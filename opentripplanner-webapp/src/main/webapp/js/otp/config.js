@@ -63,8 +63,8 @@ otp.config_defaults = {
 
         // options to turn stuff on / off on the planner
         options        : {
-            showElevationGraph    : true,   // turn on/off the southern panel that displays the elevation data
-            showBikeshareMode     : true,   // turn on/off the bikeshare options in the mode pull down
+            showElevationGraph    : false,   // turn on/off the southern panel that displays the elevation data
+            showBikeshareMode     : false,   // turn on/off the bikeshare options in the mode pull down
             showTrainMode         : true,   // turn on/off the train options in the mode pull down
             showWheelchairForm    : true,   // turn on/off the wheelchair check box (on by default)
             showIntermediateForms : true,   // turn on/off the ability to plan routes with intermediate points 
