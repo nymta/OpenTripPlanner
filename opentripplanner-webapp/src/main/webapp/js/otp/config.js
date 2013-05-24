@@ -107,11 +107,11 @@ otp.config_defaults = {
 
         geocoder  :
         {
-            enabled : false,
+            enabled : true,
             url     : "/geocoder/geocode",  
             addressParamName : "address"
         },
-        fromToOverride : new Ext.Template('<div class="mapHelp">' + otp.config.locale.config.rightClickMsg + '</div>')
+//        fromToOverride : new Ext.Template('<div class="mapHelp">' + otp.config.locale.config.rightClickMsg + '</div>')
     },
 
     map : {
