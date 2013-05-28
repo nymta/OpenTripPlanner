@@ -108,7 +108,8 @@ otp.config_defaults = {
         geocoder  :
         {
             enabled : true,
-            url     : "/geocoder/geocode",  
+//            url     : "/geocoder/geocode",
+            url: "/opentripplanner-geocoder/geocode",
             addressParamName : "address"
         },
 //        fromToOverride : new Ext.Template('<div class="mapHelp">' + otp.config.locale.config.rightClickMsg + '</div>')
@@ -128,11 +129,18 @@ otp.config_defaults = {
             controls: []
         },
 
+        baseLayer: [
+                    // Regular Open Street Map server
+                    new OpenLayers.Layer.OSM(
+                        "Open Street Map"
+                    ),
+                    ],
+                    
         // Instead of specifying just the base layer options, you can instead
         // specify the full base layer object.
         // If only one layer is defined in the baseLayer array, the layer switcher is disabled.
         // If there are several layers in the baseLayer array, the layer switcher is enabled and the first layer in the array becomes the default layer
-        baseLayer: [
+        baseLayerDISABLED: [
            // MapBox Streets Layer
            new OpenLayers.Layer.OSM(
                "Mapbox Streets", [
