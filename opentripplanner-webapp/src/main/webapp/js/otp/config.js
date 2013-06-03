@@ -11,6 +11,8 @@ if(typeof(otp) == "undefined" || otp == null) otp = {};
 if(typeof(otp.config) == "undefined" || otp.config == null) otp.config = {};
 if(typeof(otp.config.locale) == "undefined" || otp.config.locale == null) otp.config.locale = otp.locale.English;
 
+Ext.data.Connection.prototype.useDefaultXhrHeader = false;
+
 /* UNCOMMNET the following to have default fares in the UI -- note: routing engine fares take precedence 
 otp.config.default_fares = {
     regular : "2.00",
@@ -108,13 +110,14 @@ otp.config_defaults = {
         geocoder  :
         {
             enabled : true,
-//            url     : "/geocoder/geocode",
-            url: "/opentripplanner-geocoder/geocode",
+            url     : "/geocoder/geocode",
+//            url: "http://localhost:4567/geocode",
             addressParamName : "address"
         },
 //        fromToOverride : new Ext.Template('<div class="mapHelp">' + otp.config.locale.config.rightClickMsg + '</div>')
     },
 
+    googleApiKey: "${googleApiKey}",
     map : {
         // The default extent to zoom the map to when the web app loads.
         // This can either be an OpenLayers.Bounds object or the string "automatic"
@@ -130,10 +133,12 @@ otp.config_defaults = {
         },
 
         baseLayer: [
-                    // Regular Open Street Map server
-                    new OpenLayers.Layer.OSM(
-                        "Open Street Map"
-                    ),
+//                    new OpenLayers.Layer.OSM(
+//                            "Open Street Map"
+//                        ),
+                        new OpenLayers.Layer.Google(
+                                "Google Maps"
+                            ),
                     ],
                     
         // Instead of specifying just the base layer options, you can instead
