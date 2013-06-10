@@ -122,14 +122,20 @@ otp.config_defaults = {
         // The default extent to zoom the map to when the web app loads.
         // This can either be an OpenLayers.Bounds object or the string "automatic"
         // If set to "automatic", the client will ask the server for the default extent.
-        defaultExtent: "automatic",
+//        defaultExtent: "automatic",
 
         // These options are passed directly to the OpenLayers.Map constructor.
         options : {
-            projection        : new OpenLayers.Projection("EPSG:900913"),
-            displayProjection : new OpenLayers.Projection("EPSG:4326"),
-            numZoomLevels: 20,
-            controls: []
+//            projection        : new OpenLayers.Projection("EPSG:900913"),
+            projection: 'EPSG:3857',
+           // displayProjection : new OpenLayers.Projection("EPSG:4326"),
+           // numZoomLevels: 20,
+            controls: [],
+            center: new OpenLayers.LonLat(-84.388561, 33.749964)
+        	// Google.v3 uses web mercator as projection, so we have to
+    		// 	transform our coordinates
+        	.transform('EPSG:4326', 'EPSG:3857'),
+    zoom: 3
         },
 
         baseLayer: [
