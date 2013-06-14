@@ -418,7 +418,8 @@ public class Graph implements Serializable {
             } else { 
                 LOG.error("Commit mismatch in non-SNAPSHOT version. This implies a problem with " +
             		 "the build or release process.");
-                return true; // major problem
+//                return true; // major problem
+                return false; // TODO we'll let it be processed, since we're not creating release builds.
             }
         } else {
             // no version mismatch, no commit mismatch

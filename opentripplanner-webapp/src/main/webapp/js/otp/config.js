@@ -110,7 +110,7 @@ otp.config_defaults = {
         geocoder  :
         {
             enabled : true,
-            url     : "/geocoder/geocode",
+            url     : "http://arc-geocoder-demo.camsys-apps.com/geocode",
 //            url: "http://localhost:4567/geocode",
             addressParamName : "address"
         },
@@ -122,20 +122,30 @@ otp.config_defaults = {
         // The default extent to zoom the map to when the web app loads.
         // This can either be an OpenLayers.Bounds object or the string "automatic"
         // If set to "automatic", the client will ask the server for the default extent.
-//        defaultExtent: "automatic",
+        defaultExtent: "automatic",
+//	defaultExtent: new OpenLayers.Bounds(
+//                              -84.406634,
+//                              33.737147,
+//                              -84.370361,
+//                              33.764125
+//                      )
+//        	.transform('EPSG:4326', 'EPSG:3857'),
 
         // These options are passed directly to the OpenLayers.Map constructor.
         options : {
 //            projection        : new OpenLayers.Projection("EPSG:900913"),
             projection: 'EPSG:3857',
            // displayProjection : new OpenLayers.Projection("EPSG:4326"),
-           // numZoomLevels: 20,
+	    // with 16 is the default, so as if numZoomLevels not defined at all
+	    // with 20, is zoomed all the way in
+//            numZoomLevels: 20,
             controls: [],
+// this definitely works to center it
             center: new OpenLayers.LonLat(-84.388561, 33.749964)
         	// Google.v3 uses web mercator as projection, so we have to
     		// 	transform our coordinates
         	.transform('EPSG:4326', 'EPSG:3857'),
-    zoom: 3
+	    zoom: 10
         },
 
         baseLayer: [
@@ -143,7 +153,10 @@ otp.config_defaults = {
 //                            "Open Street Map"
 //                        ),
                         new OpenLayers.Layer.Google(
-                                "Google Maps"
+                                "Google Maps",
+                                {
+                                     numZoomLevels: 20,
+                                }
                             ),
                     ],
                     
