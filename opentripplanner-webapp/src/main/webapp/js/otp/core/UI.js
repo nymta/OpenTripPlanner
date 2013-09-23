@@ -159,7 +159,7 @@ otp.core.UI = {
                 width:        360,
                 minSize:      150,
                 maxSize:      450,
-                margins:      '30 0 1 1',
+                margins:      '39 0 1 1',
                 split:        true,
                 useSplitTips: true,
                 collapsible:  true,

@@ -271,6 +271,7 @@ otp.locale.English = {
             wheelchair    : "Wheelchair accessible trip", 
             go            : "Go",
             planTrip      : "Plan Your Trip",
+            faq           : "About This Project",
             newTrip       : "New trip"
         },
 

@@ -68,6 +68,7 @@ otp.planner.StaticForms = {
 
     // buttons
     m_submitButton        : null,
+    m_faqButton           : null,
 
     m_xmlRespRecord       : null,
 
@@ -75,6 +76,7 @@ otp.planner.StaticForms = {
     m_fromToFP            : null,
 
     THIS                  : null,
+    
 
 
     /**
@@ -343,6 +345,9 @@ otp.planner.StaticForms = {
         }, 5000);
     },
 
+    faq : function() {
+    	window.open("/faq.html");
+    },
 
     /** */
     clear : function()
@@ -904,6 +909,15 @@ otp.planner.StaticForms = {
             handler: this.submit
         });
 
+        this.m_faqButton = new Ext.Button({
+            text:    this.locale.tripPlanner.labels.faq,
+            id:      'trip-faq',
+            scope:   this,
+            style:   'background-color:FF0000;',
+            icon: 'images/ui/buttons/glyphicons_194_circle_question_mark.png',
+            handler: this.faq
+        });
+
         this.m_toPlace   = new Ext.form.Hidden({name: 'toPlace',   value: ''});
         this.m_fromPlace = new Ext.form.Hidden({name: 'fromPlace', value: ''});
         var dateParam    = new Ext.form.Hidden({name: 'date',      value: ''});
@@ -914,7 +928,8 @@ otp.planner.StaticForms = {
                 dateParam,
                 this.m_toPlace,
                 this.m_fromPlace,
-                this.m_submitButton
+                this.m_submitButton,
+                this.m_faqButton
         ];
 
         var conf = {

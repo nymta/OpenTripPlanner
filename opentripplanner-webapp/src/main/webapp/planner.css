@@ -2,6 +2,10 @@ div.olMap {
 background: #81bee7 !important;
 }
 
+div.logo {
+	height: 39px;
+}
+
 div.olMapViewport {
 z-index: 0;
 }

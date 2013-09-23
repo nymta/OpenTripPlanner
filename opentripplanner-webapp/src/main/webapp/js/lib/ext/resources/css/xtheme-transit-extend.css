@@ -228,6 +228,16 @@ margin: 0 auto;
 color: #fff;
 }
 
+#trip-faq {
+background: #f0a250!important;
+color: #fff!important;
+margin: 10 auto 0 auto;
+}
+
+#trip-faq button {
+color: #fff;
+}
+
 .x-btn {
 background: #808080;
 color: #fff;
