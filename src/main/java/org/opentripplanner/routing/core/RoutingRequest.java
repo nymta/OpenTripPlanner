@@ -412,6 +412,9 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Accept only paths that use transit (no street-only paths). */
     public boolean onlyTransitTrips = false;
 
+    /** Should attempt to determine when the enxt bus goes through this stop. */
+    public boolean showNextFromDeparture = false;
+    
     /* CONSTRUCTORS */
 
     /** Constructor for options; modes defaults to walk and transit */

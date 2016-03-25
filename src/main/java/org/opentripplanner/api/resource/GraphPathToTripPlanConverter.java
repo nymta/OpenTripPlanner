@@ -17,11 +17,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import org.onebusaway.gtfs.model.*;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.api.model.*;
 import org.opentripplanner.common.geometry.DirectionUtils;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.PackedCoordinateSequence;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.index.model.StopTimesInPattern;
+import org.opentripplanner.index.model.TripTimeShort;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
@@ -79,9 +82,9 @@ public abstract class GraphPathToTripPlanConverter {
         to.orig = request.to.name;
 
         TripPlan plan = new TripPlan(from, to, request.getDateTime());
-
+        
         for (GraphPath path : paths) {
-            Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, requestedLocale);
+            Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, requestedLocale, request.showNextFromDeparture);
             itinerary = adjustItinerary(request, itinerary);
             plan.addItinerary(itinerary);
         }
@@ -120,15 +123,33 @@ public abstract class GraphPathToTripPlanConverter {
     }
 
     /**
+     * A method for generating itineraries that preserves existing functionality and allows older 
+     * methods to continue working without needing the update. It always assumed the user does not
+     * want the nextFromDeparture.
+     * 
+     * @param path The graph path to base the itinerary on
+     * @param showIntermediateStops Whether to include intermediate stops in the itinerary or not
+     * @param requestedLocale
+     * @return
+     */
+    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops, Locale requestedLocale)
+    {
+        return generateItinerary(path, showIntermediateStops, requestedLocale, false);
+    }
+    
+    /**
      * Generate an itinerary from a {@link GraphPath}. This method first slices the list of states
      * at the leg boundaries. These smaller state arrays are then used to generate legs. Finally the
      * rest of the itinerary is generated based on the complete state array.
      *
      * @param path The graph path to base the itinerary on
      * @param showIntermediateStops Whether to include intermediate stops in the itinerary or not
+     * @param requestedLocale
+     * @param showNextFromDeparture Whether to include the expensive process of determining when the next bus leaves that stop
      * @return The generated itinerary
      */
-    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops, Locale requestedLocale) {
+    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops, 
+                                            Locale requestedLocale, boolean showNextFromDeparture) {
         Itinerary itinerary = new Itinerary();
 
         State[] states = new State[path.states.size()];
@@ -149,7 +170,7 @@ public abstract class GraphPathToTripPlanConverter {
         }
 
         for (State[] legStates : legsStates) {
-            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, requestedLocale));
+            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, requestedLocale, showNextFromDeparture));
         }
 
         addWalkSteps(graph, itinerary.legs, legsStates, requestedLocale);
@@ -284,9 +305,11 @@ public abstract class GraphPathToTripPlanConverter {
      *
      * @param states The array of states to base the leg on
      * @param showIntermediateStops Whether to include intermediate stops in the leg or not
+     * @param requestedLocale
+     * @param showNextFromDeparture Whether to include the expensive process of determining when the next bus leaves that stop
      * @return The generated leg
      */
-    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops, Locale requestedLocale) {
+    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops, Locale requestedLocale, boolean showNextFromDeparture) {
         Leg leg = new Leg();
 
         Edge[] edges = new Edge[states.length - 1];
@@ -308,6 +331,13 @@ public abstract class GraphPathToTripPlanConverter {
 
         addPlaces(leg, states, edges, showIntermediateStops, requestedLocale);
 
+        List<StopTimesInPattern> stopTimes = null;
+        
+        if(leg.from.stopId != null && showNextFromDeparture)
+        {
+            establishNextDeparture(graph, states, leg);
+        }        
+        
         CoordinateArrayListSequence coordinates = makeCoordinates(edges);
         Geometry geometry = GeometryUtils.getGeometryFactory().createLineString(coordinates);
 
@@ -323,6 +353,59 @@ public abstract class GraphPathToTripPlanConverter {
         if (leg.isTransitLeg()) addRealTimeData(leg, states);
 
         return leg;
+    }
+
+
+    private static void establishNextDeparture(Graph graph, State[] states, Leg leg) {
+        List<StopTimesInPattern> stopTimes;
+        stopTimes = graph.index.stopTimesForStop(graph.index.stopForId.get(leg.from.stopId), 0, 86400, 50);
+
+        Calendar nextDeparture = determineNextDepartureTimeForStop(leg, stopTimes);
+        
+        if(nextDeparture == null)
+        {
+            Calendar nextServiceDay = leg.from.departure;
+            nextServiceDay.set(Calendar.DAY_OF_YEAR, nextServiceDay.get(Calendar.DAY_OF_YEAR)+1);
+            nextServiceDay.set(Calendar.MINUTE, 0);
+            nextServiceDay.set(Calendar.SECOND, 0);
+            graph.index.stopTimesForStop(graph.index.stopForId.get(leg.from.stopId), leg.from.departure.getTime().getTime(), 86400, 5);
+        }
+
+        leg.from.nextDeparture = nextDeparture;
+    }
+
+    private static Calendar determineNextDepartureTimeForStop(Leg leg,
+            List<StopTimesInPattern> stopTimes) {
+        for (StopTimesInPattern stopTimesInPattern : stopTimes) {
+           int shortTimeCounter = 1;
+            
+            for (TripTimeShort tripTimeShort : stopTimesInPattern.times) {
+                if(tripTimeShort.tripId.equals(leg.tripId))
+                {
+                    TripTimeShort nextTrip;
+                    
+                    if(shortTimeCounter < stopTimesInPattern.times.size())
+                    {
+                        nextTrip = stopTimesInPattern.times.get(shortTimeCounter);
+                                      
+                        Calendar nextDeparture = (Calendar) leg.from.departure.clone();
+                        
+                        int hours = (nextTrip.scheduledDeparture / 60) / 60;
+                        int minutes = (nextTrip.scheduledDeparture / 60) % 60;
+                        int seconds = nextTrip.scheduledDeparture % 60;
+                        
+                        nextDeparture.set(Calendar.HOUR_OF_DAY, hours);
+                        nextDeparture.set(Calendar.MINUTE, minutes);
+                        nextDeparture.set(Calendar.SECOND, seconds);
+                        
+                        return nextDeparture;
+                    }
+                }
+                shortTimeCounter++;
+            }
+        }
+        
+        return null;
     }
 
     private static void addFrequencyFields(State[] states, Leg leg) {

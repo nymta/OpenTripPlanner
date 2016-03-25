@@ -347,6 +347,12 @@ public abstract class RoutingResource {
     @QueryParam("disableRemainingWeightHeuristic")
     protected Boolean disableRemainingWeightHeuristic;
     
+    /**
+     * 
+     */
+    @QueryParam("showNextFromDeparture")
+    protected Boolean showNextFromDeparture;
+    
     /* 
      * somewhat ugly bug fix: the graphService is only needed here for fetching per-graph time zones. 
      * this should ideally be done when setting the routing context, but at present departure/
@@ -432,6 +438,8 @@ public abstract class RoutingResource {
         if (bikeSwitchCost != null)
             request.bikeSwitchCost = bikeSwitchCost;
 
+        
+        
         if (optimize != null) {
             // Optimize types are basically combined presets of routing parameters, except for triangle
             request.setOptimize(optimize);
@@ -565,6 +573,9 @@ public abstract class RoutingResource {
         if (disableRemainingWeightHeuristic != null)
             request.disableRemainingWeightHeuristic = disableRemainingWeightHeuristic;
 
+        if (showNextFromDeparture != null)
+            request.showNextFromDeparture = showNextFromDeparture;
+        
         //getLocale function returns defaultLocale if locale is null
         request.locale = ResourceBundleSingleton.INSTANCE.getLocale(locale);
         return request;
