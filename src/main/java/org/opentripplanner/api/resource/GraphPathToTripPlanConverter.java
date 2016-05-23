@@ -341,8 +341,6 @@ public abstract class GraphPathToTripPlanConverter {
 
         addPlaces(leg, states, edges, showIntermediateStops, requestedLocale);
 
-        List<StopTimesInPattern> stopTimes = null;
-
         CoordinateArrayListSequence coordinates = makeCoordinates(edges);
         Geometry geometry = GeometryUtils.getGeometryFactory().createLineString(coordinates);
 
@@ -358,23 +356,21 @@ public abstract class GraphPathToTripPlanConverter {
         if (leg.isTransitLeg()) {
             addRealTimeData(leg, states);
             if (showNextFromDeparture) {
-                establishNextDeparture(graph, states, leg);
+                leg.from.nextDeparture = establishNextDeparture(graph, states, new ServiceDate(leg.from.departure), leg);
             }
         }
 
         return leg;
     }
 
-    private static void establishNextDeparture(Graph graph, State[] states, Leg leg) {
-        List<StopTimesInPattern> stopTimes;
-
-        ServiceDate serviceDate;
-            stopTimes = graph.index.stopTimesForStop(graph.index.stopForId.get(leg.from.stopId), 0,
-                    86400, 50);
-
+    private static Calendar establishNextDeparture(Graph graph, State[] states, ServiceDate serviceDate, Leg leg) {
+        
+        List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate);
+        stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next()));
+        
         Calendar nextDeparture = determineNextDepartureTimeForStop(leg, stopTimes);
-
-        leg.from.nextDeparture = nextDeparture;
+                
+        return nextDeparture;
     }
 
     private static Calendar determineNextDepartureTimeForStop(Leg leg,
@@ -392,15 +388,7 @@ public abstract class GraphPathToTripPlanConverter {
                         nextTrip = sortedStopTimes.get(shortTimeCounter);
 
                         Calendar nextDeparture = (Calendar) leg.from.departure.clone();
-                        nextDeparture.setTimeZone(TimeZone.getDefault());
-
-                        int hours = (nextTrip.scheduledDeparture / 3600);
-                        int minutes = (nextTrip.scheduledDeparture / 60) % 60;
-                        int seconds = nextTrip.scheduledDeparture % 60;
-
-                        nextDeparture.set(Calendar.HOUR_OF_DAY, hours);
-                        nextDeparture.set(Calendar.MINUTE, minutes);
-                        nextDeparture.set(Calendar.SECOND, seconds);
+                        nextDeparture.setTimeInMillis(nextTrip.serviceDay+nextTrip.scheduledDeparture);
                         nextDeparture.setTimeZone(leg.from.departure.getTimeZone());
 
                         return nextDeparture;
