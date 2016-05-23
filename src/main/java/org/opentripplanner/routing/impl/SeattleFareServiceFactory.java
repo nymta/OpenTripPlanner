@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FareAttribute;
+import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.services.GtfsRelationalDao;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.routing.core.FareRuleSet;
 import org.opentripplanner.routing.services.FareService;
@@ -69,6 +71,9 @@ public class SeattleFareServiceFactory extends DefaultFareServiceFactory {
         for (AgencyAndId route : fareRule.getRoutes())
             newFareRule.addRoute(route);
         
+        for (AgencyAndId trip : fareRule.getTrips())
+        	newFareRule.addTrip(trip);
+        
         fareRules.put(fare.getId(), newFareRule);
     }
     
@@ -86,5 +91,28 @@ public class SeattleFareServiceFactory extends DefaultFareServiceFactory {
     @Override
     public void configure(JsonNode config) {
         // No config for the moment
+    }
+    
+    @Override
+    public void processGtfs(GtfsRelationalDao dao) {
+        super.processGtfs(dao);
+       
+        // Add custom extension: trips may have a fare ID specified in KCM GTFS.
+        // Index rules by AgencyAndId to avoid conflicts across feeds.
+        
+        Map<AgencyAndId, FareRuleSet> fareRuleSetById = new HashMap<>();
+        
+        for (FareRuleSet rule : regularFareRules.values()) {
+        	AgencyAndId id = rule.getFareAttribute().getId();
+        	fareRuleSetById.put(id, rule);
+        }
+        
+        for (Trip trip : dao.getAllTrips()) {
+        	AgencyAndId fareId = new AgencyAndId(trip.getId().getAgencyId(), trip.getFareId());
+        	FareRuleSet rule = fareRuleSetById.get(fareId);
+        	if (rule != null)
+        		rule.addTrip(trip.getId());        	
+        }
+        	
     }
 }
