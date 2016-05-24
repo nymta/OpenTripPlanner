@@ -95,21 +95,26 @@ public class SeattleFareServiceFactory extends DefaultFareServiceFactory {
     
     @Override
     public void processGtfs(GtfsRelationalDao dao) {
-        super.processGtfs(dao);
-       
-        // Add custom extension: trips may have a fare ID specified in KCM GTFS.
-        // Index rules by AgencyAndId to avoid conflicts across feeds.
-        
-        Map<AgencyAndId, FareRuleSet> fareRuleSetById = new HashMap<>();
-        
+    	// Add custom extension: trips may have a fare ID specified in KCM GTFS.
+    	// Need to ensure that we are scoped to feed when adding trips to FareRuleSet,
+    	// since fare IDs may not be unique across feeds and trip agency IDs
+    	// may not match fare attribute agency IDs (which are feed IDs).
+    	
+    	Map<AgencyAndId, FareRuleSet> feedFareRules = new HashMap<>();
+    	fillFareRules(null, dao.getAllFareAttributes(), dao.getAllFareRules(), feedFareRules);
+    	
+    	regularFareRules.putAll(feedFareRules);
+    	
+    	Map<String, FareRuleSet> feedFareRulesById = new HashMap<>();
+            
         for (FareRuleSet rule : regularFareRules.values()) {
-        	AgencyAndId id = rule.getFareAttribute().getId();
-        	fareRuleSetById.put(id, rule);
+        	String id = rule.getFareAttribute().getId().getId();
+        	feedFareRulesById.put(id, rule);
         }
         
         for (Trip trip : dao.getAllTrips()) {
-        	AgencyAndId fareId = new AgencyAndId(trip.getId().getAgencyId(), trip.getFareId());
-        	FareRuleSet rule = fareRuleSetById.get(fareId);
+        	String fareId = trip.getFareId();
+        	FareRuleSet rule = feedFareRulesById.get(fareId);
         	if (rule != null)
         		rule.addTrip(trip.getId());        	
         }
