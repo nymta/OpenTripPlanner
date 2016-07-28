@@ -105,6 +105,11 @@ public class Place {
     public VertexType vertexType;
 
     /**
+     * In case the vertex is of type Bike sharing station.
+     */
+    public String bikeShareId;
+
+    /**
      * Returns the geometry in GeoJSON format
      * @return
      */

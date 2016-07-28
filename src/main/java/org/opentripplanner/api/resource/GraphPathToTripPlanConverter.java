@@ -28,6 +28,7 @@ import org.opentripplanner.index.model.TripTimeShort;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
+import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.error.TrivialPathException;
@@ -669,7 +670,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
-            leg.headsign = states[states.length - 1].getBackDirection();
+            leg.headsign = states[1].getBackDirection();
             leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);
             leg.routeColor = route.getColor();
             leg.routeId = route.getId();
@@ -793,6 +794,8 @@ public abstract class GraphPathToTripPlanConverter {
             }
             place.vertexType = VertexType.TRANSIT;
         } else if (vertex instanceof BikeRentalStationVertex) {
+            place.bikeShareId = ((BikeRentalStationVertex) vertex).getId();
+            LOG.trace("Added bike share Id {} to place", place.bikeShareId);
             place.vertexType = VertexType.BIKESHARE;
         } else if (vertex instanceof BikeParkVertex) {
             place.vertexType = VertexType.BIKEPARK;
