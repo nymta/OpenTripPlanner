@@ -173,6 +173,10 @@ public abstract class RoutingResource {
      *  transfers over longer distances might use a longer time. */
     @QueryParam("minTransferTime")
     protected Integer minTransferTime;
+    
+    /** Maximum time in seconds between successive trips on different vehicles. */
+    @QueryParam("maxTransferTime")
+    protected Integer maxTransferTime;
 
     /** The maximum number of possible itineraries to return. */
     @QueryParam("numItineraries")
@@ -540,6 +544,9 @@ public abstract class RoutingResource {
         if (minTransferTime != null)
             request.transferSlack = minTransferTime; // TODO rename field in routingrequest
 
+        if (maxTransferTime != null)
+        	request.maxTransferTime = maxTransferTime;
+        
         if (nonpreferredTransferPenalty != null)
             request.nonpreferredTransferPenalty = nonpreferredTransferPenalty;
 

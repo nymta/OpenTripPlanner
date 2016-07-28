@@ -278,6 +278,11 @@ public class RoutingRequest implements Cloneable, Serializable {
      */
     // initialize to zero so this does not inadvertently affect tests, and let Planner handle defaults
     public int transferSlack = 0;
+    
+    /**
+     * Max transfer time
+     */
+    public int maxTransferTime = Integer.MAX_VALUE;
 
     /** Invariant: boardSlack + alightSlack <= transferSlack. */
     public int boardSlack = 0;
@@ -909,6 +914,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && preferredRoutes.equals(other.preferredRoutes)
                 && unpreferredRoutes.equals(other.unpreferredRoutes)
                 && transferSlack == other.transferSlack
+                && maxTransferTime == other.maxTransferTime
                 && boardSlack == other.boardSlack
                 && alightSlack == other.alightSlack
                 && nonpreferredTransferPenalty == other.nonpreferredTransferPenalty
@@ -964,7 +970,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Boolean(reverseOptimizeOnTheFly).hashCode() * 95112799
                 + new Boolean(ignoreRealtimeUpdates).hashCode() * 154329
                 + new Boolean(disableRemainingWeightHeuristic).hashCode() * 193939
-                + new Boolean(useTraffic).hashCode() * 10169;
+                + new Boolean(useTraffic).hashCode() * 10169
+                + new Double(maxTransferTime).hashCode() * 790052909;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters
