@@ -97,7 +97,7 @@ public class PlannerResource extends RoutingResource {
             TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
             response.setPlan(plan);
             
-            if (showStopTimes) {
+            if (showStopTimes != null && showStopTimes) {
             	response.setTripTimes(getTripTimes(response.getPlan(), router.graph.index));
             }
 
