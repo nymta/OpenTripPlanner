@@ -357,6 +357,12 @@ public abstract class RoutingResource {
     @QueryParam("showNextFromDeparture")
     protected Boolean showNextFromDeparture;
     
+    /**
+     * If true, API call will return stop times for all the trips in the TripPlan.
+     */
+    @QueryParam("showStopTimes")
+    protected Boolean showStopTimes;
+    
     /* 
      * somewhat ugly bug fix: the graphService is only needed here for fetching per-graph time zones. 
      * this should ideally be done when setting the routing context, but at present departure/
