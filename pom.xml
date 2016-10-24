@@ -7,7 +7,6 @@
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
     <version>1.0.0</version>
-    <classifier>RTD</version>
     <packaging>jar</packaging>
 
     <scm>
