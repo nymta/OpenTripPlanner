@@ -365,7 +365,7 @@ public abstract class GraphPathToTripPlanConverter {
     }
 
     private static Calendar establishNextDeparture(Graph graph, State[] states, ServiceDate serviceDate, Leg leg) {
-        
+
         List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate);
         stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next()));
         
@@ -428,6 +428,9 @@ public abstract class GraphPathToTripPlanConverter {
 
     private static boolean stopTimesInPatternMatches(Graph graph, Leg leg, StopTimesInPattern stip) {
         Trip legTrip = graph.index.tripForId.get(leg.tripId);
+
+        if (stip.times.size() == 0)
+            return false;
 
         TripTimeShort example = stip.times.get(0);
         Trip newTrip = graph.index.tripForId.get(example.tripId);
