@@ -365,20 +365,19 @@ public abstract class GraphPathToTripPlanConverter {
     }
 
     private static Calendar establishNextDeparture(Graph graph, State[] states, ServiceDate serviceDate, Leg leg) {
-        
+
         List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate);
         stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next()));
         
-        Calendar nextDeparture = determineNextDepartureTimeForStop(leg, stopTimes);
+        Calendar nextDeparture = determineNextDepartureTimeForStop(graph, leg, stopTimes);
                 
         return nextDeparture;
     }
 
-    private static Calendar determineNextDepartureTimeForStop(Leg leg,
+    private static Calendar determineNextDepartureTimeForStop(Graph graph, Leg leg,
             List<StopTimesInPattern> stopTimes) {
         
-        String routeId = leg.routeId.getAgencyId()+":"+leg.routeId.getId()+":";
-        List<TripTimeShort> sortedStopTimes = FindAndSortStopTimes(routeId, stopTimes);
+        List<TripTimeShort> sortedStopTimes = findAndSortStopTimes(graph, leg, stopTimes);
         int shortTimeCounter = 1;
         
         for (TripTimeShort tripTimeShort : sortedStopTimes) {
@@ -401,13 +400,13 @@ public abstract class GraphPathToTripPlanConverter {
         return null;
     }
 
-    private static List<TripTimeShort> FindAndSortStopTimes(String routeId,
-            List<StopTimesInPattern> stopTimes) {
+    private static List<TripTimeShort> findAndSortStopTimes(Graph graph,
+            Leg leg, List<StopTimesInPattern> stopTimes) {
         List<TripTimeShort> sortedStopTimes = new ArrayList<TripTimeShort>();
         List<TripTimeShort> collectedStopTimes= new ArrayList<TripTimeShort>();
-               
-        for (StopTimesInPattern stopTimesInPattern : stopTimes) {        
-            if(stopTimesInPattern.pattern.id.startsWith(routeId))
+
+        for (StopTimesInPattern stopTimesInPattern : stopTimes) {
+            if(stopTimesInPatternMatches(graph, leg, stopTimesInPattern))
             {
                 collectedStopTimes.addAll(stopTimesInPattern.times);
             }
@@ -425,6 +424,19 @@ public abstract class GraphPathToTripPlanConverter {
         Collections.sort(collectedStopTimes, comparator);
         
         return sortedStopTimes;
+    }
+
+    private static boolean stopTimesInPatternMatches(Graph graph, Leg leg, StopTimesInPattern stip) {
+        Trip legTrip = graph.index.tripForId.get(leg.tripId);
+
+        if (stip.times.size() == 0)
+            return false;
+
+        TripTimeShort example = stip.times.get(0);
+        Trip newTrip = graph.index.tripForId.get(example.tripId);
+
+        return legTrip.getRoute().getId().equals(newTrip.getRoute().getId())
+                && legTrip.getDirectionId().equals(newTrip.getDirectionId());
     }
 
     private static void addFrequencyFields(State[] states, Leg leg) {
