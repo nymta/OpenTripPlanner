@@ -24,6 +24,7 @@ import org.opentripplanner.routing.algorithm.strategies.RemainingWeightHeuristic
 import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHeuristic;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.LegSwitchingEdge;
 import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.error.VertexNotFoundException;
@@ -39,6 +40,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class contains the logic for repeatedly building shortest path trees and accumulating paths through
@@ -173,7 +177,18 @@ public class GraphPathFinder {
                     options.onlyTransitTrips = true;
                 }
             }
-            paths.addAll(newPaths);
+            
+            if (options.maxTransferTime == Integer.MAX_VALUE) {
+            	paths.addAll(newPaths);
+            } else {
+            
+            	List<GraphPath> pathsToAdd = newPaths.stream()
+            			.filter(path -> !graphPathExceedsMaxTransferTime(path, options))
+            			.collect(Collectors.toList());
+            
+            	paths.addAll(pathsToAdd);
+            }
+            
             LOG.debug("we have {} paths", paths.size());
         }
         LOG.debug("END SEARCH ({} msec)", System.currentTimeMillis() - searchBeginTime);
@@ -181,6 +196,31 @@ public class GraphPathFinder {
         return paths;
     }
 
+    private static boolean graphPathExceedsMaxTransferTime(GraphPath path, RoutingRequest options) {
+    	
+    	long lastTransitDeparture = -1;
+    	
+    	State[] states = path.states.toArray(new State[path.states.size()]);
+    
+    	for (int i = 0; i < states.length; i++) {
+    	
+    		if (states[i].getBackMode() == null || !states[i].getBackMode().isTransit())
+    			continue;
+    		
+    		// If it is transit, check if transfer time is too long.
+    		if (lastTransitDeparture > 0 
+    				&& states[i].getTimeSeconds() - lastTransitDeparture > options.maxTransferTime)
+    			return true;
+    		
+    		while (states[i].getBackMode() != null && states[i].getBackMode().isTransit())
+    			i++;
+    		
+    		lastTransitDeparture = states[i - 1].getTimeSeconds();
+    	}
+    	
+    	return false;
+    }
+    
     /* Try to find N paths through the Graph */
     public List<GraphPath> graphPathFinderEntryPoint (RoutingRequest request) {
 

@@ -69,6 +69,11 @@ public class Place {
      */
     public Calendar departure = null;
 
+    /**
+     * The time the next bus is scheuled to depart from this stop.
+     */
+    public Calendar nextDeparture = null;
+    
     @XmlAttribute
     @JsonSerialize
     public String orig;

@@ -173,6 +173,10 @@ public abstract class RoutingResource {
      *  transfers over longer distances might use a longer time. */
     @QueryParam("minTransferTime")
     protected Integer minTransferTime;
+    
+    /** Maximum time in seconds between successive trips on different vehicles. */
+    @QueryParam("maxTransferTime")
+    protected Integer maxTransferTime;
 
     /** The maximum number of possible itineraries to return. */
     @QueryParam("numItineraries")
@@ -347,6 +351,18 @@ public abstract class RoutingResource {
     @QueryParam("disableRemainingWeightHeuristic")
     protected Boolean disableRemainingWeightHeuristic;
     
+    /**
+     * 
+     */
+    @QueryParam("showNextFromDeparture")
+    protected Boolean showNextFromDeparture;
+    
+    /**
+     * If true, API call will return stop times for all the trips in the TripPlan.
+     */
+    @QueryParam("showStopTimes")
+    protected Boolean showStopTimes;
+    
     /* 
      * somewhat ugly bug fix: the graphService is only needed here for fetching per-graph time zones. 
      * this should ideally be done when setting the routing context, but at present departure/
@@ -432,6 +448,8 @@ public abstract class RoutingResource {
         if (bikeSwitchCost != null)
             request.bikeSwitchCost = bikeSwitchCost;
 
+        
+        
         if (optimize != null) {
             // Optimize types are basically combined presets of routing parameters, except for triangle
             request.setOptimize(optimize);
@@ -532,6 +550,9 @@ public abstract class RoutingResource {
         if (minTransferTime != null)
             request.transferSlack = minTransferTime; // TODO rename field in routingrequest
 
+        if (maxTransferTime != null)
+        	request.maxTransferTime = maxTransferTime;
+        
         if (nonpreferredTransferPenalty != null)
             request.nonpreferredTransferPenalty = nonpreferredTransferPenalty;
 
@@ -565,6 +586,9 @@ public abstract class RoutingResource {
         if (disableRemainingWeightHeuristic != null)
             request.disableRemainingWeightHeuristic = disableRemainingWeightHeuristic;
 
+        if (showNextFromDeparture != null)
+            request.showNextFromDeparture = showNextFromDeparture;
+        
         //getLocale function returns defaultLocale if locale is null
         request.locale = ResourceBundleSingleton.INSTANCE.getLocale(locale);
         return request;

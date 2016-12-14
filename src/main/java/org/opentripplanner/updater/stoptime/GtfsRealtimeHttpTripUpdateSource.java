@@ -46,6 +46,8 @@ public class GtfsRealtimeHttpTripUpdateSource implements TripUpdateSource, JsonC
     private String feedId;
 
     private String url;
+    private String username;
+    private String password;
 
     @Override
     public void configure(Graph graph, JsonNode config) throws Exception {
@@ -53,7 +55,12 @@ public class GtfsRealtimeHttpTripUpdateSource implements TripUpdateSource, JsonC
         if (url == null) {
             throw new IllegalArgumentException("Missing mandatory 'url' parameter");
         }
+        String username = config.path("username").asText();
+        String password = config.path("password").asText();
+        
         this.url = url;
+        this.username = username;
+        this.password = password;
         this.feedId = config.path("feedId").asText();
     }
 
@@ -64,7 +71,8 @@ public class GtfsRealtimeHttpTripUpdateSource implements TripUpdateSource, JsonC
         List<TripUpdate> updates = null;
         fullDataset = true;
         try {
-            InputStream is = HttpUtils.getData(url);
+            InputStream is = HttpUtils.getData(url, null, null, username, password);
+            
             if (is != null) {
                 // Decode message
                 feedMessage = FeedMessage.PARSER.parseFrom(is);

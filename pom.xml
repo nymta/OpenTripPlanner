@@ -6,7 +6,7 @@
     <url>http://opentripplanner.org/</url>
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <scm>
@@ -24,11 +24,10 @@
 
     <distributionManagement>
         <repository>
-            <!-- Also used as snapshotRepository by default -->
-            <id>conveyal-maven-repo</id>
-            <name>Conveyal Maven Repository</name>
-            <url>s3://maven.conveyal.com/</url>
-        </repository>
+          <id>releases-obaweb-repo</id>
+      	  <name>OneBusAway OBAWEB Release Repo</name>
+      	  <url>http://repo.obaweb.org:8080/archiva/repository/releases/</url> 
+    	</repository>
     </distributionManagement>
 
     <build>
@@ -621,10 +620,22 @@
             <version>1.4</version>
         </dependency>
         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.0</version>
         </dependency>
+        
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.9</version>
+		</dependency>
+        
         <dependency>
             <groupId>commons-discovery</groupId>
             <artifactId>commons-discovery</artifactId>

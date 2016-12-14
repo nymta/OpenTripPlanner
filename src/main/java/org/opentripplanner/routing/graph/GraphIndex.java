@@ -487,7 +487,7 @@ public class GraphIndex {
      * @param serviceDate Return all departures for the specified date
      * @return
      */
-    public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate) {
+    public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate) {        
         List<StopTimesInPattern> ret = new ArrayList<>();
         TimetableSnapshot snapshot = null;
         if (graph.timetableSnapshotSource != null) {

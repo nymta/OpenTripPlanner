@@ -1,3 +1,4 @@
+
 /* This program is free software: you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public License
  as published by the Free Software Foundation, either version 3 of
@@ -20,14 +21,21 @@ import java.io.InputStream;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+
+import org.eclipse.jetty.util.StringUtil;
+
 
 public class HttpUtils {
     
@@ -37,13 +45,24 @@ public class HttpUtils {
     public static InputStream getData(String url) throws IOException {
         return getData(url, null, null);
     }
-
+    
     public static InputStream getData(String url, String requestHeaderName, String requestHeaderValue) throws ClientProtocolException, IOException {
+        return getDataWithAuthentication(url, requestHeaderName, requestHeaderValue, null, null);
+    }
+
+    public static InputStream getData(String url, String requestHeaderName, String requestHeaderValue, String username, String password) throws IOException {
+        return getDataWithAuthentication(url, requestHeaderName, requestHeaderValue, username, password);
+    }
+    
+    public static InputStream getDataWithAuthentication(String url, String requestHeaderName, String requestHeaderValue, 
+            String username, String password) throws ClientProtocolException, IOException {
         HttpGet httpget = new HttpGet(url);
         if (requestHeaderValue != null) {
             httpget.addHeader(requestHeaderName, requestHeaderValue);
         }
-        HttpClient httpclient = getClient();
+
+        HttpClient httpclient = getClient(username, password);
+        
         HttpResponse response = httpclient.execute(httpget);
         if(response.getStatusLine().getStatusCode() != 200)
             return null;
@@ -54,7 +73,7 @@ public class HttpUtils {
         }
         return entity.getContent();
     }
-
+    
     public static void testUrl(String url) throws IOException {
         HttpHead head = new HttpHead(url);
         HttpClient httpclient = getClient();
@@ -71,13 +90,27 @@ public class HttpUtils {
         }
     }
     
+    
     private static HttpClient getClient() {
+        return getClient(null, null);
+    }
+    
+    private static HttpClient getClient(String username, String password) {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, TIMEOUT_CONNECTION);
         HttpConnectionParams.setSoTimeout(httpParams, TIMEOUT_SOCKET);
-        
         DefaultHttpClient httpclient = new DefaultHttpClient();
-        httpclient.setParams(httpParams);
+        
+        if(StringUtil.isNotBlank(username) &&
+                StringUtil.isNotBlank(password))
+        {
+            CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+            httpclient.setCredentialsProvider(credentialsProvider);
+        }
+        
+        httpclient.setParams(httpParams);    
+                
         return httpclient;
     }
 }
