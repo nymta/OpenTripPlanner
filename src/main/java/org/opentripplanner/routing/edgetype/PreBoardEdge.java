@@ -17,6 +17,7 @@ import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.RoutingRequest;
+import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.routing.vertextype.TransitStopDepart;
 
@@ -39,21 +40,17 @@ public class PreBoardEdge extends FreeEdge implements StationEdge {
             throw new IllegalStateException("Preboard edges must lead out of a transit stop.");
     }
 
+    protected PreBoardEdge(Vertex from, Vertex to) {
+        super(from, to);
+    }
+
     @Override
     public State traverse(State s0) {
         RoutingRequest options = s0.getOptions();
         
         // Ignore this edge if its stop is banned
-        if (!options.bannedStops.isEmpty()) {
-            if (options.bannedStops.matches(((TransitStop) fromv).getStop())) {
-                return null;
-            }
-        }
-        if (!options.bannedStopsHard.isEmpty()) {
-            if (options.bannedStopsHard.matches(((TransitStop) fromv).getStop())) {
-                return null;
-            }
-        }
+        if (isStopBanned(options))
+            return null;
         
         if (options.arriveBy) {
             /* Traverse backward: not much to do */
@@ -119,6 +116,20 @@ public class PreBoardEdge extends FreeEdge implements StationEdge {
         StateEditor s1 = s0.edit(this);
         s1.setBackMode(getMode());
         return s1.makeState();
+    }
+
+    public boolean isStopBanned(RoutingRequest options) {
+        if (!options.bannedStops.isEmpty()) {
+            if (options.bannedStops.matches(((TransitStop) fromv).getStop())) {
+                return true;
+            }
+        }
+        if (!options.bannedStopsHard.isEmpty()) {
+            if (options.bannedStopsHard.matches(((TransitStop) fromv).getStop())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString() {

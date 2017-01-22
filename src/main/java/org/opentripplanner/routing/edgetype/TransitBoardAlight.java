@@ -27,9 +27,7 @@ import org.opentripplanner.routing.core.TransferTable;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.trippattern.TripTimes;
-import org.opentripplanner.routing.vertextype.PatternStopVertex;
-import org.opentripplanner.routing.vertextype.TransitStopArrive;
-import org.opentripplanner.routing.vertextype.TransitStopDepart;
+import org.opentripplanner.routing.vertextype.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +76,15 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
         this.stopIndex = stopIndex;
         this.modeMask = new TraverseModeSet(mode).getMask();
         this.boarding = false;
+    }
+
+    // for subclass for flex
+    protected TransitBoardAlight(TransitVertex from, TransitVertex to, int stopIndex, TraverseMode mode, boolean boarding) {
+        super(from, to);
+        this.stopIndex = stopIndex;
+        this.modeMask = new TraverseModeSet(mode).getMask();
+        this.boarding = boarding;
+
     }
     
     /** 

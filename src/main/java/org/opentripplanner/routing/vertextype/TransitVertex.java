@@ -31,6 +31,12 @@ public abstract class TransitVertex extends Vertex {
         this.stop = stop;
     }
 
+    /* For flex vertex */
+    protected TransitVertex(Graph graph, String label, Stop stop, double lon, double lat) {
+        super(graph, label, lon, lat);
+        this.stop = stop;
+    }
+
     /** Get the stop at which this TransitVertex is located */
     public AgencyAndId getStopId() {
         return stop.getId();

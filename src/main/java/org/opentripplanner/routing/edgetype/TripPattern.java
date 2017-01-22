@@ -649,6 +649,19 @@ public class TripPattern implements Cloneable, Serializable {
 	}
 
     /**
+     *
+     * @return true if this TripPattern has flag stops, false otherwise
+     */
+	public boolean hasFlagStops() {
+        for (int i = 0; i < stopPattern.continuous.length; i++) {
+            if (stopPattern.continuous[i] != StopPattern.CONTINUOUS_NO) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * In most cases we want to use identity equality for Trips.
      * However, in some cases we want a way to consistently identify trips across versions of a GTFS feed, when the
      * feed publisher cannot ensure stable trip IDs. Therefore we define some additional hash functions.

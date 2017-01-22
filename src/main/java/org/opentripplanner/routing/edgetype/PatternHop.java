@@ -26,6 +26,7 @@ import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+import org.opentripplanner.routing.vertextype.TransitVertex;
 
 /**
  * A transit vehicle's journey between departure at one stop and arrival at the next.
@@ -42,6 +43,15 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
     private LineString geometry = null;
 
     public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex) {
+        super(from, to);
+        this.begin = begin;
+        this.end = end;
+        this.stopIndex = stopIndex;
+        getPattern().setPatternHop(stopIndex, this);
+    }
+
+    // for extending with flex version
+    protected PatternHop(TransitVertex from, TransitVertex to, Stop begin, Stop end, int stopIndex) {
         super(from, to);
         this.begin = begin;
         this.end = end;

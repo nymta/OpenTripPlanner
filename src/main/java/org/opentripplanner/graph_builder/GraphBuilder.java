@@ -22,6 +22,7 @@ import org.opentripplanner.graph_builder.module.GtfsModule;
 import org.opentripplanner.graph_builder.module.PruneFloatingIslands;
 import org.opentripplanner.graph_builder.module.StreetLinkerModule;
 import org.opentripplanner.graph_builder.module.TransitToTaggedStopsModule;
+import org.opentripplanner.graph_builder.module.flex.FlagStopStreetMatcher;
 import org.opentripplanner.graph_builder.module.map.BusRouteStreetMatcher;
 import org.opentripplanner.graph_builder.module.ned.DegreeGridNEDTileSource;
 import org.opentripplanner.graph_builder.module.ned.ElevationModule;
@@ -271,6 +272,7 @@ public class GraphBuilder implements Runnable {
                     graphBuilder.addModule(new BusRouteStreetMatcher());
                 }
                 graphBuilder.addModule(new TransitToTaggedStopsModule());
+                graphBuilder.addModule(new FlagStopStreetMatcher());
             }
         }
         // This module is outside the hasGTFS conditional block because it also links things like bike rental

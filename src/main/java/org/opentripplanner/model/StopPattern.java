@@ -47,18 +47,24 @@ public class StopPattern implements Serializable {
     public static final int PICKDROP_NONE = 1;
     public static final int PICKDROP_CALL_AGENCY = 2;
     public static final int PICKDROP_COORDINATE_WITH_DRIVER = 3;
-    
+
+    /* Constants for GTFS continuous stops */
+    public static final int CONTINUOUS_NO = 0;
+    public static final int CONTINUOUS_YES = 1;
+
     public final int size; // property could be derived from arrays
     public final Stop[] stops;
     public final int[]  pickups;
     public final int[]  dropoffs;
+    public final int[] continuous;
 
     public boolean equals(Object other) {
         if (other instanceof StopPattern) {
             StopPattern that = (StopPattern) other;
             return Arrays.equals(this.stops,    that.stops) && 
                    Arrays.equals(this.pickups,  that.pickups) && 
-                   Arrays.equals(this.dropoffs, that.dropoffs);
+                   Arrays.equals(this.dropoffs, that.dropoffs) &&
+                   Arrays.equals(this.continuous, that.continuous);
         } else {
             return false;
         }
@@ -71,6 +77,8 @@ public class StopPattern implements Serializable {
         hash += Arrays.hashCode(this.pickups);
         hash *= 31;
         hash += Arrays.hashCode(this.dropoffs);
+        hash *= 31;
+        hash += Arrays.hashCode(this.continuous);
         return hash;
     }
 
@@ -88,6 +96,7 @@ public class StopPattern implements Serializable {
         stops     = new Stop[size];
         pickups   = new int[size];
         dropoffs  = new int[size];
+        continuous = new int[size];
     }
 
     /** Assumes that stopTimes are already sorted by time. */
@@ -101,6 +110,7 @@ public class StopPattern implements Serializable {
             // pick/drop messages could be stored in individual trips
             pickups[i] = stopTime.getPickupType();
             dropoffs[i] = stopTime.getDropOffType();
+            continuous[i] = stopTime.getContinuousStops();
         }
         /*
          * TriMet GTFS has many trips that differ only in the pick/drop status of their initial and
@@ -144,6 +154,7 @@ public class StopPattern implements Serializable {
         for (int hop = 0; hop < size - 1; hop++) {
             hasher.putInt(pickups[hop]);
             hasher.putInt(dropoffs[hop + 1]);
+            hasher.putInt(continuous[hop]);
         }
         return hasher.hash();
     }
