@@ -370,7 +370,7 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
     }
 
     /** @return the stop where this board/alight edge is located. */
-    private Stop getStop() {
+    protected Stop getStop() {
         PatternStopVertex stopVertex = (PatternStopVertex) (boarding ? tov : fromv);
         return stopVertex.getStop();
     }

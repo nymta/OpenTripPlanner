@@ -40,6 +40,7 @@ public class PreBoardEdge extends FreeEdge implements StationEdge {
             throw new IllegalStateException("Preboard edges must lead out of a transit stop.");
     }
 
+    // This is for flex subclass.
     protected PreBoardEdge(Vertex from, Vertex to) {
         super(from, to);
     }
@@ -55,7 +56,6 @@ public class PreBoardEdge extends FreeEdge implements StationEdge {
         if (options.arriveBy) {
             /* Traverse backward: not much to do */
             StateEditor s1 = s0.edit(this);
-            TransitStop fromVertex = (TransitStop) getFromVertex();
 
             //apply board slack
             s1.incrementTimeInSeconds(options.boardSlack);
