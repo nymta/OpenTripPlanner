@@ -58,17 +58,16 @@ public class FlagStopStreetMatcher implements GraphBuilderModule {
         return Arrays.asList("streets", "transit");
     }
 
-    private Map<StreetVertex, Pair<FlexStopDepart, FlexDepartOnboard>> flexStopMap = new HashMap<>();
+    private Map<StreetVertex, FlexStopDepart> flexStopMap = new HashMap<>();
 
-    private Pair<FlexStopDepart, FlexDepartOnboard> getOrCreate(Graph graph, StreetVertex street, Stop previousStop) {
-        Pair p = flexStopMap.get(street);
-        if (p == null) {
-            FlexStopDepart stopDepart = new FlexStopDepart(graph, street, previousStop);
-            FlexDepartOnboard departOnboard = new FlexDepartOnboard(graph, street, previousStop);
-            p = new Pair<>(stopDepart, departOnboard);
-            flexStopMap.put(street, p);
+    private FlexStopDepart getOrCreate(Graph graph, StreetVertex street, Stop previousStop) {
+        FlexStopDepart s = flexStopMap.get(street);
+        if (s == null) {
+            s = new FlexStopDepart(graph, street, previousStop);
+            flexStopMap.put(street, s);
+            new FlexPreBoardEdge(street, s);
         }
-        return p;
+        return s;
     }
 
 
@@ -97,16 +96,16 @@ public class FlagStopStreetMatcher implements GraphBuilderModule {
                                 .map(e -> Arrays.asList(e.getFromVertex(), e.getToVertex()))
                                 .flatMap(List::stream).collect(Collectors.toList());
                         for (Vertex vertex : vertices) {
-                            if (vertex instanceof StreetVertex && hop.getToVertex() instanceof PatternArriveVertex) {
+                            if (vertex instanceof StreetVertex) {
                                 StreetVertex street = (StreetVertex) vertex;
                                 Stop previousStop = hop.getBeginStop();
                                 PatternArriveVertex arrive = (PatternArriveVertex) hop.getToVertex();
 
-                                Pair<FlexStopDepart, FlexDepartOnboard> p = getOrCreate(graph, street, previousStop);
-                                FlexStopDepart stopDepart = p.getKey();
-                                FlexDepartOnboard departOnboard = p.getValue();
+                                // FlexStopDepart should be unique to StreetVertex and previousStop. TODO: maybe not previousStop
+                                // FlexDepartOnboard should be unique to StreetVertex, previousStop, and hop
+                                FlexStopDepart stopDepart = getOrCreate(graph, street, previousStop);
+                                FlexDepartOnboard departOnboard = new FlexDepartOnboard(graph, street, previousStop, hop);
 
-                                new FlexPreBoardEdge(street, stopDepart);
                                 new FlexTransitBoardAlight(stopDepart, departOnboard, pattern, hop);
                                 new FlexHop(departOnboard, arrive, hop.getStopIndex());
                             }

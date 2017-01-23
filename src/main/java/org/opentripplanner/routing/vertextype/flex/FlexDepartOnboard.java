@@ -14,6 +14,7 @@
 package org.opentripplanner.routing.vertextype.flex;
 
 import org.onebusaway.gtfs.model.Stop;
+import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
@@ -24,8 +25,8 @@ public class FlexDepartOnboard extends FlexVertex {
     private static final long serialVersionUID = 1L;
 
     /** constructor for table trip patterns */
-    public FlexDepartOnboard(Graph g, StreetVertex connection, Stop stop) {
-        super(g, connection, stop, "flexDepart");
+    public FlexDepartOnboard(Graph g, StreetVertex connection, Stop stop, PatternHop hop) {
+        super(g, connection, stop, "flexDepart " + hop.toString() + " ");
     }
     
 }
