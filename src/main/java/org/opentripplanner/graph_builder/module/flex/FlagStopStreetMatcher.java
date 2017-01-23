@@ -80,8 +80,6 @@ public class FlagStopStreetMatcher implements GraphBuilderModule {
         }
 
         StreetMatcher matcher = new StreetMatcher(graph);
-        EdgesForRoute edgesForRoute = new EdgesForRoute();
-        extra.put(EdgesForRoute.class, edgesForRoute);
         log.info("Finding corresponding street edges for trip patterns...");
 
         for (Route route : graph.index.routeForId.values()) {
