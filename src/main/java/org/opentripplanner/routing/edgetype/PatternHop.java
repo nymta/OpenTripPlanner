@@ -37,16 +37,24 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
 
     private Stop begin, end;
 
+    private int continuousPickup, continuousDropoff;
+
     public int stopIndex;
 
     private LineString geometry = null;
 
-    public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex) {
+    public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex, int continuousPickup, int continuousDropoff) {
         super(from, to);
         this.begin = begin;
         this.end = end;
         this.stopIndex = stopIndex;
         getPattern().setPatternHop(stopIndex, this);
+        this.continuousPickup = continuousPickup;
+        this.continuousDropoff = continuousDropoff;
+    }
+
+    public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex) {
+        this(from, to, begin, end, stopIndex, 0, 0);
     }
 
     public double getDistance() {
@@ -154,4 +162,13 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
     public int getStopIndex() {
         return stopIndex;
     }
+
+    public int getContinuousPickup() {
+        return continuousPickup;
+    }
+
+    public int getContinuousDropoff() {
+        return continuousDropoff;
+    }
+
 }
