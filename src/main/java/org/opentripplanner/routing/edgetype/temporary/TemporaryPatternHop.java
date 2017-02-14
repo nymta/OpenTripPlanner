@@ -25,9 +25,11 @@ import org.opentripplanner.routing.vertextype.TransitStopArrive;
 
 public class TemporaryPatternHop extends PatternHop implements TemporaryEdge {
 
+    public PatternHop originalPatternHop;
 
-    public TemporaryPatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex) {
+    public TemporaryPatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex, PatternHop originalPatternHop) {
         super(from, to, begin, end, stopIndex);
+        this.originalPatternHop = originalPatternHop;
     }
 
     public boolean equals(Object obj) {
