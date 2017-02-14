@@ -14,14 +14,13 @@
 package org.opentripplanner.routing.edgetype;
 
 import java.util.Locale;
+
+import com.vividsolutions.jts.geom.Point;
 import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.gtfs.GtfsLibrary;
-import org.opentripplanner.routing.core.RoutingRequest;
-import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.core.StateEditor;
-import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -57,9 +56,15 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
         this(from, to, begin, end, stopIndex, 0, 0);
     }
 
+    // made more accurate
     public double getDistance() {
-        return SphericalDistanceLibrary.distance(begin.getLat(), begin.getLon(), end.getLat(),
-                end.getLon());
+        double distance = 0;
+        LineString line = getGeometry();
+        for (int i = 0; i < line.getNumPoints() - 1; i++) {
+            Point p0 = line.getPointN(i), p1 = line.getPointN(i+1);
+            distance += SphericalDistanceLibrary.distance(p0.getCoordinate(), p1.getCoordinate());
+        }
+        return distance;
     }
 
     public TraverseMode getMode() {
@@ -172,3 +177,4 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
     }
 
 }
+
