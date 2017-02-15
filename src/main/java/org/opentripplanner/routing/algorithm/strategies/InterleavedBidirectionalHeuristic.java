@@ -15,29 +15,18 @@ package org.opentripplanner.routing.algorithm.strategies;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
-import com.vividsolutions.jts.linearref.LinearLocation;
-import com.vividsolutions.jts.linearref.LocationIndexedLine;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.referencing.GeodeticCalculator;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
-import org.opengis.referencing.operation.TransformException;
-import org.opentripplanner.common.geometry.GeometryUtils;
-import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
-import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TraverseMode;
-import org.opentripplanner.routing.edgetype.*;
+import org.opentripplanner.routing.edgetype.PatternHop;
+import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.edgetype.StreetTransitLink;
+import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.edgetype.temporary.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -45,7 +34,6 @@ import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.StreetLocation;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.ShortestPathTree;
-import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,8 +78,6 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
 
     // For each step in the main search, how many steps should the reverse search proceed?
     private static final int HEURISTIC_STEPS_PER_MAIN_STEP = 8; // TODO determine a good value empirically
-
-    private GeodeticCalculator calculator = new GeodeticCalculator(GeometryUtils.WGS84_XY);
 
     /** The vertex at which the main search begins. */
     Vertex origin;
@@ -332,7 +318,6 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             // At this point the vertex is closed (pulled off heap).
             // This is the lowest cost we will ever see for this vertex. We can record the cost to reach it.
             if (v instanceof TransitStop) {
-                System.out.println(v.getY() + "," + v.getX());
                 // We don't want to continue into the transit network yet, but when searching around the target
                 // place vertices on the transit queue so we can explore the transit network backward later.
                 if (fromTarget) {
@@ -379,51 +364,39 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         for(State s : stateToTripPatternsMap.keySet()){
 
             Vertex v = fromTarget ? s.getBackEdge().getToVertex() : s.getBackEdge().getFromVertex();
+            System.out.println("creating temporary transit link at |" + v.getY() + "," + v.getX());
 
-            Stop flagStop = new Stop();
-            flagStop.setId(new AgencyAndId("1", String.valueOf(Math.random())));
-            flagStop.setLat(v.getLat());
-            flagStop.setLon(v.getLon());
-            flagStop.setName(String.valueOf(Math.random()));
-            TransitStop flagTransitStop = new TemporaryFlexTransitStop(graph, flagStop);
+            Stop stop = new Stop();
+            stop.setId(new AgencyAndId("1", String.valueOf(Math.random())));
+            stop.setLat(v.getLat());
+            stop.setLon(v.getLon());
+            stop.setName(String.valueOf(Math.random()));
+            TransitStop transitStop = new TemporaryFlexTransitStop(graph, stop);
 
 
             if(fromTarget){
                 //reverse search
 
-                TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink(flagTransitStop, (StreetVertex)v, true);
+                TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink(transitStop, (StreetVertex)v, true);
                 rr.rctx.temporaryEdges.add(streetTransitLink);
 
-                TransitStopArrive transitStopArrive = new TransitStopArrive(graph, flagStop, flagTransitStop);
-                TemporaryPreAlightEdge preAlightEdge = new TemporaryPreAlightEdge(transitStopArrive, flagTransitStop);
+                TransitStopArrive transitStopArrive = new TransitStopArrive(graph, stop, transitStop);
+                TemporaryPreAlightEdge preAlightEdge = new TemporaryPreAlightEdge(transitStopArrive, transitStop);
                 rr.rctx.temporaryEdges.add(preAlightEdge);
 
-                for(TripPattern originalTripPattern : stateToTripPatternsMap.get(s)){
+                for(TripPattern tripPattern : stateToTripPatternsMap.get(s)){
 
                     List<PatternHop> patternHops = graph.index.getHopsForEdge(s.getBackEdge(), fromTarget)
                             .stream()
-                            .filter(e -> e.getPattern() == originalTripPattern)
+                            .filter(e -> e.getPattern() == tripPattern)
                             .collect(Collectors.toList());
 
                     for(PatternHop patternHop : patternHops){
-
-                        int stopIndex = patternHop.getStopIndex();
-
-                        Stop originalStop = originalTripPattern.getStop(stopIndex);
-                        Stop patternHopStop = patternHop.getBeginStop();
-                        Stop endStop = patternHop.getEndStop();
-                        System.out.println(originalStop.getLat() + "," + originalStop.getLon());
-                        System.out.println(patternHopStop.getLat() + "," + patternHopStop.getLon());
-                        System.out.println(endStop.getLat() + "," + endStop.getLon());
-                        System.out.println(flagTransitStop.getLat() + "," + flagTransitStop.getLon());
-
-                        TemporaryTripPattern temporaryTripPattern = new TemporaryTripPattern(originalTripPattern);
-
                         PatternArriveVertex patternArriveVertex =
-                                new PatternArriveVertex(graph, temporaryTripPattern, stopIndex);
+                                new PatternArriveVertex(graph, tripPattern, patternHop.getStopIndex());
 
                         TemporaryPatternHop temporaryPatternHop = new TemporaryPatternHop((PatternStopVertex)patternHop.getFromVertex(),
-                                patternArriveVertex, patternHop.getBeginStop(), patternHop.getEndStop(), patternHop.getStopIndex(), patternHop);
+                                patternArriveVertex, patternHop.getBeginStop(), patternHop.getEndStop(), patternHop.getStopIndex());
                         rr.rctx.temporaryEdges.add(temporaryPatternHop);
 
                         /** Alighting constructor (PatternStopVertex --> TransitStopArrive) */
@@ -435,51 +408,27 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             }else{
                 //forward search
 
-                TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink((StreetVertex)v, flagTransitStop, true);
+                TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink((StreetVertex)v, transitStop, true);
                 rr.rctx.temporaryEdges.add(streetTransitLink);
 
-                TransitStopDepart transitStopDepart = new TransitStopDepart(graph, flagStop, flagTransitStop);
-                TemporaryPreBoardEdge preBoardEdge = new TemporaryPreBoardEdge(flagTransitStop, transitStopDepart);
+                TransitStopDepart transitStopDepart = new TransitStopDepart(graph, stop, transitStop);
+                TemporaryPreBoardEdge preBoardEdge = new TemporaryPreBoardEdge(transitStop, transitStopDepart);
                 rr.rctx.temporaryEdges.add(preBoardEdge);
 
-                for(TripPattern originalTripPattern : stateToTripPatternsMap.get(s)){
+                for(TripPattern tripPattern : stateToTripPatternsMap.get(s)){
 
                     List<PatternHop> patternHops = graph.index.getHopsForEdge(s.getBackEdge(), fromTarget)
                             .stream()
-                            .filter(e -> e.getPattern() == originalTripPattern)
+                            .filter(e -> e.getPattern() == tripPattern)
                             .collect(Collectors.toList());
 
                     for(PatternHop patternHop : patternHops){
-
-                        Double originalPatternHopLength = GeometryUtils.getLengthInMeters(patternHop.getGeometry());
-                        Coordinate temporaryStopCoordinate = new Coordinate(flagStop.getLat(), flagStop.getLon());
-
-                        //closest point along the route
-                        //Coordinate flexPoint = this.getClosestCoordinateFromLine(patternHop.getGeometry().getCoordinates(), temporaryStopCoordinate);
-
-                        Coordinate[] postStopHopGeometry = null;
-
-                        int stopIndex = patternHop.getStopIndex();
-
-                        Stop originalStop = originalTripPattern.getStop(stopIndex);
-                        Stop patternHopStop = patternHop.getBeginStop();
-                        Stop endStop = patternHop.getEndStop();
-                        System.out.println(originalStop.getLat() + "," + originalStop.getLon());
-                        System.out.println(patternHopStop.getLat() + "," + patternHopStop.getLon());
-                        System.out.println(endStop.getLat() + "," + endStop.getLon());
-                        System.out.println(flagTransitStop.getLat() + "," + flagTransitStop.getLon());
-
-                        TemporaryTripPattern temporaryTripPattern = new TemporaryTripPattern(originalTripPattern);
-
                         PatternDepartVertex patternDepartVertex =
-                                new PatternDepartVertex(graph, temporaryTripPattern, patternHop.getStopIndex());
+                                new PatternDepartVertex(graph, tripPattern, patternHop.getStopIndex());
 
                         TemporaryPatternHop temporaryPatternHop = new TemporaryPatternHop(patternDepartVertex,
-                                (PatternStopVertex)patternHop.getToVertex(), patternHop.getBeginStop(), patternHop.getEndStop(), patternHop.getStopIndex(), patternHop);
-                        temporaryPatternHop.setGeometry(GeometryUtils.getGeometryFactory().createLineString(postStopHopGeometry));
+                                (PatternStopVertex)patternHop.getToVertex(), patternHop.getBeginStop(), patternHop.getEndStop(), patternHop.getStopIndex());
                         rr.rctx.temporaryEdges.add(temporaryPatternHop);
-
-                        int offsetInSeconds = getTimeOffsetForFlagStop(temporaryPatternHop, patternHop, fromTarget);
 
                         /** TransitBoardAlight: Boarding constructor (TransitStopDepart, PatternStopVertex) */
                         TemporaryTransitBoardAlight transitBoardAlight =
@@ -488,6 +437,11 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                 }
             }
         }
+
+
+
+
+
 
         BiMap<Edge, TripPattern> tripPatternEdgeBiMap = fromTarget ? destinationFlexEdges : originFlexEdges;
         for(TripPattern tripPattern : tripPatternStateMap.keySet()){
@@ -499,78 +453,5 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         LOG.debug("Heuristric street search hit {} transit stops.", transitQueue.size());
         return vertices;
     }
-
-    /**
-     * Finds the closest coordinate along a line to the target, splices that point into the line, and returns
-     * a coordinate array containing either the partial array up to and including the target, or the target and all after
-     * @param lineCoordinates
-     * @param target
-     * @return coordinate of the flex point or null if a stop exists at that point already
-     */
-    private Coordinate[] getFlexPointForHopGeometry(Coordinate[] lineCoordinates, Coordinate target, Boolean reverseSearch){
-
-        LineString lineString = GeometryUtils.getGeometryFactory().createLineString(lineCoordinates);
-        LocationIndexedLine locationIndexedLine = new LocationIndexedLine(lineString);
-        LinearLocation here = locationIndexedLine.project(target);
-        Coordinate flexPoint = locationIndexedLine.extractPoint(here);
-
-        graph.index.findClosestStopsByWalking()
-
-        LengthIndexedLine lengthIndexedLine = new LengthIndexedLine(lineString);
-        double flexPointIndex = lengthIndexedLine.project(flexPoint);
-
-        return null;
-    }
-
-    private int getTimeOffsetForFlagStop(TemporaryPatternHop temporaryPatternHop, PatternHop originalPatternHop, boolean fromTarget){
-
-        //This is a temporary connection to a flex transit originalPatternHopLine,
-        //offset the arrival time to account for drive time from previous stop to passenger location
-        LengthIndexedLine originalPatternHopLine = new LengthIndexedLine(originalPatternHop.getGeometry());
-        Double originalPatternHopLength = GeometryUtils.getLengthInMeters(originalPatternHop.getGeometry());
-        Coordinate temporaryStopCoordinate = fromTarget ? temporaryPatternHop.getToVertex().getCoordinate() : temporaryPatternHop.getFromVertex().getCoordinate();
-
-        //we need to compute two distances for the patternhop
-        //for forward search, compute the distance from the original beginning stop to the temporary stop,
-        // and from the temporary stop to the end stop in the pattern
-        //for reverse search, compute the distance from the beginning stop to the temporary end stop,
-        // and from the temporary end stop to the original end stop in the pattern
-        Geometry g;
-        if(fromTarget){
-            g = originalPatternHopLine.extractLine(originalPatternHopLine.project(temporaryStopCoordinate), originalPatternHopLine.getEndIndex());
-        }else{
-            g = originalPatternHopLine.extractLine(originalPatternHopLine.getStartIndex(), originalPatternHopLine.project(temporaryStopCoordinate));
-        }
-        LineString lineString = GeometryUtils.getGeometryFactory().createLineString(g.getCoordinates());
-        temporaryPatternHop.setGeometry(lineString);
-
-        double temporaryHopLength = GeometryUtils.getLengthInMeters(lineString);
-
-        System.out.println("original length: " + originalPatternHopLength);
-        System.out.println(originalPatternHop.getFromVertex().getY() + "," + originalPatternHop.getFromVertex().getX());
-        System.out.println(originalPatternHop.getToVertex().getY() + "," + originalPatternHop.getToVertex().getX());
-
-        System.out.println("temporary length: " + temporaryHopLength);
-        System.out.println(temporaryPatternHop.getFromVertex().getY() + "," + temporaryPatternHop.getFromVertex().getX());
-        System.out.println(temporaryPatternHop.getToVertex().getY() + "," + temporaryPatternHop.getToVertex().getX());
-        System.out.println("");
-        return 0;
-    }
-
-    // assumes coordinate is in between start and end.
-    public long getTimeForCoordinate(PatternHop originalPatternHop, Coordinate coord, TripTimes tripTimes, ServiceDay sd) {
-        int stop = originalPatternHop.getStopIndex();
-        int hopStartTime = tripTimes.getDepartureTime(stop);
-        int hopEndTime = tripTimes.getArrivalTime(stop + 1);
-
-        LengthIndexedLine line = new LengthIndexedLine(originalPatternHop.getGeometry());
-
-        Double hopLength = line.extractLine(line.getStartIndex(), line.getEndIndex()).getLength();
-        Double remainingLength = line.extractLine(line.project(coord), line.getEndIndex()).getLength();
-
-        double runningTime = (line.project(coord) / line.getEndIndex()) * (hopEndTime - hopStartTime);
-        int sec = hopStartTime + (int) runningTime;
-        long time = sd.time(sec);
-        return time;
-    }
+ 
 }

@@ -16,14 +16,8 @@ package org.opentripplanner.routing.edgetype;
 import java.util.BitSet;
 
 import java.util.Locale;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
-import org.geotools.referencing.GeodeticCalculator;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
-import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.ServiceDay;
@@ -32,8 +26,6 @@ import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TransferTable;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
-import org.opentripplanner.routing.edgetype.temporary.TemporaryPatternHop;
-import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
@@ -296,7 +288,6 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
                 }
             }
             if (bestWait < 0) return null; // no appropriate trip was found
-
             Trip trip = bestTripTimes.trip;
             
             /* check if route and/or Agency are banned for this plan */
@@ -315,7 +306,7 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
                                    getStop(), s0.getPreviousTrip(), trip, boarding);
                 transferPenalty  = transferTable.determineTransferPenalty(transferTime, 
                                    options.nonpreferredTransferPenalty);
-            }
+            }            
 
             /* Found a trip to board. Now make the child state. */
             StateEditor s1 = s0.edit(this);

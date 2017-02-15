@@ -400,10 +400,6 @@ public class StateEditor {
         child.stateData.startTime = seconds;
     }
 
-    public void resetTime() {
-        child.time = child.backState.time;
-    }
-
     /**
      * Set non-incremental state values (ex. {@link State#getRoute()}) from an existing state.
      * Incremental values (ex. {@link State#getNumBoardings()}) are not currently set.
