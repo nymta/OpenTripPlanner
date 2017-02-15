@@ -16,6 +16,8 @@ package org.opentripplanner.graph_builder.module;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import org.apache.commons.math3.util.Pair;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Transfer;
@@ -31,8 +33,12 @@ import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHe
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.edgetype.PartialPatternHop;
 import org.opentripplanner.routing.edgetype.PatternHop;
+import org.opentripplanner.routing.edgetype.PreAlightEdge;
+import org.opentripplanner.routing.edgetype.SimpleTransfer;
 import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.edgetype.TransitBoardAlight;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -40,11 +46,13 @@ import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
+import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
 import org.opentripplanner.routing.vertextype.TransitStopDepart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.util.Length;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +86,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
     }
 
     StreetMatcher matcher;
+    GeometryFactory geometryFactory = GeometryUtils.getGeometryFactory();
 
     @Override
     public void buildGraph(Graph graph, HashMap<Class<?>, Object> extra) {
@@ -93,7 +102,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
         int nTransfersTotal = 0;
         int nLinkableHops = 0;
 
-        for (TripPattern tripPattern : graph.index.patternForTrip.values()) {
+        for (TripPattern tripPattern : graph.index.patternsForFeedId.values()) {
             for (PatternHop hop : tripPattern.getPatternHops()) {
 
                 // for each hop, find nearby stops and hops. create transfers.
@@ -106,7 +115,9 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
                     // - it is a TransitStop and it is within 100m of either endpoint of the hop
                     // - it is a hop where either endpoint is within 100m of either endpoint of this hop.
 
-                    for (TransferPointAtDistance pt : findNearbyTransferPoints(graph, hop)) {
+                    Collection<TransferPointAtDistance> pts =  findNearbyTransferPoints(graph, hop);
+
+                    for (TransferPointAtDistance pt : pts) {
                         if (!shouldExclude(hop, pt)) {
                             link(graph, hop, pt);
                         }
@@ -158,22 +169,18 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
                     TransitStop tstop = (TransitStop) v;
                     Collection<TripPattern> patterns = graph.index.patternsForStop.get(tstop.getStop());
                     for (TripPattern pattern : patterns) {
-                        if (closestTransferPointForTripPattern.get(pattern) == null) {
-                            TransferPointAtDistance pt = new TransferPointAtDistance(state, tstop);
-                            closestTransferPointForTripPattern.put(pattern, pt);
-                        }
+                        TransferPointAtDistance pt = new TransferPointAtDistance(hop, state, tstop);
+                        addPointForTripPattern(pattern, pt);
                     }
                 }
 
                 // get hops
                 if (state.backEdge instanceof StreetEdge) {
-                    for (PatternHop hop : graph.index.getHopsForEdge(state.backEdge, true)) {
-                        if (hop.getContinuousPickup() > 0 || hop.getContinuousDropoff() > 0) {
-                            TripPattern pattern = hop.getPattern();
-                            if (closestTransferPointForTripPattern.get(pattern) == null) {
-                                TransferPointAtDistance pt = new TransferPointAtDistance(state, hop, state.getVertex().getCoordinate());
-                                closestTransferPointForTripPattern.put(pattern, pt);
-                            }
+                    for (PatternHop h : graph.index.getHopsForEdge(state.backEdge, true)) {
+                        if (h.getContinuousPickup() > 0 || h.getContinuousDropoff() > 0) {
+                            TripPattern pattern = h.getPattern();
+                            TransferPointAtDistance pt = new TransferPointAtDistance(hop, state, h, state.getVertex().getCoordinate());
+                            addPointForTripPattern(pattern, pt);
                         }
                     }
                 }
@@ -181,6 +188,13 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
 
             @Override
             public void visitEnqueue(State state) {
+            }
+
+            private void addPointForTripPattern(TripPattern pattern, TransferPointAtDistance pt) {
+                TransferPointAtDistance other = closestTransferPointForTripPattern.get(pattern);
+                if (pt.betterThan(other) && !pattern.equals(hop.getPattern())) {
+                    closestTransferPointForTripPattern.put(pattern, pt);
+                }
             }
         };
 
@@ -198,25 +212,32 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
 
         Set<TransferPointAtDistance> pts = new HashSet<>(closestTransferPointForTripPattern.values());
 
-        LOG.info("for hop={} found {} transfer points", hop, pts.size());
+        LOG.debug("for hop={} found {} transfer points", hop, pts.size());
         return pts;
     }
 
-    private static void link(Graph graph, PatternHop hop, TransferPointAtDistance point) {
+    private void link(Graph graph, PatternHop hop, TransferPointAtDistance point) {
         if (point.isTransitStop()) {
             // linking from a hop to a transit stop
-
-            TransitStop toStop = point.getTransitStop();
 
             Vertex v = point.getFrom();
             Stop stop = new Stop();
             stop.setId(new AgencyAndId(hop.getPattern().getFeedId(), String.valueOf(Math.random())));
             stop.setLat(v.getLat());
             stop.setLon(v.getLon());
-            stop.setName(String.format("Transfer from pattern=%s, stopIndex=%d, pos=%s to stop=%s", hop.getPattern().code, hop.getStopIndex(), v.getCoordinate().toString(), toStop.getCoordinate().toString()));
-            TransitStop transferStop = new TransitStop(graph, stop);
-            PatternArriveVertex patternArriveVertex = new PatternArriveVertex(graph, hop.getPattern(), hop.getStopIndex());
 
+            // a transfer is totally determined by HOP and STOP
+            Pair<PatternHop, TransitStop> key = new Pair<>(hop, point.tstop);
+
+            String msg = String.format("Transfer from pattern=%s, stopIndex=%d, pos=%s to stop=%s", hop.getPattern().code, hop.getStopIndex(), v.getCoordinate().toString(), point.tstop.toString());
+            stop.setName(msg);
+            TransitStop transferStop = new TransitStop(graph, stop);
+            PatternArriveVertex patternArriveVertex = new PatternArriveVertex(graph, hop.getPattern(), hop.getStopIndex(), stop);
+            TransitStopArrive transitStopArrive = new TransitStopArrive(graph, stop, transferStop);
+            new PartialPatternHop(hop, (PatternStopVertex) hop.getFromVertex(), patternArriveVertex, hop.getBeginStop(), stop, matcher, geometryFactory);
+            new TransitBoardAlight(patternArriveVertex, transitStopArrive, hop.getStopIndex(), hop.getPattern().mode);
+            new PreAlightEdge(transitStopArrive, transferStop);
+            new SimpleTransfer(transferStop, point.tstop, point.dist, point.geom, point.edges);
 
         } else {
             // TODO
@@ -244,22 +265,25 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
 class TransferPointAtDistance {
 
     TransitStop tstop;
-    double dist;
+    double dist; // distance TO original hop
     LineString geom;
     List<Edge>  edges;
     PatternHop hop;
     Coordinate locationOnHop;
     Vertex from;
 
+    PatternHop fromHop;
+    double distanceAlongFromHop; // distance along original hop
+
     private static GeometryFactory geometryFactory = GeometryUtils.getGeometryFactory();
 
-    public TransferPointAtDistance(State state, TransitStop tstop) {
-        this(state);
+    public TransferPointAtDistance(PatternHop fromHop, State state, TransitStop tstop) {
+        this(fromHop, state);
         this.tstop = tstop;
     }
 
-    public TransferPointAtDistance(State state, PatternHop hop, Coordinate coord) {
-        this(state);
+    public TransferPointAtDistance(PatternHop fromHop, State state, PatternHop hop, Coordinate coord) {
+        this(fromHop, state);
         this.hop = hop;
         this.locationOnHop = coord;
     }
@@ -281,7 +305,7 @@ class TransferPointAtDistance {
     }
 
     // TODO: merge with NearbyStopFinder.stopAtDistanceForState() (where this code was taken from)
-    private TransferPointAtDistance(State state) {
+    private TransferPointAtDistance(PatternHop fromHop, State state) {
         double distance = 0.0;
         GraphPath graphPath = new GraphPath(state, false);
         from = graphPath.states.getFirst().getVertex();
@@ -311,6 +335,11 @@ class TransferPointAtDistance {
         this.geom = geometryFactory.createLineString(new PackedCoordinateSequence.Double(coordinates.toCoordinateArray()));
         this.edges = edges;
         this.dist = distance;
+
+        this.fromHop = fromHop;
+        LengthIndexedLine line = new LengthIndexedLine(fromHop.getGeometry());
+        this.distanceAlongFromHop = (line.project(from.getCoordinate())/line.getEndIndex()) * fromHop.getDistance();
+
     }
 
     @Override
@@ -343,5 +372,11 @@ class TransferPointAtDistance {
         return "TransferPointAtDistance[dist=" + dist + "," +
                 ((tstop != null) ? ("tstop=" + tstop.toString()) : ("hop=" + hop.toString() + ",coord=" + locationOnHop.toString()))
                 + "]";
+    }
+
+    public boolean betterThan(TransferPointAtDistance pt) {
+        if (pt==null)
+            return true;
+        return false; // TODO: find first transfer point on hop
     }
 }
