@@ -35,6 +35,7 @@ import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.PartialPatternHop;
 import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.edgetype.PreAlightEdge;
+import org.opentripplanner.routing.edgetype.PreBoardEdge;
 import org.opentripplanner.routing.edgetype.SimpleTransfer;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.TransitBoardAlight;
@@ -45,9 +46,11 @@ import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
+import org.opentripplanner.routing.vertextype.PatternDepartVertex;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
+import org.opentripplanner.routing.vertextype.TransitStopDepart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,19 +226,26 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
             stop.setLat(v.getLat());
             stop.setLon(v.getLon());
 
-            // a transfer is totally determined by HOP and STOP
-            Pair<PatternHop, TransitStop> key = new Pair<>(hop, point.tstop);
-
             String msg = String.format("Transfer from pattern=%s, stopIndex=%d, pos=%s to stop=%s, dist=%g, dafh=%g", hop.getPattern().code, hop.getStopIndex(), v.getCoordinate().toString(), point.tstop.toString(), point.dist, point.distanceAlongFromHop);
             stop.setName(msg);
             TransitStop transferStop = new TransitStop(graph, stop);
+
+            // hop -> stop transfer
             PatternArriveVertex patternArriveVertex = new PatternArriveVertex(graph, hop.getPattern(), hop.getStopIndex(), stop);
             TransitStopArrive transitStopArrive = new TransitStopArrive(graph, stop, transferStop);
-            new PartialPatternHop(hop, (PatternStopVertex) hop.getFromVertex(), patternArriveVertex, hop.getBeginStop(), stop, matcher, geometryFactory);
+            PartialPatternHop.startHop(hop, patternArriveVertex, stop, matcher, geometryFactory);
             new TransitBoardAlight(patternArriveVertex, transitStopArrive, hop.getStopIndex(), hop.getPattern().mode);
             new PreAlightEdge(transitStopArrive, transferStop);
             new SimpleTransfer(transferStop, point.tstop, point.dist, point.geom, point.edges);
 
+            // stop -> hop
+            TransitStopDepart transitStopDepart = new TransitStopDepart(graph, stop, transferStop);
+            PatternDepartVertex patternDepartVertex = new PatternDepartVertex(graph, hop.getPattern(), hop.getStopIndex(), stop);
+            new PreBoardEdge(transferStop, transitStopDepart);
+            new TransitBoardAlight(transitStopDepart, patternDepartVertex, hop.getStopIndex(), hop.getPattern().mode);
+            PartialPatternHop.endHop(hop, patternDepartVertex,stop, matcher, geometryFactory);
+            TransferPointAtDistance rev = point.reverse();
+            new SimpleTransfer(point.tstop, transferStop, rev.dist, rev.geom, rev.edges);
         } else {
             // TODO
         }
@@ -260,6 +270,8 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
 }
 
 class TransferPointAtDistance {
+
+    State state;
 
     TransitStop tstop;
     double dist; // distance TO original hop
@@ -301,8 +313,16 @@ class TransferPointAtDistance {
         return from;
     }
 
-    // TODO: merge with NearbyStopFinder.stopAtDistanceForState() (where this code was taken from)
     private TransferPointAtDistance(PatternHop fromHop, State state) {
+        this(state);
+        this.state = state;
+        this.fromHop = fromHop;
+        LengthIndexedLine line = new LengthIndexedLine(fromHop.getGeometry());
+        this.distanceAlongFromHop = (line.project(from.getCoordinate())/line.getEndIndex()) * fromHop.getDistance();
+    }
+
+    // TODO: merge with NearbyStopFinder.stopAtDistanceForState() (where this code was taken from)
+    private TransferPointAtDistance(State state) {
         double distance = 0.0;
         GraphPath graphPath = new GraphPath(state, false);
         from = graphPath.states.getFirst().getVertex();
@@ -332,11 +352,6 @@ class TransferPointAtDistance {
         this.geom = geometryFactory.createLineString(new PackedCoordinateSequence.Double(coordinates.toCoordinateArray()));
         this.edges = edges;
         this.dist = distance;
-
-        this.fromHop = fromHop;
-        LengthIndexedLine line = new LengthIndexedLine(fromHop.getGeometry());
-        this.distanceAlongFromHop = (line.project(from.getCoordinate())/line.getEndIndex()) * fromHop.getDistance();
-
     }
 
     @Override
@@ -390,5 +405,9 @@ class TransferPointAtDistance {
         if (this.distanceAlongFromHop < other.distanceAlongFromHop)
             return true;
         return false;
+    }
+
+    public TransferPointAtDistance reverse() {
+        return new TransferPointAtDistance(state.reverse());
     }
 }

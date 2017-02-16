@@ -13,6 +13,7 @@
 
 package org.opentripplanner.routing.vertextype;
 
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Graph;
 
@@ -23,6 +24,10 @@ public class PatternDepartVertex extends PatternStopVertex {
     /** constructor for table trip patterns */
     public PatternDepartVertex(Graph g, TripPattern pattern, int stopIndex) {
         super(g, makeLabel(pattern, stopIndex), pattern, pattern.stopPattern.stops[stopIndex]);
+    }
+
+    public PatternDepartVertex(Graph g, TripPattern pattern, int stopIndex, Stop stop) {
+        super(g, makeLabel(pattern, stopIndex) + "_transfer", pattern, stop);
     }
 
     // constructor for single-trip hops with no trip pattern (frequency patterns) is now missing

@@ -23,6 +23,8 @@ import org.opentripplanner.graph_builder.module.map.StreetMatcher;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.graph.Edge;
+import org.opentripplanner.routing.vertextype.PatternArriveVertex;
+import org.opentripplanner.routing.vertextype.PatternDepartVertex;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 
 import java.util.ArrayList;
@@ -33,16 +35,31 @@ public class PartialPatternHop extends PatternHop {
 
     private static final long serialVersionUID = 1L;
 
+    private double startIndex;
+    private double endIndex;
     private double percentageOfHop;
 
-    public PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop) {
+    private PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, StreetMatcher matcher, GeometryFactory factory, boolean start) {
         super(from, to, fromStop, toStop, hop.getStopIndex(), hop.getContinuousPickup(), hop.getContinuousDropoff(), false);
-        this.percentageOfHop = calculatePercentageOfHop(hop);
+        LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
+        if (start) {
+            this.startIndex = 0;
+            this.endIndex = line.project(to.getCoordinate());
+        } else {
+            this.startIndex = line.project(from.getCoordinate());
+            this.endIndex = line.getEndIndex();
+        }
+        this.setGeometryFromHop(matcher, factory, hop);
+        this.percentageOfHop = (this.endIndex - this.startIndex) / line.getEndIndex();
     }
 
-    public PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, StreetMatcher matcher, GeometryFactory factory) {
-        this(hop, from, to, fromStop, toStop);
-        setGeometryFromHop(matcher, factory, hop);
+    // given hop s0->s1 and a temporary position t, create a partial hop s0->t
+    public static PartialPatternHop startHop(PatternHop hop, PatternArriveVertex to, Stop toStop, StreetMatcher matcher, GeometryFactory factory) {
+        return new PartialPatternHop(hop, (PatternStopVertex) hop.getFromVertex(), to, hop.getBeginStop(), toStop, matcher, factory, true);
+    }
+
+    public static PartialPatternHop endHop(PatternHop hop, PatternDepartVertex from, Stop fromStop, StreetMatcher matcher, GeometryFactory factory) {
+        return new PartialPatternHop(hop, from, (PatternStopVertex) hop.getToVertex(), fromStop, hop.getEndStop(), matcher, factory, false);
     }
 
     @Override
@@ -59,11 +76,12 @@ public class PartialPatternHop extends PatternHop {
         List<Edge> edges = matcher.match(hop.getGeometry());
         List<Coordinate> coords = new ArrayList<>();
         LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
-        //boolean fromMatch = hop.getFromVertex().equals(getFromVertex());
         for (Edge e : edges) {
-            double pct = line.project(e.getToVertex().getCoordinate())/line.getEndIndex();
-            if (pct >= percentageOfHop)
+            double idx = line.project(e.getToVertex().getCoordinate());
+            if (idx >= endIndex)
                 break;
+            if (idx < startIndex)
+                continue;
             for (Coordinate c : e.getGeometry().getCoordinates())
                 coords.add(c);
         }
@@ -72,11 +90,6 @@ public class PartialPatternHop extends PatternHop {
         setGeometry(geometry);
     }
 
-    private double calculatePercentageOfHop(PatternHop hop) {
-        LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
-        double idx = line.project(getToVertex().getCoordinate());
-        return idx/line.getEndIndex();
-    }
 
 }
 
