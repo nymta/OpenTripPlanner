@@ -20,7 +20,6 @@ import com.vividsolutions.jts.linearref.LengthIndexedLine;
 import org.apache.commons.math3.util.Pair;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.Transfer;
 import org.opentripplanner.api.resource.CoordinateArrayListSequence;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.PackedCoordinateSequence;
@@ -49,10 +48,8 @@ import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
-import org.opentripplanner.routing.vertextype.TransitStopDepart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.util.Length;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -229,7 +226,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
             // a transfer is totally determined by HOP and STOP
             Pair<PatternHop, TransitStop> key = new Pair<>(hop, point.tstop);
 
-            String msg = String.format("Transfer from pattern=%s, stopIndex=%d, pos=%s to stop=%s", hop.getPattern().code, hop.getStopIndex(), v.getCoordinate().toString(), point.tstop.toString());
+            String msg = String.format("Transfer from pattern=%s, stopIndex=%d, pos=%s to stop=%s, dist=%g, dafh=%g", hop.getPattern().code, hop.getStopIndex(), v.getCoordinate().toString(), point.tstop.toString(), point.dist, point.distanceAlongFromHop);
             stop.setName(msg);
             TransitStop transferStop = new TransitStop(graph, stop);
             PatternArriveVertex patternArriveVertex = new PatternArriveVertex(graph, hop.getPattern(), hop.getStopIndex(), stop);
@@ -374,9 +371,24 @@ class TransferPointAtDistance {
                 + "]";
     }
 
-    public boolean betterThan(TransferPointAtDistance pt) {
-        if (pt==null)
+    public boolean betterThan(TransferPointAtDistance other) {
+        if (other==null)
             return true;
-        return false; // TODO: find first transfer point on hop
+        // prefer a transfer point that is at a real stop [unless the real stop is outside the cutoff away?]
+        if (this.isTransitStop() && !other.isTransitStop())
+            return true;
+        if (!this.isTransitStop() && other.isTransitStop())
+            return false;
+
+        // prefer traveling a shorter distance as long as the difference is not trivial. (should this be "softer"? if your walk preferences are larger you might prefer to walk a "cutoff")
+        if (other.dist - this.dist > 100)
+            return true;
+        if (this.dist - other.dist > 100)
+            return false;
+
+        // prefer transferring earlier in the hop
+        if (this.distanceAlongFromHop < other.distanceAlongFromHop)
+            return true;
+        return false;
     }
 }
