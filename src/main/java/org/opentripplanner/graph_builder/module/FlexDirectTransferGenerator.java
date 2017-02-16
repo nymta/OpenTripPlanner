@@ -13,6 +13,8 @@
 
 package org.opentripplanner.graph_builder.module;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
@@ -57,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -140,7 +143,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
     // This is based on NearbyStopFinder but more flexible
     // In addition, we *require* that we have streets (can't use Euclidean distance). Flag stops make no sense without streets.
     private Collection<TransferPointAtDistance> findNearbyTransferPoints(Graph graph, PatternHop hop) {
-        Map<TripPattern, TransferPointAtDistance> closestTransferPointForTripPattern = new HashMap<>();
+        Multimap<TripPattern, TransferPointAtDistance> closestTransferPointForTripPattern = ArrayListMultimap.create();
 
         RoutingRequest request = new RoutingRequest(TraverseMode.WALK);
         request.softWalkLimiting = false;
@@ -170,7 +173,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
                     Collection<TripPattern> patterns = graph.index.patternsForStop.get(tstop.getStop());
                     for (TripPattern pattern : patterns) {
                         TransferPointAtDistance pt = new TransferPointAtDistance(hop, state, tstop);
-                        addPointForTripPattern(pattern, pt);
+                        closestTransferPointForTripPattern.put(pattern, pt);
                     }
                 }
 
@@ -180,7 +183,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
                         if (h.getContinuousPickup() > 0 || h.getContinuousDropoff() > 0) {
                             TripPattern pattern = h.getPattern();
                             TransferPointAtDistance pt = new TransferPointAtDistance(hop, state, h, state.getVertex().getCoordinate());
-                            addPointForTripPattern(pattern, pt);
+                            closestTransferPointForTripPattern.put(pattern, pt);
                         }
                     }
                 }
@@ -190,12 +193,6 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
             public void visitEnqueue(State state) {
             }
 
-            private void addPointForTripPattern(TripPattern pattern, TransferPointAtDistance pt) {
-                TransferPointAtDistance other = closestTransferPointForTripPattern.get(pattern);
-                if (pt.betterThan(other) && !pattern.equals(hop.getPattern())) {
-                    closestTransferPointForTripPattern.put(pattern, pt);
-                }
-            }
         };
 
         // Remap edge to the graph to find vertices for search
@@ -210,7 +207,14 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
 
         gd.getShortestPathTree(states);
 
-        Set<TransferPointAtDistance> pts = new HashSet<>(closestTransferPointForTripPattern.values());
+        Set<TransferPointAtDistance> pts = new HashSet<>();
+
+        for (Collection<TransferPointAtDistance> ptsForPattern : closestTransferPointForTripPattern.asMap().values()) {
+            TransferPointAtDistance best = Collections.max(ptsForPattern, (x, y) -> y.betterThan(x, true) ? -1 : 1);
+            TransferPointAtDistance rev  = Collections.max(ptsForPattern, (x, y) -> y.betterThan(x, false) ? -1 : 1);
+            pts.add(best);
+            pts.add(rev);
+        }
 
         LOG.debug("for hop={} found {} transfer points", hop, pts.size());
         return pts;
@@ -246,6 +250,7 @@ public class FlexDirectTransferGenerator implements GraphBuilderModule {
             PartialPatternHop.endHop(hop, patternDepartVertex,stop, matcher, geometryFactory);
             TransferPointAtDistance rev = point.reverse();
             new SimpleTransfer(point.tstop, transferStop, rev.dist, rev.geom, rev.edges);
+
         } else {
             // TODO
         }
@@ -386,7 +391,7 @@ class TransferPointAtDistance {
                 + "]";
     }
 
-    public boolean betterThan(TransferPointAtDistance other) {
+    public boolean betterThan(TransferPointAtDistance other, boolean preferEarlyTransfer) {
         if (other==null)
             return true;
         // prefer a transfer point that is at a real stop [unless the real stop is outside the cutoff away?]
@@ -401,10 +406,11 @@ class TransferPointAtDistance {
         if (this.dist - other.dist > 100)
             return false;
 
-        // prefer transferring earlier in the hop
-        if (this.distanceAlongFromHop < other.distanceAlongFromHop)
-            return true;
-        return false;
+        // prefer transferring earlier in the hop (or later, since we need to do reverse hops)
+        if (preferEarlyTransfer)
+            return (this.distanceAlongFromHop < other.distanceAlongFromHop);
+        else
+            return (this.distanceAlongFromHop > other.distanceAlongFromHop);
     }
 
     public TransferPointAtDistance reverse() {

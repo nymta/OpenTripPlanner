@@ -27,7 +27,7 @@ public class PatternArriveVertex extends PatternStopVertex {
     }
 
     public PatternArriveVertex(Graph g, TripPattern pattern, int stopIndex, Stop stop) {
-        super(g, makeLabel(pattern, stopIndex) + "_transfer", pattern, stop);
+        super(g, makeLabel(pattern, stopIndex, stop), pattern, stop);
     }
 
     // constructor for frequency patterns is now missing
@@ -35,6 +35,10 @@ public class PatternArriveVertex extends PatternStopVertex {
 
     private static String makeLabel(TripPattern pattern, int stop) {
         return String.format("%s_%02d_A", pattern.code, stop);
+    }
+
+    private static String makeLabel(TripPattern pattern, int stop, Stop newStop) {
+        return String.format("%s_%02d_A_flextransfer_arrive_%s", pattern.code, stop, newStop.toString());
     }
 
 
