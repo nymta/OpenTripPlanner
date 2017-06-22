@@ -50,6 +50,10 @@ public abstract class Edge implements Serializable {
 
     protected Vertex tov;
 
+    private static int idGen = 0;
+
+    public int specialId = idGen++;
+
     protected Edge(Vertex v1, Vertex v2) {
         if (v1 == null || v2 == null) {
             String err = String.format("%s constructed with null vertex : %s %s", this.getClass(),

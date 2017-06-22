@@ -19,6 +19,8 @@ import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.model.error.PlannerError;
 import org.opentripplanner.routing.core.RoutingRequest;
+import org.opentripplanner.routing.graph.Edge;
+import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.GraphPathFinder;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.OTPServer;
@@ -104,11 +106,15 @@ public class PlannerResource extends RoutingResource {
             }
         }
 
+        Graph graph = request.rctx.graph;
+        Edge last = graph.getEdges().stream().max((a, b) -> a.specialId - b.specialId).get();
+        LOG.info("Graph has {} vertices and {} edges, last edge type={}", graph.countVertices(), graph.countEdges(), last.getClass().getName());
+
         /* Populate up the elevation metadata */
         response.elevationMetadata = new ElevationMetadata();
         response.elevationMetadata.ellipsoidToGeoidDifference = router.graph.ellipsoidToGeoidDifference;
         response.elevationMetadata.geoidElevation = request.geoidElevation;
-
+        
         /* Log this request if such logging is enabled. */
         if (request != null && router != null && router.requestLogger != null) {
             StringBuilder sb = new StringBuilder();
