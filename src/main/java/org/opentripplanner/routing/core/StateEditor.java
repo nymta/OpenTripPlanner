@@ -15,12 +15,14 @@ package org.opentripplanner.routing.core;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.routing.edgetype.TripPattern;
+import org.opentripplanner.routing.flex.DemandResponseService;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
@@ -369,6 +371,7 @@ public class StateEditor {
         } else {
             child.stateData.nonTransitMode = TraverseMode.CAR;
         }
+        child.stateData.demandResponseServices = null;
     }
 
     public void setBikeParked(boolean bikeParked) {
@@ -524,4 +527,15 @@ public class StateEditor {
         return child.hasEnteredNoThruTrafficArea();
     }
 
+    public boolean isOnDemandResponseService() {
+        return child.stateData.demandResponseServices != null && !child.stateData.demandResponseServices.isEmpty();
+    }
+
+    public void setDemandResponseServices(List<DemandResponseService> services) {
+        child.stateData.demandResponseServices = services;
+    }
+
+    public void setTriedDrtFork(boolean triedDrtFork) {
+        child.stateData.triedDrtFork = triedDrtFork;
+    }
 }

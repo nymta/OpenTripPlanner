@@ -13,15 +13,17 @@
 
 package org.opentripplanner.routing.core;
 
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.routing.algorithm.NegativeWeightException;
 import org.opentripplanner.routing.edgetype.*;
+import org.opentripplanner.routing.flex.DemandResponseService;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.trippattern.TripTimes;
@@ -121,7 +123,19 @@ public class State implements Cloneable {
         if (options.parkAndRide || options.kissAndRide) {
             this.stateData.carParked = options.arriveBy;
             this.stateData.nonTransitMode = this.stateData.carParked ? TraverseMode.WALK : TraverseMode.CAR;
-        } else if (options.bikeParkAndRide) {
+        } /*else if (options.servicesPlaceholder) {
+            RoutingRequest optionsClone = options.clone();
+            optionsClone.servicesPlaceholder = false;
+            State other = new State(vertex, backEdge, timeSeconds, startTime, optionsClone);
+            other.getOptions().servicesPlaceholder = true;
+            other.stateData.nonTransitMode = TraverseMode.CAR;
+            List<DemandResponseService> drt = getApplicableDemandResponseServices();
+            if (drt != null) {
+                other.stateData.demandResponseServices = drt;
+                other.weight = other.weight + 1000; // some number?
+                this.next = other;
+            }
+        } */else if (options.bikeParkAndRide) {
             this.stateData.bikeParked = options.arriveBy;
             this.stateData.nonTransitMode = this.stateData.bikeParked ? TraverseMode.WALK
                     : TraverseMode.BICYCLE;
@@ -834,6 +848,23 @@ public class State implements Cloneable {
 
     public boolean hasEnteredNoThruTrafficArea() {
         return stateData.enteredNoThroughTrafficArea;
+    }
+
+    public List<DemandResponseService> getApplicableDemandResponseServices() {
+        if (getOptions() == null || getOptions().getRoutingContext() == null)
+            return null;
+        return getOptions().getRoutingContext().graph.demandResponseServices
+                .stream()
+                //.filter(svc -> svc.isApplicableTo(this))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isOnDemandResponseService() {
+        return stateData.demandResponseServices != null && !stateData.demandResponseServices.isEmpty();
+    }
+
+    public boolean hasTriedDrtFork() {
+        return stateData.triedDrtFork;
     }
 
 }

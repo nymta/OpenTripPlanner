@@ -14,6 +14,7 @@
 package org.opentripplanner.routing.core;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.routing.edgetype.TripPattern;
+import org.opentripplanner.routing.flex.DemandResponseService;
 import org.opentripplanner.routing.trippattern.TripTimes;
 
 /**
@@ -101,6 +103,10 @@ public class StateData implements Cloneable {
     public Map<String, Integer> flagStopDepartureOffsets;
 
     public Map<String, Integer> flagStopArrivalOffsets;
+
+    protected List<DemandResponseService> demandResponseServices;
+
+    protected boolean triedDrtFork = false;
 
     public StateData(RoutingRequest options) {
         TraverseModeSet modes = options.modes;

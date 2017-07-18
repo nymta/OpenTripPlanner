@@ -26,6 +26,9 @@ import org.opentripplanner.routing.vertextype.TransitStop;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Locale;
 
 /** 
@@ -37,6 +40,8 @@ public class StreetTransitLink extends Edge {
 
     private static final long serialVersionUID = -3311099256178798981L;
     static final int STL_TRAVERSE_COST = 1;
+
+    private static final Logger LOG = LoggerFactory.getLogger(StreetTransitLink.class);
 
     private boolean wheelchairAccessible;
 
@@ -117,13 +122,17 @@ public class StreetTransitLink extends Edge {
         if (s0.getNonTransitMode() == TraverseMode.CAR) {
             if (req.kissAndRide && !s0.isCarParked()) {
                 s1.setCarParked(true);
+            } else if (s1.isOnDemandResponseService()) {
+                s1.setCarParked(true);
             } else {
+                LOG.info("forbidding stl");
                 return null;
             }
         }
         s1.incrementTimeInSeconds(transitStop.getStreetToStopTime() + STL_TRAVERSE_COST);
         s1.incrementWeight(STL_TRAVERSE_COST + transitStop.getStreetToStopTime());
         s1.setBackMode(TraverseMode.LEG_SWITCH);
+        s1.setTriedDrtFork(false);
         return s1.makeState();
     }
 

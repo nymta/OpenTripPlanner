@@ -21,6 +21,7 @@ import org.opentripplanner.common.TurnRestrictionType;
 import org.opentripplanner.common.geometry.*;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.routing.core.*;
+import org.opentripplanner.routing.flex.DemandResponseService;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.util.ElevationUtils;
@@ -258,6 +259,12 @@ public class StreetEdge extends Edge implements Cloneable {
         final RoutingRequest options = s0.getOptions();
         final TraverseMode currMode = s0.getNonTransitMode();
         StateEditor editor = doTraverse(s0, options, s0.getNonTransitMode());
+
+        boolean shouldTryDrtFork = !s0.isOnDemandResponseService() && !s0.hasTriedDrtFork() && currMode == TraverseMode.WALK && getPermission().allows(TraverseMode.CAR);
+        if (editor != null) {
+            editor.setTriedDrtFork(true);
+        }
+
         State state = (editor == null) ? null : editor.makeState();
         /* Kiss and ride support. Mode transitions occur without the explicit loop edges used in park-and-ride. */
         if (options.kissAndRide) {
@@ -288,11 +295,46 @@ public class StreetEdge extends Edge implements Cloneable {
                 }
             }
         }
+
+        if (s0.isOnDemandResponseService()) {
+            if (!getPermission().allows(TraverseMode.CAR) && currMode == TraverseMode.CAR) {
+                editor = doTraverse(s0, options, TraverseMode.WALK);
+                if (editor != null) {
+                    editor.setCarParked(true); // has the effect of switching to WALK and preventing further car use
+                    return editor.makeState(); // return only the "parked" walking state
+                }
+
+            }
+        }
+
+        // fork state maybe
+        if (shouldTryDrtFork && options.servicesPlaceholder) {
+            List<DemandResponseService> services = s0.getApplicableDemandResponseServices();
+            if (services != null && !services.isEmpty()) {
+                editor = doTraverse(s0, options, TraverseMode.CAR, true);
+                if (editor != null) {
+                    editor.incrementWeight(0);
+                    editor.setCarParked(false); // Also has the effect of switching to CAR
+                    editor.setTriedDrtFork(true);
+                    editor.setDemandResponseServices(services);
+                    State forkState = editor.makeState();
+                    if (forkState != null) {
+                        forkState.addToExistingResultChain(state);
+                        return forkState; // return both parked and unparked states
+                    }
+                }
+            }
+        }
+
         return state;
     }
 
-    /** return a StateEditor rather than a State so that we can make parking/mode switch modifications for kiss-and-ride. */
     private StateEditor doTraverse(State s0, RoutingRequest options, TraverseMode traverseMode) {
+        return doTraverse(s0, options, traverseMode, s0.isOnDemandResponseService());
+    }
+
+    /** return a StateEditor rather than a State so that we can make parking/mode switch modifications for kiss-and-ride. */
+    private StateEditor doTraverse(State s0, RoutingRequest options, TraverseMode traverseMode, boolean onDemandResponse) {
         boolean walkingBike = options.walkingBike;
         boolean backWalkingBike = s0.isBackWalkingBike();
         TraverseMode backMode = s0.getBackMode();
@@ -392,6 +434,10 @@ public class StreetEdge extends Edge implements Cloneable {
         } else {
             // TODO: this is being applied even when biking or driving.
             weight *= options.walkReluctance;
+        }
+
+        if (onDemandResponse) {
+            weight *= 1;
         }
 
         StateEditor s1 = s0.edit(this);
