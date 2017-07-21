@@ -860,11 +860,14 @@ public class State implements Cloneable {
     }
 
     public boolean isOnDemandResponseService() {
-        return stateData.demandResponseServices != null && !stateData.demandResponseServices.isEmpty();
+        return stateData.demandResponseServices != null && !stateData.demandResponseServices.isEmpty() && !stateData.carParked;
     }
 
     public boolean hasTriedDrtFork() {
         return stateData.triedDrtFork;
     }
 
+    public boolean isEverBoardedDrt() {
+        return stateData.everBoardedDrt;
+    }
 }

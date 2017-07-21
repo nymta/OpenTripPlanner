@@ -108,6 +108,8 @@ public class StateData implements Cloneable {
 
     protected boolean triedDrtFork = false;
 
+    protected boolean everBoardedDrt = false;
+
     public StateData(RoutingRequest options) {
         TraverseModeSet modes = options.modes;
         if (modes.getCar())

@@ -538,4 +538,8 @@ public class StateEditor {
     public void setTriedDrtFork(boolean triedDrtFork) {
         child.stateData.triedDrtFork = triedDrtFork;
     }
+
+    public void setEverBoardedDrt() {
+        child.stateData.everBoardedDrt = true;
+    }
 }

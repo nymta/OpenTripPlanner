@@ -303,7 +303,6 @@ public class StreetEdge extends Edge implements Cloneable {
                     editor.setCarParked(true); // has the effect of switching to WALK and preventing further car use
                     return editor.makeState(); // return only the "parked" walking state
                 }
-
             }
         }
 
@@ -313,10 +312,12 @@ public class StreetEdge extends Edge implements Cloneable {
             if (services != null && !services.isEmpty()) {
                 editor = doTraverse(s0, options, TraverseMode.CAR, true);
                 if (editor != null) {
-                    editor.incrementWeight(0);
+                    editor.incrementWeight(3600);
+                    editor.incrementTimeInSeconds(3600);
                     editor.setCarParked(false); // Also has the effect of switching to CAR
                     editor.setTriedDrtFork(true);
                     editor.setDemandResponseServices(services);
+                    editor.setEverBoardedDrt();
                     State forkState = editor.makeState();
                     if (forkState != null) {
                         forkState.addToExistingResultChain(state);
