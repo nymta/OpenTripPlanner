@@ -18,6 +18,7 @@ import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.StreetTransitLink;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -77,14 +78,14 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     Vertex target;
 
     /** All vertices within walking distance of the origin (the vertex at which the main search begins). */
-    Set<Vertex> preTransitVertices;
+    Set<VertexAndMode> preTransitVertices;
 
     /**
      * A lower bound on the weight of the lowest-cost path to the target (the vertex at which the main search ends)
      * from each vertex within walking distance of the target. As the heuristic progressively improves, this map will
      * include lower bounds on path weights for an increasing number of vertices on board transit.
      */
-    TObjectDoubleMap<Vertex> postBoardingWeights;
+    TObjectDoubleMap<VertexAndMode> postBoardingWeights;
 
     Graph graph;
 
@@ -95,7 +96,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     double maxWeightSeen = 0;
 
     // The priority queue for the interleaved backward search through the transit network.
-    BinHeap<Vertex> transitQueue;
+    BinHeap<VertexAndMode> transitQueue;
 
     // True when the entire transit network has been explored by the reverse search.
     boolean finished = false;
@@ -121,7 +122,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         request.softPreTransitLimiting = false;
         transitQueue = new BinHeap<>();
         // Forward street search first, mark street vertices around the origin so H evaluates to 0
-        TObjectDoubleMap<Vertex> forwardStreetSearchResults = streetSearch(request, false, abortTime);
+        TObjectDoubleMap<VertexAndMode> forwardStreetSearchResults = streetSearch(request, false, abortTime);
         if (forwardStreetSearchResults == null) {
             return; // Search timed out
         }
@@ -160,11 +161,11 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             // The main search is on the streets, not on transit.
             if (s.isEverBoarded()) {
                 // If we have already ridden transit we must be near the destination. If not the map returns INF.
-                return postBoardingWeights.get(v);
+                return postBoardingWeights.get(new VertexAndMode(v, s.getNonTransitMode()));
             } else {
                 // We have not boarded transit yet. We have no idea what the weight to the target is so return zero.
                 // We could also use a Euclidean heuristic here.
-                if (preTransitVertices.contains(v)) {
+                if (preTransitVertices.contains(new VertexAndMode(v, s.getNonTransitMode()))) {
                     return 0;
                 } else {
                     return Double.POSITIVE_INFINITY;
@@ -174,7 +175,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             // The main search is not currently on a street vertex, it's probably on transit.
             // If the current part of the transit network has been explored, then return the stored lower bound.
             // Otherwise return the highest lower bound yet seen -- this location must have a higher cost than that.
-            double h = postBoardingWeights.get(v);
+            double h = postBoardingWeights.get(new VertexAndMode(v, s.getNonTransitMode()));
             if (h == Double.POSITIVE_INFINITY) {
                 return maxWeightSeen;
             } else {
@@ -200,7 +201,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                 break;
             }
             int uWeight = (int) transitQueue.peek_min_key();
-            Vertex u = transitQueue.extract_min();
+            VertexAndMode u = transitQueue.extract_min();
             // The weight of the queue head is uniformly increasing.
             // This is the highest weight ever seen for a closed vertex.
             maxWeightSeen = uWeight;
@@ -216,7 +217,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             }
             // This search is proceeding backward relative to the main search.
             // When the main search is arriveBy the heuristic search looks at OUTgoing edges.
-            for (Edge e : routingRequest.arriveBy ? u.getOutgoing() : u.getIncoming()) {
+            for (Edge e : routingRequest.arriveBy ? u.getVertex().getOutgoing() : u.getVertex().getIncoming()) {
                 // Do not enter streets in this phase, which should only touch transit.
                 if (e instanceof StreetTransitLink) {
                     continue;
@@ -232,7 +233,8 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                 double vWeightOld = postBoardingWeights.get(v);
                 if (vWeight < vWeightOld) {
                     // Should only happen when vWeightOld is infinite because it is not yet closed.
-                    transitQueue.insert(v, vWeight);
+                    VertexAndMode vm = new VertexAndMode(v, u.getMode());
+                    transitQueue.insert(vm, vWeight);
                 }
             }
         }
@@ -264,14 +266,14 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
      *
      * TODO what if the egress segment is by bicycle or car mode? This is no longer admissible.
      */
-    private TObjectDoubleMap<Vertex> streetSearch (RoutingRequest rr, boolean fromTarget, long abortTime) {
+    private TObjectDoubleMap<VertexAndMode> streetSearch (RoutingRequest rr, boolean fromTarget, long abortTime) {
         LOG.debug("Heuristic street search around the {}.", fromTarget ? "target" : "origin");
         rr = rr.clone();
         if (fromTarget) {
             rr.setArriveBy(!rr.arriveBy);
         }
         // Create a map that returns Infinity when it does not contain a vertex.
-        TObjectDoubleMap<Vertex> vertices = new TObjectDoubleHashMap<>(100, 0.5f, Double.POSITIVE_INFINITY);
+        TObjectDoubleMap<VertexAndMode> vertices = new TObjectDoubleHashMap<>(100, 0.5f, Double.POSITIVE_INFINITY);
         ShortestPathTree spt = new DominanceFunction.MinimumWeight().getNewShortestPathTree(rr);
         // TODO use normal OTP search for this.
         BinHeap<State> pq = new BinHeap<State>();
@@ -291,7 +293,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                 // place vertices on the transit queue so we can explore the transit network backward later.
                 if (fromTarget) {
                     double weight = s.getWeight();
-                    transitQueue.insert(v, weight);
+                    transitQueue.insert(new VertexAndMode(v, s.getNonTransitMode()), weight);
                     if (weight > maxWeightSeen) {
                         maxWeightSeen = weight;
                     }
@@ -302,7 +304,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             // (park and ride or bike rental related) that should also be explored and marked as usable.
             // Record the cost to reach this vertex.
             if (!vertices.containsKey(v)) {
-                vertices.put(v, (int) s.getWeight()); // FIXME time or weight? is RR using right mode?
+                vertices.put(new VertexAndMode(v, s.getNonTransitMode()), (int) s.getWeight()); // FIXME time or weight? is RR using right mode?
             }
             for (Edge e : rr.arriveBy ? v.getIncoming() : v.getOutgoing()) {
                 // arriveBy has been set to match actual directional behavior in this subsearch.
@@ -320,5 +322,48 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         LOG.debug("Heuristric street search hit {} transit stops.", transitQueue.size());
         return vertices;
     }
- 
+}
+
+class VertexAndMode {
+    private Vertex vertex;
+    private TraverseMode mode;
+
+    public VertexAndMode(Vertex vertex, TraverseMode mode) {
+        this.vertex = vertex;
+        this.mode = mode;
+    }
+
+    public Vertex getVertex() {
+        return vertex;
+    }
+
+    public void setVertex(Vertex vertex) {
+        this.vertex = vertex;
+    }
+
+    public TraverseMode getMode() {
+        return mode;
+    }
+
+    public void setMode(TraverseMode mode) {
+        this.mode = mode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VertexAndMode that = (VertexAndMode) o;
+
+        if (!vertex.equals(that.vertex)) return false;
+        return mode == that.mode;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = vertex.hashCode();
+        result = 31 * result + mode.hashCode();
+        return result;
+    }
 }
