@@ -28,6 +28,7 @@ import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.error.TrivialPathException;
+import org.opentripplanner.routing.flex.DemandResponseService;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -579,6 +580,13 @@ public abstract class GraphPathToTripPlanConverter {
      */
     private static void addTripFields(Leg leg, State[] states, Locale requestedLocale) {
         Trip trip = states[states.length - 1].getBackTrip();
+        if (trip == null) {
+            State state = states[states.length - 1];
+            if (state.isOnDemandResponseService()) {
+                DemandResponseService svc = state.getDemandResponseService();
+                trip = svc.getTrip();
+            }
+        }
 
         if (trip != null) {
             Route route = trip.getRoute();

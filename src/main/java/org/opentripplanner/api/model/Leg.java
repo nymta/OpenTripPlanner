@@ -266,12 +266,13 @@ public class Leg {
      */
     public Boolean isTransitLeg() {
         if (mode == null) return null;
+        else if (isDemandResponseService()) return true;
         else if (mode.equals(TraverseMode.WALK.toString())) return false;
         else if (mode.equals(TraverseMode.CAR.toString())) return false;
         else if (mode.equals(TraverseMode.BICYCLE.toString())) return false;
         else return true;
     }
-    
+
     /** 
      * The leg's duration in seconds
      */
@@ -301,5 +302,9 @@ public class Leg {
         calendar.setTime(endTime.getTime());
         endTime = calendar;
         agencyTimeZoneOffset = timeZone.getOffset(startTime.getTimeInMillis());
+    }
+
+    private boolean isDemandResponseService() {
+        return TraverseMode.CAR.equals(mode) && tripId != null;
     }
 }

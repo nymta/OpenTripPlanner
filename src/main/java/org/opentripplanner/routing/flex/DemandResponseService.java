@@ -33,12 +33,14 @@ public class DemandResponseService implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private AgencyAndId serviceId;
+    private Trip trip;
     private Route route;
     private int startTime; // start time, in seconds past midnight
     private int endTime; // end time, in seconds past midnight
     private Polygon coverageArea;
 
     public DemandResponseService(Trip trip, StopTime start, StopTime end, List<Area> areas) {
+        this.trip = trip;
         this.serviceId = trip.getServiceId();
         this.route = trip.getRoute();
         this.startTime = start.getDepartureTime();
@@ -57,6 +59,10 @@ public class DemandResponseService implements Serializable {
 
     public AgencyAndId getServiceId() {
         return serviceId;
+    }
+
+    public Trip getTrip() {
+        return trip;
     }
 
     public Route getRoute() {
