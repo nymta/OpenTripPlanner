@@ -169,6 +169,9 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Used instead of walk reluctance for stairs */
     public double stairsReluctance = 2.0;
+
+    /** Multiplier for how bad demand-response services are relative to transit */
+    public double demandResponseReluctance = 3.0;
     
     /** Multiplicative factor on expected turning time. */
     public double turnReluctance = 1.0;
@@ -928,6 +931,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && maxSlope == other.maxSlope
                 && walkReluctance == other.walkReluctance
                 && waitReluctance == other.waitReluctance
+                && demandResponseReluctance == other.demandResponseReluctance
                 && waitAtBeginningFactor == other.waitAtBeginningFactor
                 && walkBoardCost == other.walkBoardCost
                 && bikeBoardCost == other.bikeBoardCost
@@ -981,6 +985,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Double(maxTransferWalkDistance).hashCode()
                 + new Double(transferPenalty).hashCode() + new Double(maxSlope).hashCode()
                 + new Double(walkReluctance).hashCode() + new Double(waitReluctance).hashCode()
+                + new Double(demandResponseReluctance).hashCode()
                 + new Double(waitAtBeginningFactor).hashCode() * 15485863
                 + walkBoardCost + bikeBoardCost + bannedRoutes.hashCode()
                 + bannedTrips.hashCode() * 1373 + transferSlack * 20996011
@@ -1122,6 +1127,12 @@ public class RoutingRequest implements Cloneable, Serializable {
     public void setWaitReluctance(double waitReluctance) {
         if (waitReluctance > 0) {
             this.waitReluctance = waitReluctance;
+        }
+    }
+
+    public void setDemandResponseReluctance(double demandResponseReluctance) {
+        if (demandResponseReluctance > 0) {
+            this.demandResponseReluctance = demandResponseReluctance;
         }
     }
 

@@ -147,12 +147,16 @@ public class GraphPath {
         List<AgencyAndId> ret = new LinkedList<AgencyAndId>();
         Trip lastTrip = null;
         for (State s : states) {
+            Trip trip = null;
             if (s.getBackEdge() != null) {
-                Trip trip = s.getBackTrip();
-                if (trip != null && trip != lastTrip) {
-                    ret.add(trip.getId());
-                    lastTrip = trip;
-                }
+                trip = s.getBackTrip();
+            }
+            if (trip == null && s.getDemandResponseService() != null) {
+                trip = s.getDemandResponseService().getTrip();
+            }
+            if (trip != null && trip != lastTrip) {
+                ret.add(trip.getId());
+                lastTrip = trip;
             }
         }
         return ret;

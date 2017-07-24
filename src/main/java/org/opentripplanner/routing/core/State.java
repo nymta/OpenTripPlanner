@@ -856,6 +856,7 @@ public class State implements Cloneable {
         return getOptions().getRoutingContext().graph.demandResponseServices
                 .stream()
                 //.filter(svc -> svc.isApplicableTo(this))
+                .filter(svc -> !getOptions().bannedTrips.keySet().contains(svc.getTrip().getId()))
                 .collect(Collectors.toList());
     }
 

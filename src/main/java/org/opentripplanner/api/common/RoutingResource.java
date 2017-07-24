@@ -126,6 +126,13 @@ public abstract class RoutingResource {
     @QueryParam("waitReluctance")
     protected Double waitReluctance;
 
+    /**
+     * A multiplier for how bad demand-response services are, compared to being in transit for equal
+     * lengths of time.
+     */
+    @QueryParam("demandResponseReluctance")
+    protected Double demandResponseReluctance;
+
     /** How much less bad is waiting at the beginning of the trip (replaces waitReluctance) */
     @QueryParam("waitAtBeginningFactor")
     protected Double waitAtBeginningFactor;
@@ -442,6 +449,9 @@ public abstract class RoutingResource {
 
         if (waitReluctance != null)
             request.setWaitReluctance(waitReluctance);
+
+        if (demandResponseReluctance != null)
+            request.setDemandResponseReluctance(demandResponseReluctance);
 
         if (waitAtBeginningFactor != null)
             request.setWaitAtBeginningFactor(waitAtBeginningFactor);

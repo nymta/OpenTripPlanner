@@ -438,7 +438,7 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         if (onDemandResponse) {
-            weight *= 1;
+            weight *= options.demandResponseReluctance;
         }
 
         StateEditor s1 = s0.edit(this);
