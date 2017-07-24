@@ -172,7 +172,11 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Multiplier for how bad demand-response services are relative to transit */
     public double demandResponseReluctance = 3.0;
-    
+
+    public boolean useDemandResponse = true;
+
+    public boolean banDemandResponse = true;
+
     /** Multiplicative factor on expected turning time. */
     public double turnReluctance = 1.0;
 
@@ -426,7 +430,6 @@ public class RoutingRequest implements Cloneable, Serializable {
     public boolean bikeParkAndRide = false;
     public boolean parkAndRide  = false;
     public boolean kissAndRide  = false;
-    public boolean servicesPlaceholder = true;
 
     /* Whether we are in "long-distance mode". This is currently a server-wide setting, but it could be made per-request. */
     // TODO remove
@@ -1134,6 +1137,14 @@ public class RoutingRequest implements Cloneable, Serializable {
         if (demandResponseReluctance > 0) {
             this.demandResponseReluctance = demandResponseReluctance;
         }
+    }
+
+    public void setUseDemandResponse(boolean useDemandResponse) {
+        this.useDemandResponse = useDemandResponse;
+    }
+
+    public void setBanDemandResponse(boolean banDemandResponse) {
+        this.banDemandResponse = banDemandResponse;
     }
 
     public void setWaitAtBeginningFactor(double waitAtBeginningFactor) {

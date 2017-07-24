@@ -307,13 +307,11 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         // fork state maybe
-        if (shouldTryDrtFork && options.servicesPlaceholder) {
+        if (shouldTryDrtFork && options.useDemandResponse) {
             List<DemandResponseService> services = s0.getApplicableDemandResponseServices();
             if (services != null && !services.isEmpty()) {
                 editor = doTraverse(s0, options, TraverseMode.CAR, true);
                 if (editor != null) {
-                    editor.incrementWeight(3600);
-                    editor.incrementTimeInSeconds(3600);
                     editor.setCarParked(false); // Also has the effect of switching to CAR
                     editor.setTriedDrtFork(true);
                     editor.setDemandResponseServices(services);

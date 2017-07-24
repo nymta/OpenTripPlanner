@@ -133,6 +133,18 @@ public abstract class RoutingResource {
     @QueryParam("demandResponseReluctance")
     protected Double demandResponseReluctance;
 
+    /**
+     * Whether to ban demand response trips
+     */
+    @QueryParam("banDemandResponse")
+    protected Boolean banDemandResponse;
+
+    /**
+     * Whether to use demand response trips
+     */
+    @QueryParam("useDemandResponse")
+    protected Boolean useDemandResponse;
+
     /** How much less bad is waiting at the beginning of the trip (replaces waitReluctance) */
     @QueryParam("waitAtBeginningFactor")
     protected Double waitAtBeginningFactor;
@@ -452,6 +464,12 @@ public abstract class RoutingResource {
 
         if (demandResponseReluctance != null)
             request.setDemandResponseReluctance(demandResponseReluctance);
+
+        if (useDemandResponse != null)
+            request.setUseDemandResponse(useDemandResponse);
+
+        if (banDemandResponse != null)
+            request.setBanDemandResponse(banDemandResponse);
 
         if (waitAtBeginningFactor != null)
             request.setWaitAtBeginningFactor(waitAtBeginningFactor);

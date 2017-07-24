@@ -151,7 +151,7 @@ public class GraphPath {
             if (s.getBackEdge() != null) {
                 trip = s.getBackTrip();
             }
-            if (trip == null && s.getDemandResponseService() != null) {
+            if (s.getOptions().banDemandResponse && trip == null && s.getDemandResponseService() != null) {
                 trip = s.getDemandResponseService().getTrip();
             }
             if (trip != null && trip != lastTrip) {
