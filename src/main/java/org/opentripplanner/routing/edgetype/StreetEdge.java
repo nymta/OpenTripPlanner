@@ -307,7 +307,7 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         // fork state maybe
-        if (shouldTryDrtFork && options.useDemandResponse) {
+        if (shouldTryDrtFork && options.useDemandResponse && options.getRoutingContext() != null && options.getRoutingContext().graph.useFlexService) {
             List<DemandResponseService> services = s0.getApplicableDemandResponseServices();
             if (services != null && !services.isEmpty()) {
                 editor = doTraverse(s0, options, TraverseMode.CAR, true);

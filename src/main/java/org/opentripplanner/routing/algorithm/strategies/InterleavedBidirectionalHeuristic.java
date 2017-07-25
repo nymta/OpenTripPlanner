@@ -331,6 +331,9 @@ class VertexAndMode {
     public VertexAndMode(Vertex vertex, TraverseMode mode) {
         this.vertex = vertex;
         this.mode = mode;
+        if (this.mode == null) {
+            this.mode = TraverseMode.WALK;
+        }
     }
 
     public Vertex getVertex() {

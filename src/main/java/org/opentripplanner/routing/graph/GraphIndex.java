@@ -195,8 +195,10 @@ public class GraphIndex {
         initializeHopsForEdgeMap();
 
         LOG.info("initializing demand services....");
-        for (DemandResponseService service : graph.demandResponseServices) {
-            demandResponseServicesForId.put(service.getRoute().getId(), service);
+        if (graph.demandResponseServices != null) {
+            for (DemandResponseService service : graph.demandResponseServices) {
+                demandResponseServicesForId.put(service.getRoute().getId(), service);
+            }
         }
 
         LOG.info("Done indexing graph.");
