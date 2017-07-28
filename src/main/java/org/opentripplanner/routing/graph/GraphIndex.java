@@ -194,8 +194,8 @@ public class GraphIndex {
         LOG.info("initializing hops-for-edge map...");
         initializeHopsForEdgeMap();
 
-        LOG.info("initializing demand services....");
         if (graph.demandResponseServices != null) {
+            LOG.info("initializing demand services....");
             for (DemandResponseService service : graph.demandResponseServices) {
                 demandResponseServicesForId.put(service.getRoute().getId(), service);
             }
