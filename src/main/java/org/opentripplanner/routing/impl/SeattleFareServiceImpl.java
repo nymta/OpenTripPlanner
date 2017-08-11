@@ -25,6 +25,7 @@ import org.opentripplanner.common.model.T2;
 import org.opentripplanner.routing.core.Fare;
 import org.opentripplanner.routing.core.Fare.FareType;
 import org.opentripplanner.routing.core.FareRuleSet;
+import org.opentripplanner.routing.core.Ride;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ public class SeattleFareServiceImpl extends DefaultFareServiceImpl {
     private static final Logger LOG = LoggerFactory.getLogger(SeattleFareServiceImpl.class);
 
     public SeattleFareServiceImpl(Collection<FareRuleSet> regularFareRules,
-            Collection<FareRuleSet> youthFareRules, Collection<FareRuleSet> seniorFareRules) {
+                                  Collection<FareRuleSet> youthFareRules, Collection<FareRuleSet> seniorFareRules) {
         super();
         addFareRules(FareType.regular, regularFareRules);
         addFareRules(FareType.youth, youthFareRules);

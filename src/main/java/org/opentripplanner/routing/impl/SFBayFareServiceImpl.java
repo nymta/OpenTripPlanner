@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.opentripplanner.routing.core.Fare;
 import org.opentripplanner.routing.core.FareRuleSet;
+import org.opentripplanner.routing.core.Ride;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.Fare.FareType;
 import org.slf4j.Logger;

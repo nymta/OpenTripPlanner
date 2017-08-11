@@ -14,121 +14,286 @@
 package org.opentripplanner.routing.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Maps;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FareAttribute;
-import org.opentripplanner.common.model.P2;
+import org.onebusaway.gtfs.model.FareRule;
 
 public class FareRuleSet implements Serializable {
 
-    private static final long serialVersionUID = 7218355718876553028L;
+    /*
+     * A FareRuleClause is a row in fare_rules.txt. If all rides match clauses, and set-of-rides
+     * match journey parameters, the set matches the FareRuleSet.
+     */
 
+    private static final long serialVersionUID = 7218355718876553029L;
+
+    private FareAttribute attribute;
     private String agency = null;
-    private Set<AgencyAndId> routes;
-    private Set<P2<String>> originDestinations;
-    private Set<String> contains;
-    private FareAttribute fareAttribute;
-    private Set<AgencyAndId> trips;
-    
-    public FareRuleSet(FareAttribute fareAttribute) {
-        this.fareAttribute = fareAttribute;
-        routes = new HashSet<AgencyAndId>();
-        originDestinations= new HashSet<P2<String>>();
-        contains = new HashSet<String>();
-        trips = new HashSet<AgencyAndId>();
+    private List<FareRuleClause> clauses;
+
+    private transient Map<ContainsKey, FareRuleClause> rulesByContainsKey;
+
+    public FareRuleSet(FareAttribute attribute) {
+        this.attribute = attribute;
+        this.clauses = new ArrayList<>();
+        this.rulesByContainsKey = Maps.newHashMap();
     }
 
-    public void setAgency(String agency) {
-        // TODO With new GTFS lib, read value from fareAttribute directly?
-        this.agency = agency;
-    }
-    
-    public String getAgency() {
-    	return agency;
-    }
-
-    public void addOriginDestination(String origin, String destination) {
-        originDestinations.add(new P2<String>(origin, destination));
-    }
-
-    public Set<P2<String>> getOriginDestinations() {
-        return originDestinations;
-    }
-
-    public void addContains(String containsId) {
-        contains.add(containsId);
-    }
-    
-    public void addRoute(AgencyAndId route) {
-        routes.add(route);
-    }
-    
-    public Set<AgencyAndId> getRoutes() {
-    	return routes;
-    }
-
-    public FareAttribute getFareAttribute() {
-        return fareAttribute;
-    }
-
-    public boolean hasAgencyDefined() {
-        return agency != null;
+    public void addFareRule(FareRule rule) {
+        if (rule.getContainsId() != null) {
+            ContainsKey key = new ContainsKey(rule);
+            FareRuleClause clause = rulesByContainsKey.get(key);
+            if (clause != null) {
+                clause.addContains(rule.getContainsId());
+            } else {
+                clause = new FareRuleClause(rule);
+                clauses.add(clause);
+                rulesByContainsKey.put(key, clause);
+            }
+        } else {
+            clauses.add(new FareRuleClause(rule));
+        }
     }
 
     public void addTrip(AgencyAndId trip) {
-    	trips.add(trip);
+        clauses.add(new FareRuleClause(trip));
     }
-    
-    public Set<AgencyAndId> getTrips() {
-    	return trips;
-    }
-    
-    public boolean matches(Set<String> agencies, String startZone, String endZone, Set<String> zonesVisited,
-            Set<AgencyAndId> routesVisited, Set<AgencyAndId> tripsVisited) {
-        //check for matching agency
-        if (agency != null) {
-            if (agencies.size() != 1 || !agencies.contains(agency))
-                return false;
-        }
 
-        //check for matching origin/destination, if this ruleset has any origin/destination restrictions
-        if (originDestinations.size() > 0) {
-            P2<String> od = new P2<String>(startZone, endZone);
-            if (!originDestinations.contains(od)) {
-                P2<String> od2 = new P2<String>(od.first, null);
-                if (!originDestinations.contains(od2)) {
-                    od2 = new P2<String>(null, od.first);
-                    if (!originDestinations.contains(od2)) {
+    public void setAgency(String agency) {
+        this.agency = agency;
+    }
+
+    /**
+     * Return true if given set of rides matches this set of rules.
+     *
+     * For a set of rides, we need to check
+     * (a) clauses (ie rows in fare_rules.txt [multiple rows make up a clause for `contains']).
+            - either one clause satisfies the whole sequence, or one clause satisfies each ride.
+     * (b) "all ride" properties (agency)
+     * (c) whole ride-set properties (transfer time)
+     */
+    public boolean matches(RideSequence rideSequence) {
+
+        List<Ride> rides = rideSequence.getRides();
+
+        // Must satisfy clauses
+        if (!clauses.isEmpty()) {
+
+            // Check if there's a clause that matches the whole sequence
+            boolean matches = false;
+            for (FareRuleClause clause : clauses) {
+                if (clause.matches(rideSequence)) {
+                    matches = true;
+                    break;
+                }
+            }
+
+            if (!matches) {
+                // Check that each ride matches a clause
+                for (Ride ride : rides) {
+                    if (!rideMatchesAnyClause(ride)) {
                         return false;
                     }
                 }
             }
         }
 
-        //check for matching contains, if this ruleset has any containment restrictions
-        if (contains.size() > 0) {
-            if (!zonesVisited.equals(contains)) {
+        // Check all rides match clause (just agency)
+        if (agency != null) {
+            for (Ride ride : rides) {
+                if (!(agency.equals(ride.agency))) {
+                    return false;
+                }
+            }
+        }
+
+        // Check that the whole set of rides satisfy the FareAttribute properties
+        if (attribute.isTransfersSet() && attribute.getTransfers() < rideSequence.getTransfersUsed()) {
+            return false;
+        }
+        // assume transfers are evaluated at boarding time,
+        // as trimet does
+        if (attribute.isTransferDurationSet() &&
+                rideSequence.getTripTime() > attribute.getTransferDuration()) {
+            return false;
+        }
+        if (attribute.isJourneyDurationSet() &&
+                rideSequence.getJourneyTime() > attribute.getJourneyDuration()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean rideMatchesAnyClause(Ride ride) {
+        for (FareRuleClause clause : clauses) {
+            if (clause.matches(ride)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasAgencyDefined() {
+        return agency != null;
+    }
+
+    public FareAttribute getFareAttribute() {
+        return attribute;
+    }
+}
+
+class FareRuleClause implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
+    private AgencyAndId route;
+    private String origin;
+    private String destination;
+    private List<String> contains;
+    private AgencyAndId trip;
+
+    FareRuleClause(FareRule rule) {
+        if (rule.getRoute() != null) {
+            this.route = rule.getRoute().getId();
+        }
+        this.origin = rule.getOriginId();
+        this.destination = rule.getDestinationId();
+        if (rule.getContainsId() != null) {
+            this.contains = new ArrayList<>();
+            this.contains.add(rule.getContainsId());
+        }
+    }
+
+    FareRuleClause(AgencyAndId trip) {
+        this.trip = trip;
+    }
+
+    void addContains(String zone) {
+        this.contains.add(zone);
+    }
+
+    /**
+     * Check this clause matches an entire sequence
+     */
+    public boolean matches(RideSequence sequence) {
+        // can only match legs separately if this is a route- or trip-limited clause.
+        if (route != null || trip != null) {
+            return false;
+        }
+
+        if (origin != null) {
+            if (!origin.equals(sequence.getStartZone())) {
+                return false;
+            }
+        }
+
+        if (destination != null) {
+            if (!destination.equals(sequence.getEndZone())) {
+                return false;
+            }
+        }
+
+        if (contains != null) {
+            List<Ride> rides = sequence.getRides();
+            Set<String> allRideZones = new HashSet<>();
+            for (Ride ride : rides) {
+                allRideZones.addAll(ride.zones);
+            }
+            for (String zone : contains) {
+                if (!allRideZones.contains(zone)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check that this clause matches a single ride
+     */
+    public boolean matches(Ride ride) {
+
+        // check for matching origin, if applicable
+        if (this.origin != null) {
+            if (!this.origin.equals(ride.startZone)) {
+                return false;
+            }
+        }
+
+        // check for matching destination, if applicable
+        if (this.destination != null) {
+            if (!this.destination.equals(ride.endZone)) {
                 return false;
             }
         }
 
         //check for matching routes
-        if (routes.size() != 0) {
-            if (!routes.containsAll(routesVisited)) {
+        if (this.route != null) {
+            if (!this.route.equals(ride.route)) {
                 return false;
             }
         }
-        
+
         //check for matching trips
-        if (trips.size() != 0) {
-        	if (!trips.containsAll(tripsVisited)) {
-        		return false;
-        	}
+        if (this.trip != null) {
+            if (!this.trip.equals(ride.trip)) {
+                return false;
+            }
+        }
+
+        // check for matching contains
+        if (this.contains != null) {
+            for (String zone : this.contains) {
+                if (!ride.zones.contains(zone)) {
+                    return false;
+                }
+            }
         }
 
         return true;
     }
 }
 
+// This allows us to add new contains rows to the correct clause
+class ContainsKey {
+    private AgencyAndId route;
+    private String origin;
+    private String destination;
+
+    ContainsKey(FareRule rule) {
+        if (rule.getRoute() != null) {
+            route = rule.getRoute().getId();
+        }
+        origin = rule.getOriginId();
+        destination = rule.getDestinationId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ContainsKey that = (ContainsKey) o;
+
+        if (route != null ? !route.equals(that.route) : that.route != null) return false;
+        if (origin != null ? !origin.equals(that.origin) : that.origin != null) return false;
+        return destination != null ? destination.equals(that.destination) : that.destination == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = route != null ? route.hashCode() : 0;
+        result = 31 * result + (origin != null ? origin.hashCode() : 0);
+        result = 31 * result + (destination != null ? destination.hashCode() : 0);
+        return result;
+    }
+}

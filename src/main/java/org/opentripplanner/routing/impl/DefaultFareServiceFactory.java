@@ -87,20 +87,7 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
                 LOG.error("Inexistant fare ID in fare rule: " + id);
                 continue;
             }
-            String contains = rule.getContainsId();
-            if (contains != null) {
-                fareRule.addContains(contains);
-            }
-            String origin = rule.getOriginId();
-            String destination = rule.getDestinationId();
-            if (origin != null || destination != null) {
-                fareRule.addOriginDestination(origin, destination);
-            }
-            Route route = rule.getRoute();
-            if (route != null) {
-                AgencyAndId routeId = route.getId();
-                fareRule.addRoute(routeId);
-            }
+            fareRule.addFareRule(rule);
         }
     }
 
