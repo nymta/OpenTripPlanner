@@ -278,7 +278,7 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
 //            ServiceDay bestServiceDay = null;
 //            for (ServiceDay sd : rctx.serviceDays) {
 //                /* Find the proper timetable (updated or original) if there is a realtime snapshot. */
-//                Timetable timetable = tripPattern.getUpdatedTimetable(options, sd);
+//               Timetable timetable = tripPattern.getUpdatedTimetable(options, sd);
 //                /* Skip this day/timetable if no trip in it could possibly be useful. */
 //                if ( ! timetable.temporallyViable(sd, s0.getTimeSeconds(), bestWait, boarding))
 //                    continue;
@@ -312,6 +312,7 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
 
             Timetable timetable = tripPattern.getUpdatedTimetable(options, bestServiceDay);
 
+
             if (timetable.tripTimes.isEmpty())
                 return null;
 
@@ -331,6 +332,9 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
                     bestWait = 900;
             }
 
+            if ( ! timetable.temporallyViable(bestServiceDay, s0.getTimeSeconds(), bestWait, boarding)) {
+                return null;
+            }
 
             Trip trip = bestTripTimes.trip;
             
