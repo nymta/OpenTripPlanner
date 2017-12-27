@@ -15,9 +15,13 @@ package org.opentripplanner.routing.edgetype;
 
 import java.util.BitSet;
 
+import java.util.Date;
 import java.util.Locale;
+import java.util.Optional;
+
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.ServiceDay;
@@ -267,35 +271,67 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
              * Imagine a trip on a pattern at 25:00 today and another trip on the same pattern at
              * 00:30 tommorrow. The 00:30 trip should be taken, but if we stopped the search after
              * finding today's 25:00 trip we would never find tomorrow's 00:30 trip.
-             */
-            TripPattern tripPattern = this.getPattern();
-            int bestWait = -1;
-            TripTimes  bestTripTimes  = null;
-            ServiceDay bestServiceDay = null;
-            for (ServiceDay sd : rctx.serviceDays) {
-                /* Find the proper timetable (updated or original) if there is a realtime snapshot. */
-                Timetable timetable = tripPattern.getUpdatedTimetable(options, sd);
-                /* Skip this day/timetable if no trip in it could possibly be useful. */
-                if ( ! timetable.temporallyViable(sd, s0.getTimeSeconds(), bestWait, boarding))
-                    continue;
-                /* Find the next or prev departure depending on final boolean parameter. */
-                TripTimes tripTimes = timetable.getNextTrip(s0, sd, stopIndex, boarding);
-                if (tripTimes != null) {
-                    /* Wait is relative to departures on board and arrivals on alight. */
-                    int wait = boarding ? 
-                        (int)(sd.time(tripTimes.getDepartureTime(stopIndex)) - s0.getTimeSeconds()):
-                        (int)(s0.getTimeSeconds() - sd.time(tripTimes.getArrivalTime(stopIndex)));
-                    /* A trip was found. The wait should be non-negative. */
-                    if (wait < 0) LOG.error("Negative wait time when boarding.");
-                    /* Track the soonest departure over all relevant schedules. */
-                    if (bestWait < 0 || wait < bestWait) {
-                        bestWait       = wait;
-                        bestServiceDay = sd;
-                        bestTripTimes  = tripTimes;
-                    }
-                }
+//             */
+//            TripPattern tripPattern = this.getPattern();
+//            int bestWait = -1;
+//            TripTimes  bestTripTimes  = null;
+//            ServiceDay bestServiceDay = null;
+//            for (ServiceDay sd : rctx.serviceDays) {
+//                /* Find the proper timetable (updated or original) if there is a realtime snapshot. */
+//                Timetable timetable = tripPattern.getUpdatedTimetable(options, sd);
+//                /* Skip this day/timetable if no trip in it could possibly be useful. */
+//                if ( ! timetable.temporallyViable(sd, s0.getTimeSeconds(), bestWait, boarding))
+//                    continue;
+//                /* Find the next or prev departure depending on final boolean parameter. */
+//                TripTimes tripTimes = timetable.getNextTrip(s0, sd, stopIndex, boarding);
+//                if (tripTimes != null) {
+//                    /* Wait is relative to departures on board and arrivals on alight. */
+//                    int wait = boarding ?
+//                        (int)(sd.time(tripTimes.getDepartureTime(stopIndex)) - s0.getTimeSeconds()):
+//                        (int)(s0.getTimeSeconds() - sd.time(tripTimes.getArrivalTime(stopIndex)));
+//                    /* A trip was found. The wait should be non-negative. */
+//                    if (wait < 0) LOG.error("Negative wait time when boarding.");
+//                    /* Track the soonest departure over all relevant schedules. */
+//                    if (bestWait < 0 || wait < bestWait) {
+//                        bestWait       = wait;
+//                        bestServiceDay = sd;
+//                        bestTripTimes  = tripTimes;
+//                    }
+//                }
+//            }
+//            if (bestWait < 0) return null; // no appropriate trip was found
+
+            if (rctx.serviceDays.isEmpty())
+                return null;
+
+            ServiceDay bestServiceDay = rctx.serviceDays.get(0);
+            TripPattern tripPattern = getPattern();
+
+            if (bestServiceDay == null)
+                return null;
+
+            Timetable timetable = tripPattern.getUpdatedTimetable(options, bestServiceDay);
+
+            if (timetable.tripTimes.isEmpty())
+                return null;
+
+            TripTimes bestTripTimes = timetable.getTripTimes(0);
+            int bestWait;
+            switch(tripPattern.mode) {
+                case BUS:
+                    bestWait = 600;
+                    break;
+                case SUBWAY:
+                    bestWait = 300;
+                    break;
+                case RAIL:
+                    bestWait = 900;
+                    break;
+                default:
+                    bestWait = 900;
             }
-            if (bestWait < 0) return null; // no appropriate trip was found
+
+
             Trip trip = bestTripTimes.trip;
             
             /* check if route and/or Agency are banned for this plan */
