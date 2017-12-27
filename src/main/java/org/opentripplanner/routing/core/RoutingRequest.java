@@ -499,6 +499,8 @@ public class RoutingRequest implements Cloneable, Serializable {
      */
     private StreetEdge splitEdge = null;
 
+    public boolean nextTripEstimate = true;
+
     /* CONSTRUCTORS */
 
     /** Constructor for options; modes defaults to walk and transit */

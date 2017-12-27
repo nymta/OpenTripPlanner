@@ -662,6 +662,7 @@ public class State implements Cloneable {
         State orig = this;
         State unoptimized = orig;
         State ret = orig.reversedClone();
+        ret.getOptions().nextTripEstimate = false;
         long newInitialWaitTime = this.stateData.initialWaitTime;
 
         Edge edge = null;
