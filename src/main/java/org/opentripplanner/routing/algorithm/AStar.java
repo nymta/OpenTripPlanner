@@ -293,8 +293,14 @@ public class AStar {
                 if (runState.options.onlyTransitTrips && !runState.u.isEverBoarded()) {
                     continue;
                 }
-                runState.targetAcceptedStates.add(runState.u);
-                runState.foundPathWeight = runState.u.getWeight();
+
+                State finalState = (runState.options.nextTripEstimate) ? runState.u.replaceWithRealTripTimes() : runState.u;
+                if (finalState == null) {
+                    continue;
+                }
+
+                runState.targetAcceptedStates.add(finalState);
+                runState.foundPathWeight = finalState.getWeight();
                 runState.options.rctx.debugOutput.foundPath();
                 // new GraphPath(runState.u, false).dump();
                 /* Only find one path at a time in long distance mode. */

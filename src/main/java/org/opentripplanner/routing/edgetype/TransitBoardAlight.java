@@ -285,7 +285,11 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
                 /* Find the next or prev departure depending on final boolean parameter. */
                 if (options.nextTripEstimate) {
                     bestTripTimes = timetable.getTripTimes(0);
-                    bestWait = 900;
+                    // check transfer allowability. This is assumes we don't care about the trip! TODO
+                    int t = timetable.adjustTimeForTransfer(s0, getStop(), bestTripTimes.trip, boarding, sd, 0);
+                    if (t < 0)
+                        return null;
+                    bestWait = 300;
                 } else {
                     TripTimes tripTimes = timetable.getNextTrip(s0, sd, stopIndex, boarding);
                     if (tripTimes != null) {

@@ -240,7 +240,7 @@ public class Timetable implements Serializable {
      * or -1 if boarding this trip is not allowed.
      * FIXME adjustedTime can legitimately be -1! But negative times might as well be zero.
      */
-    private int adjustTimeForTransfer(State state, Stop currentStop, Trip trip, boolean boarding, ServiceDay serviceDay, int t0) {
+    public int adjustTimeForTransfer(State state, Stop currentStop, Trip trip, boolean boarding, ServiceDay serviceDay, int t0) {
         if ( ! state.isEverBoarded()) {
             // This is the first boarding not a transfer.
             return t0;

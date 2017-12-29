@@ -15,6 +15,7 @@ package org.opentripplanner.routing.core;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -490,6 +491,19 @@ public class State implements Cloneable {
         return newState;
     }
 
+    public State cloneWithExactNextTrip() {
+        RoutingRequest options = stateData.opt.clone();
+        options.nextTripEstimate = false;
+        State newState = new State(this.vertex, getTimeSeconds(), options);
+        newState.stateData.tripTimes = stateData.tripTimes;
+        newState.stateData.initialWaitTime = stateData.initialWaitTime;
+        // TODO Check if those two lines are needed:
+        newState.stateData.usingRentedBike = stateData.usingRentedBike;
+        newState.stateData.carParked = stateData.carParked;
+        newState.stateData.bikeParked = stateData.bikeParked;
+        return newState;
+    }
+
     public void dumpPath() {
         System.out.printf("---- FOLLOWING CHAIN OF STATES ----\n");
         State s = this;
@@ -840,4 +854,30 @@ public class State implements Cloneable {
         return stateData.enteredNoThroughTrafficArea;
     }
 
+    public State replaceWithRealTripTimes() {
+        LinkedList<State> states = new LinkedList<State>();
+        LinkedList<Edge> edges = new LinkedList<Edge>();
+        for (State cur = this; cur != null; cur = cur.getBackState()) {
+            states.addFirst(cur);
+            // Record the edge if it exists and this is not the first state in the path.
+            if (cur.getBackEdge() != null && cur.getBackState() != null) {
+                edges.addFirst(cur.getBackEdge());
+            }
+        }
+        State ret = states.getFirst().cloneWithExactNextTrip();
+        for (int i = 0; i < edges.size(); i++) {
+            Edge e = edges.get(i);
+            ret = e.traverse(ret);
+            State orig = states.get(i + 1);
+            if (ret != null && ret.getBackMode() != null && orig.getBackMode() != null &&
+                    ret.getBackMode() != orig.getBackMode()) {
+                ret = ret.next; // Keep the mode the same as on the original graph path (in K+R)
+            }
+            if (ret == null) {
+                LOG.error("Unable to replace real trip times");
+                break;
+            }
+        }
+        return ret;
+    }
 }
