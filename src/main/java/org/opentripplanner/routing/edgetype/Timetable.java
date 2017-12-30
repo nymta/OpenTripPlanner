@@ -14,18 +14,26 @@
 package org.opentripplanner.routing.edgetype;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.TimeZone;
+import java.util.TreeSet;
+import java.util.stream.Stream;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.common.MavenVersion;
+import org.opentripplanner.common.geometry.PackedCoordinateSequence;
 import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StopTransfer;
@@ -328,6 +336,8 @@ public class Timetable implements Serializable {
             minTime = Math.min(minTime, freq.getMinDeparture());
             maxTime = Math.max(maxTime, freq.getMaxArrival());
         }
+
+        createTripGroups();
     }
 
     /** @return the index of TripTimes for this trip ID in this particular Timetable */
@@ -614,4 +624,33 @@ public class Timetable implements Serializable {
         }
     }
 
+
+    /* Trip frequency data structures */
+
+    private transient List<TripGroup> tripGroups;
+
+    private void createTripGroups() {
+        SortedSet<TripTimes> sortedTrips = new TreeSet<>(Comparator.comparingInt(tt -> tt.getDepartureTime(0)));
+        sortedTrips.addAll(tripTimes);
+        tripGroups = new ArrayList<>();
+        for (Iterator<TripTimes> iter = sortedTrips.iterator(); iter.hasNext(); ) {
+            TripTimes tt = iter.next();
+            if (tripGroups.isEmpty() || ! tripGroups.get(tripGroups.size() - 1).addTrip(tt)) {
+                tripGroups.add(new TripGroup(tt));
+            }
+        }
+    }
+
+    public TripGroup getBestTripGroup(ServiceDay sd, long timeSec, int stopIndex) {
+        int time = sd.secondsSinceMidnight(timeSec);
+        for (TripGroup g : tripGroups) {
+            int minTime = g.getMinTime(stopIndex);
+            int maxTime = g.getMaxTime(stopIndex);
+            int estimatedNewTime = time + g.getEstimatedWait();
+            if (estimatedNewTime >= minTime && estimatedNewTime < maxTime) {
+                return g;
+            }
+        }
+        return null;
+    }
 } 
