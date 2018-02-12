@@ -84,8 +84,8 @@ public class IndexAPI {
     @SuppressWarnings("unused")
     private static final Logger LOG = LoggerFactory.getLogger(IndexAPI.class);
     public static final double MAX_STOP_SEARCH_RADIUS = 5000;
-    private static final String MSG_404 = "FOUR ZERO FOUR";
-    private static final String MSG_400 = "FOUR HUNDRED";
+    public static final String MSG_404 = "FOUR ZERO FOUR";
+    public static final String MSG_400 = "FOUR HUNDRED";
 
     /** Choose short or long form of results. */
     @QueryParam("detail") private boolean detail = false;
