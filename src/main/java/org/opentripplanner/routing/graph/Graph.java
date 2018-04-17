@@ -87,6 +87,8 @@ public class Graph implements Serializable {
     private long transitServiceStarts = Long.MAX_VALUE;
 
     private long transitServiceEnds = 0;
+    
+    private String feedInfo = null;
 
     private Map<Class<?>, Object> _services = new HashMap<Class<?>, Object>();
 
@@ -194,7 +196,7 @@ public class Graph implements Serializable {
 
     /** Has information how much time alighting a vehicle takes. Can be significant eg in airplanes or ferries. */
     public Map<TraverseMode, Integer> alightTimes = Collections.EMPTY_MAP;
-
+    
     /** A speed source for traffic data */
     public transient StreetSpeedSnapshotSource streetSpeedSource;
 
@@ -541,7 +543,7 @@ public class Graph implements Serializable {
             if (!agenciesWithFutureDates.contains(agency)) {
                 LOG.warn(this.addBuilderAnnotation(new NoFutureDates(agency)));
             }
-        }
+        }        
     }
 
     // Check to see if we have transit information for a given date
@@ -1066,5 +1068,13 @@ public class Graph implements Serializable {
 
     public long getTransitServiceEnds() {
         return transitServiceEnds;
+    }
+    
+    public String getFeedInfo() {
+        return feedInfo;
+    }
+    
+    public void setFeedInfo(String feedInfo) {
+        this.feedInfo = feedInfo;
     }
 }

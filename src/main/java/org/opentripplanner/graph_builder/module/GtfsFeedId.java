@@ -20,11 +20,14 @@ import org.onebusaway.csv_entities.CsvInputSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represent a feed id in a GTFS feed.
  */
 public class GtfsFeedId {
+    private static final Logger LOG = LoggerFactory.getLogger(GtfsFeedId.class);
     /**
      * A counter that will increase for each created feed id.
      */
@@ -34,6 +37,11 @@ public class GtfsFeedId {
      * The id for the feed
      */
     private final String id;
+    
+    /**
+     * The version for the feed
+     */
+    private final String version;
 
     /**
      * Constructs a new feed id.
@@ -42,21 +50,27 @@ public class GtfsFeedId {
      *
      * @param id The feed id
      */
-    private GtfsFeedId(String id) {
+    private GtfsFeedId(String id, String version) {
         this.id = id;
+        this.version = version;
     }
 
     public String getId() {
         return id;
     }
 
+    public String getVersion() {
+        return version;
+    }
 
     public static class Builder {
 
         private String id;
+        private String version;
 
-        public Builder id(String id) {
+        public Builder id(String id, String version) {
             this.id = id;
+            this.version = version;
             return this;
         }
 
@@ -83,6 +97,7 @@ public class GtfsFeedId {
                     result.readHeaders();
                     result.readRecord();
                     this.id = result.get("feed_id");
+                    this.version = result.get("feed_version");
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -105,6 +120,26 @@ public class GtfsFeedId {
             return id.replaceAll("_", "")
                     .replaceAll(":", "");
         }
+        
+        protected String cleanVersion(String version) {
+            if (version == null || version.trim().length() == 0) {
+                return version;
+            }
+            String result = version;
+            int prefixIndex = version.indexOf("-");
+            if (prefixIndex > 0) {
+                String prefix = version.substring(0, prefixIndex);
+                if (prefix.equals("Merged")) {
+                    int index = version.lastIndexOf("-");
+                    if (index > 0) {
+                        result = version.substring(index+1);
+                    }
+                } else {
+                    result = prefix;
+                }
+            }
+            return result;
+        }
 
         /**
          * Creates a new GtfsFeedId.
@@ -117,7 +152,7 @@ public class GtfsFeedId {
                 id = String.valueOf(FEED_ID_COUNTER);
             }
             FEED_ID_COUNTER++;
-            return new GtfsFeedId(id);
+            return new GtfsFeedId(id, cleanVersion(version));
         }
     }
 }

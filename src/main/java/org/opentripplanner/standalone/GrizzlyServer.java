@@ -10,7 +10,6 @@ import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
-import org.glassfish.grizzly.http.server.accesslog.AccessLogBuilder;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
 import org.glassfish.grizzly.threadpool.ThreadPoolConfig;
@@ -53,12 +52,6 @@ public class GrizzlyServer {
         LOG.info("OTP server base path is {}", params.basePath);
         HttpServer httpServer = new HttpServer();
 
-        /* Access log */
-        if (params.accessLog != null) {
-        	final AccessLogBuilder builder = new AccessLogBuilder(params.accessLog);
-        	builder.instrument(httpServer.getServerConfiguration());
-        }
-        
         /* Configure SSL */
         SSLContextConfigurator sslConfig = new SSLContextConfigurator();
         sslConfig.setKeyStoreFile(new File(params.basePath, "keystore").getAbsolutePath());

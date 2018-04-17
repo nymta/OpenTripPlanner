@@ -114,6 +114,9 @@ public class GtfsModule implements GraphBuilderModule {
 
                 CalendarServiceDataFactoryImpl csfactory = new CalendarServiceDataFactoryImpl();
                 csfactory.setGtfsDao(dao);
+                
+                graph.setFeedInfo(gtfsBundle.getFeedId() == null ? null : gtfsBundle.getFeedId().getVersion());
+                
                 CalendarServiceData data = csfactory.createData();
                 service.addData(data, dao);
 

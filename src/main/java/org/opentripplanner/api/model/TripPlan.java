@@ -34,6 +34,12 @@ public class TripPlan {
     
     /** The destination */
     public Place to = null;
+    
+    /** The warning message for the given travel time beyond the GTFS service time range. */
+    public String warnMessage = null;
+    
+    /** The time and date of the end date of current GTFS. */
+    public Long feedEndDate = null;
 
     /** A list of possible itineraries */
     @XmlElementWrapper(name="itineraries") //TODO: why don't we just change the variable name?
@@ -46,6 +52,14 @@ public class TripPlan {
         this.from = from;
         this.to = to;
         this.date = date;
+    }
+    
+    public void setWarnMessage(String message) {
+        this.warnMessage = message;
+    }
+    
+    public void setFeedEndDate(long date) {
+        this.feedEndDate = date;
     }
     
     public void addItinerary(Itinerary itinerary) {

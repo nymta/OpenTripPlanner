@@ -198,11 +198,26 @@ public class GraphPath {
     }
 
     public void dumpPathParser() {
-        System.out.println(" --- BEGIN GRAPHPATH DUMP ---");
-        System.out.println(this.toString());
-        for (State s : states) 
-            System.out.println(s.getPathParserStates() + s + " via " + s.getBackEdge());
-        System.out.println(" --- END GRAPHPATH DUMP ---");
+        LOG.info(" --- BEGIN GRAPHPATH DUMP ---");
+        LOG.info(this.toString());
+        String str = "";
+        String r = "";
+        long st = 0;
+        for (State s : states) {
+            //System.out.println(s.getPathParserStates() + s + " via " + s.getBackEdge());
+            if (s != null && s.getBackEdge() != null && s.getBackTrip() != null && s.getBackTrip().getRoute() != null) {
+                if (!s.getBackTrip().getRoute().getId().getId().equals(r)) {
+                    str = str + "---" + r + "---" + (st > 0 ? String.valueOf(st):"");
+                    r = s.getBackTrip().getRoute().getId().getId();
+                    st = s.getTimeInMillis();
+                }
+            }
+        }
+        if (r.length() > 0) {
+            str = str + "---" + r + "---" + String.valueOf(st);;
+        }
+        LOG.info(str);
+        LOG.info(" --- END GRAPHPATH DUMP ---");
     }
 
     public double getWalkDistance() {

@@ -81,8 +81,17 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** An ordered list of intermediate locations to be visited. */
     public List<GenericLocation> intermediatePlaces;
 
-    /** The maximum distance (in meters) the user is willing to walk. Defaults to unlimited. */
+    /**
+     * The maximum distance (in meters) the user is willing to walk for access/egress legs.
+     * Defaults to unlimited.
+     */
     public double maxWalkDistance = Double.MAX_VALUE;
+
+    /**
+     * The maximum distance (in meters) the user is willing to walk for transfer legs.
+     * Defaults to unlimited. Currently set to be the same value as maxWalkDistance.
+     */
+    public double maxTransferWalkDistance = Double.MAX_VALUE;
 
     /**
      * The maximum time (in seconds) of pre-transit travel when using drive-to-transit (park and
@@ -108,6 +117,14 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** The epoch date/time that the trip should depart (or arrive, for requests where arriveBy is true) */
     public long dateTime = new Date().getTime() / 1000;
+    
+    /** The date/time that the original travel time requested by customer */
+    public long origTravelDateTime = Long.MIN_VALUE;
+    
+    /** The run board name in current GTFS file. This name will be used in the warning message if the user given travel date is beyond the current runboard. */
+    public String runboard = null;
+    
+    public Long runboardEndDate = null;
 
     /** Whether the trip should depart at dateTime (false, the default), or arrive at dateTime. */
     public boolean arriveBy = false;
@@ -284,6 +301,16 @@ public class RoutingRequest implements Cloneable, Serializable {
      */
     public int maxTransferTime = Integer.MAX_VALUE;
 
+    /**
+     * Min transfer time as hard limit
+     */
+    public int minTransferTimeHard = Integer.MIN_VALUE;
+    
+    /**
+     * Trip shown range. eg. trip starts 3 hours later than the departure time; or trip arrives before 3 hours than arrive by time.
+     */
+    public int tripShownRangeTime = Integer.MAX_VALUE;
+
     /** Invariant: boardSlack + alightSlack <= transferSlack. */
     public int boardSlack = 0;
 
@@ -420,14 +447,14 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Accept only paths that use transit (no street-only paths). */
     public boolean onlyTransitTrips = false;
 
-    /** Should attempt to determine when the next bus goes through this stop. */
-    public boolean showNextFromDeparture = false;
-    
     /** Saves split edge which can be split on origin/destination search
      *
      * This is used so that TrivialPathException is thrown if origin and destination search would split the same edge
      */
     private StreetEdge splitEdge = null;
+
+    /** Should attempt to determine when the enxt bus goes through this stop. */
+    public boolean showNextFromDeparture = false;
 
     /* CONSTRUCTORS */
 
@@ -689,6 +716,34 @@ public class RoutingRequest implements Cloneable, Serializable {
             addMode(m);
         }
     }
+    
+    public Date getOrigTravelDateTime() {
+        if (origTravelDateTime == Long.MIN_VALUE) {
+            return null;
+        } else {
+            return new Date(origTravelDateTime*1000);
+        }
+    }
+    
+    public void setOrigTravelDateTime(Date origTravelDateTime) {
+        this.origTravelDateTime = origTravelDateTime.getTime() / 1000;
+    }
+    
+    public String getRunboard() {
+        return runboard;
+    }
+    
+    public void setRunboard(String runboard) {
+        this.runboard = runboard;
+    }
+    
+    public Long getRunboardEndDate() {
+        return runboardEndDate;
+    }
+    
+    public void setRunboardEndDate(long date) {
+        this.runboardEndDate = date;
+    }
 
     public Date getDateTime() {
         return new Date(dateTime * 1000);
@@ -718,6 +773,10 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     public String toString() {
         return toString(" ");
+    }
+
+    public String toString111() {
+        return "RoutingRequest{" + "traversalCostModel=" + traversalCostModel + ", parameters=" + parameters + ", routerId=" + routerId + ", from=" + from + ", to=" + to + ", intermediatePlaces=" + intermediatePlaces + ", maxWalkDistance=" + maxWalkDistance + ", maxTransferWalkDistance=" + maxTransferWalkDistance + ", maxPreTransitTime=" + maxPreTransitTime + ", worstTime=" + worstTime + ", maxWeight=" + maxWeight + ", modes=" + modes + ", optimize=" + optimize + ", dateTime=" + dateTime + ", arriveBy=" + arriveBy + ", wheelchairAccessible=" + wheelchairAccessible + ", numItineraries=" + numItineraries + ", maxSlope=" + maxSlope + ", showIntermediateStops=" + showIntermediateStops + ", walkSpeed=" + walkSpeed + ", bikeSpeed=" + bikeSpeed + ", carSpeed=" + carSpeed + ", locale=" + locale + ", transferPenalty=" + transferPenalty + ", walkReluctance=" + walkReluctance + ", stairsReluctance=" + stairsReluctance + ", turnReluctance=" + turnReluctance + ", elevatorBoardTime=" + elevatorBoardTime + ", elevatorBoardCost=" + elevatorBoardCost + ", elevatorHopTime=" + elevatorHopTime + ", elevatorHopCost=" + elevatorHopCost + ", bikeSwitchTime=" + bikeSwitchTime + ", bikeSwitchCost=" + bikeSwitchCost + ", bikeRentalPickupTime=" + bikeRentalPickupTime + ", bikeRentalPickupCost=" + bikeRentalPickupCost + ", bikeRentalDropoffTime=" + bikeRentalDropoffTime + ", bikeRentalDropoffCost=" + bikeRentalDropoffCost + ", bikeParkTime=" + bikeParkTime + ", bikeParkCost=" + bikeParkCost + ", carDropoffTime=" + carDropoffTime + ", waitReluctance=" + waitReluctance + ", waitAtBeginningFactor=" + waitAtBeginningFactor + ", walkBoardCost=" + walkBoardCost + ", bikeBoardCost=" + bikeBoardCost + ", bannedRoutes=" + bannedRoutes + ", bannedAgencies=" + bannedAgencies + ", bannedTrips=" + bannedTrips + ", bannedStops=" + bannedStops + ", bannedStopsHard=" + bannedStopsHard + ", preferredRoutes=" + preferredRoutes + ", preferredAgencies=" + preferredAgencies + ", otherThanPreferredRoutesPenalty=" + otherThanPreferredRoutesPenalty + ", unpreferredRoutes=" + unpreferredRoutes + ", unpreferredAgencies=" + unpreferredAgencies + ", useUnpreferredRoutesPenalty=" + useUnpreferredRoutesPenalty + ", transferSlack=" + transferSlack + ", maxTransferTime=" + maxTransferTime + ", minTransferTimeHard=" + minTransferTimeHard + ", tripShownRangeTime=" + tripShownRangeTime + ", boardSlack=" + boardSlack + ", alightSlack=" + alightSlack + ", maxTransfers=" + maxTransfers + ", extensions=" + extensions + ", nonpreferredTransferPenalty=" + nonpreferredTransferPenalty + ", triangleTimeFactor=" + triangleTimeFactor + ", triangleSlopeFactor=" + triangleSlopeFactor + ", triangleSafetyFactor=" + triangleSafetyFactor + ", bikeWalkingOptions=" + bikeWalkingOptions + ", reverseOptimizing=" + reverseOptimizing + ", batch=" + batch + ", useBikeRentalAvailabilityInformation=" + useBikeRentalAvailabilityInformation + ", clampInitialWait=" + clampInitialWait + ", reverseOptimizeOnTheFly=" + reverseOptimizeOnTheFly + ", driveOnRight=" + driveOnRight + ", carDecelerationSpeed=" + carDecelerationSpeed + ", carAccelerationSpeed=" + carAccelerationSpeed + ", ignoreRealtimeUpdates=" + ignoreRealtimeUpdates + ", disableRemainingWeightHeuristic=" + disableRemainingWeightHeuristic + ", rctx=" + rctx + ", startingTransitStopId=" + startingTransitStopId + ", startingTransitTripId=" + startingTransitTripId + ", walkingBike=" + walkingBike + ", softWalkLimiting=" + softWalkLimiting + ", softPreTransitLimiting=" + softPreTransitLimiting + ", softWalkPenalty=" + softWalkPenalty + ", softWalkOverageRate=" + softWalkOverageRate + ", preTransitPenalty=" + preTransitPenalty + ", preTransitOverageRate=" + preTransitOverageRate + ", allowBikeRental=" + allowBikeRental + ", bikeParkAndRide=" + bikeParkAndRide + ", parkAndRide=" + parkAndRide + ", kissAndRide=" + kissAndRide + ", longDistance=" + longDistance + ", useTraffic=" + useTraffic + ", dominanceFunction=" + dominanceFunction + ", onlyTransitTrips=" + onlyTransitTrips + ", splitEdge=" + splitEdge + ", showNextFromDeparture=" + showNextFromDeparture + '}';
     }
 
     public String toString(String sep) {
@@ -901,6 +960,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && wheelchairAccessible == other.wheelchairAccessible
                 && optimize.equals(other.optimize)
                 && maxWalkDistance == other.maxWalkDistance
+                && maxTransferWalkDistance == other.maxTransferWalkDistance
                 && maxPreTransitTime == other.maxPreTransitTime
                 && transferPenalty == other.transferPenalty
                 && maxSlope == other.maxSlope
@@ -915,6 +975,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && unpreferredRoutes.equals(other.unpreferredRoutes)
                 && transferSlack == other.transferSlack
                 && maxTransferTime == other.maxTransferTime
+                && minTransferTimeHard == other.minTransferTimeHard
+                && tripShownRangeTime == other.tripShownRangeTime
                 && boardSlack == other.boardSlack
                 && alightSlack == other.alightSlack
                 && nonpreferredTransferPenalty == other.nonpreferredTransferPenalty
@@ -955,6 +1017,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + (int) (worstTime & 0xffffffff) + modes.hashCode()
                 + (arriveBy ? 8966786 : 0) + (wheelchairAccessible ? 731980 : 0)
                 + optimize.hashCode() + new Double(maxWalkDistance).hashCode()
+                + new Double(maxTransferWalkDistance).hashCode()
                 + new Double(transferPenalty).hashCode() + new Double(maxSlope).hashCode()
                 + new Double(walkReluctance).hashCode() + new Double(waitReluctance).hashCode()
                 + new Double(waitAtBeginningFactor).hashCode() * 15485863
@@ -971,7 +1034,9 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Boolean(ignoreRealtimeUpdates).hashCode() * 154329
                 + new Boolean(disableRemainingWeightHeuristic).hashCode() * 193939
                 + new Boolean(useTraffic).hashCode() * 10169
-                + new Double(maxTransferTime).hashCode() * 790052909;
+                + new Double(maxTransferTime).hashCode() * 790052909
+                + new Double(minTransferTimeHard).hashCode() * 31
+                + new Double(tripShownRangeTime).hashCode() * 790052909;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters
