@@ -106,6 +106,12 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** The worst possible weight that we will accept when planning a trip. */
     public double maxWeight = Double.MAX_VALUE;
 
+    /** The maximum duration of a returned itinerary, in hours. */
+    public double maxHours = Double.MAX_VALUE;
+
+    /** Whether maxHours limit should consider wait/idle time between the itinerary and the requested arrive/depart time. */
+    public boolean useRequestedDateTimeInMaxHours = false;
+
     /** The set of TraverseModes that a user is willing to use. Defaults to WALK | TRANSIT. */
     public TraverseModeSet modes = new TraverseModeSet("TRANSIT,WALK"); // defaults in constructor overwrite this
 
@@ -365,6 +371,11 @@ public class RoutingRequest implements Cloneable, Serializable {
     public boolean reverseOptimizeOnTheFly = false;
 
     /**
+     * When true, do a full reversed search to compact the legs of the GraphPath.
+     */
+    public boolean compactLegsByReversedSearch = false;
+
+    /**
      * If true, cost turns as they would be in a country where driving occurs on the right; otherwise, cost them as they would be in a country where
      * driving occurs on the left.
      */
@@ -446,6 +457,12 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Accept only paths that use transit (no street-only paths). */
     public boolean onlyTransitTrips = false;
+
+    /** Option to disable the default filtering of GTFS-RT alerts by time. */
+    public boolean disableAlertFiltering = false;
+
+    /** Whether to apply the ellipsoid->geoid offset to all elevations in the response */
+    public boolean geoidElevation = false;
 
     /** Saves split edge which can be split on origin/destination search
      *
@@ -1003,7 +1020,9 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && ignoreRealtimeUpdates == other.ignoreRealtimeUpdates
                 && disableRemainingWeightHeuristic == other.disableRemainingWeightHeuristic
                 && Objects.equal(startingTransitTripId, other.startingTransitTripId)
-                && useTraffic == other.useTraffic;
+                && useTraffic == other.useTraffic
+                && disableAlertFiltering == other.disableAlertFiltering
+                && geoidElevation == other.geoidElevation;
     }
 
     /**
@@ -1204,7 +1223,7 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Check if route is preferred according to this request. */
     public long preferencesPenaltyForRoute(Route route) {
         long preferences_penalty = 0;
-        String agencyID = route.getId().getAgencyId();
+        String agencyID = route.getAgency().getId();
         if ((preferredRoutes != null && !preferredRoutes.equals(RouteMatcher.emptyMatcher())) ||
                 (preferredAgencies != null && !preferredAgencies.isEmpty())) {
             boolean isPreferedRoute = preferredRoutes != null && preferredRoutes.matches(route);

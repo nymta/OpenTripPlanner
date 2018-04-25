@@ -60,19 +60,19 @@ public abstract class GraphPathToTripPlanConverter {
     private static final Logger LOG = LoggerFactory.getLogger(GraphPathToTripPlanConverter.class);
 
     private static final double MAX_ZAG_DISTANCE = 30; // TODO add documentation, what is a "zag"?
-    
+
     private static Map<String, List<String>> schoolDayBusTripIds = null;
 
     /**
      * Generates a TripPlan from a set of paths
      * @param paths
      * @param request
-     * @return 
+     * @return
      */
     public static TripPlan generatePlan(List<GraphPath> paths, RoutingRequest request) {
 
         Locale requestedLocale = request.locale;
-        
+
         GraphPath exemplar = paths.get(0);
         Vertex tripStartVertex = exemplar.getStartVertex();
         Vertex tripEndVertex = exemplar.getEndVertex();
@@ -93,32 +93,50 @@ public abstract class GraphPathToTripPlanConverter {
         to.orig = request.to.name;
 
         TripPlan plan = new TripPlan(from, to, request.getDateTime());
-        
+
+
+        // Convert GraphPaths to Itineraries, keeping track of the best non-transit (e.g. walk/bike-only) option time
+        long bestNonTransitTime = Long.MAX_VALUE;
+        List<Itinerary> itineraries = new LinkedList<>();
         for (GraphPath path : paths) {
-            Itinerary itinerary = generateItinerary(path, request.showIntermediateStops,
-                    requestedLocale, request.showNextFromDeparture, request);
+            Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, request.disableAlertFiltering, requestedLocale, request.showNextFromDeparture, request);
             itinerary = adjustItinerary(request, itinerary);
-            
+
+            //TODO Simon what is happening here?
             //check if the itinerary asks customer to get back to the origin place. If so, the itinerary is not a good one.
             if (isLoopbackItinerary(itinerary)) {
                 continue;
             }
-            
-            plan.addItinerary(itinerary);
+
+            if(itinerary.transitTime == 0 && itinerary.walkTime < bestNonTransitTime) {
+                bestNonTransitTime = itinerary.walkTime;
+            }
+            itineraries.add(itinerary);
+
+
+
+            // Filter and add itineraries to plan
+            for (Itinerary itin : itineraries) {
+                // If this is a transit option whose walk/bike time is greater than that of the walk/bike-only option,
+                // do not include in plan
+                if(itin.transitTime > 0 && itin.walkTime > bestNonTransitTime) continue;
+
+                plan.addItinerary(itin);
+            }
         }
-        
+
         //set warning message in the TripPlan if the given travel time is beyond the GTFS service time range
-        
+
         if (request.getOrigTravelDateTime() != null) {
             if (request.getOrigTravelDateTime().getTime() > request.getDateTime().getTime()) {
                 plan.setWarnMessage("The travel date is beyond " + (request.getRunboard()== null ? "the current run board." : (request.getRunboard() + " run board.")));
-                
+
             }
         }
-        
+
         //always set feed end date in the trip plan response
         plan.setFeedEndDate(request.getRunboardEndDate());
-        
+
         if (plan != null) {
             for (Itinerary i : plan.itinerary) {
                 /*
@@ -156,7 +174,7 @@ public abstract class GraphPathToTripPlanConverter {
         // Return itinerary
         return itinerary;
     }
-    
+
     //check if itinerary asks customer to go back to the original start point. If so, this itinerary is not good one
     private static boolean isLoopbackItinerary(Itinerary itinerary) {
         //for testing purpose
@@ -183,7 +201,7 @@ public abstract class GraphPathToTripPlanConverter {
      * A method for generating itineraries that preserves existing functionality and allows older
      * methods to continue working without needing the update. It always assumed the user does not
      * want the nextFromDeparture.
-     * 
+     *
      * @param path The graph path to base the itinerary on
      * @param showIntermediateStops Whether to include intermediate stops in the itinerary or not
      * @param requestedLocale
@@ -207,7 +225,7 @@ public abstract class GraphPathToTripPlanConverter {
      * @param request
      * @return The generated itinerary
      */
-    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops,
+    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops,boolean disableAlertFiltering,
             Locale requestedLocale, boolean showNextFromDeparture, RoutingRequest request) {
         Itinerary itinerary = new Itinerary();
 
@@ -229,8 +247,7 @@ public abstract class GraphPathToTripPlanConverter {
         }
 
         for (State[] legStates : legsStates) {
-            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, requestedLocale,
-                    showNextFromDeparture, request));
+            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, disableAlertFiltering, requestedLocale, showNextFromDeparture, request));
         }
 
         addWalkSteps(graph, itinerary.legs, legsStates, requestedLocale);
@@ -262,12 +279,12 @@ public abstract class GraphPathToTripPlanConverter {
 //        calendar.setTimeInMillis(state.getTimeInMillis());
 //        return calendar;
 //    }
-    
+
     private static Calendar makeCalendar(State state, Date origRequestDate, Date requestDate) {
         RoutingContext rctx = state.getContext();
         TimeZone timeZone = rctx.graph.getTimeZone();
         Calendar calendar = Calendar.getInstance(timeZone);
-        
+
         if (origRequestDate != null) {
             //if origRequestDate is not null, which means the original request travel data is beyond the current run board.
             //we need to repalce the travel time with original travel date.
@@ -276,15 +293,15 @@ public abstract class GraphPathToTripPlanConverter {
             c.setTimeInMillis(origRequestDate.getTime());
             int origYear = c.get(Calendar.YEAR);
             int origDay = c.get(Calendar.DAY_OF_YEAR);
-            
+
             c.setTimeInMillis(requestDate.getTime());
             int requestYear = c.get(Calendar.YEAR);
             int requestDay = c.get(Calendar.DAY_OF_YEAR);
-            
+
             c.setTimeInMillis(state.getTimeInMillis());
             int resYear = c.get(Calendar.YEAR);
             int resDay = c.get(Calendar.DAY_OF_YEAR);
-            
+
             if ((resDay - requestDay) == 0) { //same day
                 calendar.setTimeInMillis(state.getTimeInMillis());
                 calendar.set(Calendar.YEAR, origYear);
@@ -303,7 +320,7 @@ public abstract class GraphPathToTripPlanConverter {
         } else {
             calendar.setTimeInMillis(state.getTimeInMillis());
         }
-        
+
         return calendar;
     }
 
@@ -332,9 +349,10 @@ public abstract class GraphPathToTripPlanConverter {
     }
 
     /**
-     * Slice a {@link State} array at the leg boundaries. Leg switches occur when: 1. A LEG_SWITCH
-     * mode (which itself isn't part of any leg) is seen 2. The mode changes otherwise, for instance
-     * from BICYCLE to WALK 3. A PatternInterlineDwell edge (i.e. interlining) is seen
+     * Slice a {@link State} array at the leg boundaries. Leg switches occur when:
+     * 1. A LEG_SWITCH mode (which itself isn't part of any leg) is seen
+     * 2. The mode changes otherwise, for instance from BICYCLE to WALK
+     * 3. A PatternInterlineDwell edge (i.e. interlining) is seen
      *
      * @param states The one-dimensional array of input states
      * @return An array of arrays of states belonging to a single leg (i.e. a two-dimensional array)
@@ -414,8 +432,7 @@ public abstract class GraphPathToTripPlanConverter {
      *        next bus leaves that stop
      * @return The generated leg
      */
-    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops,
-            Locale requestedLocale, boolean showNextFromDeparture, RoutingRequest request) {
+    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops, boolean disableAlertFiltering, Locale requestedLocale, boolean showNextFromDeparture, RoutingRequest request) {
         Leg leg = new Leg();
 
         Edge[] edges = new Edge[states.length - 1];
@@ -448,7 +465,7 @@ public abstract class GraphPathToTripPlanConverter {
 
         leg.rentedBike = states[0].isBikeRenting() && states[states.length - 1].isBikeRenting();
 
-        addModeAndAlerts(graph, leg, states, requestedLocale);
+        addModeAndAlerts(graph, leg, states, disableAlertFiltering, requestedLocale);
         if (leg.isTransitLeg()) {
             addRealTimeData(leg, states);
             if (showNextFromDeparture) {
@@ -463,21 +480,21 @@ public abstract class GraphPathToTripPlanConverter {
 
         List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate);
         stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next()));
-        
+
         List<StopTimesInPattern> endStopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate);
         endStopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate.next()));
-        
+
         Calendar nextDeparture = determineNextDepartureTimeForStop(graph, leg, stopTimes, endStopTimes);
-                
+
         return nextDeparture;
     }
 
     private static Calendar determineNextDepartureTimeForStop(Graph graph, Leg leg,
             List<StopTimesInPattern> stopTimes, List<StopTimesInPattern> destStopTimes) {
-        
+
         List<TripTimeShort> sortedStopTimes = findAndSortStopTimes(graph, leg, stopTimes);
         List<TripTimeShort> destSortedStopTimes = findAndSortStopTimes(graph, leg, destStopTimes);
-        
+
         int shortTimeCounter = 1;
 
         for (TripTimeShort tripTimeShort : sortedStopTimes) {
@@ -488,7 +505,7 @@ public abstract class GraphPathToTripPlanConverter {
                     int nextTripCounter = shortTimeCounter;
                     while (nextTripCounter < sortedStopTimes.size() && nextTripCounter >= 0) {
                         nextTrip = sortedStopTimes.get(nextTripCounter);
-                        
+
                         if (hasSameEndStop(nextTrip.tripId, destSortedStopTimes)) {
                             Calendar nextDeparture = (Calendar) leg.from.departure.clone();
                             nextDeparture.setTimeInMillis(nextTrip.serviceDay+nextTrip.scheduledDeparture);
@@ -514,7 +531,7 @@ public abstract class GraphPathToTripPlanConverter {
         }
         return false;
     }
-    
+
     private static List<TripTimeShort> findAndSortStopTimes(Graph graph,
             Leg leg, List<StopTimesInPattern> stopTimes) {
         List<TripTimeShort> sortedStopTimes = new ArrayList<TripTimeShort>();
@@ -690,19 +707,19 @@ public abstract class GraphPathToTripPlanConverter {
                 continue;
 
             switch (state.getBackMode()) {
-            default:
-                itinerary.transitTime += state.getTimeDeltaSeconds();
-                break;
+                default:
+                    itinerary.transitTime += state.getTimeDeltaSeconds();
+                    break;
 
-            case LEG_SWITCH:
-                itinerary.waitingTime += state.getTimeDeltaSeconds();
-                break;
+                case LEG_SWITCH:
+                    itinerary.waitingTime += state.getTimeDeltaSeconds();
+                    break;
 
-            case WALK:
-            case BICYCLE:
-            case CAR:
-                itinerary.walkTime += state.getTimeDeltaSeconds();
-            }
+                case WALK:
+                case BICYCLE:
+                case CAR:
+                    itinerary.walkTime += state.getTimeDeltaSeconds();
+                }
         }
     }
 
@@ -744,20 +761,20 @@ public abstract class GraphPathToTripPlanConverter {
      * @param leg The leg to add the mode and alerts to
      * @param states The states that go with the leg
      */
-    private static void addModeAndAlerts(Graph graph, Leg leg, State[] states,
+    private static void addModeAndAlerts(Graph graph, Leg leg, State[] states, boolean disableAlertFiltering,
             Locale requestedLocale) {
-        
+
         if (schoolDayBusTripIds == null) {
             schoolDayBusTripIds = loadSchoolDayTrips();
         }
-        
+
         if (leg.tripId != null && leg.tripId.getId() != null && leg.routeId != null && leg.routeId.getId() != null) {
             if (schoolDayBusTripIds.containsKey(leg.routeId.getId()) && schoolDayBusTripIds.get(leg.routeId.getId()).contains(leg.tripId.getId())) {
                 Alert alert = Alert.createSimpleAlerts("This trip operates only on school days and is open to the public.");
                 leg.addAlert(alert, requestedLocale);
             }
         }
-        
+
         for (State state : states) {
             TraverseMode mode = state.getBackMode();
             Set<Alert> alerts = graph.streetNotesService.getNotes(state);
@@ -774,7 +791,7 @@ public abstract class GraphPathToTripPlanConverter {
             }
 
             for (AlertPatch alertPatch : graph.getAlertPatches(edge)) {
-                if (alertPatch.displayDuring(state)) {
+                if (disableAlertFiltering || alertPatch.displayDuring(state)) {
                     if (alertPatch.hasTrip()) {
                         // If the alert patch contains a trip and that trip match this leg only add
                         // the alert for
@@ -809,6 +826,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
+            leg.agencyBrandingUrl = agency.getBrandingUrl();
             leg.headsign = states[1].getBackDirection();
             leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);
             leg.routeColor = route.getColor();
@@ -817,6 +835,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeShortName = route.getShortName();
             leg.routeTextColor = route.getTextColor();
             leg.routeType = route.getType();
+            leg.routeBrandingUrl = route.getBrandingUrl();
             leg.tripId = trip.getId();
             leg.tripShortName = trip.getTripShortName();
             leg.tripBlockId = trip.getBlockId();
@@ -980,6 +999,25 @@ public abstract class GraphPathToTripPlanConverter {
         String roundaboutPreviousStreet = null;
 
         State onBikeRentalState = null, offBikeRentalState = null;
+
+        // Check if this leg is a SimpleTransfer; if so, rebuild state array based on stored transfer edges
+        if (states.length == 2 && states[1].getBackEdge() instanceof SimpleTransfer) {
+            SimpleTransfer transferEdge = ((SimpleTransfer) states[1].getBackEdge());
+            List<Edge> transferEdges = transferEdge.getEdges();
+            if (transferEdges != null) {
+                // Create a new initial state. Some parameters may have change along the way, copy them from the first state
+                StateEditor se = new StateEditor(states[0].getOptions(), transferEdges.get(0).getFromVertex());
+                se.setNonTransitOptionsFromState(states[0]);
+                State s = se.makeState();
+                ArrayList<State> transferStates = new ArrayList<>();
+                transferStates.add(s);
+                for (Edge e : transferEdges) {
+                    s = e.traverse(s);
+                    transferStates.add(s);
+                }
+                states = transferStates.toArray(new State[transferStates.size()]);
+            }
+        }
 
         for (int i = 0; i < states.length - 1; i++) {
             State backState = states[i];
@@ -1241,7 +1279,8 @@ public abstract class GraphPathToTripPlanConverter {
                 }
             } else {
                 if (!createdNewStep && step.elevation != null) {
-                    List<P2<Double>> s = encodeElevationProfile(edge, distance);
+                    List<P2<Double>> s = encodeElevationProfile(edge, distance,
+                            backState.getOptions().geoidElevation ? -graph.ellipsoidToGeoidDifference : 0);
                     if (step.elevation != null && step.elevation.size() > 0) {
                         step.elevation.addAll(s);
                     } else {
@@ -1297,7 +1336,8 @@ public abstract class GraphPathToTripPlanConverter {
         step.streetName = en.getName(wantedLocale);
         step.lon = en.getFromVertex().getX();
         step.lat = en.getFromVertex().getY();
-        step.elevation = encodeElevationProfile(s.getBackEdge(), 0);
+        step.elevation = encodeElevationProfile(s.getBackEdge(), 0,
+                s.getOptions().geoidElevation ? -graph.ellipsoidToGeoidDifference : 0);
         step.bogusName = en.hasBogusName();
         step.addAlerts(graph.streetNotesService.getNotes(s), wantedLocale);
         step.angle = DirectionUtils.getFirstAngle(s.getBackEdge().getGeometry());
@@ -1307,7 +1347,7 @@ public abstract class GraphPathToTripPlanConverter {
         return step;
     }
 
-    private static List<P2<Double>> encodeElevationProfile(Edge edge, double offset) {
+    private static List<P2<Double>> encodeElevationProfile(Edge edge, double distanceOffset, double heightOffset) {
         if (!(edge instanceof StreetEdge)) {
             return new ArrayList<P2<Double>>();
         }
@@ -1318,11 +1358,11 @@ public abstract class GraphPathToTripPlanConverter {
         ArrayList<P2<Double>> out = new ArrayList<P2<Double>>();
         Coordinate[] coordArr = elevEdge.getElevationProfile().toCoordinateArray();
         for (int i = 0; i < coordArr.length; i++) {
-            out.add(new P2<Double>(coordArr[i].x + offset, coordArr[i].y));
+            out.add(new P2<Double>(coordArr[i].x + distanceOffset, coordArr[i].y + heightOffset));
         }
         return out;
     }
-    
+
     private static Map<String, List<String>> loadSchoolDayTrips() {
         LOG.info("############# loadSchoolDayTrips.....");
         BufferedReader br = null;
@@ -1334,7 +1374,7 @@ public abstract class GraphPathToTripPlanConverter {
             //skip the first line because of it is the header
             int index = 0;
             while ((line = br.readLine()) != null) {
-                if (index > 0) {                 
+                if (index > 0) {
                     String[] record = line.split(cvsSplitBy);
                     String route = record[1];
                     String tripid = "1" + record[0];
@@ -1352,13 +1392,13 @@ public abstract class GraphPathToTripPlanConverter {
         } catch (FileNotFoundException ex) {
             LOG.info("############### could not find the school_trip_sample file.");
         } catch (IOException ex) {
-            
+
         } finally {
             if (br != null) {
                 try {
                     br.close();
                 } catch (IOException ex) {
-                    
+
                 }
             }
         }
