@@ -209,7 +209,10 @@ public abstract class GraphPathToTripPlanConverter {
      */
     public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops,
             Locale requestedLocale) {
-        return generateItinerary(path, showIntermediateStops, requestedLocale, false, null);
+        return generateItinerary(path, showIntermediateStops, false, requestedLocale, false, null);
+    }
+    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops, boolean disableAlertFiltering, Locale requestedLocale) {
+        return generateItinerary(path, showIntermediateStops, disableAlertFiltering, requestedLocale, false, null);
     }
 
     /**
@@ -478,11 +481,11 @@ public abstract class GraphPathToTripPlanConverter {
 
     private static Calendar establishNextDeparture(Graph graph, State[] states, ServiceDate serviceDate, Leg leg) {
 
-        List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate);
-        stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next()));
+        List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate, false);
+        stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next(), false));
 
-        List<StopTimesInPattern> endStopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate);
-        endStopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate.next()));
+        List<StopTimesInPattern> endStopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate, false);
+        endStopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate.next(), false));
 
         Calendar nextDeparture = determineNextDepartureTimeForStop(graph, leg, stopTimes, endStopTimes);
 
@@ -826,7 +829,8 @@ public abstract class GraphPathToTripPlanConverter {
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
-            leg.agencyBrandingUrl = agency.getBrandingUrl();
+            //TODO find out what I'm missing here
+//            leg.agencyBrandingUrl = agency.getBrandingUrl();
             leg.headsign = states[1].getBackDirection();
             leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);
             leg.routeColor = route.getColor();
@@ -835,7 +839,8 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeShortName = route.getShortName();
             leg.routeTextColor = route.getTextColor();
             leg.routeType = route.getType();
-            leg.routeBrandingUrl = route.getBrandingUrl();
+            //TODO find out what I'm missing here
+//            leg.routeBrandingUrl = route.getBrandingUrl();
             leg.tripId = trip.getId();
             leg.tripShortName = trip.getTripShortName();
             leg.tripBlockId = trip.getBlockId();
