@@ -23,12 +23,20 @@
     </properties>
 
     <distributionManagement>
-        <repository>
-            <!-- Also used as snapshotRepository by default -->
-            <id>conveyal-maven-repo</id>
-            <name>Conveyal Maven Repository</name>
-            <url>s3://maven.conveyal.com/</url>
-        </repository>
+      <repository>
+        <id>nexus.onebusaway.org-releases</id>
+        <name>Nexus Release Repo</name>
+        <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+      </repository>
+      <snapshotRepository>
+        <id>nexus.onebusaway.org-snapshots</id>
+        <name>Nexus Snapshot Repo</name>
+        <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
+      </snapshotRepository>
+      <site>
+        <id>${site_id}</id>
+        <url>${site_url}</url>
+      </site>
     </distributionManagement>
 
     <build>
