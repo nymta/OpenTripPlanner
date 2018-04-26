@@ -51,14 +51,13 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * A library class with only static methods used in converting internal GraphPaths to TripPlans,
- * which are returned by the OTP "planner" web service. TripPlans are made up of Itineraries, so the
- * functions to produce them are also bundled together here.
+ * A library class with only static methods used in converting internal GraphPaths to TripPlans, which are
+ * returned by the OTP "planner" web service. TripPlans are made up of Itineraries, so the functions to produce them
+ * are also bundled together here.
  */
 public abstract class GraphPathToTripPlanConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphPathToTripPlanConverter.class);
-
     private static final double MAX_ZAG_DISTANCE = 30; // TODO add documentation, what is a "zag"?
 
     private static Map<String, List<String>> schoolDayBusTripIds = null;
@@ -94,7 +93,6 @@ public abstract class GraphPathToTripPlanConverter {
 
         TripPlan plan = new TripPlan(from, to, request.getDateTime());
 
-
         // Convert GraphPaths to Itineraries, keeping track of the best non-transit (e.g. walk/bike-only) option time
         long bestNonTransitTime = Long.MAX_VALUE;
         List<Itinerary> itineraries = new LinkedList<>();
@@ -112,18 +110,17 @@ public abstract class GraphPathToTripPlanConverter {
                 bestNonTransitTime = itinerary.walkTime;
             }
             itineraries.add(itinerary);
-
-
-
-            // Filter and add itineraries to plan
-            for (Itinerary itin : itineraries) {
-                // If this is a transit option whose walk/bike time is greater than that of the walk/bike-only option,
-                // do not include in plan
-                if(itin.transitTime > 0 && itin.walkTime > bestNonTransitTime) continue;
-
-                plan.addItinerary(itin);
-            }
         }
+
+        // Filter and add itineraries to plan
+        for (Itinerary itin : itineraries) {
+            // If this is a transit option whose walk/bike time is greater than that of the walk/bike-only option,
+            // do not include in plan
+            if(itin.transitTime > 0 && itin.walkTime > bestNonTransitTime) continue;
+
+            plan.addItinerary(itin);
+        }
+
 
         //set warning message in the TripPlan if the given travel time is beyond the GTFS service time range
 
@@ -139,10 +136,7 @@ public abstract class GraphPathToTripPlanConverter {
 
         if (plan != null) {
             for (Itinerary i : plan.itinerary) {
-                /*
-                 * Communicate the fact that the only way we were able to get a response was by
-                 * removing a slope limit.
-                 */
+                /* Communicate the fact that the only way we were able to get a response was by removing a slope limit. */
                 i.tooSloped = request.rctx.slopeRestrictionRemoved;
                 /* fix up from/to on first/last legs */
                 if (i.legs.size() == 0) {
@@ -161,7 +155,6 @@ public abstract class GraphPathToTripPlanConverter {
 
     /**
      * Check whether itinerary needs adjustments based on the request.
-     *
      * @param itinerary is the itinerary
      * @param request is the request containing the original trip planning options
      * @return the (adjusted) itinerary

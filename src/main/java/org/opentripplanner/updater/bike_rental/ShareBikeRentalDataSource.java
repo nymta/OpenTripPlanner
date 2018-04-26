@@ -67,23 +67,13 @@ public class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 		if(networkID == null) {
 			// Get SystemID url parameter as StationIDs are not globally unique for
 			// the ShareBike system
-			String url = getUrl();
-			try {
-				Map<String, List<String>> urlParameters = splitQuery(new URL(url));
-
-				List<String> systemIDs = urlParameters.get("SystemID");
-				if (systemIDs != null && systemIDs.size() == 1) {
-					networkID = systemIDs.get(0);
-					log.info("Extracted url parameter 'SystemID 'from sharebike url: "+networkID);
-				} else {
-					networkID = UUID.randomUUID().toString();
-					//TODO Removed our warning and used the one provided by conveyal
-                    log.warn("No query parameter 'SystemID' in sharebike url, using random value "+networkID);
-				}
-			} catch (UnsupportedEncodingException | MalformedURLException e) {
-				log.error("Unable to extract SystemID query parameter from sharebike url, using random",e);
+			List<String> systemIDs = urlParameters.get("SystemID");
+			if (systemIDs != null && systemIDs.size() == 1) {
+				networkID = systemIDs.get(0);
+				log.info("Extracted query parameter 'SystemID 'from sharebike url: "+networkID);
+			} else {
 				networkID = UUID.randomUUID().toString();
-
+				log.warn("No query parameter 'SystemID' in sharebike url, using random value "+networkID);
 			}
 		}
 		
