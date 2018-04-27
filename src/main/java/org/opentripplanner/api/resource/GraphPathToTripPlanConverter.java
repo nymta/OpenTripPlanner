@@ -102,7 +102,7 @@ public abstract class GraphPathToTripPlanConverter {
 
             //TODO Simon what is happening here?
             //check if the itinerary asks customer to get back to the origin place. If so, the itinerary is not a good one.
-            if (isLoopbackItinerary(itinerary)) {
+            if (isLoopbackItinerary(itinerary) && !request.hasIntermediatePlaces()) {
                 continue;
             }
 
@@ -123,7 +123,6 @@ public abstract class GraphPathToTripPlanConverter {
 
 
         //set warning message in the TripPlan if the given travel time is beyond the GTFS service time range
-
         if (request.getOrigTravelDateTime() != null) {
             if (request.getOrigTravelDateTime().getTime() > request.getDateTime().getTime()) {
                 plan.setWarnMessage("The travel date is beyond " + (request.getRunboard()== null ? "the current run board." : (request.getRunboard() + " run board.")));
@@ -132,8 +131,10 @@ public abstract class GraphPathToTripPlanConverter {
         }
 
         //always set feed end date in the trip plan response
-        plan.setFeedEndDate(request.getRunboardEndDate());
-
+        if (request.hasRunboardEndDate()) {
+            plan.setFeedEndDate(request.getRunboardEndDate());
+        }
+        
         if (plan != null) {
             for (Itinerary i : plan.itinerary) {
                 /* Communicate the fact that the only way we were able to get a response was by removing a slope limit. */
@@ -155,6 +156,7 @@ public abstract class GraphPathToTripPlanConverter {
 
     /**
      * Check whether itinerary needs adjustments based on the request.
+     *
      * @param itinerary is the itinerary
      * @param request is the request containing the original trip planning options
      * @return the (adjusted) itinerary
@@ -268,14 +270,12 @@ public abstract class GraphPathToTripPlanConverter {
         return itinerary;
     }
 
-//    private static Calendar makeCalendar(State state) {
-//        RoutingContext rctx = state.getContext();
-//        TimeZone timeZone = rctx.graph.getTimeZone();
-//        Calendar calendar = Calendar.getInstance(timeZone);
-//        calendar.setTimeInMillis(state.getTimeInMillis());
-//        return calendar;
-//    }
-
+    private static Calendar makeCalendar(State state) {
+        RoutingRequest request = state.getOptions();
+        return request != null ? makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()) :
+                makeCalendar(state, null, null);
+    }
+    
     private static Calendar makeCalendar(State state, Date origRequestDate, Date requestDate) {
         RoutingContext rctx = state.getContext();
         TimeZone timeZone = rctx.graph.getTimeZone();
@@ -822,7 +822,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
-            //TODO find out what I'm missing here
+            TODO find out what I'm missing here
 //            leg.agencyBrandingUrl = agency.getBrandingUrl();
             leg.headsign = states[1].getBackDirection();
             leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);

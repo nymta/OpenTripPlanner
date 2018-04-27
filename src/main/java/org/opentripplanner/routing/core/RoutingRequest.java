@@ -762,6 +762,10 @@ public class RoutingRequest implements Cloneable, Serializable {
         this.runboardEndDate = date;
     }
 
+    public boolean hasRunboardEndDate() {
+        return runboardEndDate != null;
+    }
+
     public Date getDateTime() {
         return new Date(dateTime * 1000);
     }
