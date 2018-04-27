@@ -98,26 +98,27 @@ public abstract class GraphPathToTripPlanConverter {
             Itinerary itinerary = generateItinerary(path, request.showIntermediateStops,
                     requestedLocale, request.showNextFromDeparture, request);
             itinerary = adjustItinerary(request, itinerary);
-            
+
             //check if the itinerary asks customer to get back to the origin place. If so, the itinerary is not a good one.
-            if (isLoopbackItinerary(itinerary)) {
+            if (isLoopbackItinerary(itinerary) && !request.hasIntermediatePlaces()) {
                 continue;
             }
             
             plan.addItinerary(itinerary);
         }
-        
+
         //set warning message in the TripPlan if the given travel time is beyond the GTFS service time range
-        
         if (request.getOrigTravelDateTime() != null) {
             if (request.getOrigTravelDateTime().getTime() > request.getDateTime().getTime()) {
                 plan.setWarnMessage("The travel date is beyond " + (request.getRunboard()== null ? "the current run board." : (request.getRunboard() + " run board.")));
-                
+
             }
         }
-        
+
         //always set feed end date in the trip plan response
-        plan.setFeedEndDate(request.getRunboardEndDate());
+        if (request.hasRunboardEndDate()) {
+            plan.setFeedEndDate(request.getRunboardEndDate());
+        }
         
         if (plan != null) {
             for (Itinerary i : plan.itinerary) {
@@ -238,8 +239,8 @@ public abstract class GraphPathToTripPlanConverter {
         fixupLegs(itinerary.legs, legsStates);
 
         itinerary.duration = lastState.getElapsedTimeSeconds();
-        itinerary.startTime = makeCalendar(states[0], request.getOrigTravelDateTime(), request.getDateTime());
-        itinerary.endTime = makeCalendar(lastState, request.getOrigTravelDateTime(), request.getDateTime());
+        itinerary.startTime = makeCalendar(states[0]);
+        itinerary.endTime = makeCalendar(lastState);
 
         calculateTimes(itinerary, states);
 
@@ -255,13 +256,11 @@ public abstract class GraphPathToTripPlanConverter {
         return itinerary;
     }
 
-//    private static Calendar makeCalendar(State state) {
-//        RoutingContext rctx = state.getContext();
-//        TimeZone timeZone = rctx.graph.getTimeZone();
-//        Calendar calendar = Calendar.getInstance(timeZone);
-//        calendar.setTimeInMillis(state.getTimeInMillis());
-//        return calendar;
-//    }
+    private static Calendar makeCalendar(State state) {
+        RoutingRequest request = state.getOptions();
+        return request != null ? makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()) :
+                makeCalendar(state, null, null);
+    }
     
     private static Calendar makeCalendar(State state, Date origRequestDate, Date requestDate) {
         RoutingContext rctx = state.getContext();
@@ -420,8 +419,8 @@ public abstract class GraphPathToTripPlanConverter {
 
         Edge[] edges = new Edge[states.length - 1];
 
-        leg.startTime = makeCalendar(states[0], request.getOrigTravelDateTime(), request.getDateTime());
-        leg.endTime = makeCalendar(states[states.length - 1], request.getOrigTravelDateTime(), request.getDateTime());
+        leg.startTime = makeCalendar(states[0]);
+        leg.endTime = makeCalendar(states[states.length - 1]);
 
         // Calculate leg distance and fill array of edges
         leg.distance = 0.0;
@@ -875,7 +874,7 @@ public abstract class GraphPathToTripPlanConverter {
                     continue;
 
                 if (currentStop == previousStop) { // Avoid duplication of stops
-                    leg.stop.get(leg.stop.size() - 1).departure = makeCalendar(states[i], request.getOrigTravelDateTime(), request.getDateTime());
+                    leg.stop.get(leg.stop.size() - 1).departure = makeCalendar(states[i]);
                     continue;
                 }
 
@@ -914,8 +913,8 @@ public abstract class GraphPathToTripPlanConverter {
             name = ((StreetVertex) vertex).getIntersectionName(requestedLocale)
                     .toString(requestedLocale);
         }
-        Place place = new Place(vertex.getX(), vertex.getY(), name, makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()),
-                makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()));
+        Place place = new Place(vertex.getX(), vertex.getY(), name, makeCalendar(state),
+                makeCalendar(state));
 
         if (endOfLeg)
             edge = state.getBackEdge();
