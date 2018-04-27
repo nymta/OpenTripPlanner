@@ -605,13 +605,19 @@ public class GTFSPatternHopFactory {
      */
     private LineString[] createGeometry(Graph graph, Trip trip, List<StopTime> stopTimes) {
         AgencyAndId shapeId = trip.getShapeId();
-        
+
         // One less geometry than stoptime as array indexes represetn hops not stops (fencepost problem).
         LineString[] geoms = new LineString[stopTimes.size() - 1];
         
         // Detect presence or absence of shape_dist_traveled on a per-trip basis
         StopTime st0 = stopTimes.get(0);
         boolean hasShapeDist = st0.isShapeDistTraveledSet();
+        
+        //recently RTD GTFS file has been updated by adding distance value into Stop Times file, but distance value is not added into Shapes file accordingly.
+        //This change brings issue to the logic of how to create Grometry in OTP. 
+        //Temporarily fix is to set "hasShapeDist" is false, just pretend the distance value is not added into stop times file like before. 
+        hasShapeDist = false;
+        
         if (hasShapeDist) {
             // this trip has shape_dist in stop_times
             for (int i = 0; i < stopTimes.size() - 1; ++i) {
@@ -1097,7 +1103,7 @@ public class GTFSPatternHopFactory {
 
     
     private LineString getHopGeometryViaShapeDistTraveled(Graph graph, AgencyAndId shapeId, StopTime st0, StopTime st1) {
-
+        
         double startDistance = st0.getShapeDistTraveled();
         double endDistance = st1.getShapeDistTraveled();
 
@@ -1107,7 +1113,7 @@ public class GTFSPatternHopFactory {
             return geometry;
 
         double[] distances = getDistanceForShapeId(shapeId);
-
+        
         if (distances == null) {
             LOG.warn(graph.addBuilderAnnotation(new BogusShapeGeometry(shapeId)));
             return null;
@@ -1236,7 +1242,7 @@ public class GTFSPatternHopFactory {
     private LineString getLineStringForShapeId(AgencyAndId shapeId) {
 
         LineString geometry = _geometriesByShapeId.get(shapeId);
-
+        
         if (geometry != null) 
             return geometry;
 

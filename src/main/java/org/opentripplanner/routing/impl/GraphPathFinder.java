@@ -10,7 +10,6 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-
 package org.opentripplanner.routing.impl;
 
 import com.google.common.collect.Lists;
@@ -45,25 +44,31 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * This class contains the logic for repeatedly building shortest path trees and accumulating paths through
- * the graph until the requested number of them have been found.
- * It is used in point-to-point (i.e. not one-to-many / analyst) routing.
+ * This class contains the logic for repeatedly building shortest path trees and
+ * accumulating paths through the graph until the requested number of them have
+ * been found. It is used in point-to-point (i.e. not one-to-many / analyst)
+ * routing.
  *
  * Its exact behavior will depend on whether the routing request allows transit.
  *
- * When using transit it will incorporate techniques from what we called "long distance" mode, which is designed to
- * provide reasonable response times when routing over large graphs (e.g. the entire Netherlands or New York State).
- * In this case it only uses the street network at the first and last legs of the trip, and all other transfers
- * between transit vehicles will occur via SimpleTransfer edges which are pre-computed by the graph builder.
- * 
+ * When using transit it will incorporate techniques from what we called "long
+ * distance" mode, which is designed to provide reasonable response times when
+ * routing over large graphs (e.g. the entire Netherlands or New York State). In
+ * this case it only uses the street network at the first and last legs of the
+ * trip, and all other transfers between transit vehicles will occur via
+ * SimpleTransfer edges which are pre-computed by the graph builder.
+ *
  * More information is available on the OTP wiki at:
  * https://github.com/openplans/OpenTripPlanner/wiki/LargeGraphs
  *
- * One instance of this class should be constructed per search (i.e. per RoutingRequest: it is request-scoped).
- * Its behavior is undefined if it is reused for more than one search.
+ * One instance of this class should be constructed per search (i.e. per
+ * RoutingRequest: it is request-scoped). Its behavior is undefined if it is
+ * reused for more than one search.
  *
- * It is very close to being an abstract library class with only static functions. However it turns out to be convenient
- * and harmless to have the OTPServer object etc. in fields, to avoid passing context around in function parameters.
+ * It is very close to being an abstract library class with only static
+ * functions. However it turns out to be convenient and harmless to have the
+ * OTPServer object etc. in fields, to avoid passing context around in function
+ * parameters.
  */
 public class GraphPathFinder {
 
@@ -78,13 +83,15 @@ public class GraphPathFinder {
     }
 
     /**
-     * Repeatedly build shortest path trees, retaining the best path to the destination after each try.
-     * For search N, all trips used in itineraries retained from trips 0..(N-1) are "banned" to create variety.
-     * The goal direction heuristic is reused between tries, which means the later tries have more information to
-     * work with (in the case of the more sophisticated bidirectional heuristic, which improves over time).
+     * Repeatedly build shortest path trees, retaining the best path to the
+     * destination after each try. For search N, all trips used in itineraries
+     * retained from trips 0..(N-1) are "banned" to create variety. The goal
+     * direction heuristic is reused between tries, which means the later tries
+     * have more information to work with (in the case of the more sophisticated
+     * bidirectional heuristic, which improves over time).
      */
     public List<GraphPath> getPaths(RoutingRequest options) {
-
+        
         if (options == null) {
             LOG.error("PathService was passed a null routing request.");
             return null;
@@ -136,8 +143,12 @@ public class GraphPathFinder {
          * It's the radius around the origin or destination within which you can walk on the streets.
          * If no value is provided, max walk defaults to the largest double-precision float.
          * This would cause long distance mode to do unbounded street searches and consider the whole graph walkable. */
-        if (options.maxWalkDistance == Double.MAX_VALUE) options.maxWalkDistance = DEFAULT_MAX_WALK;
-        if (options.maxWalkDistance > CLAMP_MAX_WALK) options.maxWalkDistance = CLAMP_MAX_WALK;
+        if (options.maxWalkDistance == Double.MAX_VALUE) {
+            options.maxWalkDistance = DEFAULT_MAX_WALK;
+        }
+        if (options.maxWalkDistance > CLAMP_MAX_WALK) {
+            options.maxWalkDistance = CLAMP_MAX_WALK;
+        }
         long searchBeginTime = System.currentTimeMillis();
         LOG.debug("BEGIN SEARCH");
         List<GraphPath> paths = Lists.newArrayList();
@@ -167,7 +178,7 @@ public class GraphPathFinder {
             }
             // Find all trips used in this path and ban them for the remaining searches
             for (GraphPath path : newPaths) {
-                // path.dump();
+                //path.dump();
                 List<AgencyAndId> tripIds = path.getTrips();
                 for (AgencyAndId tripId : tripIds) {
                     options.banTrip(tripId);
@@ -176,19 +187,29 @@ public class GraphPathFinder {
                     // This path does not use transit (is entirely on-street). Do not repeatedly find the same one.
                     options.onlyTransitTrips = true;
                 }
+//                path.dumpPathParser();
             }
             
-            if (options.maxTransferTime == Integer.MAX_VALUE) {
-            	paths.addAll(newPaths);
+            if (options.maxTransferTime == Integer.MAX_VALUE && options.minTransferTimeHard == Integer.MIN_VALUE) {
+                paths.addAll(newPaths);
             } else {
-            
-            	List<GraphPath> pathsToAdd = newPaths.stream()
-            			.filter(path -> !graphPathExceedsMaxTransferTime(path, options))
-            			.collect(Collectors.toList());
-            
-            	paths.addAll(pathsToAdd);
+
+//            	List<GraphPath> pathsToAdd = newPaths.stream()
+//            			.filter(path -> !graphPathExceedsMaxTransferTime(path, options))
+//            			.collect(Collectors.toList());
+                List<GraphPath> pathsToAdd = newPaths.stream()
+                        .filter(path -> !filterOutPath(path, options))
+                        .collect(Collectors.toList());
+                
+//                LOG.info("#########pathsToAdd");
+//                for (GraphPath path : pathsToAdd) {
+//                    path.dumpPathParser();
+//                }
+//                LOG.info("#########end pathsToAdd");
+                
+                paths.addAll(pathsToAdd);
             }
-            
+
             LOG.debug("we have {} paths", paths.size());
         }
         LOG.debug("END SEARCH ({} msec)", System.currentTimeMillis() - searchBeginTime);
@@ -196,38 +217,65 @@ public class GraphPathFinder {
         return paths;
     }
 
-    private static boolean graphPathExceedsMaxTransferTime(GraphPath path, RoutingRequest options) {
-    	
-    	long lastTransitDeparture = -1;
-    	
-    	State[] states = path.states.toArray(new State[path.states.size()]);
-    
-    	for (int i = 0; i < states.length; i++) {
-    	
-    		if (states[i].getBackMode() == null || !states[i].getBackMode().isTransit())
-    			continue;
-    		
-    		// If it is transit, check if transfer time is too long.
-    		if (lastTransitDeparture > 0 
-    				&& states[i].getTimeSeconds() - lastTransitDeparture > options.maxTransferTime)
-    			return true;
-    		
-    		while (states[i].getBackMode() != null && states[i].getBackMode().isTransit())
-    			i++;
-    		
-    		lastTransitDeparture = states[i - 1].getTimeSeconds();
-    	}
-    	
-    	return false;
+    private static boolean filterOutPath(GraphPath path, RoutingRequest options) {
+        return (graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options) || graphPathExceedsMaxTransferTime(path, options));
     }
-    
+
+    private static boolean graphPathStartsLaterThanLimit(GraphPath path, int range, RoutingRequest options) {
+        boolean result = false;
+        if (options.arriveBy) {
+            long arrivetime = options.dateTime;
+            if (arrivetime - path.getEndTime() > range) {
+                result = true;
+            }
+        } else {
+            long startTime = path.getStartTime();
+            long departtime = options.dateTime;
+            if (startTime - departtime > range) {
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private static boolean graphPathExceedsMaxTransferTime(GraphPath path, RoutingRequest options) {
+        
+        long lastTransitDeparture = -1;
+
+        State[] states = path.states.toArray(new State[path.states.size()]);
+        
+        for (int i = 1; i < states.length; i++) {
+            if (states[i].getBackMode() == null || !states[i].getBackMode().isTransit()) {
+                continue;
+            }
+
+            // If it is transit, check if transfer time is too long. Need to check LAST state because
+            // this state is *after* a PatternHop.
+            long transferTime = states[i - 1].getTimeSeconds() - lastTransitDeparture;
+            if (lastTransitDeparture > 0 && (transferTime > options.maxTransferTime || transferTime < options.minTransferTimeHard)) {
+                LOG.debug("for itinerary {}, transfer time {} is not in range", path.getTrips(), transferTime);
+                return true;
+            }
+
+            while (states[i].getBackMode() != null && states[i].getBackMode().isTransit()) {
+                i++;
+            }
+
+            if (i < states.length) {
+                lastTransitDeparture = states[i - 1].getTimeSeconds();
+            }
+        }
+        
+        return false;
+    }
+
     /* Try to find N paths through the Graph */
-    public List<GraphPath> graphPathFinderEntryPoint (RoutingRequest request) {
+    public List<GraphPath> graphPathFinderEntryPoint(RoutingRequest request) {
 
         // We used to perform a protective clone of the RoutingRequest here.
         // There is no reason to do this if we don't modify the request.
         // Any code that changes them should be performing the copy!
-
+        
         List<GraphPath> paths = null;
         try {
             paths = getGraphPathsConsideringIntermediates(request);
@@ -250,13 +298,13 @@ public class GraphPathFinder {
         if (paths != null) {
             Iterator<GraphPath> gpi = paths.iterator();
             while (gpi.hasNext()) {
-                GraphPath graphPath = gpi.next();
+                GraphPath graphPath = gpi.next();              
                 // TODO check, is it possible that arriveBy and time are modifed in-place by the search?
                 if (request.arriveBy) {
                     if (graphPath.states.getLast().getTimeSeconds() > request.dateTime) {
                         LOG.error("A graph path arrives after the requested time. This implies a bug.");
                         gpi.remove();
-                    }
+                    } 
                 } else {
                     if (graphPath.states.getFirst().getTimeSeconds() < request.dateTime) {
                         LOG.error("A graph path leaves before the requested time. This implies a bug.");
@@ -276,15 +324,17 @@ public class GraphPathFinder {
     }
 
     /**
-     * Break up a RoutingRequest with intermediate places into separate requests, in the given order.
+     * Break up a RoutingRequest with intermediate places into separate
+     * requests, in the given order.
      *
-     * If there are no intermediate places, issue a single request. Otherwise process the places
-     * list [from, i1, i2, ..., to] either from left to right (if {@code request.arriveBy==false})
-     * or from right to left (if {@code request.arriveBy==true}). In the latter case the order of
-     * the requested subpaths is (i2, to), (i1, i2), and (from, i1) which has to be reversed at
-     * the end.
+     * If there are no intermediate places, issue a single request. Otherwise
+     * process the places list [from, i1, i2, ..., to] either from left to right
+     * (if {@code request.arriveBy==false}) or from right to left (if
+     * {@code request.arriveBy==true}). In the latter case the order of the
+     * requested subpaths is (i2, to), (i1, i2), and (from, i1) which has to be
+     * reversed at the end.
      */
-    private List<GraphPath> getGraphPathsConsideringIntermediates (RoutingRequest request) {
+    private List<GraphPath> getGraphPathsConsideringIntermediates(RoutingRequest request) {
         if (request.hasIntermediatePlaces()) {
             List<GenericLocation> places = Lists.newArrayList(request.from);
             places.addAll(request.intermediatePlaces);
@@ -357,7 +407,7 @@ public class GraphPathFinder {
         return newPath;
     }
 
-/*
+    /*
     TODO reimplement
     This should probably be done with a special value in the departure/arrival time.
 
@@ -394,6 +444,5 @@ public class GraphPathFinder {
 
         return generate(request);
     }
-*/
-
+     */
 }

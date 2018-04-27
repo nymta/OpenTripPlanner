@@ -33,7 +33,7 @@ public class CommandLineParameters implements Cloneable {
     private static final int    DEFAULT_SECURE_PORT = 8081;
     private static final String DEFAULT_BASE_PATH   = "/var/otp";
     private static final String DEFAULT_ROUTER_ID   = "";
-    
+
     /* Options for the command itself, rather than build or server sub-tasks. */
 
     @Parameter(names = {"--help"}, help = true,
@@ -135,9 +135,6 @@ public class CommandLineParameters implements Cloneable {
 
     @Parameter(names = { "--enableScriptingWebService" }, description = "enable scripting through a web-service (Warning! Very unsafe for public facing servers)")
     boolean enableScriptingWebService = false;
-    
-    @Parameter(names = {"--accessLog" }, description = "Log server accesses to a file", validateWith = AccessLog.class)
-    public String accessLog = null;
 
     /** Set some convenience parameters based on other parameters' values. */
     public void infer() {
@@ -268,19 +265,6 @@ public class CommandLineParameters implements Cloneable {
                 throw new ParameterException(msg);
             }
         }
-    }
-    
-    public static class AccessLog implements IParameterValidator {
-		@Override
-		public void validate(String name, String value) throws ParameterException {
-			File file = new File(value);
-			File dir = file.getParentFile();
-			if (dir == null || !dir.exists()) {
-				String msg = String.format("%s: '%s' is not in a valid directory.", name, value);
-				throw new ParameterException(msg);
-			}	
-		}
-    	
     }
 }
 
