@@ -133,6 +133,7 @@ public class IndexGraphQLSchema {
     public IndexGraphQLSchema(GraphIndex index) {
 
         fuzzyTripMatcher = new GtfsRealtimeFuzzyTripMatcher(index);
+        index.clusterStopsAsNeeded();
 
         stopAtDistanceType = GraphQLObjectType.newObject()
             .name("stopAtDistance")
@@ -323,7 +324,8 @@ public class IndexGraphQLSchema {
                     try {  // TODO: Add our own scalar types for at least serviceDate and AgencyAndId
                         return index.getStopTimesForStop(
                             (Stop) environment.getSource(),
-                            ServiceDate.parseString(environment.getArgument("date")));
+                            ServiceDate.parseString(environment.getArgument("date")),
+                            environment.getArgument("omitNonPickups"));
                     } catch (ParseException e) {
                         return null;
                     }
@@ -347,11 +349,17 @@ public class IndexGraphQLSchema {
                     .type(Scalars.GraphQLInt)
                     .defaultValue(5)
                     .build())
+                .argument(GraphQLArgument.newArgument()
+            		.name("omitNonPickups")
+            		.type(Scalars.GraphQLBoolean)
+            		.defaultValue(false)
+            		.build())
                 .dataFetcher(environment ->
                     index.stopTimesForStop((Stop) environment.getSource(),
                         Long.parseLong(environment.getArgument("startTime")),
                         (int) environment.getArgument("timeRange"),
-                        (int) environment.getArgument("numberOfDepartures")))
+                        (int) environment.getArgument("numberOfDepartures"),
+                        (boolean) environment.getArgument("omitNonPickups")))
                 .build())
             .field(GraphQLFieldDefinition.newFieldDefinition()
                 .name("stoptimesWithoutPatterns")
@@ -371,12 +379,18 @@ public class IndexGraphQLSchema {
                     .type(Scalars.GraphQLInt)
                     .defaultValue(5)
                     .build())
+                .argument(GraphQLArgument.newArgument()
+            		.name("omitNonPickups")
+            		.type(Scalars.GraphQLBoolean)
+            		.defaultValue(false)
+            		.build())
                 .dataFetcher(environment ->
                     index.stopTimesForStop(
                         (Stop) environment.getSource(),
                         Long.parseLong(environment.getArgument("startTime")),
                         (int) environment.getArgument("timeRange"),
-                        (int) environment.getArgument("numberOfDepartures"))
+                        (int) environment.getArgument("numberOfDepartures"),
+                        (boolean) environment.getArgument("omitNonPickups"))
                     .stream()
                     .flatMap(stoptimesWithPattern -> stoptimesWithPattern.times.stream())
                     .sorted(Comparator.comparing(t -> t.serviceDay + t.realtimeDeparture))
@@ -454,6 +468,11 @@ public class IndexGraphQLSchema {
                 .dataFetcher(environment -> index.tripForId
                     .get(((TripTimeShort) environment.getSource()).tripId))
                 .build())
+            .field(GraphQLFieldDefinition.newFieldDefinition()
+               	.name("headsign")
+              	.type(Scalars.GraphQLString)
+              	.dataFetcher(environment -> ((TripTimeShort) environment.getSource()).headsign)
+              	.build())
             .build();
 
         tripType = GraphQLObjectType.newObject()

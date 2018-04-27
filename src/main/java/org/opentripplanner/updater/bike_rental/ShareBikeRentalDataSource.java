@@ -18,6 +18,8 @@ public class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 
 	private String networkID;
 
+	private Map<String, List<String>> urlParameters = new HashMap<>();
+
 	public ShareBikeRentalDataSource() throws UnsupportedEncodingException, MalformedURLException {
 		super("result/LiveStationData");
 	}
@@ -65,20 +67,13 @@ public class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 		if(networkID == null) {
 			// Get SystemID url parameter as StationIDs are not globally unique for
 			// the ShareBike system
-			String url = getUrl();
-			try {
-				Map<String, List<String>> urlParameters = splitQuery(new URL(url));
-				List<String> systemIDs = urlParameters.get("SystemID");
-				if (systemIDs != null && systemIDs.size() == 1) {
-					networkID = systemIDs.get(0);
-					log.info("Extracted SystemID from sharebike url: "+networkID);
-				} else {
-					log.error("Unable to extract SystemID query parameter from sharebike url, using random");
-					networkID = UUID.randomUUID().toString();
-				}
-			} catch (UnsupportedEncodingException | MalformedURLException e) {
-				log.error("Unable to extract SystemID query parameter from sharebike url, using random",e);
+			List<String> systemIDs = urlParameters.get("SystemID");
+			if (systemIDs != null && systemIDs.size() == 1) {
+				networkID = systemIDs.get(0);
+				log.info("Extracted query parameter 'SystemID 'from sharebike url: "+networkID);
+			} else {
 				networkID = UUID.randomUUID().toString();
+				log.warn("No query parameter 'SystemID' in sharebike url, using random value "+networkID);
 			}
 		}
 		
@@ -106,18 +101,41 @@ public class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 
 	public static Map<String, List<String>> splitQuery(URL url) throws UnsupportedEncodingException {
 		final Map<String, List<String>> query_pairs = new LinkedHashMap<String, List<String>>();
-		final String[] pairs = url.getQuery().split("&");
-		for (String pair : pairs) {
-			final int idx = pair.indexOf("=");
-			final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
-			if (!query_pairs.containsKey(key)) {
-				query_pairs.put(key, new LinkedList<String>());
+		if(url.getQuery() != null) {
+			final String[] pairs = url.getQuery().split("&");
+			for (String pair : pairs) {
+				final int idx = pair.indexOf("=");
+				final String key = idx > 0 ? URLDecoder.decode(pair.substring(0, idx), "UTF-8") : pair;
+				if (!query_pairs.containsKey(key)) {
+					query_pairs.put(key, new LinkedList<String>());
+				}
+				final String value = idx > 0 && pair.length() > idx + 1
+						? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
+				query_pairs.get(key).add(value);
 			}
-			final String value = idx > 0 && pair.length() > idx + 1
-					? URLDecoder.decode(pair.substring(idx + 1), "UTF-8") : null;
-			query_pairs.get(key).add(value);
 		}
 		return query_pairs;
 	}
+
+	@Override
+	public void setUrl(String url) {
+		try {
+			URL u = new URL(url);
+			if(u.getQuery() != null) {
+				// Has query params
+				urlParameters = splitQuery(u);
+				setUrl(url.substring(0,url.indexOf('?')));
+			} else {
+				// No query params
+				super.setUrl(url);
+			}
+		} catch (UnsupportedEncodingException | MalformedURLException e) {
+			log.error("Unable to extract 'SystemID' query parameter from sharebike url, will use random",e);
+			networkID = UUID.randomUUID().toString();
+			super.setUrl(url);
+		}
+	}
+
+
 
 }

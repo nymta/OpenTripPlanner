@@ -26,6 +26,8 @@ import org.joda.time.DateTime;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.FeedInfo;
 import org.onebusaway.gtfs.model.calendar.CalendarServiceData;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
@@ -50,6 +52,7 @@ import org.opentripplanner.routing.services.StreetVertexIndexService;
 import org.opentripplanner.routing.services.notes.StreetNotesService;
 import org.opentripplanner.routing.trippattern.Deduplicator;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
+import org.opentripplanner.routing.vertextype.TransitStation;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.traffic.StreetSpeedSnapshotSource;
 import org.opentripplanner.updater.GraphUpdaterConfigurator;
@@ -87,6 +90,8 @@ public class Graph implements Serializable {
     private long transitServiceStarts = Long.MAX_VALUE;
 
     private long transitServiceEnds = 0;
+    
+    private String feedInfo = null;
 
     private Map<Class<?>, Object> _services = new HashMap<Class<?>, Object>();
 
@@ -129,6 +134,8 @@ public class Graph implements Serializable {
     private Map<String, Collection<Agency>> agenciesForFeedId = new HashMap<>();
 
     private Collection<String> feedIds = new HashSet<>();
+
+    private Map<String, FeedInfo> feedInfoForId = new HashMap<>();
 
     private VertexComparatorFactory vertexComparatorFactory = new MortonVertexComparatorFactory();
 
@@ -194,9 +201,18 @@ public class Graph implements Serializable {
 
     /** Has information how much time alighting a vehicle takes. Can be significant eg in airplanes or ferries. */
     public Map<TraverseMode, Integer> alightTimes = Collections.EMPTY_MAP;
-
+    
     /** A speed source for traffic data */
     public transient StreetSpeedSnapshotSource streetSpeedSource;
+    
+    /** How should we cluster stops? */
+    public String stopClusterMode = "proximity";
+
+    /** The difference in meters between the WGS84 ellipsoid height and geoid height at the graph's center */
+    public Double ellipsoidToGeoidDifference = 0.0;
+
+    /** Parent stops **/
+    public Map<AgencyAndId, Stop> parentStopById = new HashMap<>();
 
     public Graph(Graph basedOn) {
         this();
@@ -541,7 +557,7 @@ public class Graph implements Serializable {
             if (!agenciesWithFutureDates.contains(agency)) {
                 LOG.warn(this.addBuilderAnnotation(new NoFutureDates(agency)));
             }
-        }
+        }        
     }
 
     // Check to see if we have transit information for a given date
@@ -896,11 +912,19 @@ public class Graph implements Serializable {
         return agenciesForFeedId.get(feedId);
     }
 
+    public FeedInfo getFeedInfo(String feedId) {
+        return feedInfoForId.get(feedId);
+    }
+
     public void addAgency(String feedId, Agency agency) {
         Collection<Agency> agencies = agenciesForFeedId.getOrDefault(feedId, new HashSet<>());
         agencies.add(agency);
         this.agenciesForFeedId.put(feedId, agencies);
         this.feedIds.add(feedId);
+    }
+
+    public void addFeedInfo(FeedInfo info) {
+        this.feedInfoForId.put(info.getId().toString(), info);
     }
 
     /**
@@ -1066,5 +1090,13 @@ public class Graph implements Serializable {
 
     public long getTransitServiceEnds() {
         return transitServiceEnds;
+    }
+    
+    public String getFeedInfo() {
+        return feedInfo;
+    }
+    
+    public void setFeedInfo(String feedInfo) {
+        this.feedInfo = feedInfo;
     }
 }

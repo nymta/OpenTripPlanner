@@ -31,6 +31,7 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.util.FastMath;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.FeedInfo;
 import org.onebusaway.gtfs.model.Frequency;
 import org.onebusaway.gtfs.model.Pathway;
 import org.onebusaway.gtfs.model.Route;
@@ -306,6 +307,10 @@ public class GTFSPatternHopFactory {
 
     private GtfsStopContext context = new GtfsStopContext();
 
+    // the location types for transfers.txt
+    public static final int STOP_LOCATION_TYPE = 0;
+    public static final int PARENT_STATION_LOCATION_TYPE = 1;
+
     public int subwayAccessTime = 0;
 
     private double maxStopToShapeSnapDistance = 150;
@@ -334,6 +339,7 @@ public class GTFSPatternHopFactory {
         // TODO: Why are we loading stops? The Javadoc above says this method assumes stops are aleady loaded.
         loadStops(graph);
         loadPathways(graph);
+        loadFeedInfo(graph);
         loadAgencies(graph);
         // TODO: Why is there cached "data", and why are we clearing it? Due to a general lack of comments, I have no idea.
         // Perhaps it is to allow name collisions with previously loaded feeds.
@@ -488,6 +494,14 @@ public class GTFSPatternHopFactory {
         /* Interpret the transfers explicitly defined in transfers.txt. */
         loadTransfers(graph);
 
+        /* Store parent stops in graph, even if not linked. These are needed for clustering*/
+        for(TransitStationStop stop : context.stationStopNodes.values()){
+            if(stop instanceof TransitStation){
+                TransitStation parentStopVertex = (TransitStation) stop;
+                graph.parentStopById.put(parentStopVertex.getStopId(), parentStopVertex.getStop());
+            }
+        }
+
         /* Is this the wrong place to do this? It should be done on all feeds at once, or at deserialization. */
         // it is already done at deserialization, but standalone mode allows using graphs without serializing them.
         for (TripPattern tableTripPattern : tripPatterns.values()) {
@@ -605,13 +619,19 @@ public class GTFSPatternHopFactory {
      */
     private LineString[] createGeometry(Graph graph, Trip trip, List<StopTime> stopTimes) {
         AgencyAndId shapeId = trip.getShapeId();
-        
+
         // One less geometry than stoptime as array indexes represetn hops not stops (fencepost problem).
         LineString[] geoms = new LineString[stopTimes.size() - 1];
         
         // Detect presence or absence of shape_dist_traveled on a per-trip basis
         StopTime st0 = stopTimes.get(0);
         boolean hasShapeDist = st0.isShapeDistTraveledSet();
+        
+        //recently RTD GTFS file has been updated by adding distance value into Stop Times file, but distance value is not added into Shapes file accordingly.
+        //This change brings issue to the logic of how to create Grometry in OTP. 
+        //Temporarily fix is to set "hasShapeDist" is false, just pretend the distance value is not added into stop times file like before. 
+        hasShapeDist = false;
+        
         if (hasShapeDist) {
             // this trip has shape_dist in stop_times
             for (int i = 0; i < stopTimes.size() - 1; ++i) {
@@ -918,6 +938,12 @@ public class GTFSPatternHopFactory {
         }
     }
 
+    private void loadFeedInfo(Graph graph) {
+        for (FeedInfo info : _dao.getAllFeedInfos()) {
+            graph.addFeedInfo(info);
+        }
+    }
+
     private void loadPathways(Graph graph) {
         for (Pathway pathway : _dao.getAllPathways()) {
             Vertex fromVertex = context.stationStopNodes.get(pathway.getFromStop());
@@ -1047,57 +1073,63 @@ public class GTFSPatternHopFactory {
     private void loadTransfers(Graph graph) {
         Collection<Transfer> transfers = _dao.getAllTransfers();
         TransferTable transferTable = graph.getTransferTable();
-        for (Transfer t : transfers) {
-            Stop fromStop = t.getFromStop();
-            Stop toStop = t.getToStop();
-            Route fromRoute = t.getFromRoute();
-            Route toRoute = t.getToRoute();
-            Trip fromTrip = t.getFromTrip();
-            Trip toTrip = t.getToTrip();
-            Vertex fromVertex = context.stopArriveNodes.get(fromStop);
-            Vertex toVertex = context.stopDepartNodes.get(toStop);
-            switch (t.getTransferType()) {
-            case 1:
-                // timed (synchronized) transfer 
-                // Handle with edges that bypass the street network.
-                // from and to vertex here are stop_arrive and stop_depart vertices
-                
-                // only add edge when it doesn't exist already
-                boolean hasTimedTransferEdge = false;
-                for (Edge outgoingEdge : fromVertex.getOutgoing()) {
-                    if (outgoingEdge instanceof TimedTransferEdge) {
-                        if (outgoingEdge.getToVertex() == toVertex) {
-                            hasTimedTransferEdge = true;
-                            break;
+        for (Transfer sourceTransfer : transfers) {
+            // Transfers may be specified using parent stations (https://developers.google.com/transit/gtfs/reference/transfers-file)
+            // "If the stop ID refers to a station that contains multiple stops, this transfer rule applies to all stops in that station."
+            // we thus expand transfers that use parent stations to all the member stops.
+            for (Transfer t : expandTransfer(sourceTransfer)) {
+                Stop fromStop = t.getFromStop();
+                Stop toStop = t.getToStop();
+                Route fromRoute = t.getFromRoute();
+                Route toRoute = t.getToRoute();
+                Trip fromTrip = t.getFromTrip();
+                Trip toTrip = t.getToTrip();
+                Vertex fromVertex = context.stopArriveNodes.get(fromStop);
+                Vertex toVertex = context.stopDepartNodes.get(toStop);
+                switch (t.getTransferType()) {
+                    case 1:
+                        // timed (synchronized) transfer
+                        // Handle with edges that bypass the street network.
+                        // from and to vertex here are stop_arrive and stop_depart vertices
+
+                        // only add edge when it doesn't exist already
+                        boolean hasTimedTransferEdge = false;
+
+                        for (Edge outgoingEdge : fromVertex.getOutgoing()) {
+                            if (outgoingEdge instanceof TimedTransferEdge) {
+                                if (outgoingEdge.getToVertex() == toVertex) {
+                                    hasTimedTransferEdge = true;
+                                    break;
+                                }
+                            }
                         }
-                    }
+                        if (!hasTimedTransferEdge) {
+                            new TimedTransferEdge(fromVertex, toVertex);
+                        }
+                        // add to transfer table to handle specificity
+                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.TIMED_TRANSFER);
+                        break;
+                    case 2:
+                        // min transfer time
+                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, t.getMinTransferTime());
+                        break;
+                    case 3:
+                        // forbidden transfer
+                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.FORBIDDEN_TRANSFER);
+                        break;
+                    case 0:
+                    default:
+                        // preferred transfer
+                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.PREFERRED_TRANSFER);
+                        break;
                 }
-                if (!hasTimedTransferEdge) {
-                    new TimedTransferEdge(fromVertex, toVertex);
-                }
-                // add to transfer table to handle specificity
-                transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.TIMED_TRANSFER);
-                break;
-            case 2:
-                // min transfer time
-                transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, t.getMinTransferTime());
-                break;
-            case 3:
-                // forbidden transfer
-                transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.FORBIDDEN_TRANSFER);
-                break;
-            case 0:
-            default: 
-                // preferred transfer
-                transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.PREFERRED_TRANSFER);
-                break;
             }
         }
     }
 
     
     private LineString getHopGeometryViaShapeDistTraveled(Graph graph, AgencyAndId shapeId, StopTime st0, StopTime st1) {
-
+        
         double startDistance = st0.getShapeDistTraveled();
         double endDistance = st1.getShapeDistTraveled();
 
@@ -1107,7 +1139,7 @@ public class GTFSPatternHopFactory {
             return geometry;
 
         double[] distances = getDistanceForShapeId(shapeId);
-
+        
         if (distances == null) {
             LOG.warn(graph.addBuilderAnnotation(new BogusShapeGeometry(shapeId)));
             return null;
@@ -1236,7 +1268,7 @@ public class GTFSPatternHopFactory {
     private LineString getLineStringForShapeId(AgencyAndId shapeId) {
 
         LineString geometry = _geometriesByShapeId.get(shapeId);
-
+        
         if (geometry != null) 
             return geometry;
 
@@ -1469,4 +1501,56 @@ public class GTFSPatternHopFactory {
         this.maxStopToShapeSnapDistance = maxStopToShapeSnapDistance;
     }
 
+    private Collection<Transfer> expandTransfer (Transfer source) {
+        Stop fromStop = source.getFromStop();
+        Stop toStop = source.getToStop();
+
+        if (fromStop.getLocationType() == STOP_LOCATION_TYPE && toStop.getLocationType() == STOP_LOCATION_TYPE) {
+            // simple, no need to copy anything
+            return Arrays.asList(source);
+        } else {
+            // at least one of the stops is a parent station
+            // all the stops this transfer originates with
+            List<Stop> fromStops;
+
+            // all the stops this transfer terminates with
+            List<Stop> toStops;
+
+            if (fromStop.getLocationType() == PARENT_STATION_LOCATION_TYPE) {
+                fromStops = _dao.getStopsForStation(fromStop);
+            } else {
+                fromStops = Arrays.asList(fromStop);
+            }
+
+            if (toStop.getLocationType() == PARENT_STATION_LOCATION_TYPE) {
+                toStops = _dao.getStopsForStation(toStop);
+            } else {
+                toStops = Arrays.asList(toStop);
+            }
+
+            List<Transfer> expandedTransfers = new ArrayList<>(fromStops.size() * toStops.size());
+
+            for (Stop expandedFromStop : fromStops) {
+                for (Stop expandedToStop : toStops) {
+                    Transfer expanded = new Transfer(source);
+                    expanded.setFromStop(expandedFromStop);
+                    expanded.setToStop(expandedToStop);
+                    expandedTransfers.add(expanded);
+                }
+            }
+
+            LOG.info(
+                    "Expanded transfer between stations \"{} ({})\" and \"{} ({})\" to {} transfers between {} and {} stops",
+                    fromStop.getName(),
+                    fromStop.getId(),
+                    toStop.getName(),
+                    toStop.getId(),
+                    expandedTransfers.size(),
+                    fromStops.size(),
+                    toStops.size()
+                    );
+
+            return expandedTransfers;
+        }
+    }
 }

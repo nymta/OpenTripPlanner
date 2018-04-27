@@ -173,10 +173,20 @@ public abstract class RoutingResource {
      *  transfers over longer distances might use a longer time. */
     @QueryParam("minTransferTime")
     protected Integer minTransferTime;
-    
+
     /** Maximum time in seconds between successive trips on different vehicles. */
     @QueryParam("maxTransferTime")
     protected Integer maxTransferTime;
+
+    /** Minimum time in seconds between successive trips on different vehicles - hard parameter to match maxTransferTime */
+    @QueryParam("minTransferTimeHard")
+    protected Integer minTransferTimeHard;
+
+    /**
+     * Range time in seconds between the trip start time and the departure time user defined or between the trip end time and the arrive by time user defined.
+     */
+    @QueryParam("tripShownRangeTime")
+    protected Integer tripShownRangeTime;
 
     /** The maximum number of possible itineraries to return. */
     @QueryParam("numItineraries")
@@ -338,6 +348,15 @@ public abstract class RoutingResource {
     @QueryParam("locale")
     private String locale;
 
+    @QueryParam("maxHours")
+    private Double maxHours;
+
+    @QueryParam("useRequestedDateTimeInMaxHours")
+    private Boolean useRequestedDateTimeInMaxHours;
+
+    @QueryParam("disableAlertFiltering")
+    private Boolean disableAlertFiltering;
+
     /**
      * If true, realtime updates are ignored during this search.
      */
@@ -350,20 +369,26 @@ public abstract class RoutingResource {
      */
     @QueryParam("disableRemainingWeightHeuristic")
     protected Boolean disableRemainingWeightHeuristic;
-    
+
     /**
-     * 
+     *
      */
     @QueryParam("showNextFromDeparture")
     protected Boolean showNextFromDeparture;
-    
+
     /**
      * If true, API call will return stop times for all the trips in the TripPlan.
      */
     @QueryParam("showStopTimes")
     protected Boolean showStopTimes;
-    
-    /* 
+
+    /**
+     * If true, the Graph's ellipsoidToGeoidDifference is applied to all elevations returned by this query.
+     */
+    @QueryParam("geoidElevation")
+    private Boolean geoidElevation;
+
+    /*
      * somewhat ugly bug fix: the graphService is only needed here for fetching per-graph time zones. 
      * this should ideally be done when setting the routing context, but at present departure/
      * arrival time is stored in the request as an epoch time with the TZ already resolved, and other
@@ -412,6 +437,43 @@ public abstract class RoutingResource {
                 }
             } else {
                 request.setDateTime(date, time, tz);
+                request.setRunboardEndDate(router.graph.getTransitServiceEnds() * 1000);
+
+                //check if date is exceed end time of GTFS.
+                if (request.getDateTime().getTime() > router.graph.getTransitServiceEnds()*1000 ) {
+                    LOG.warn("********* request time beyond the range");
+                    //back up original travel time
+                    request.setOrigTravelDateTime(request.getDateTime());
+                    request.setRunboard(router.graph.getFeedInfo());
+
+                    //set transit time as the one within the GTFS calendar
+                    LOG.warn("********* user given date: " + request.getDateTime());
+                    //get the day of the week
+                    Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(router.graph.getTransitServiceEnds()*1000);
+                    int serviceEndWeek = c.get(Calendar.WEEK_OF_YEAR);
+
+                    c.setTimeInMillis(request.getDateTime().getTime());
+                    int userGivendayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                    int userGivenHour = c.get(Calendar.HOUR_OF_DAY);
+                    int userGivenMin = c.get(Calendar.MINUTE);
+                    int userGivenSec = c.get(Calendar.SECOND);
+                    int userGivenYear = c.get(Calendar.YEAR);
+                    //int userGivenWeek = c.get(Calendar.WEEK_OF_YEAR);
+
+                    c.clear();
+                    c.set(Calendar.WEEK_OF_YEAR, serviceEndWeek-1);
+                    c.set(Calendar.YEAR, userGivenYear);
+                    c.set(Calendar.DAY_OF_WEEK, userGivendayOfWeek);
+                    c.set(Calendar.HOUR_OF_DAY, userGivenHour);
+                    c.set(Calendar.MINUTE, userGivenMin);
+                    c.set(Calendar.SECOND, userGivenSec);
+
+                    LOG.warn("********* user given date (new): " + c.getTime());
+
+                    request.setDateTime(c.getTime());
+
+                }
             }
         }
 
@@ -421,8 +483,10 @@ public abstract class RoutingResource {
         if (numItineraries != null)
             request.setNumItineraries(numItineraries);
 
-        if (maxWalkDistance != null)
+        if (maxWalkDistance != null) {
             request.setMaxWalkDistance(maxWalkDistance);
+            request.maxTransferWalkDistance = maxWalkDistance;
+        }
 
         if (maxPreTransitTime != null)
             request.setMaxPreTransitTime(maxPreTransitTime);
@@ -448,8 +512,8 @@ public abstract class RoutingResource {
         if (bikeSwitchCost != null)
             request.bikeSwitchCost = bikeSwitchCost;
 
-        
-        
+
+
         if (optimize != null) {
             // Optimize types are basically combined presets of routing parameters, except for triangle
             request.setOptimize(optimize);
@@ -551,8 +615,14 @@ public abstract class RoutingResource {
             request.transferSlack = minTransferTime; // TODO rename field in routingrequest
 
         if (maxTransferTime != null)
-        	request.maxTransferTime = maxTransferTime;
-        
+        	  request.maxTransferTime = maxTransferTime;
+
+        if (minTransferTimeHard != null)
+            request.minTransferTimeHard = minTransferTimeHard;
+
+        if (tripShownRangeTime != null)
+            request.tripShownRangeTime = tripShownRangeTime;
+
         if (nonpreferredTransferPenalty != null)
             request.nonpreferredTransferPenalty = nonpreferredTransferPenalty;
 
@@ -586,11 +656,24 @@ public abstract class RoutingResource {
         if (disableRemainingWeightHeuristic != null)
             request.disableRemainingWeightHeuristic = disableRemainingWeightHeuristic;
 
+        if (maxHours != null)
+            request.maxHours = maxHours;
+
+        if (useRequestedDateTimeInMaxHours != null)
+            request.useRequestedDateTimeInMaxHours = useRequestedDateTimeInMaxHours;
+
+        if (disableAlertFiltering != null)
+            request.disableAlertFiltering = disableAlertFiltering;
+
+        if (geoidElevation != null)
+            request.geoidElevation = geoidElevation;
+
         if (showNextFromDeparture != null)
             request.showNextFromDeparture = showNextFromDeparture;
-        
+
         //getLocale function returns defaultLocale if locale is null
         request.locale = ResourceBundleSingleton.INSTANCE.getLocale(locale);
+
         return request;
     }
 
