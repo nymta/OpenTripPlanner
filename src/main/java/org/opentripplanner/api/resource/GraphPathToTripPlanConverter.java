@@ -58,6 +58,7 @@ import java.util.*;
 public abstract class GraphPathToTripPlanConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphPathToTripPlanConverter.class);
+
     private static final double MAX_ZAG_DISTANCE = 30; // TODO add documentation, what is a "zag"?
 
     private static Map<String, List<String>> schoolDayBusTripIds = null;
@@ -253,8 +254,8 @@ public abstract class GraphPathToTripPlanConverter {
         fixupLegs(itinerary.legs, legsStates);
 
         itinerary.duration = lastState.getElapsedTimeSeconds();
-        itinerary.startTime = makeCalendar(states[0], request.getOrigTravelDateTime(), request.getDateTime());
-        itinerary.endTime = makeCalendar(lastState, request.getOrigTravelDateTime(), request.getDateTime());
+        itinerary.startTime = makeCalendar(states[0]);
+        itinerary.endTime = makeCalendar(lastState);
 
         calculateTimes(itinerary, states);
 
@@ -281,7 +282,7 @@ public abstract class GraphPathToTripPlanConverter {
         TimeZone timeZone = rctx.graph.getTimeZone();
         Calendar calendar = Calendar.getInstance(timeZone);
 
-        if (origRequestDate != null) {
+        if (origRequestDate != null && requestDate != null) {
             //if origRequestDate is not null, which means the original request travel data is beyond the current run board.
             //we need to repalce the travel time with original travel date.
             //get the day of the week
@@ -433,8 +434,8 @@ public abstract class GraphPathToTripPlanConverter {
 
         Edge[] edges = new Edge[states.length - 1];
 
-        leg.startTime = makeCalendar(states[0], request.getOrigTravelDateTime(), request.getDateTime());
-        leg.endTime = makeCalendar(states[states.length - 1], request.getOrigTravelDateTime(), request.getDateTime());
+        leg.startTime = makeCalendar(states[0]);
+        leg.endTime = makeCalendar(states[states.length - 1]);
 
         // Calculate leg distance and fill array of edges
         leg.distance = 0.0;
@@ -822,8 +823,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.agencyId = agency.getId();
             leg.agencyName = agency.getName();
             leg.agencyUrl = agency.getUrl();
-            TODO find out what I'm missing here
-//            leg.agencyBrandingUrl = agency.getBrandingUrl();
+            leg.agencyBrandingUrl = agency.getBrandingUrl();
             leg.headsign = states[1].getBackDirection();
             leg.route = states[states.length - 1].getBackEdge().getName(requestedLocale);
             leg.routeColor = route.getColor();
@@ -832,8 +832,7 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeShortName = route.getShortName();
             leg.routeTextColor = route.getTextColor();
             leg.routeType = route.getType();
-            //TODO find out what I'm missing here
-//            leg.routeBrandingUrl = route.getBrandingUrl();
+            leg.routeBrandingUrl = route.getBrandingUrl();
             leg.tripId = trip.getId();
             leg.tripShortName = trip.getTripShortName();
             leg.tripBlockId = trip.getBlockId();
@@ -892,7 +891,7 @@ public abstract class GraphPathToTripPlanConverter {
                     continue;
 
                 if (currentStop == previousStop) { // Avoid duplication of stops
-                    leg.stop.get(leg.stop.size() - 1).departure = makeCalendar(states[i], request.getOrigTravelDateTime(), request.getDateTime());
+                    leg.stop.get(leg.stop.size() - 1).departure = makeCalendar(states[i]);
                     continue;
                 }
 
@@ -931,8 +930,7 @@ public abstract class GraphPathToTripPlanConverter {
             name = ((StreetVertex) vertex).getIntersectionName(requestedLocale)
                     .toString(requestedLocale);
         }
-        Place place = new Place(vertex.getX(), vertex.getY(), name, makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()),
-                makeCalendar(state, request.getOrigTravelDateTime(), request.getDateTime()));
+        Place place = new Place(vertex.getX(), vertex.getY(), name, makeCalendar(state), makeCalendar(state));
 
         if (endOfLeg)
             edge = state.getBackEdge();
