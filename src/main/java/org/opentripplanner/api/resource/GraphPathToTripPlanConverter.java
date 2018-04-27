@@ -100,8 +100,7 @@ public abstract class GraphPathToTripPlanConverter {
         for (GraphPath path : paths) {
             Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, request.disableAlertFiltering, requestedLocale, request.showNextFromDeparture, request);
             itinerary = adjustItinerary(request, itinerary);
-
-            //TODO Simon what is happening here?
+            
             //check if the itinerary asks customer to get back to the origin place. If so, the itinerary is not a good one.
             if (isLoopbackItinerary(itinerary) && !request.hasIntermediatePlaces()) {
                 continue;

@@ -41,10 +41,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-//TODO this was a conflic It looks like the java.util functions have been explicitly called.
-//import java.util.*;
-//import java.util.stream.Collectors;
-
 /**
  * This class contains the logic for repeatedly building shortest path trees and
  * accumulating paths through the graph until the requested number of them have
@@ -244,8 +240,6 @@ public class GraphPathFinder {
         return paths;
     }
 
-    //TODO this was in conflict it is the start of new code Conveyal added.
-
     /**
      * Do a full reversed search to compact the legs of the path.
      *
@@ -377,7 +371,6 @@ public class GraphPathFinder {
         return reversedOptions;
     }
 
-    //TODO this appears to be new code added by we
     private static boolean filterOutPath(GraphPath path, RoutingRequest options) {
         return (graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options) || graphPathExceedsMaxTransferTime(path, options));
     }
