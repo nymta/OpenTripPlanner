@@ -115,18 +115,5 @@ public class HttpUtils {
         httpclient.setParams(httpParams);
 
         return httpclient;
-
-        //TODO it looks like this may have been reworked we still need to support
-        //username and passwords for RTD's GTFS RT but more HTTP client code could
-        //have been depricated since this was written
-        /*
-        * HttpClient httpClient = HttpClientBuilder.create()
-        *        .setDefaultSocketConfig(SocketConfig.custom().setSoTimeout(TIMEOUT_SOCKET).build())
-        *        .setConnectionTimeToLive(TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-        *        .build();
-        *
-
-        *return httpClient;
-        */
     }
 }

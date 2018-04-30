@@ -493,9 +493,6 @@ public class GraphIndex {
      * @return
      */
     public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate, boolean omitNonPickups) {
-        //TODO there was a conflic here originally the getStopTimesForStop was this indicating some code might break that calls the old method:
-        //public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate) {
-
         List<StopTimesInPattern> ret = new ArrayList<>();
         TimetableSnapshot snapshot = null;
         if (graph.timetableSnapshotSource != null) {
