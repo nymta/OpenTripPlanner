@@ -13,11 +13,13 @@
 
 package org.opentripplanner.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -33,17 +35,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.http.config.SocketConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
-
 import org.eclipse.jetty.util.StringUtil;
-
 
 public class HttpUtils {
     
     private static final long TIMEOUT_CONNECTION = 5000;
     private static final int TIMEOUT_CONNECTION_AS_INT = (int)TIMEOUT_CONNECTION;
     private static final int TIMEOUT_SOCKET = 5000;
+
+    private static final String SCHEME_FILE = "file";
 
     public static InputStream getData(String url) throws IOException {
         return getData(url, null, null);
@@ -59,7 +59,11 @@ public class HttpUtils {
 
     public static InputStream getDataWithAuthentication(String url, String requestHeaderName, String requestHeaderValue,
             String username, String password) throws ClientProtocolException, IOException {
-        HttpGet httpget = new HttpGet(url);
+        URI uri = URI.create(url);
+        if (SCHEME_FILE.equals(uri.getScheme())) {
+            return FileUtils.openInputStream(new File(uri.getPath()));
+        }
+        HttpGet httpget = new HttpGet(uri);
         if (requestHeaderValue != null) {
             httpget.addHeader(requestHeaderName, requestHeaderValue);
         }
