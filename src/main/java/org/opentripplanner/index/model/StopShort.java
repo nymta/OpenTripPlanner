@@ -19,6 +19,7 @@ public class StopShort {
     public double lon;
     public String url;
     public String cluster;
+    public int locationType;
 
     /** Distance to the stop when it is returned from a location-based query. */
     @JsonInclude(Include.NON_NULL) public Integer dist;
@@ -31,6 +32,7 @@ public class StopShort {
         lon = stop.getLon();
         url = stop.getUrl();
         cluster = stop.getParentStation(); // TODO harmonize these names, maybe use "station" everywhere
+        locationType = stop.getLocationType();
     }
 
     /** @param distance in integral meters, to avoid serializing a bunch of decimal places. */
