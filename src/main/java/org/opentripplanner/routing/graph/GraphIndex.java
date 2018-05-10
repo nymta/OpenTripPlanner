@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Calendar;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -204,7 +205,7 @@ public class GraphIndex {
         if (stopClusterSpatialIndex == null) {
             clusterStops();
             LOG.info("Creating a spatial index for stop clusters.");
-            stopClusterSpatialIndex = new HashGridSpatialIndex<StopCluster>();
+            stopClusterSpatialIndex = new HashGridSpatialIndex<>();
             for (StopCluster cluster : stopClusterForId.values()) {
                 Envelope envelope = new Envelope(new Coordinate(cluster.lon, cluster.lat));
                 stopClusterSpatialIndex.insert(envelope, cluster);
@@ -605,19 +606,8 @@ public class GraphIndex {
     }
 
     /**
-     * Stop clusters can be built in one of two ways, either by geographical proximity, or
+     * Stop clusters can be built in one of two ways, either by geographical proximity and name, or
      * according to a parent/child station topology, if it exists.
-     *
-     * Some challenges faced by DC and Trimet:
-     * FIXME OBA parentStation field is a string, not an AgencyAndId, so it has no agency/feed scope
-     * But the DC regional graph has no parent stations pre-defined, so no use dealing with them for now.
-     * However Trimet stops have "landmark" or Transit Center parent stations, so we don't use the parent stop field.
-     *
-     * We can't use a similarity comparison, we need exact matches. This is because many street names differ by only
-     * one letter or number, e.g. 34th and 35th or Avenue A and Avenue B.
-     * Therefore normalizing the names before the comparison is essential.
-     * The agency must provide either parent station information or a well thought out stop naming scheme to cluster
-     * stops -- no guessing is reasonable without that information.
      */
     public void clusterStops() {
         if (graph.stopClusterMode != null) {
@@ -626,48 +616,71 @@ public class GraphIndex {
                     clusterByParentStation();
                     break;
                 case "proximity":
-                    clusterByProximity();
+                    clusterByProximityAndName();
                     break;
                 default:
-                    clusterByProximity();
+                    clusterByProximityAndName();
             }
         } else {
-            clusterByProximity();
+            clusterByProximityAndName();
         }
     }
 
-    private void clusterByProximity() {
-        int psIdx = 0; // unique index for next parent stop
-        LOG.info("Clustering stops by geographic proximity and name...");
-        // Each stop without a cluster will greedily claim other stops without clusters.
-        for (Stop s0 : stopForId.values()) {
-            if (stopClusterForStop.containsKey(s0)) continue; // skip stops that have already been claimed by a cluster
-            String s0normalizedName = StopNameNormalizer.normalize(s0.getName());
-            StopCluster cluster = new StopCluster(String.format("C%03d", psIdx++), s0normalizedName);
-            // LOG.info("stop {}", s0normalizedName);
-            // No need to explicitly add s0 to the cluster. It will be found in the spatial index query below.
-            Envelope env = new Envelope(new Coordinate(s0.getLon(), s0.getLat()));
-            env.expandBy(SphericalDistanceLibrary.metersToLonDegrees(CLUSTER_RADIUS, s0.getLat()),
-                    SphericalDistanceLibrary.metersToDegrees(CLUSTER_RADIUS));
-            for (TransitStop ts1 : stopSpatialIndex.query(env)) {
-                Stop s1 = ts1.getStop();
-                double geoDistance = SphericalDistanceLibrary.fastDistance(
-                        s0.getLat(), s0.getLon(), s1.getLat(), s1.getLon());
-                if (geoDistance < CLUSTER_RADIUS) {
-                    String s1normalizedName = StopNameNormalizer.normalize(s1.getName());
-                    // LOG.info("   --> {}", s1normalizedName);
-                    // LOG.info("       geodist {} stringdist {}", geoDistance, stringDistance);
-                    if (s1normalizedName.equals(s0normalizedName)) {
-                        // Create a bidirectional relationship between the stop and its cluster
-                        cluster.children.add(s1);
-                        stopClusterForStop.put(s1, cluster);
-                    }
-                }
-            }
-            cluster.computeCenter();
-            stopClusterForId.put(cluster.id, cluster);
-        }
+    /**
+     * Cluster stops by proximity and name.
+     * This functionality was developed for the Washington, DC area and probably will not work anywhere else in the
+     * world. It depends on the exact way stops are named and the way street intersections are named in that geographic
+     * region and in the GTFS data sets which represent it. Based on comments, apparently it might work for TriMet
+     * as well.
+     *
+     * We can't use a name similarity comparison, we need exact matches. This is because many street names differ by
+     * only one letter or number, e.g. 34th and 35th or Avenue A and Avenue B. Therefore normalizing the names before
+     * the comparison is essential. The agency must provide either parent station information or a well thought out stop
+     * naming scheme to cluster stops -- no guessing is reasonable without that information.
+     */
+    private void clusterByProximityAndName() {
+    	int psIdx = 0; // unique index for next parent stop
+	    LOG.info("Clustering stops by geographic proximity and name...");
+	    // Each stop without a cluster will greedily claim other stops without clusters.
+	    for (Stop s0 : stopForId.values()) {
+	        if (stopClusterForStop.containsKey(s0)) continue; // skip stops that have already been claimed by a cluster
+	        String s0normalizedName = StopNameNormalizer.normalize(s0.getName());
+	        StopCluster cluster = new StopCluster(String.format("C%03d", psIdx++), s0normalizedName);
+	        // LOG.info("stop {}", s0normalizedName);
+	        // No need to explicitly add s0 to the cluster. It will be found in the spatial index query below.
+	        Envelope env = new Envelope(new Coordinate(s0.getLon(), s0.getLat()));
+	        env.expandBy(SphericalDistanceLibrary.metersToLonDegrees(CLUSTER_RADIUS, s0.getLat()),
+	                SphericalDistanceLibrary.metersToDegrees(CLUSTER_RADIUS));
+	        for (TransitStop ts1 : stopSpatialIndex.query(env)) {
+	            Stop s1 = ts1.getStop();
+	            double geoDistance = SphericalDistanceLibrary.fastDistance(
+	                    s0.getLat(), s0.getLon(), s1.getLat(), s1.getLon());
+	            if (geoDistance < CLUSTER_RADIUS) {
+	                String s1normalizedName = StopNameNormalizer.normalize(s1.getName());
+	                // LOG.info("   --> {}", s1normalizedName);
+	                // LOG.info("       geodist {} stringdist {}", geoDistance, stringDistance);
+	                if (s1normalizedName.equals(s0normalizedName)) {
+	                    // Create a bidirectional relationship between the stop and its cluster
+	                    cluster.children.add(s1);
+	                    stopClusterForStop.put(s1, cluster);
+	                }
+	            }
+	        }
+	        cluster.computeCenter();
+	        stopClusterForId.put(cluster.id, cluster);
+	    }
     }
+
+    /**
+     * Rather than using the names and geographic locations of stops to cluster them, group them by their declared
+     * parent station in the GTFS data. This should be a much more reliable method where these fields have been
+     * included in the GTFS data. However:
+     *
+     * FIXME OBA parentStation field is a string, not an AgencyAndId, so it has no agency/feed scope.
+     * That means it would only work reliably if there is only one GTFS feed loaded.
+     * The DC regional graph has no parent stations pre-defined, so we use the alternative proximity / name method.
+     * Trimet stops have "landmark" or Transit Center parent stations, so we don't use the parent stop field.
+     */
     private void clusterByParentStation() {
         LOG.info("Clustering stops by parent station...");
         for (Stop stop : stopForId.values()) {

@@ -24,7 +24,7 @@ import javax.ws.rs.core.Application;
 public class GrizzlyServer {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrizzlyServer.class);
-    
+
     static {
         // Remove existing handlers attached to the j.u.l root logger
         SLF4JBridgeHandler.removeHandlersForRootLogger();  // (since SLF4J 1.6.5)
@@ -86,7 +86,6 @@ public class GrizzlyServer {
 
         /* HTTP (non-encrypted) listener */
         NetworkListener httpListener = new NetworkListener("otp_insecure", params.bindAddress, params.port);
-        // OTP is CPU-bound, we don't want more threads than cores. TODO: We should switch to async handling.
         httpListener.setSecure(false);
 
         if (System.getProperty("otp.transport_same_thread") != null
@@ -143,19 +142,15 @@ public class GrizzlyServer {
             LOG.info("disabling native UI");
         }
 
-        /*
-         * 3. A static content handler to serve local files from the filesystem, under the "local"
-         * path.
-         */
+        /* 3. A static content handler to serve local files from the filesystem, under the "local" path. */
         if (params.clientDirectory != null) {
             StaticHttpHandler localHandler = new StaticHttpHandler(
                     params.clientDirectory.getAbsolutePath());
             localHandler.setFileCacheEnabled(false);
-            httpServer.getServerConfiguration().addHttpHandler(localHandler, params.clientPath);
-            LOG.info("deploying " + params.clientDirectory + " to path " + params.clientPath);
+            httpServer.getServerConfiguration().addHttpHandler(localHandler, "/local");
         }
 
-        /* 3. Test alternate method (no Jersey). */
+        /* 3. Test alternate HTTP handling without Jersey. */
         // As in servlets, * is needed in base path to identify the "rest" of the path.
         // GraphService gs = (GraphService) iocFactory.getComponentProvider(GraphService.class).getInstance();
         // Graph graph = gs.getGraph();
