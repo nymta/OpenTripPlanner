@@ -846,7 +846,6 @@ public class StreetEdge extends Edge implements Cloneable {
 
             // copy the wayId to the split edges, so we can trace them back to their parent if need be
             e1.wayId = this.wayId;
-            e2.wayId = this.wayId;
 
             // figure the lengths, ensuring that they sum to the length of this edge
             e1.calculateLengthFromGeometry();
