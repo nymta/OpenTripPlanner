@@ -947,11 +947,13 @@ public class GraphPathToTripPlanConverterTest {
         assertEquals(60000L, itinerary.endTime.getTimeInMillis());
 
         if (type == Type.FORWARD || type == Type.BACKWARD) {
-            assertEquals(27L, itinerary.walkTime);
+            assertEquals(23L, itinerary.walkTime);
+            assertEquals(4L, itinerary.bikeTime);
             assertEquals(23L, itinerary.transitTime);
             assertEquals(10L, itinerary.waitingTime);
         } else if (type == Type.ONBOARD) {
-            assertEquals(24L, itinerary.walkTime);
+            assertEquals(20L, itinerary.walkTime);
+            assertEquals(4L, itinerary.bikeTime);
             assertEquals(21L, itinerary.transitTime);
             assertEquals(9L, itinerary.waitingTime);
         }

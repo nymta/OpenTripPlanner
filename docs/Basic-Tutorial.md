@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # OpenTripPlanner Basic Tutorial
 
 This page will get you up and running with your own OTP server. If all goes well it should only take a few minutes!

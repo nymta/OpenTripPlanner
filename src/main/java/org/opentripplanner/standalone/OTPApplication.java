@@ -76,6 +76,8 @@ public class OTPApplication extends Application {
             SimpleIsochrone.class,
             TileService.class,
             BikeRental.class,
+            GraphVersionResource.class,
+            RoutingDefaultsResource.class,
             LIsochrone.class,
             ExternalGeocoderResource.class,
             TimeGridWs.class,
@@ -97,7 +99,9 @@ public class OTPApplication extends Application {
             ParkAndRideResource.class,
             /* Features and Filters: extend Jersey, manipulate requests and responses. */
             CorsFilter.class,
-            MultiPartFeature.class
+            MultiPartFeature.class,
+            NearbySchedulesResource.class,
+            RoutePatternsResource.class
         ));
         
         if (this.secure) {

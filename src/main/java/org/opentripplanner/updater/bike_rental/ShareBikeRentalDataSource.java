@@ -135,7 +135,7 @@ public class ShareBikeRentalDataSource extends GenericJsonBikeRentalDataSource {
 			super.setUrl(url);
 		}
 	}
-
-
+	
+	
 
 }

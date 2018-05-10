@@ -8,7 +8,7 @@
 
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.3.0.0-rtd-SNAPSHOT</version>
+    <version>1.3.0.20-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -75,13 +75,17 @@
         <connection>scm:git:http://github.com/camsys/OpenTripPlanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/camsys/OpenTripPlanner.git</developerConnection>
         <url>http://github.com/camsys/OpenTripPlanner</url>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
 
     <properties>
         <geotools.version>10.5</geotools.version>
         <jackson.version>2.5.3</jackson.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <aws.version>1.9.39</aws.version>
+        <aws.version>1.11.104</aws.version>
+        <site_id>developer.onebusaway.org</site_id>
+        <site_deployment_base>scp://developer.onebusaway.org/var/www/sites/developer/modules</site_deployment_base>
+        <site_url>${site_deployment_base}/${project.name}/${project.version}</site_url>
     </properties>
 
     <distributionManagement>
@@ -95,6 +99,10 @@
         <name>Nexus Snapshot Repo</name>
         <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
       </snapshotRepository>
+      <site>
+        <id>${site_id}</id>
+        <url>${site_url}</url>
+      </site>
     </distributionManagement>
 
     <build>
@@ -179,7 +187,7 @@
             <plugin>
                 <groupId>com.webcohesion.enunciate</groupId>
                 <artifactId>enunciate-maven-plugin</artifactId>
-                <version>2.4.0</version>
+                <version>2.8.0</version>
                 <executions>
                     <execution>
                         <!-- override default binding to process-sources phase (enunciate generates web services). -->
@@ -252,6 +260,11 @@
                     <!-- Jenkins needs XML test reports to determine whether the build is stable. -->
                     <disableXmlReport>false</disableXmlReport>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.3</version>
             </plugin>
             <plugin>
                 <!-- Get current Git commit information for use in MavenVersion class.
@@ -360,7 +373,7 @@
             </plugin>
         </plugins>
         <!-- In Maven 3, ssh wagon is no longer enabled by default. Since many of our internal deployments use ssh, we enable
--          it here -->
+          it here -->
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
@@ -462,6 +475,16 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-cloudwatch</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-autoscaling</artifactId>
             <version>${aws.version}</version>
         </dependency>
         <!-- Fast drop-in serialization including compound value types (structs) for Java -->
@@ -664,6 +687,12 @@
             <artifactId>onebusaway-gtfs</artifactId>
             <version>1.3.20</version>
         </dependency>
+        <!-- GTFS-RT classes (with extensions) - from OBA -->
+        <dependency>
+          <groupId>org.onebusaway</groupId>
+          <artifactId>onebusaway-gtfs-realtime-api</artifactId>
+          <version>1.2.6</version>
+        </dependency>
         <!-- Processing is used for the debug GUI (though we could probably use just Java2D) -->
         <dependency>
             <groupId>org.processing</groupId>
@@ -714,13 +743,6 @@
             <artifactId>commons-compress</artifactId>
             <version>1.0</version>
         </dependency>
-        
-		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.9</version>
-		</dependency>
-        
         <dependency>
             <groupId>commons-discovery</groupId>
             <artifactId>commons-discovery</artifactId>
@@ -814,8 +836,7 @@
             <artifactId>traffic-engine</artifactId>
             <version>0.2</version>
         </dependency>
-
-        <!-- r5 is needed only so that we can delegate Analyst work to it -->
+        <!-- R5 may eventually be an alternate routing option within OTP, and provides Graph serialization. -->
         <dependency>
             <groupId>com.conveyal</groupId>
             <artifactId>r5</artifactId>
@@ -826,6 +847,12 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.webcohesion.enunciate</groupId>
+            <artifactId>enunciate-core</artifactId>
+            <version>2.8.0</version>
         </dependency>
     </dependencies>
 

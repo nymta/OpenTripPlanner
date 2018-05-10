@@ -1087,7 +1087,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             float carSpeed = wayPropertySet.getCarSpeedForWay(way, back);
 
             StreetEdge street = edgeFactory.createEdge(startEndpoint, endEndpoint, geometry, name, length,
-                    permissions, back);
+                    permissions, back, way.getId());
             street.setCarSpeed(carSpeed);
 
             String highway = way.getTag("highway");
@@ -1130,9 +1130,6 @@ public class OpenStreetMapModule implements GraphBuilderModule {
             if (customNamer != null) {
                 customNamer.nameWithEdge(way, street);
             }
-
-            // save the way ID so we can match with OpenTraffic
-            street.wayId = way.getId();
 
             return street;
         }

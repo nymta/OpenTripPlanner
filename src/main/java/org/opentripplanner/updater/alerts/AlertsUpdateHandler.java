@@ -15,6 +15,7 @@ package org.opentripplanner.updater.alerts;
 
 import java.util.*;
 
+import com.google.transit.realtime.GtfsRealtimeOneBusAway;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
@@ -83,7 +84,7 @@ public class AlertsUpdateHandler {
                     bestStartTime = realStart;
                 }
                 final long end = activePeriod.hasEnd() ? activePeriod.getEnd() : Long.MAX_VALUE;
-                if (end > lastEndTime) {
+                if (end < Long.MAX_VALUE && end > lastEndTime) {
                     lastEndTime = end;
                 }
                 periods.add(new TimePeriod(start, end));
@@ -108,6 +109,8 @@ public class AlertsUpdateHandler {
             String routeId = null;
             if (informed.hasRouteId()) {
                 routeId = informed.getRouteId();
+            } else if (informed.hasTrip() && informed.getTrip().hasRouteId())  {
+                routeId = informed.getTrip().getRouteId();
             }
 
             int direction;
@@ -132,6 +135,15 @@ public class AlertsUpdateHandler {
                 agencyId = informed.getAgencyId().intern();
             }
 
+            String elevatorId = null;
+            if (informed.hasExtension(GtfsRealtimeOneBusAway.obaEntitySelector)) {
+                GtfsRealtimeOneBusAway.OneBusAwayEntitySelector entitySelector =
+                        informed.getExtension(GtfsRealtimeOneBusAway.obaEntitySelector);
+                if (entitySelector.hasElevatorId()) {
+                    elevatorId = entitySelector.getElevatorId();
+                }
+            }
+
             AlertPatch patch = new AlertPatch();
             patch.setFeedId(feedId);
             if (routeId != null) {
@@ -150,6 +162,9 @@ public class AlertsUpdateHandler {
             if (agencyId != null && routeId == null && tripId == null && stopId == null) {
                 patch.setAgencyId(agencyId);
             }
+            if (elevatorId != null) {
+                patch.setElevatorId(elevatorId);
+            }
             patch.setTimePeriods(periods);
             patch.setAlert(alertText);
 
@@ -164,8 +179,10 @@ public class AlertsUpdateHandler {
         return id + " "
             + (informed.hasAgencyId  () ? informed.getAgencyId  () : " null ") + " "
             + (informed.hasRouteId   () ? informed.getRouteId   () : " null ") + " "
+            + (informed.hasTrip() && informed.getTrip().hasRouteId() ?
+                informed.getTrip().getRouteId() : " null ") + " "
             + (informed.hasTrip() && informed.getTrip().hasDirectionId() ?
-                informed.getTrip().hasDirectionId() : " null ") + " "
+                informed.getTrip().getDirectionId() : " null ") + " "
             + (informed.hasRouteType () ? informed.getRouteType () : " null ") + " "
             + (informed.hasStopId    () ? informed.getStopId    () : " null ") + " "
             + (informed.hasTrip() && informed.getTrip().hasTripId() ?

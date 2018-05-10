@@ -16,10 +16,13 @@ package org.opentripplanner.api.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
+import org.opentripplanner.routing.alertpatch.Alert;
 
 /**
  * A TripPlan is a set of ways to get from point A to point B at time T.
@@ -46,6 +49,8 @@ public class TripPlan {
     @JsonProperty(value="itineraries")
     public List<Itinerary> itinerary = new ArrayList<Itinerary>();
 
+    public List<LocalizedAlert> alerts;
+
     public TripPlan() { }
 
     public TripPlan(Place from, Place to, Date date) {
@@ -64,5 +69,13 @@ public class TripPlan {
 
     public void addItinerary(Itinerary itinerary) {
         this.itinerary.add(itinerary);
+    }
+
+    public void addAlert(Alert alert, Locale locale) {
+        if (alerts == null) {
+            alerts = new ArrayList<>();
+        }
+        LocalizedAlert la = new LocalizedAlert(alert, locale);
+        alerts.add(la);
     }
 }

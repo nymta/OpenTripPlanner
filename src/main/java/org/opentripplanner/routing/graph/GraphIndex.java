@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Calendar;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -42,10 +43,12 @@ import org.opentripplanner.profile.StopNameNormalizer;
 import org.opentripplanner.profile.StopTreeCache;
 import org.opentripplanner.routing.algorithm.AStar;
 import org.opentripplanner.routing.algorithm.TraverseVisitor;
+import org.opentripplanner.routing.core.RouteMatcher;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.TablePatternEdge;
 import org.opentripplanner.routing.edgetype.Timetable;
 import org.opentripplanner.routing.edgetype.TimetableSnapshot;
@@ -91,10 +94,11 @@ public class GraphIndex {
     public final Multimap<String, TripPattern> patternsForFeedId = ArrayListMultimap.create();
     public final Multimap<Route, TripPattern> patternsForRoute = ArrayListMultimap.create();
     public final Multimap<Stop, TripPattern> patternsForStop = ArrayListMultimap.create();
-    public final Multimap<String, Stop> stopsForParentStation = ArrayListMultimap.create();
+    public final Multimap<AgencyAndId, Stop> stopsForParentStation = ArrayListMultimap.create();
     final HashGridSpatialIndex<TransitStop> stopSpatialIndex = new HashGridSpatialIndex<TransitStop>();
     public final Map<Stop, StopCluster> stopClusterForStop = Maps.newHashMap();
     public final Map<String, StopCluster> stopClusterForId = Maps.newHashMap();
+    public final Multimap<String, PathwayEdge> pathwayForElevator = ArrayListMultimap.create();
 
     /* Should eventually be replaced with new serviceId indexes. */
     private final CalendarService calendarService;
@@ -142,6 +146,12 @@ public class GraphIndex {
                 TripPattern pattern = patternEdge.getPattern();
                 patternForId.put(pattern.code, pattern);
             }
+            if (edge instanceof PathwayEdge) {
+                PathwayEdge pathwayEdge = (PathwayEdge) edge;
+                if (pathwayEdge.isElevator()) {
+                    pathwayForElevator.put(pathwayEdge.getPathwayCode(), pathwayEdge);
+                }
+            }
         }
         for (Vertex vertex : vertices) {
             vertexForId.put(vertex.getLabel(), vertex);
@@ -150,7 +160,8 @@ public class GraphIndex {
                 Stop stop = transitStop.getStop();
                 stopForId.put(stop.getId(), stop);
                 stopVertexForStop.put(stop, transitStop);
-                stopsForParentStation.put(stop.getParentStation(), stop);
+                AgencyAndId parent = new AgencyAndId(stop.getId().getAgencyId(), stop.getParentStation());
+                stopsForParentStation.put(parent, stop);
             }
         }
         for (TransitStop stopVertex : stopVertexForStop.values()) {
@@ -347,7 +358,7 @@ public class GraphIndex {
             Vertex vertex = state.getVertex();
             if (vertex instanceof TransitStop) {
                 stopsFound.add(new StopAndDistance(((TransitStop) vertex).getStop(),
-                    (int) state.getElapsedTimeSeconds()));
+                        (int) state.getElapsedTimeSeconds()));
             }
         }
     }
@@ -404,8 +415,8 @@ public class GraphIndex {
      * @param omitNonPickups If true, do not include vehicles that will not pick up passengers.
      * @return
      */
-    public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups) {
-
+    public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
+                                                     RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes) {
         if (startTime == 0) {
             startTime = System.currentTimeMillis() / 1000;
         }
@@ -417,7 +428,28 @@ public class GraphIndex {
         Date date = new Date(startTime * 1000);
         ServiceDate[] serviceDates = {new ServiceDate(date).previous(), new ServiceDate(date), new ServiceDate(date).next()};
 
-        for (TripPattern pattern : patternsForStop.get(stop)) {
+        List<TripPattern> tripPatterns = new ArrayList<>(patternsForStop.get(stop));
+        if (snapshot != null) {
+            tripPatterns.addAll(snapshot.getTripPatternsForStop(stop));
+        }
+        for (TripPattern pattern : tripPatterns) {
+
+            if (!routeMatcher.isEmpty() && !routeMatcher.matches(pattern.route)) {
+                continue;
+            }
+
+            if (direction != null && direction != pattern.directionId) {
+                continue;
+            }
+
+            if(bannedRouteTypes != null && bannedRouteTypes.contains(pattern.route.getType())) {
+                continue;
+            }
+
+            if(bannedAgencies != null && bannedAgencies.contains(pattern.route.getAgency().getId())){
+                continue;
+            }
+
 
             // Use the Lucene PriorityQueue, which has a fixed size
             PriorityQueue<TripTimeShort> pq = new PriorityQueue<TripTimeShort>(numberOfDepartures) {
@@ -448,9 +480,10 @@ public class GraphIndex {
                         if(omitNonPickups && pattern.stopPattern.pickups[sidx] == pattern.stopPattern.PICKDROP_NONE) continue;
                         for (TripTimes t : tt.tripTimes) {
                             if (!sd.serviceRunning(t.serviceCode)) continue;
+                            if (headsign != null && !t.getHeadsign(sidx).equals(headsign)) continue;
                             if (t.getDepartureTime(sidx) != -1 &&
                                     t.getDepartureTime(sidx) >= secondsSinceMidnight) {
-                                pq.insertWithOverflow(new TripTimeShort(t, sidx, stop, sd));
+                                pq.insertWithOverflow(new TripTimeShort(pattern, t, sidx, stop, sd, graph.getTimeZone()));
                             }
                         }
 
@@ -463,7 +496,7 @@ public class GraphIndex {
                                     freq.tripTimes.getDepartureTime(0);
                             int i = 0;
                             while (departureTime <= lastDeparture && i < numberOfDepartures) {
-                                pq.insertWithOverflow(new TripTimeShort(freq.materialize(sidx, departureTime, true), sidx, stop, sd));
+                                pq.insertWithOverflow(new TripTimeShort(pattern, freq.materialize(sidx, departureTime, true), sidx, stop, sd, graph.getTimeZone()));
                                 departureTime += freq.headway;
                                 i++;
                             }
@@ -482,6 +515,14 @@ public class GraphIndex {
             }
         }
         return ret;
+    }
+
+    public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups, RouteMatcher routeMatcher, String headsign) {
+        return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, null, headsign, null, null);
+    }
+
+    public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups) {
+        return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, RouteMatcher.emptyMatcher(), null);
     }
 
     /**
@@ -514,7 +555,7 @@ public class GraphIndex {
                     if(omitNonPickups && pattern.stopPattern.pickups[sidx] == pattern.stopPattern.PICKDROP_NONE) continue;
                     for (TripTimes t : tt.tripTimes) {
                         if (!sd.serviceRunning(t.serviceCode)) continue;
-                        stopTimes.times.add(new TripTimeShort(t, sidx, stop, sd));
+                        stopTimes.times.add(new TripTimeShort(pattern, t, sidx, stop, sd, graph.getTimeZone()));
                     }
                 }
                 sidx++;
@@ -522,6 +563,18 @@ public class GraphIndex {
             ret.add(stopTimes);
         }
         return ret;
+    }
+
+    /**
+     * Get parent stop for given stop.
+     */
+    public Stop getParentStopForStop(Stop stop) {
+        String ps = stop.getParentStation();
+        if (ps == null) {
+            return null;
+        }
+        AgencyAndId pid = new AgencyAndId(stop.getId().getAgencyId(), ps);
+        return graph.parentStopById.get(pid);
     }
 
     /** Fetch a cache of nearby intersection distances for every transit stop in this graph, lazy-building as needed. */
@@ -557,7 +610,7 @@ public class GraphIndex {
      * according to a parent/child station topology, if it exists.
      */
     public void clusterStops() {
-    	if (graph.stopClusterMode != null) {
+        if (graph.stopClusterMode != null) {
             switch (graph.stopClusterMode) {
                 case "parentStation":
                     clusterByParentStation();
@@ -630,24 +683,24 @@ public class GraphIndex {
      */
     private void clusterByParentStation() {
         LOG.info("Clustering stops by parent station...");
-    	for (Stop stop : stopForId.values()) {
-    	    String ps = stop.getParentStation();
-    	    if (ps == null || ps.isEmpty()) {
-    	        continue;
-    	    }
-    	    StopCluster cluster;
-    	    if (stopClusterForId.containsKey(ps)) {
-    	        cluster = stopClusterForId.get(ps);
-    	    } else {
-    	        cluster = new StopCluster(ps, stop.getName());
-    	        Stop parent = graph.parentStopById.get(new AgencyAndId(stop.getId().getAgencyId(), ps));
+        for (Stop stop : stopForId.values()) {
+            String ps = stop.getParentStation();
+            if (ps == null || ps.isEmpty()) {
+                continue;
+            }
+            StopCluster cluster;
+            if (stopClusterForId.containsKey(ps)) {
+                cluster = stopClusterForId.get(ps);
+            } else {
+                cluster = new StopCluster(ps, stop.getName());
+                Stop parent = graph.parentStopById.get(new AgencyAndId(stop.getId().getAgencyId(), ps));
                 cluster.setCoordinates(parent.getLat(), parent.getLon());
                 stopClusterForId.put(ps, cluster);
 
-	        }
-    	    cluster.children.add(stop);
-    	    stopClusterForStop.put(stop, cluster);
-    	}
+            }
+            cluster.children.add(stop);
+            stopClusterForStop.put(stop, cluster);
+        }
     }
 
     public Response getGraphQLResponse(String query, Map<String, Object> variables, String operationName) {

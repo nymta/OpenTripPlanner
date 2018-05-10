@@ -2,8 +2,9 @@ package org.opentripplanner.routing.spt;
 
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.edgetype.SimpleTransfer;
 import org.opentripplanner.routing.edgetype.StreetEdge;
+import org.opentripplanner.routing.edgetype.TimedTransferEdge;
+import org.opentripplanner.routing.edgetype.TransferEdge;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -46,11 +47,18 @@ public abstract class DominanceFunction implements Serializable {
             return false;
         }
 
-        // The result of a SimpleTransfer must not block alighting normally from transit. States that are results of
-        // SimpleTransfers are incomparable with states that are not the result of SimpleTransfers.
-        if ((a.backEdge instanceof SimpleTransfer) != (b.backEdge instanceof SimpleTransfer)) {
+        // The result of a TransferEdge must not block alighting normally from transit. States that are results of
+        // TransferEdge are incomparable with states that are not the result of TransferEdge.
+        if ((a.backEdge instanceof TransferEdge) != (b.backEdge instanceof TransferEdge)) {
             return false;
         }
+
+        // A TimedTransferEdge cannot be trusted to dominate another state, since its resulting state can be invalidated
+        // when checking the specificity of the transfer
+        if ((a.backEdge instanceof TimedTransferEdge) || (b.backEdge instanceof TimedTransferEdge)) {
+            return false;
+        }
+
 
         // Does one state represent riding a rented bike and the other represent walking before/after rental?
         if (a.isBikeRenting() != b.isBikeRenting()) {
@@ -65,6 +73,10 @@ public abstract class DominanceFunction implements Serializable {
 
         // Does one state represent driving a car and the other represent walking after the car was parked?
         if (a.isCarParked() != b.isCarParked()) {
+            return false;
+        }
+
+        if (a.isUsingCar() != b.isUsingCar()) {
             return false;
         }
 

@@ -40,7 +40,6 @@ import org.eclipse.jetty.util.StringUtil;
 public class HttpUtils {
     
     private static final long TIMEOUT_CONNECTION = 5000;
-    private static final int TIMEOUT_CONNECTION_AS_INT = (int)TIMEOUT_CONNECTION;
     private static final int TIMEOUT_SOCKET = 5000;
 
     private static final String SCHEME_FILE = "file";
@@ -104,7 +103,7 @@ public class HttpUtils {
 
     private static HttpClient getClient(String username, String password) {
         HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, TIMEOUT_CONNECTION_AS_INT);
+        HttpConnectionParams.setConnectionTimeout(httpParams, (int) TIMEOUT_CONNECTION);
         HttpConnectionParams.setSoTimeout(httpParams, TIMEOUT_SOCKET);
         DefaultHttpClient httpclient = new DefaultHttpClient();
 

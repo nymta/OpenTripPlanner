@@ -16,11 +16,9 @@ package org.opentripplanner.index;
 import com.beust.jcommander.internal.Lists;
 import com.beust.jcommander.internal.Sets;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.webcohesion.enunciate.metadata.Ignore;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FeedInfo;
@@ -36,15 +34,20 @@ import org.opentripplanner.index.model.RouteShort;
 import org.opentripplanner.index.model.StopClusterDetail;
 import org.opentripplanner.index.model.StopShort;
 import org.opentripplanner.index.model.StopTimesInPattern;
+import org.opentripplanner.index.model.TransferShort;
 import org.opentripplanner.index.model.TripShort;
 import org.opentripplanner.index.model.TripTimeShort;
+import org.opentripplanner.model.Landmark;
 import org.opentripplanner.profile.StopCluster;
-import org.opentripplanner.routing.edgetype.SimpleTransfer;
+import org.opentripplanner.routing.edgetype.StreetTransitLink;
 import org.opentripplanner.routing.edgetype.Timetable;
+import org.opentripplanner.routing.edgetype.TransferEdge;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
+import org.opentripplanner.routing.vertextype.StreetVertex;
+import org.opentripplanner.routing.vertextype.TransitStationStop;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.standalone.OTPServer;
 import org.opentripplanner.standalone.Router;
@@ -69,6 +72,7 @@ import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -76,7 +80,6 @@ import java.util.Map;
 import java.util.Set;
 
 // TODO move to org.opentripplanner.api.resource, this is a Jersey resource class
-
 @Path("/routers/{routerId}/index")    // It would be nice to get rid of the final /index.
 @Produces(MediaType.APPLICATION_JSON) // One @Produces annotation for all endpoints.
 public class IndexAPI {
@@ -188,23 +191,27 @@ public class IndexAPI {
            @QueryParam("maxLon") Double maxLon,
            @QueryParam("lat")    Double lat,
            @QueryParam("lon")    Double lon,
-           @QueryParam("radius") Double radius) {
+           @QueryParam("radius") Double radius,
+           @QueryParam("debug") Boolean debug) {
 
-       /* When no parameters are supplied, return all stops. */
-       if (uriInfo.getQueryParameters().isEmpty()) {
-           Collection<Stop> stops = index.stopForId.values();
-           return Response.status(Status.OK).entity(StopShort.list(stops)).build();
-       }
+       List<StopShort> stops;
+
        /* If any of the circle parameters are specified, expect a circle not a box. */
        boolean expectCircle = (lat != null || lon != null || radius != null);
-       if (expectCircle) {
+
+       /* When no parameters are supplied, return all stops. */
+       if (uriInfo.getQueryParameters().isEmpty() || (uriInfo.getQueryParameters().size() == 1 && debug != null)) {
+           Collection<Stop> in = index.stopForId.values();
+           stops = StopShort.list(in);
+       }
+       else if (expectCircle) {
            if (lat == null || lon == null || radius == null || radius < 0) {
                return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
            }
            if (radius > MAX_STOP_SEARCH_RADIUS){
                radius = MAX_STOP_SEARCH_RADIUS;
            }
-           List<StopShort> stops = Lists.newArrayList(); 
+           stops = Lists.newArrayList();
            Coordinate coord = new Coordinate(lon, lat);
            for (TransitStop stopVertex : streetIndex.getNearbyTransitStops(
                     new Coordinate(lon, lat), radius)) {
@@ -213,7 +220,6 @@ public class IndexAPI {
                    stops.add(new StopShort(stopVertex.getStop(), (int) distance));
                }
            }
-           return Response.status(Status.OK).entity(stops).build();
        } else {
            /* We're not circle mode, we must be in box mode. */
            if (minLat == null || minLon == null || maxLat == null || maxLon == null) {
@@ -222,13 +228,23 @@ public class IndexAPI {
            if (maxLat <= minLat || maxLon <= minLon) {
                return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
            }
-           List<StopShort> stops = Lists.newArrayList();
+           stops = Lists.newArrayList();
            Envelope envelope = new Envelope(new Coordinate(minLon, minLat), new Coordinate(maxLon, maxLat));
            for (TransitStop stopVertex : streetIndex.getTransitStopForEnvelope(envelope)) {
                stops.add(new StopShort(stopVertex.getStop()));
            }
-           return Response.status(Status.OK).entity(stops).build();           
        }
+       if (debug != null && debug) {
+           for (StopShort stop : stops) {
+               TransitStop tstop = index.stopVertexForStop.get(index.stopForId.get(stop.id));
+               if (tstop.shouldLinkToStreet()) {
+                   stop.distance = tstop.getDistance();
+                   stop.wayId = tstop.getOsmWay();
+               }
+           }
+       }
+
+       return Response.status(Status.OK).entity(stops).build();
    }
 
    @GET
@@ -304,39 +320,40 @@ public class IndexAPI {
         Stop stop = index.stopForId.get(GtfsLibrary.convertIdFromString(stopIdString));
         
         if (stop != null) {
+            Collection<TransferShort> out = Sets.newHashSet();
+
             // get the transfers for the stop
             TransitStop v = index.stopVertexForStop.get(stop);
-            Collection<Edge> transfers = Collections2.filter(v.getOutgoing(), new Predicate<Edge>() {
-                @Override
-                public boolean apply(Edge edge) {
-                    return edge instanceof SimpleTransfer;
+            for (Edge edge : v.getOutgoing()) {
+                if (edge instanceof TransferEdge) {
+                    out.add(new TransferShort((TransferEdge) edge));
                 }
-            });
-            
-            Collection<Transfer> out = Collections2.transform(transfers, new Function<Edge, Transfer> () {
-                @Override
-                public Transfer apply(Edge edge) {
-                    // TODO Auto-generated method stub
-                    return new Transfer((SimpleTransfer) edge);
-                }
-            });
-            
+            }
+
             return Response.status(Status.OK).entity(out).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
         }
     }
-    
-   /** Return a list of all routes in the graph. */
-   // with repeated hasStop parameters, replaces old routesBetweenStops
+
+    /**
+     *  Return a list of all routes in the graph.
+     *
+     * @param mode only return routes of these modes. Comma-separated list. Valid values are TRAM, SUBWAY, RAIL, BUS, FERRY, CABLE_CAR, GONDOLA, FUNICULAR. (optional)
+     * @param stopIds only return routes which include the stops (optional)
+     * @return
+     */
    @GET
    @Path("/routes")
-   public Response getRoutes (@QueryParam("hasStop") List<String> stopIds) {
+   public Response getRoutes (@QueryParam("mode") String mode, @QueryParam("hasStop") List<String> stopIds) {
+
        Collection<Route> routes = index.routeForId.values();
+
+       // Protective copy, we are going to calculate the intersection destructively when we filter Modes and Stops
+       routes = Lists.newArrayList(routes);
+
        // Filter routes to include only those that pass through all given stops
        if (stopIds != null) {
-           // Protective copy, we are going to calculate the intersection destructively
-           routes = Lists.newArrayList(routes);
            for (String stopId : stopIds) {
                Stop stop = index.stopForId.get(GtfsLibrary.convertIdFromString(stopId));
                if (stop == null) return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
@@ -347,6 +364,19 @@ public class IndexAPI {
                routes.retainAll(routesHere);
            }
        }
+
+       // Filter routes that don't include the modes that we care about
+       if (mode != null) {
+           List<String> modeList = Arrays.asList(mode.split("\\s*,\\s*"));
+           Set<Route> routesHere = Sets.newHashSet();
+           for( Route route : routes ){
+               if(modeList.contains(GtfsLibrary.getTraverseMode(route).name())){
+                   routesHere.add(route);
+               }
+           }
+           routes.retainAll(routesHere);
+       }
+
        return Response.status(Status.OK).entity(RouteShort.list(routes)).build();
    }
 
@@ -612,6 +642,29 @@ public class IndexAPI {
         }
     }
 
+    /** Get all landmark names */
+    @GET
+    @Path("/landmarks")
+    public Response getLandmarks() {
+        Set<String> landmarks = index.graph.landmarksByName.keySet();
+        return Response.status(Status.OK).entity(landmarks).build();
+    }
+
+    /** Get all stops associated with a given landmark. */
+    @GET
+    @Path("/landmarks/{landmark}")
+    public Response getLandmarkStops(@PathParam("landmark") String name) {
+        Landmark landmark = index.graph.landmarksByName.get(name);
+        if (landmark == null) {
+            return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
+        }
+        List<StopShort> response = new ArrayList<>();
+        for (TransitStationStop stop : landmark.getStops()) {
+            response.add(new StopShort(stop.getStop()));
+        }
+        return Response.status(Status.OK).entity(response).build();
+    }
+
     @POST
     @Path("/graphql")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -640,20 +693,5 @@ public class IndexAPI {
     @Consumes("application/graphql")
     public Response getGraphQL (String query) {
         return index.getGraphQLResponse(query, new HashMap<>(), null);
-    }
-
-    /** Represents a transfer from a stop */
-    private static class Transfer {
-        /** The stop we are connecting to */
-        public String toStopId;
-        
-        /** the on-street distance of the transfer (meters) */
-        public double distance;
-        
-        /** Make a transfer from a simpletransfer edge from the graph. */
-        public Transfer(SimpleTransfer e) {
-            toStopId = GtfsLibrary.convertIdToString(((TransitStop) e.getToVertex()).getStopId());
-            distance = e.getDistance();
-        }
     }
 }

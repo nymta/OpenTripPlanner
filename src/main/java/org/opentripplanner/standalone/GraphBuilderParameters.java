@@ -102,7 +102,7 @@ public class GraphBuilderParameters {
      * A custom OSM namer to use.
      */
     public final CustomNamer customNamer;
-    
+
     /**
      * Custom OSM way properties
      */
@@ -127,13 +127,13 @@ public class GraphBuilderParameters {
      * Maximal distance between stops in meters that will connect consecutive trips that are made with same vehicle
      */
     public int maxInterlineDistance = 200;
-    
+
     /**
      * This field indicates the pruning threshold for islands without stops.
      * Any such island under this size will be pruned.
      */
     public final int pruningThresholdIslandWithoutStops;
-    
+
     /**
      * This field indicates the pruning threshold for islands with stops.
      * Any such island under this size will be pruned.
@@ -156,6 +156,11 @@ public class GraphBuilderParameters {
      * Transfers up to this length in meters will be pre-calculated and included in the Graph.
      */
     public final double maxTransferDistance;
+
+    /**
+     * If set, stop_times will be ignored if they are longer than this time.
+     */
+    public final long maxHopTime;
 
     /**
      * Set all parameters from the given Jackson JSON tree, applying defaults.
@@ -190,6 +195,7 @@ public class GraphBuilderParameters {
         banDiscouragedWalking = config.path("banDiscouragedWalking").asBoolean(false);
         banDiscouragedBiking = config.path("banDiscouragedBiking").asBoolean(false);
         maxTransferDistance = config.path("maxTransferDistance").asDouble(2000);
+        maxHopTime = config.path("maxHopTime").asLong(Long.MAX_VALUE);
     }
 
 }

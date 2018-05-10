@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.google.common.collect.Multimap;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
@@ -32,6 +31,7 @@ import org.opentripplanner.api.adapters.AgencyAndIdAdapter;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.PreAlightEdge;
 import org.opentripplanner.routing.edgetype.PreBoardEdge;
+import org.opentripplanner.routing.edgetype.TransitBoardAlight;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -79,6 +79,11 @@ public class AlertPatch implements Serializable {
      * Direction id of the GTFS trips this alert concerns, set to -1 if no direction.
      */
     private int directionId = -1;
+
+    /** Whether alert affects routing (only elevator alerts) */
+    private boolean routingConsequence = false;
+
+    private String elevatorId;
 
     @XmlElement
     public Alert getAlert() {
@@ -133,13 +138,15 @@ public class AlertPatch implements Serializable {
 
             if (tripPatterns != null) {
                 for (TripPattern tripPattern : tripPatterns) {
+
                     if (direction != null && !direction.equals(tripPattern.getDirection())) {
                         continue;
                     }
-                    if (directionId != -1 && directionId == tripPattern.directionId) {
+                    if (directionId != -1 && directionId != tripPattern.directionId) {
                         continue;
                     }
                     for (int i = 0; i < tripPattern.stopPattern.stops.length; i++) {
+
                         if (stop == null || stop.equals(tripPattern.stopPattern.stops[i])) {
                             graph.addAlertPatch(tripPattern.boardEdges[i], this);
                             graph.addAlertPatch(tripPattern.alightEdges[i], this);
@@ -150,18 +157,23 @@ public class AlertPatch implements Serializable {
         } else if (stop != null) {
             TransitStop transitStop = graph.index.stopVertexForStop.get(stop);
 
-            for (Edge edge : transitStop.getOutgoing()) {
-                if (edge instanceof PreBoardEdge) {
+            for (Edge edge : transitStop.departVertex.getOutgoing()) {
+                if (edge instanceof TransitBoardAlight) {
                     graph.addAlertPatch(edge, this);
-                    break;
                 }
             }
 
-            for (Edge edge : transitStop.getIncoming()) {
-                if (edge instanceof PreAlightEdge) {
+            for (Edge edge : transitStop.arriveVertex.getIncoming()) {
+                if (edge instanceof TransitBoardAlight) {
                     graph.addAlertPatch(edge, this);
-                    break;
                 }
+            }
+        }
+
+        if (elevatorId != null) {
+            for (Edge edge : graph.index.pathwayForElevator.get(elevatorId)) {
+                routingConsequence = true;
+                graph.addAlertPatch(edge, this);
             }
         }
     }
@@ -211,18 +223,22 @@ public class AlertPatch implements Serializable {
         } else if (stop != null) {
             TransitStop transitStop = graph.index.stopVertexForStop.get(stop);
 
-            for (Edge edge : transitStop.getOutgoing()) {
-                if (edge instanceof PreBoardEdge) {
+            for (Edge edge : transitStop.departVertex.getOutgoing()) {
+                if (edge instanceof TransitBoardAlight) {
                     graph.removeAlertPatch(edge, this);
-                    break;
                 }
             }
 
-            for (Edge edge : transitStop.getIncoming()) {
-                if (edge instanceof PreAlightEdge) {
+            for (Edge edge : transitStop.arriveVertex.getIncoming()) {
+                if (edge instanceof TransitBoardAlight) {
                     graph.removeAlertPatch(edge, this);
-                    break;
                 }
+            }
+        }
+
+        if (elevatorId != null) {
+            for (Edge edge : graph.index.pathwayForElevator.get(elevatorId)) {
+                graph.removeAlertPatch(edge, this);
             }
         }
     }
@@ -308,6 +324,22 @@ public class AlertPatch implements Serializable {
 
     public boolean hasTrip() {
         return trip != null;
+    }
+
+    public boolean isRoutingConsequence() {
+        return routingConsequence;
+    }
+
+    public String getElevatorId() {
+        return elevatorId;
+    }
+
+    public void setElevatorId(String elevatorId) {
+        this.elevatorId = elevatorId;
+    }
+
+    public boolean isStopSpecific() {
+        return  route == null && trip == null && agency == null && stop != null;
     }
 
     public boolean equals(Object o) {

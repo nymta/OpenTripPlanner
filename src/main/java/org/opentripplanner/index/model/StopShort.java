@@ -9,6 +9,8 @@ import org.onebusaway.gtfs.model.Stop;
 import com.beust.jcommander.internal.Lists;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
+import org.opentripplanner.util.model.EncodedPolylineBean;
 
 public class StopShort {
 
@@ -20,12 +22,25 @@ public class StopShort {
     public String url;
     public String cluster;
     public int locationType;
+    public List<LocalizedAlert> alerts;
 
     /** Distance to the stop when it is returned from a location-based query. */
     @JsonInclude(Include.NON_NULL) public Integer dist;
-    
+
+    /** Geometry of the walking path to the stop, if returned from a search-based query */
+    @JsonInclude(Include.NON_NULL) public EncodedPolylineBean geometry;
+
+    /** Walking time, if returned from a search-based query */
+    @JsonInclude(Include.NON_NULL) public Long walkTime;
+
+    /** OSM Way ID this stop is linked to, if returning debug information. */
+    @JsonInclude(Include.NON_NULL) public Long wayId;
+
+    /** distance to OSM way */
+    @JsonInclude(Include.NON_NULL) public Double distance;
+
     public StopShort (Stop stop) {
-        id = stop.getId();
+        id = new AgencyAndId(stop.getId().getAgencyId(), stop.getId().getId()); // copy
         code = stop.getCode();
         name = stop.getName();
         lat = stop.getLat();

@@ -135,12 +135,12 @@ public class PlatformLinker {
         String labelFromTo = "way (area) " + area.parent.getId() + " from " + from.getLabel()
                 + " to " + to.getLabel();
         I18NString nameFromTo = getNameForWay(area.parent, labelFromTo);
-        factory.createEdge(from, to, line, nameFromTo, length, areaPermissions, true);
+        factory.createEdge(from, to, line, nameFromTo, length, areaPermissions, true, area.parent.getId());
 
         String labelToFrom = "way (area) " + area.parent.getId() + " from " + to.getLabel()
                 + " to " + from.getLabel();
         I18NString nameToFrom = getNameForWay(area.parent, labelToFrom);
-        factory.createEdge(to, from, line, nameToFrom, length, areaPermissions, true);
+        factory.createEdge(to, from, line, nameToFrom, length, areaPermissions, true, area.parent.getId());
     }
 
     private I18NString getNameForWay(OSMWithTags way, String id) {

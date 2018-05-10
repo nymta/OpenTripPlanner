@@ -60,13 +60,17 @@ public class GtfsModule implements GraphBuilderModule {
     private File cacheDirectory; 
     
     /** will be applied to all bundles which do not have the useCached property set */
-    private Boolean useCached; 
+    private Boolean useCached;
+
+    private boolean ignoreGtfsTransfers = false;
 
     Set<String> agencyIdsSeen = Sets.newHashSet();
 
     int nextAgencyId = 1; // used for generating agency IDs to resolve ID conflicts
 
     public List<GtfsBundle> gtfsBundles;
+
+    private long maxHopTime = Long.MAX_VALUE;
 
     public GtfsModule(List<GtfsBundle> bundles) { this.gtfsBundles = bundles; };
 
@@ -106,9 +110,11 @@ public class GtfsModule implements GraphBuilderModule {
                 GtfsMutableRelationalDao dao = new GtfsRelationalDaoImpl();
                 GtfsContext context = GtfsLibrary.createContext(gtfsBundle.getFeedId(), dao, service);
                 GTFSPatternHopFactory hf = new GTFSPatternHopFactory(context);
+                hf.setIgnoreGtfsTransfers(ignoreGtfsTransfers);
                 hf.setStopContext(stopContext);
                 hf.setFareServiceFactory(_fareServiceFactory);
                 hf.setMaxStopToShapeSnapDistance(gtfsBundle.getMaxStopToShapeSnapDistance());
+                hf.setMaxHopTime(maxHopTime);
 
                 loadBundle(gtfsBundle, graph, dao);
 
@@ -389,4 +395,11 @@ public class GtfsModule implements GraphBuilderModule {
         }
     }
 
+    public void setIgnoreGtfsTransfers(boolean ignoreGtfsTransfers) {
+        this.ignoreGtfsTransfers = ignoreGtfsTransfers;
+    }
+
+    public void setMaxHopTime(long maxHopTime) {
+        this.maxHopTime = maxHopTime;
+    }
 }

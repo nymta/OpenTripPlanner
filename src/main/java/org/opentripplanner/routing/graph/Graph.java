@@ -13,7 +13,6 @@
 
 package org.opentripplanner.routing.graph;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.*;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -38,7 +37,11 @@ import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.geometry.GraphUtils;
 import org.opentripplanner.graph_builder.annotation.GraphBuilderAnnotation;
 import org.opentripplanner.graph_builder.annotation.NoFutureDates;
+import org.opentripplanner.graph_builder.model.GraphVersion;
 import org.opentripplanner.model.GraphBundle;
+import org.opentripplanner.model.Landmark;
+import org.opentripplanner.routing.accessibility.DefaultStopAccessibilityStrategy;
+import org.opentripplanner.routing.accessibility.StopAccessibilityStrategy;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.MortonVertexComparatorFactory;
 import org.opentripplanner.routing.core.TransferTable;
@@ -47,9 +50,12 @@ import org.opentripplanner.routing.edgetype.EdgeWithCleanup;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
+import org.opentripplanner.routing.consequences.ConsequencesStrategyFactory;
 import org.opentripplanner.routing.services.StreetVertexIndexFactory;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
 import org.opentripplanner.routing.services.notes.StreetNotesService;
+import org.opentripplanner.routing.transfers.DefaultTransferPermissionStrategy;
+import org.opentripplanner.routing.transfers.TransferPermissionStrategy;
 import org.opentripplanner.routing.trippattern.Deduplicator;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.TransitStation;
@@ -66,6 +72,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.prefs.Preferences;
+
 /**
  * A graph is really just one or more indexes into a set of vertexes. It used to keep edgelists for each vertex, but those are in the vertex now.
  */
@@ -90,7 +97,7 @@ public class Graph implements Serializable {
     private long transitServiceStarts = Long.MAX_VALUE;
 
     private long transitServiceEnds = 0;
-    
+
     private String feedInfo = null;
 
     private Map<Class<?>, Object> _services = new HashMap<Class<?>, Object>();
@@ -201,10 +208,10 @@ public class Graph implements Serializable {
 
     /** Has information how much time alighting a vehicle takes. Can be significant eg in airplanes or ferries. */
     public Map<TraverseMode, Integer> alightTimes = Collections.EMPTY_MAP;
-    
+
     /** A speed source for traffic data */
     public transient StreetSpeedSnapshotSource streetSpeedSource;
-    
+
     /** How should we cluster stops? */
     public String stopClusterMode = "proximity";
 
@@ -213,6 +220,20 @@ public class Graph implements Serializable {
 
     /** Parent stops **/
     public Map<AgencyAndId, Stop> parentStopById = new HashMap<>();
+
+    /** Landmarks **/
+    public Map<String, Landmark> landmarksByName = new HashMap<>();
+
+    /** Consequences strategy */
+    public ConsequencesStrategyFactory consequencesStrategy;
+
+    /** Apply more complex stop accessibility rules */
+    public transient StopAccessibilityStrategy stopAccessibilityStrategy = new DefaultStopAccessibilityStrategy();
+
+    /** Optionally apply more complex transfer rules */
+    public transient TransferPermissionStrategy transferPermissionStrategy = new DefaultTransferPermissionStrategy();
+
+    public GraphVersion graphVersion = null;
 
     public Graph(Graph basedOn) {
         this();
@@ -557,7 +578,7 @@ public class Graph implements Serializable {
             if (!agenciesWithFutureDates.contains(agency)) {
                 LOG.warn(this.addBuilderAnnotation(new NoFutureDates(agency)));
             }
-        }        
+        }
     }
 
     // Check to see if we have transit information for a given date
@@ -923,8 +944,8 @@ public class Graph implements Serializable {
         this.feedIds.add(feedId);
     }
 
-    public void addFeedInfo(FeedInfo info) {
-        this.feedInfoForId.put(info.getId().toString(), info);
+    public void addFeedInfo(String feedId, FeedInfo info) {
+        this.feedInfoForId.put(feedId, info);
     }
 
     /**
@@ -1091,12 +1112,28 @@ public class Graph implements Serializable {
     public long getTransitServiceEnds() {
         return transitServiceEnds;
     }
-    
+
     public String getFeedInfo() {
         return feedInfo;
     }
-    
+
     public void setFeedInfo(String feedInfo) {
         this.feedInfo = feedInfo;
+    }
+
+    public void addLandmark(Landmark landmark) {
+        landmarksByName.put(landmark.getName(), landmark);
+    }
+
+    public void setGraphVersion(GraphVersion gi) {
+        if (gi == null) {
+            // default if not found
+            gi = new GraphVersion();
+            gi.setCreatedDate(new Date());
+        }
+        graphVersion = gi;
+    }
+    public GraphVersion getGraphVersion() {
+        return graphVersion;
     }
 }

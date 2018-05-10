@@ -436,7 +436,7 @@ public class WalkableAreaBuilder {
             I18NString name = __handler.getNameForWay(areaEntity, label);
 
             AreaEdge street = edgeFactory.createAreaEdge(startEndpoint, endEndpoint, line, name,
-                    length, areaPermissions, false, edgeList);
+                    length, areaPermissions, false, edgeList, areaEntity.getId());
             street.setCarSpeed(carSpeed);
 
             if (!areaEntity.hasTag("name") && !areaEntity.hasTag("ref")) {
@@ -455,7 +455,7 @@ public class WalkableAreaBuilder {
             name = __handler.getNameForWay(areaEntity, label);
 
             AreaEdge backStreet = edgeFactory.createAreaEdge(endEndpoint, startEndpoint,
-                    (LineString) line.reverse(), name, length, areaPermissions, true, edgeList);
+                    (LineString) line.reverse(), name, length, areaPermissions, true, edgeList, areaEntity.getId());
             backStreet.setCarSpeed(carSpeed);
 
             if (!areaEntity.hasTag("name") && !areaEntity.hasTag("ref")) {
@@ -552,6 +552,8 @@ public class WalkableAreaBuilder {
             StreetTraversalPermission permission = OSMFilter.getPermissionsForEntity(areaEntity,
                     StreetTraversalPermission.PEDESTRIAN_AND_BICYCLE);
             namedArea.setPermission(permission);
+
+            namedArea.setWayId(area.parent.getId());
 
             edgeList.addArea(namedArea);
         }
