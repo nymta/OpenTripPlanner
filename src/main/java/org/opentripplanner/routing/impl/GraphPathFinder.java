@@ -32,6 +32,7 @@ import org.opentripplanner.routing.error.VertexNotFoundException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.consequences.ConsequencesStrategy;
+import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.Router;
@@ -157,6 +158,8 @@ public class GraphPathFinder {
             }
         }
 
+        PathIgnoreStrategy pathIgnoreStrategy = options.getPathIgnoreStrategy();
+
         /* In long distance mode, maxWalk has a different meaning than it used to.
          * It's the radius around the origin or destination within which you can walk on the streets.
          * If no value is provided, max walk defaults to the largest double-precision float.
@@ -209,7 +212,6 @@ public class GraphPathFinder {
             }
 
             // Find all trips used in this path and ban them for the remaining searches
-            double bestDuration = -1.0;
             for (GraphPath path : newPaths) {
                 //path.dump();
                 List<AgencyAndId> tripIds = path.getTrips();
@@ -242,23 +244,7 @@ public class GraphPathFinder {
                     }
                 }
 
-                // Keep Track of the shortest duration of all paths found so far.
-                if (bestDuration == -1.0) {
-                    bestDuration = path.getDuration();
-                } else if (bestDuration > path.getDuration()) {
-                    bestDuration = path.getDuration();
-                }
-
-
-                // MTA and RTD have similar filtering:
-
-                // Absurd Paths is a final check where various sanity checks can be applie to the path
-                // e.g., don't include routes that involve 95% walking before getting on a very short bus ride.
-                if (pathIsAbsurd(path, bestDuration)){
-                    continue;
-                }
-
-                if (filterOutPath(path, options)) {
+                if (pathIgnoreStrategy.shouldIgnorePath(path)) {
                     continue;
                 }
 
@@ -284,59 +270,6 @@ public class GraphPathFinder {
         LOG.debug("END SEARCH ({} msec)", System.currentTimeMillis() - searchBeginTime);
         Collections.sort(paths, options.getPathComparator(options.arriveBy));
         return paths;
-    }
-
-
-    private static boolean filterOutPath(GraphPath path, RoutingRequest options) {
-        return (graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options) || graphPathExceedsMaxTransferTime(path, options));
-    }
-
-    private static boolean graphPathStartsLaterThanLimit(GraphPath path, int range, RoutingRequest options) {
-        boolean result = false;
-        if (options.arriveBy) {
-            long arrivetime = options.dateTime;
-            if (arrivetime - path.getEndTime() > range) {
-                result = true;
-            }
-        } else {
-            long startTime = path.getStartTime();
-            long departtime = options.dateTime;
-            if (startTime - departtime > range) {
-                result = true;
-            }
-        }
-        return result;
-    }
-
-    private static boolean graphPathExceedsMaxTransferTime(GraphPath path, RoutingRequest options) {
-
-        long lastTransitDeparture = -1;
-
-        State[] states = path.states.toArray(new State[path.states.size()]);
-
-        for (int i = 1; i < states.length; i++) {
-            if (states[i].getBackMode() == null || !states[i].getBackMode().isTransit()) {
-                continue;
-            }
-
-            // If it is transit, check if transfer time is too long. Need to check LAST state because
-            // this state is *after* a PatternHop.
-            long transferTime = states[i - 1].getTimeSeconds() - lastTransitDeparture;
-            if (lastTransitDeparture > 0 && (transferTime > options.maxTransferTime || transferTime < options.minTransferTimeHard)) {
-                LOG.debug("for itinerary {}, transfer time {} is not in range", path.getTrips(), transferTime);
-                return true;
-            }
-
-            while (states[i].getBackMode() != null && states[i].getBackMode().isTransit()) {
-                i++;
-            }
-
-            if (i < states.length) {
-                lastTransitDeparture = states[i - 1].getTimeSeconds();
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -607,23 +540,6 @@ public class GraphPathFinder {
             lastVertex = path.getEndVertex();
         }
         return newPath;
-    }
-
-    private boolean pathIsAbsurd(GraphPath path, double bestDuration) {
-
-        // Check for Absurd Walks (e.g., walking 95% of the time and then taking something else for 5%.)
-        // Question: What if that 1 thing is a ferry over water that you can't walk over?
-        double walkRatio = path.getWalkTime() / path.getDuration();
-        if (walkRatio > .95 && path.getRoutes().size() > 0)
-            return true;
-
-        // Check for Absurdly Long Trips when better options are better.
-        // This says, if the trip is longer than 30 minutes and there is a solution that is twice as good that is already found, then don't include it.
-        if (bestDuration * 2 < path.getDuration() && path.getDuration() > 1800) {
-            return true;
-        }
-
-        return false;
     }
 
 /*

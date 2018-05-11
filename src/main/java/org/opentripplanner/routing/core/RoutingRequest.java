@@ -28,8 +28,12 @@ import org.opentripplanner.routing.error.TrivialPathException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.ignore.DefaultPathIgnoreStrategy;
+import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
+import org.opentripplanner.routing.impl.MTAPathIgnoreStrategy;
 import org.opentripplanner.routing.impl.MtaPathComparator;
 import org.opentripplanner.routing.impl.PathComparator;
+import org.opentripplanner.routing.impl.RTDPathIgnoreStrategy;
 import org.opentripplanner.routing.request.BannedStopSet;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.GraphPath;
@@ -531,6 +535,9 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Which path comparator to use */
     public String pathComparator = null;
+
+    /** Which PathIgnoreStrategy to use */
+    private String pathIgnoreStrategy = null;
 
     /** How far to look out, in seconds, to add upcoming trips. Defaults to half an hour. */
     public int nextDepartureWindow = 1800;
@@ -1219,7 +1226,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && maxWalkDistanceHeuristic == other.maxWalkDistanceHeuristic
                 && hardPathBanningAgencies.equals(other.hardPathBanningAgencies)
                 && numberOfDepartures == other.numberOfDepartures
-                && stopLinking == other.stopLinking;
+                && stopLinking == other.stopLinking
+                && pathIgnoreStrategy.equals(pathIgnoreStrategy);
     }
 
     /**
@@ -1263,7 +1271,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Boolean(useTraffic).hashCode() * 10169
                 + new Double(maxTransferTime).hashCode() * 790052909
                 + new Double(minTransferTimeHard).hashCode() * 31
-                + new Double(tripShownRangeTime).hashCode() * 790052909;
+                + new Double(tripShownRangeTime).hashCode() * 790052909
+                + pathIgnoreStrategy.hashCode() * 1301081;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters
@@ -1562,6 +1571,15 @@ public class RoutingRequest implements Cloneable, Serializable {
             return new MtaPathComparator(compareStartTimes);
         }
         return new PathComparator(compareStartTimes);
+    }
+
+    public PathIgnoreStrategy getPathIgnoreStrategy() {
+        if ("mta".equals(pathIgnoreStrategy)) {
+            return new MTAPathIgnoreStrategy();
+        } else if ("rtd".equals(pathIgnoreStrategy)) {
+            return new RTDPathIgnoreStrategy();
+        }
+        return new DefaultPathIgnoreStrategy();
     }
 
     public void banPath(GraphPath path) {
