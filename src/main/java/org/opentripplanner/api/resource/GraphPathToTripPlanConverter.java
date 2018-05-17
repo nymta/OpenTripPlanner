@@ -16,10 +16,6 @@ package org.opentripplanner.api.resource;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
 import org.onebusaway.gtfs.model.*;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
@@ -30,7 +26,6 @@ import org.opentripplanner.common.geometry.PackedCoordinateSequence;
 import org.opentripplanner.common.model.P2;
 import org.opentripplanner.index.model.FrequencyDetail;
 import org.opentripplanner.index.model.StopTimesByStop;
-import org.opentripplanner.index.model.StopTimesInPattern;
 import org.opentripplanner.index.model.StopTimesInPattern;
 import org.opentripplanner.index.model.TripTimeShort;
 import org.opentripplanner.profile.BikeRentalStationInfo;
@@ -64,8 +59,6 @@ public abstract class GraphPathToTripPlanConverter {
     private static final Logger LOG = LoggerFactory.getLogger(GraphPathToTripPlanConverter.class);
 
     private static final double MAX_ZAG_DISTANCE = 30; // TODO add documentation, what is a "zag"?
-
-    private static Map<String, List<String>> schoolDayBusTripIds = null;
 
     /**
      * Generates a TripPlan from a set of paths
@@ -108,11 +101,6 @@ public abstract class GraphPathToTripPlanConverter {
         for (GraphPath path : paths) {
             Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, request.disableAlertFiltering, requestedLocale);
             itinerary = adjustItinerary(request, itinerary);
-
-            //check if the itinerary asks customer to get back to the origin place. If so, the itinerary is not a good one.
-            if (isLoopbackItinerary(itinerary) && !request.hasIntermediatePlaces()) {
-                continue;
-            }
 
             if(itinerary.transitTime == 0 && itinerary.walkTime < bestNonTransitTime) {
                 bestNonTransitTime = itinerary.walkTime;
@@ -175,28 +163,6 @@ public abstract class GraphPathToTripPlanConverter {
         }
         // Return itinerary
         return itinerary;
-    }
-
-    //check if itinerary asks customer to go back to the original start point. If so, this itinerary is not good one
-    private static boolean isLoopbackItinerary(Itinerary itinerary) {
-        //for testing purpose
-        LOG.debug("=====isLoopbackItinerary.......");
-        boolean result = false;
-        List<String> places = new ArrayList<String>();
-        for (Leg leg : itinerary.legs) {
-            LOG.debug("======= leg from: " + leg.from.lat + "," + leg.to.lon);
-            LOG.debug("======= leg to: " + leg.to.lat + "," + leg.to.lon);
-            if (places.contains(leg.to.lat + "," + leg.to.lon)) {
-                result = true;
-                break;
-            }
-            if (!places.contains(leg.from.lat + "," + leg.from.lon)) {
-                places.add(leg.from.lat + "," + leg.from.lon);
-            }
-            places.add(leg.to.lat + "," + leg.to.lon);
-        }
-        LOG.debug("======isLoopbackItinerary: " + result);
-        return result;
     }
 
     /**
@@ -878,17 +844,6 @@ public abstract class GraphPathToTripPlanConverter {
      */
     private static void addModeAndAlerts(Graph graph, Leg leg, State[] states, boolean disableAlertFiltering,
             Locale requestedLocale) {
-
-        if (schoolDayBusTripIds == null) {
-            schoolDayBusTripIds = loadSchoolDayTrips();
-        }
-
-        if (leg.tripId != null && leg.tripId.getId() != null && leg.routeId != null && leg.routeId.getId() != null) {
-            if (schoolDayBusTripIds.containsKey(leg.routeId.getId()) && schoolDayBusTripIds.get(leg.routeId.getId()).contains(leg.tripId.getId())) {
-                Alert alert = Alert.createSimpleAlerts("This trip operates only on school days and is open to the public.");
-                leg.addAlert(alert, requestedLocale);
-            }
-        }
 
         for (State state : states) {
             TraverseMode mode = state.getBackMode();
@@ -1581,56 +1536,4 @@ public abstract class GraphPathToTripPlanConverter {
         }
         return out;
     }
-
-    private static Map<String, List<String>> loadSchoolDayTrips() {
-        LOG.info("############# loadSchoolDayTrips.....");
-        BufferedReader br = null;
-        String line = "";
-        String cvsSplitBy = ",";
-        Map<String, List<String>> result = new HashMap<String,List<String>>();
-        try {
-            br = new BufferedReader(new FileReader("school_day_trips.txt"));
-            //skip the first line because of it is the header
-            int index = 0;
-            while ((line = br.readLine()) != null) {
-                if (index > 0) {
-                    String[] record = line.split(cvsSplitBy);
-                    String route = record[1];
-                    String tripid = "1" + record[0];
-                    List<String> tripidlist = result.get(route);
-                    if (tripidlist == null) {
-                        tripidlist = new ArrayList<String>();
-                    }
-                    if (!tripidlist.contains(tripid)) {
-                        tripidlist.add(tripid);
-                    }
-                    result.put(route, tripidlist);
-                }
-                index++;
-            }
-        } catch (FileNotFoundException ex) {
-            LOG.info("############### could not find the school_trip_sample file.");
-        } catch (IOException ex) {
-
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ex) {
-
-                }
-            }
-        }
-        LOG.info("########## school day trips : " + result.size());
-        if (result.size() > 0) {
-            result.keySet().forEach((key) -> {
-                List<String> values = result.get(key);
-                for (String v: values) {
-                    LOG.info(key + " -- " + v);
-                }
-            });
-        }
-        return result;
-    }
-
 }
