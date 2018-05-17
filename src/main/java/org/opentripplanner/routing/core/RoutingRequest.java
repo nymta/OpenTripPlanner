@@ -537,7 +537,7 @@ public class RoutingRequest implements Cloneable, Serializable {
     public String pathComparator = null;
 
     /** Which PathIgnoreStrategy to use */
-    private String pathIgnoreStrategy = null;
+    public String pathIgnoreStrategy = null;
 
     /** How far to look out, in seconds, to add upcoming trips. Defaults to half an hour. */
     public int nextDepartureWindow = 1800;
