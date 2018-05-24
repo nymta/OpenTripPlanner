@@ -178,7 +178,8 @@ public class Timetable implements Serializable {
                                            // now its not sure if this check should be still in place because there is a boolean field
                                            // for canceled trips
                 if (depTime >= adjustedTime && depTime < bestTime) {
-                    if (isTripTimesOk(tt, serviceDay, s0, stopIndex, true)) {
+                    if (isTripTimesOk(tt, serviceDay, s0, stopIndex, true)
+                            && isWaitOk(s0, serviceDay, depTime)) {
                         bestTrip = tt;
                         bestTime = depTime;
                     }
@@ -187,7 +188,8 @@ public class Timetable implements Serializable {
                 int arvTime = tt.getArrivalTime(stopIndex);
                 if (arvTime < 0) continue;
                 if (arvTime <= adjustedTime && arvTime > bestTime) {
-                    if (isTripTimesOk(tt, serviceDay, s0, stopIndex, true)) {
+                    if (isTripTimesOk(tt, serviceDay, s0, stopIndex, true)
+                            && isWaitOk(s0, serviceDay, arvTime)) {
                         bestTrip = tt;
                         bestTime = arvTime;
                     }
@@ -208,14 +210,16 @@ public class Timetable implements Serializable {
             if (boarding) {
                 int depTime = freq.nextDepartureTime(stopIndex, adjustedTime); // min transfer time included in search
                 if (depTime < 0) continue; 
-                if (depTime >= adjustedTime && depTime < bestTime) {
+                if (depTime >= adjustedTime && depTime < bestTime
+                        && isWaitOk(s0, serviceDay, depTime)) {
                     bestFreq = freq;
                     bestTime = depTime;
                 }
             } else {
                 int arvTime = freq.prevArrivalTime(stopIndex, adjustedTime); // min transfer time included in search
                 if (arvTime < 0) continue;
-                if (arvTime <= adjustedTime && arvTime > bestTime) {
+                if (arvTime <= adjustedTime && arvTime > bestTime
+                        && isWaitOk(s0, serviceDay, arvTime)) {
                     bestFreq = freq;
                     bestTime = arvTime;
                 }
@@ -233,6 +237,15 @@ public class Timetable implements Serializable {
         if (tt.isCanceled()) return false;
         if ( ! serviceDay.serviceRunning(tt.serviceCode)) return false; // TODO merge into call on next line
         if ( ! tt.tripAcceptable(s0, stopIndex, checkBannedTrips)) return false;
+        return true;
+    }
+
+    private boolean isWaitOk(State s0, ServiceDay sd, int boardTime) {
+        int time = sd.secondsSinceMidnight(s0.getTimeSeconds());
+        int wait = Math.abs(time - boardTime);
+        if (s0.isEverBoarded()) {
+            return wait <= s0.getOptions().maxTransferTime && wait >= s0.getOptions().minTransferTimeHard;
+        }
         return true;
     }
 

@@ -13,7 +13,6 @@
 package org.opentripplanner.routing.impl;
 
 import org.opentripplanner.routing.core.RoutingRequest;
-import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.slf4j.Logger;
@@ -26,7 +25,7 @@ public class RTDPathIgnoreStrategy implements PathIgnoreStrategy {
     @Override
     public boolean shouldIgnorePath(GraphPath path) {
         RoutingRequest options = path.states.getFirst().getOptions();
-        return (graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options) || graphPathExceedsMaxTransferTime(path, options));
+        return graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options);
     }
 
     private static boolean graphPathStartsLaterThanLimit(GraphPath path, int range, RoutingRequest options) {
@@ -44,37 +43,6 @@ public class RTDPathIgnoreStrategy implements PathIgnoreStrategy {
             }
         }
         return result;
-    }
-
-    private static boolean graphPathExceedsMaxTransferTime(GraphPath path, RoutingRequest options) {
-
-        long lastTransitDeparture = -1;
-
-        State[] states = path.states.toArray(new State[path.states.size()]);
-
-        for (int i = 1; i < states.length; i++) {
-            if (states[i].getBackMode() == null || !states[i].getBackMode().isTransit()) {
-                continue;
-            }
-
-            // If it is transit, check if transfer time is too long. Need to check LAST state because
-            // this state is *after* a PatternHop.
-            long transferTime = states[i - 1].getTimeSeconds() - lastTransitDeparture;
-            if (lastTransitDeparture > 0 && (transferTime > options.maxTransferTime || transferTime < options.minTransferTimeHard)) {
-                LOG.debug("for itinerary {}, transfer time {} is not in range", path.getTrips(), transferTime);
-                return true;
-            }
-
-            while (states[i].getBackMode() != null && states[i].getBackMode().isTransit()) {
-                i++;
-            }
-
-            if (i < states.length) {
-                lastTransitDeparture = states[i - 1].getTimeSeconds();
-            }
-        }
-
-        return false;
     }
 
 }
