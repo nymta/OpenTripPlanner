@@ -622,7 +622,7 @@ public abstract class RoutingResource {
                 request.setRunboardEndDate(router.graph.getTransitServiceEnds() * 1000);
 
                 //check if date is exceed end time of GTFS.
-                if (request.getDateTime().getTime() > router.graph.getTransitServiceEnds()*1000 ) {
+                if (request.getDateTime().getTime() > router.graph.getTransitServiceEnds()*1000 && request.useTransitServiceExtension) {
                     LOG.warn("********* request time beyond the range");
                     //back up original travel time
                     request.setOrigTravelDateTime(request.getDateTime());

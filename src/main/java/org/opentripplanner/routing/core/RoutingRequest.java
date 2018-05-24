@@ -566,6 +566,9 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Keep track of alerts to add to GraphPath */
     public List<Alert> planAlerts = new ArrayList<>();
 
+    /** Whether to use feature where dates are extended when past transit service */
+    public boolean useTransitServiceExtension = false;
+
     /* CONSTRUCTORS */
 
     /** Constructor for options; modes defaults to walk and transit */
@@ -1227,7 +1230,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && hardPathBanningAgencies.equals(other.hardPathBanningAgencies)
                 && numberOfDepartures == other.numberOfDepartures
                 && stopLinking == other.stopLinking
-                && pathIgnoreStrategy.equals(pathIgnoreStrategy);
+                && pathIgnoreStrategy.equals(pathIgnoreStrategy)
+                && useTransitServiceExtension == other.useTransitServiceExtension;
     }
 
     /**
@@ -1272,7 +1276,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Double(maxTransferTime).hashCode() * 790052909
                 + new Double(minTransferTimeHard).hashCode() * 31
                 + new Double(tripShownRangeTime).hashCode() * 790052909
-                + pathIgnoreStrategy.hashCode() * 1301081;
+                + pathIgnoreStrategy.hashCode() * 1301081
+                + Boolean.hashCode(useTransitServiceExtension) * 1300931;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters
