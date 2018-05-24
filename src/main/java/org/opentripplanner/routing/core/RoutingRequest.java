@@ -546,7 +546,7 @@ public class RoutingRequest implements Cloneable, Serializable {
     public int numberOfDepartures = 3;
 
     /** Whether to apply "hard path banning", where after a sequence of routes is used, it can't be used again */
-    public boolean hardPathBanning = true;
+    public boolean hardPathBanning = false;
 
     /** What agencies to apply hard path banning to */
     public HashSet<String> hardPathBanningAgencies = new HashSet<>();
