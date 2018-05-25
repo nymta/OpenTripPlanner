@@ -6,14 +6,14 @@
     <url>http://opentripplanner.org/</url>
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.0.1-rtd</version>
+    <version>1.0.2-rtd-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <scm>
         <connection>scm:git:http://github.com/camsys/OpenTripPlanner.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/camsys/OpenTripPlanner.git</developerConnection>
         <url>http://github.com/camsys/OpenTripPlanner</url>
-      <tag>otp-1.0.1-rtd</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
