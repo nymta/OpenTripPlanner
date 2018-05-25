@@ -146,10 +146,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
-                    <!-- The site generation step can fail. Run it in release:prepare to make sure it
-                    works before tagging the release. -->
-                    <preparationGoals>clean verify site</preparationGoals>
+                    <useReleaseProfile>false</useReleaseProfile>
                 </configuration>
             </plugin>
             <plugin>
