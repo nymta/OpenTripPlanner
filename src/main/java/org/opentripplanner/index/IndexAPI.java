@@ -18,7 +18,6 @@ import com.beust.jcommander.internal.Sets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.webcohesion.enunciate.metadata.Ignore;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FeedInfo;
@@ -39,14 +38,12 @@ import org.opentripplanner.index.model.TripShort;
 import org.opentripplanner.index.model.TripTimeShort;
 import org.opentripplanner.model.Landmark;
 import org.opentripplanner.profile.StopCluster;
-import org.opentripplanner.routing.edgetype.StreetTransitLink;
 import org.opentripplanner.routing.edgetype.Timetable;
 import org.opentripplanner.routing.edgetype.TransferEdge;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
-import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TransitStationStop;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.standalone.OTPServer;
@@ -77,7 +74,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 // TODO move to org.opentripplanner.api.resource, this is a Jersey resource class
 @Path("/routers/{routerId}/index")    // It would be nice to get rid of the final /index.
@@ -89,6 +88,8 @@ public class IndexAPI {
     private static final double MAX_STOP_SEARCH_RADIUS = 5000;
     private static final String MSG_404 = "FOUR ZERO FOUR";
     private static final String MSG_400 = "FOUR HUNDRED";
+
+    private static final int LOCATION_TYPE_STATION = 1;
 
     /** Choose short or long form of results. */
     @QueryParam("detail") private boolean detail = false;
@@ -192,15 +193,16 @@ public class IndexAPI {
            @QueryParam("lat")    Double lat,
            @QueryParam("lon")    Double lon,
            @QueryParam("radius") Double radius,
-           @QueryParam("debug") Boolean debug) {
+           @QueryParam("debug")  Boolean debug,
+           @DefaultValue("0") @QueryParam("locationType") List<Integer> locationTypes) {
 
        List<StopShort> stops;
 
        /* If any of the circle parameters are specified, expect a circle not a box. */
        boolean expectCircle = (lat != null || lon != null || radius != null);
 
-       /* When no parameters are supplied, return all stops. */
-       if (uriInfo.getQueryParameters().isEmpty() || (uriInfo.getQueryParameters().size() == 1 && debug != null)) {
+       /* When no locational parameters are supplied, return all stops. */
+       if (Stream.of(minLat, minLon, maxLat, maxLon, lat, lon, radius).allMatch(Objects::isNull)) {
            Collection<Stop> in = index.stopForId.values();
            stops = StopShort.list(in);
        }
@@ -243,6 +245,19 @@ public class IndexAPI {
                }
            }
        }
+       if (locationTypes.contains(LOCATION_TYPE_STATION)) {
+           List<StopShort> parentStations = new ArrayList<>();
+           for (StopShort stopShort : stops) {
+               Stop stop = index.stopForId.get(stopShort.id);
+               Stop parent = index.getParentStopForStop(stop);
+               if (parent != null) {
+                   parentStations.add(new StopShort(parent));
+               }
+           }
+           stops.addAll(parentStations);
+       }
+
+       stops.removeIf(s -> !locationTypes.contains(s.locationType));
 
        return Response.status(Status.OK).entity(stops).build();
    }
