@@ -175,12 +175,8 @@ public abstract class GraphPathToTripPlanConverter {
      * @param requestedLocale
      * @return
      */
-    public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops,
-            Locale requestedLocale) {
-        return generateItinerary(path, showIntermediateStops, false, requestedLocale, false, null);
-    }
     public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops, boolean disableAlertFiltering, Locale requestedLocale) {
-        return generateItinerary(path, showIntermediateStops, disableAlertFiltering, requestedLocale, false, null);
+        return generateItinerary(path, showIntermediateStops, disableAlertFiltering, requestedLocale, path.states.peekFirst().getOptions());
     }
 
     /**
@@ -197,7 +193,7 @@ public abstract class GraphPathToTripPlanConverter {
      * @return The generated itinerary
      */
     public static Itinerary generateItinerary(GraphPath path, boolean showIntermediateStops,boolean disableAlertFiltering,
-            Locale requestedLocale, boolean showNextFromDeparture, RoutingRequest request) {
+            Locale requestedLocale, RoutingRequest request) {
         Itinerary itinerary = new Itinerary();
 
         State[] states = new State[path.states.size()];
@@ -218,7 +214,7 @@ public abstract class GraphPathToTripPlanConverter {
         }
 
         for (State[] legStates : legsStates) {
-            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, disableAlertFiltering, requestedLocale, showNextFromDeparture, request));
+            itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, disableAlertFiltering, requestedLocale, request));
         }
 
         addWalkSteps(graph, itinerary.legs, legsStates, requestedLocale);
@@ -414,7 +410,7 @@ public abstract class GraphPathToTripPlanConverter {
      *        next bus leaves that stop
      * @return The generated leg
      */
-    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops, boolean disableAlertFiltering, Locale requestedLocale, boolean showNextFromDeparture, RoutingRequest request) {
+    private static Leg generateLeg(Graph graph, State[] states, boolean showIntermediateStops, boolean disableAlertFiltering, Locale requestedLocale, RoutingRequest request) {
         Leg leg = new Leg();
 
         Edge[] edges = new Edge[states.length - 1];
@@ -451,7 +447,7 @@ public abstract class GraphPathToTripPlanConverter {
         if (leg.isTransitLeg()) {
             addRealTimeData(leg, states);
             // TODO: Duplicated between MTA and RTD
-            if (showNextFromDeparture) {
+            if (request.showNextFromDeparture) {
                 leg.from.nextDeparture = establishNextDeparture(graph, states, new ServiceDate(leg.from.departure), leg);
             }
             addNextDepartures(leg, states);
