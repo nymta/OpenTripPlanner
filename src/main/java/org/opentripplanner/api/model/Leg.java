@@ -54,7 +54,7 @@ public class Leg {
      * The date and time this leg begins, in ISO-8601 format.
      */
     public String startTimeFmt = null;
-    
+
     /**
      * The date and time this leg ends.
      */
@@ -336,6 +336,9 @@ public class Leg {
      @XmlAttribute
      @JsonSerialize
      public FrequencyDetail frequencyDetail;
+
+    /** The location of the vehicle serving the transit leg, if available */
+    public VehicleInfo vehicleInfo;
 
     /**
      * Whether this leg is a transit leg or not.
