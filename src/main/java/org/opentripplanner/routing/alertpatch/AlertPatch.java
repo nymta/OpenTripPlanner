@@ -22,13 +22,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.google.common.collect.Multimap;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.api.adapters.AgencyAndIdAdapter;
+import org.opentripplanner.api.model.VehicleInfo;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.PreAlightEdge;
 import org.opentripplanner.routing.edgetype.PreBoardEdge;
@@ -80,9 +80,16 @@ public class AlertPatch implements Serializable {
      */
     private int directionId = -1;
 
+    /** Vehicle info, if available */
+    private VehicleInfo vehicleInfo;
+
     @XmlElement
     public Alert getAlert() {
         return alert;
+    }
+
+    public boolean hasAlert() {
+        return alert != null;
     }
 
     public boolean displayDuring(State state) {
@@ -310,6 +317,18 @@ public class AlertPatch implements Serializable {
         return trip != null;
     }
 
+    public VehicleInfo getVehicleInfo() {
+        return vehicleInfo;
+    }
+
+    public void setVehicleInfo(VehicleInfo vehicleInfo) {
+        this.vehicleInfo = vehicleInfo;
+    }
+
+    public boolean hasVehicleInfo() {
+        return vehicleInfo != null;
+    }
+
     public boolean equals(Object o) {
         if (!(o instanceof AlertPatch)) {
             return false;
@@ -399,6 +418,15 @@ public class AlertPatch implements Serializable {
                 return false;
             }
         }
+        if (vehicleInfo == null) {
+            if (other.vehicleInfo != null) {
+                return false;
+            }
+        } else {
+            if (!vehicleInfo.equals(other.vehicleInfo)) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -410,6 +438,7 @@ public class AlertPatch implements Serializable {
                 (stop == null ? 0 : stop.hashCode()) +
                 (route == null ? 0 : route.hashCode()) +
                 (alert == null ? 0 : alert.hashCode()) +
-                (feedId == null ? 0 : feedId.hashCode()));
+                (feedId == null ? 0 : feedId.hashCode()) +
+                (vehicleInfo == null ? 0 : vehicleInfo.hashCode()));
     }
 }

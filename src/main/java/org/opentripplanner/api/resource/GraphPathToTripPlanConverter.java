@@ -25,7 +25,6 @@ import org.opentripplanner.common.model.P2;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
-import org.opentripplanner.routing.bike_rental.BikeRentalStation;
 import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.error.TrivialPathException;
@@ -555,7 +554,12 @@ public abstract class GraphPathToTripPlanConverter {
                         // If the alert patch contains a trip and that trip match this leg only add the alert for
                         // this leg.
                         if (alertPatch.getTrip().equals(leg.tripId)) {
-                            leg.addAlert(alertPatch.getAlert(), requestedLocale);
+                            if (alertPatch.hasAlert()) {
+                                leg.addAlert(alertPatch.getAlert(), requestedLocale);
+                            }
+                            if (alertPatch.hasVehicleInfo()) {
+                                leg.vehicleInfo = alertPatch.getVehicleInfo();
+                            }
                         }
                     } else {
                         // If we are not matching a particular trip add all known alerts for this trip pattern.

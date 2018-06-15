@@ -59,7 +59,9 @@ public class GtfsRealtimeAlertsUpdater extends PollingGraphUpdater {
 
     private long earlyStart;
 
-    private AlertsUpdateHandler updateHandler = null;
+    private AbstractUpdateHandler updateHandler = null;
+
+    private boolean vehiclePositions = false;
 
     @Override
     public void setGraphUpdaterManager(GraphUpdaterManager updaterManager) {
@@ -81,13 +83,14 @@ public class GtfsRealtimeAlertsUpdater extends PollingGraphUpdater {
         if (config.path("fuzzyTripMatching").asBoolean(false)) {
             this.fuzzyTripMatcher = new GtfsRealtimeFuzzyTripMatcher(graph.index);
         }
+        vehiclePositions = config.path("vehiclePositions").asBoolean(false);
         LOG.info("Creating real-time alert updater running every {} seconds : {}", pollingPeriodSeconds, url);
     }
 
     @Override
     public void setup() {
         if (updateHandler == null) {
-            updateHandler = new AlertsUpdateHandler();
+            updateHandler = vehiclePositions ? new VehiclePositionsUpdateHandler() : new AlertsUpdateHandler();
         }
         updateHandler.setEarlyStart(earlyStart);
         updateHandler.setFeedId(feedId);
