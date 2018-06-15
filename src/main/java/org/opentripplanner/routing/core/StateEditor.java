@@ -584,4 +584,9 @@ public class StateEditor {
         cloneStateDataAsNeeded();;
         child.stateData.nonTransitMode = mode;
     }
+
+    public void recalculateNonTransitMode() {
+        cloneStateDataAsNeeded();
+        child.stateData.calculateNonTransitMode(child.stateData.opt);
+    }
 }

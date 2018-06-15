@@ -105,15 +105,7 @@ public class StateData implements Cloneable {
     protected CarState carState = CarState.UNUSED;
 
     public StateData(RoutingRequest options) {
-        TraverseModeSet modes = options.modes;
-        if (modes.getCar())
-            nonTransitMode = TraverseMode.CAR;
-        else if (modes.getWalk())
-            nonTransitMode = TraverseMode.WALK;
-        else if (modes.getBicycle())
-            nonTransitMode = TraverseMode.BICYCLE;
-        else
-            nonTransitMode = null;
+        calculateNonTransitMode(options);
     }
 
     protected StateData clone() {
@@ -129,4 +121,16 @@ public class StateData implements Cloneable {
     }
 
     protected enum CarState { UNUSED, USING, USED }
+
+    public void calculateNonTransitMode(RoutingRequest options) {
+        TraverseModeSet modes = options.modes;
+        if (modes.getCar())
+            nonTransitMode = TraverseMode.CAR;
+        else if (modes.getWalk())
+            nonTransitMode = TraverseMode.WALK;
+        else if (modes.getBicycle())
+            nonTransitMode = TraverseMode.BICYCLE;
+        else
+            nonTransitMode = null;
+    }
 }

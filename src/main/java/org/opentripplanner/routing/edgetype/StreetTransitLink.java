@@ -151,12 +151,12 @@ public class StreetTransitLink extends Edge {
                 return null;
             } else {
                 s1.setUsedCar();
-                s1.setNonTransitMode(TraverseMode.WALK);
+                s1.recalculateNonTransitMode();
             }
         }
         if (leavingTransit) {
             s1.setUnusedCar();
-            s1.setNonTransitMode(TraverseMode.WALK);
+            s1.recalculateNonTransitMode();
         }
 
         s1.incrementTimeInSeconds(transitStop.getStreetToStopTime() + STL_TRAVERSE_COST);
@@ -212,5 +212,4 @@ public class StreetTransitLink extends Edge {
         }
         return false;
     }
-
 }
