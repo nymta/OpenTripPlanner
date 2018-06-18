@@ -67,6 +67,10 @@ public class GtfsRealtimeAlertsUpdater extends PollingGraphUpdater {
 
     private boolean vehiclePositions = false;
 
+    private String username;
+
+    private String password;
+
     static {
         _extensionRegistry = ExtensionRegistry.newInstance();
         GtfsRealtimeExtensions.registerExtensions(_extensionRegistry);
@@ -93,6 +97,8 @@ public class GtfsRealtimeAlertsUpdater extends PollingGraphUpdater {
             this.fuzzyTripMatcher = new GtfsRealtimeFuzzyTripMatcher(graph.index);
         }
         vehiclePositions = config.path("vehiclePositions").asBoolean(false);
+        username = config.path("username").asText();
+        password = config.path("password").asText();
         LOG.info("Creating real-time alert updater running every {} seconds : {}", pollingPeriodSeconds, url);
     }
 
@@ -110,7 +116,7 @@ public class GtfsRealtimeAlertsUpdater extends PollingGraphUpdater {
     @Override
     protected void runPolling() {
         try {
-            InputStream data = HttpUtils.getData(url);
+            InputStream data = HttpUtils.getData(url, null, null, username, password);
             if (data == null) {
                 throw new RuntimeException("Failed to get data from url " + url);
             }
