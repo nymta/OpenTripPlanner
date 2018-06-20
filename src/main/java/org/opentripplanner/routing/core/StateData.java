@@ -124,7 +124,7 @@ public class StateData implements Cloneable {
 
     public void calculateNonTransitMode(RoutingRequest options) {
         TraverseModeSet modes = options.modes;
-        if (modes.getCar())
+        if (modes.getCar() && !carParked)
             nonTransitMode = TraverseMode.CAR;
         else if (modes.getWalk())
             nonTransitMode = TraverseMode.WALK;
