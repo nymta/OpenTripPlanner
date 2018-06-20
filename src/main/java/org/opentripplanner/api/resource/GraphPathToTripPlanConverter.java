@@ -102,8 +102,8 @@ public abstract class GraphPathToTripPlanConverter {
             Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, request.disableAlertFiltering, requestedLocale);
             itinerary = adjustItinerary(request, itinerary);
 
-            if(itinerary.transitTime == 0 && itinerary.walkTime < bestNonTransitTime) {
-                bestNonTransitTime = itinerary.walkTime;
+            if(itinerary.transitTime == 0 && itinerary.getNonTransitTime() < bestNonTransitTime) {
+                bestNonTransitTime = itinerary.getNonTransitTime();
             }
             itineraries.add(itinerary);
         }

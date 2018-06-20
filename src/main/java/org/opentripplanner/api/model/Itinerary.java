@@ -192,4 +192,8 @@ public class Itinerary {
         endTime = calendar;
         endTimeFmt = formatDateIso(calendar);
     }
+
+    public long getNonTransitTime() {
+        return walkTime + bikeTime + driveTime;
+    }
 }
