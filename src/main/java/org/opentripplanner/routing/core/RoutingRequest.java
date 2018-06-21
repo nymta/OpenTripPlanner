@@ -201,10 +201,10 @@ public class RoutingRequest implements Cloneable, Serializable {
      *  observation should in no way be taken as scientific or definitive. Your mileage may vary.*/
     public double walkReluctance = 2.0;
 
-    /** Multiplier for how bad driving is - similar to walkReluctance. Set to 1.0 to match previous
-     * OTP behavior by default, but it would be reasonable to set this value to higher than
+    /** Multiplier for how bad driving is - similar to walkReluctance. Set equal to walkReluctance
+     * to match previous OTP behavior, but it may be reasonable to set this value to higher than
      * walkReluctance. */
-    public double carReluctance = 1.0;
+    public double carReluctance = 2.0;
 
     /** Multiplier for OptimizeType = walking */
     public double optimizeWalkMultiplier = 3.5;
