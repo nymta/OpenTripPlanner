@@ -201,6 +201,9 @@ public class RoutingRequest implements Cloneable, Serializable {
      *  observation should in no way be taken as scientific or definitive. Your mileage may vary.*/
     public double walkReluctance = 2.0;
 
+    /** Whether to use walkReluctance in TransferEdges */
+    public boolean applyWalkReluctanceInTransfers = false;
+
     /** Multiplier for how bad driving is - similar to walkReluctance. Set equal to walkReluctance
      * to match previous OTP behavior, but it may be reasonable to set this value to higher than
      * walkReluctance. */
@@ -1175,6 +1178,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && transferPenalty == other.transferPenalty
                 && maxSlope == other.maxSlope
                 && walkReluctance == other.walkReluctance
+                && applyWalkReluctanceInTransfers == other.applyWalkReluctanceInTransfers
                 && carReluctance == other.carReluctance
                 && waitReluctance == other.waitReluctance
                 && waitAtBeginningFactor == other.waitAtBeginningFactor
@@ -1248,6 +1252,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Double(maxTransferWalkDistance).hashCode()
                 + new Double(transferPenalty).hashCode() + new Double(maxSlope).hashCode()
                 + new Double(walkReluctance).hashCode() + new Double(waitReluctance).hashCode() + new Double(carReluctance).hashCode()
+                + Boolean.hashCode(applyWalkReluctanceInTransfers) * 39330359
                 + new Double(waitAtBeginningFactor).hashCode() * 15485863
                 + walkBoardCost + bikeBoardCost + bannedRoutes.hashCode()
                 + bannedTrips.hashCode() * 1373 + transferSlack * 20996011

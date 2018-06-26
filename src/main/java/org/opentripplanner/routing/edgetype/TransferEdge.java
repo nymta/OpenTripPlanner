@@ -81,7 +81,7 @@ public class TransferEdge extends Edge {
 
         RoutingRequest options = s0.getOptions();
         int time = getTime(options);
-        double weight = time * options.walkReluctance;
+        double weight = time * (options.applyWalkReluctanceInTransfers ? options.walkReluctance : 1.0);
 
         // Forbid taking shortcuts composed of two transfers in a row
         if (s0.backEdge instanceof TransferEdge) {
