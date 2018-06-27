@@ -21,6 +21,9 @@ import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetTransitLink;
+import org.opentripplanner.routing.error.BothEndpointsTooFarException;
+import org.opentripplanner.routing.error.DestinationTooFarException;
+import org.opentripplanner.routing.error.OriginTooFarException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.StreetLocation;
@@ -180,6 +183,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             }
         }
         request.rctx.debugOutput.finishedPrecalculating();
+        checkEndpoints();
     }
 
     /**
@@ -479,5 +483,16 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             routeTypes.add(route.getType());
         }
         return routeTypes;
+    }
+
+    private void checkEndpoints() {
+        boolean preTransitEmpty = preTransitStopsByDistance.empty();
+        boolean postTransitEmpty = postTransitStopByDistance.empty();
+        if (preTransitEmpty && postTransitEmpty)
+            throw new BothEndpointsTooFarException();
+        else if (preTransitEmpty)
+            throw new OriginTooFarException();
+        else if (postTransitEmpty)
+            throw new DestinationTooFarException();
     }
 }
