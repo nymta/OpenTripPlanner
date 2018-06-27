@@ -192,6 +192,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     protected RoutingRequest getOptions() {
         RoutingRequest options = new RoutingRequest();
         options.wheelchairAccessible = true;
+        options.applyWalkReluctanceInTransfers = true;
         return options;
     }
 }
