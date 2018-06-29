@@ -572,6 +572,9 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Whether to use feature where dates are extended when past transit service */
     public boolean useTransitServiceExtension = false;
 
+
+    public boolean farEndpointsException = false;
+
     /* CONSTRUCTORS */
 
     /** Constructor for options; modes defaults to walk and transit */
@@ -1235,7 +1238,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && numberOfDepartures == other.numberOfDepartures
                 && stopLinking == other.stopLinking
                 && pathIgnoreStrategy.equals(pathIgnoreStrategy)
-                && useTransitServiceExtension == other.useTransitServiceExtension;
+                && useTransitServiceExtension == other.useTransitServiceExtension
+                && farEndpointsException == other.farEndpointsException;
     }
 
     /**
@@ -1282,7 +1286,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Double(minTransferTimeHard).hashCode() * 31
                 + new Double(tripShownRangeTime).hashCode() * 790052909
                 + pathIgnoreStrategy.hashCode() * 1301081
-                + Boolean.hashCode(useTransitServiceExtension) * 1300931;
+                + Boolean.hashCode(useTransitServiceExtension) * 1300931
+                + Boolean.hashCode(farEndpointsException) * 538799;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters

@@ -19,6 +19,7 @@ import org.onebusaway.gtfs.model.Route;
 import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetTransitLink;
 import org.opentripplanner.routing.error.BothEndpointsTooFarException;
@@ -486,13 +487,19 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     }
 
     private void checkEndpoints() {
-        boolean preTransitEmpty = preTransitStopsByDistance.empty();
-        boolean postTransitEmpty = postTransitStopByDistance.empty();
-        if (preTransitEmpty && postTransitEmpty)
+        if (!routingRequest.farEndpointsException)
+            return;
+        boolean preTransitFar = preTransitStopsByDistance.empty()
+                || (preTransitStopsByDistance.peek_min_key() > routingRequest.maxWalkDistance
+                && !((routingRequest.kissAndRide || routingRequest.parkAndRide) && !routingRequest.arriveBy));
+        boolean postTransitFar = postTransitStopByDistance.empty()
+                || (postTransitStopByDistance.peek_min_key() > routingRequest.maxWalkDistance
+                && !((routingRequest.kissAndRide || routingRequest.parkAndRide) && routingRequest.arriveBy));
+        if (preTransitFar && postTransitFar)
             throw new BothEndpointsTooFarException();
-        else if (preTransitEmpty)
+        else if (preTransitFar)
             throw new OriginTooFarException();
-        else if (postTransitEmpty)
+        else if (postTransitFar)
             throw new DestinationTooFarException();
     }
 }
