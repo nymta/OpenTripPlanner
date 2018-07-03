@@ -26,8 +26,6 @@ import static org.junit.Assert.assertFalse;
 
 public class EndpointsTooFarTest {
 
-    private static Graph graph;
-
     private static final String NEAR_STOP_S1 = "40.22,-83.09";
 
     private static final String NEAR_STOP_S2 = "39.958,-83.012";
@@ -35,6 +33,8 @@ public class EndpointsTooFarTest {
     private static final String MIDDLE_LOCATION_1 = "39.9908,-83.0118";
 
     private static final String MIDDLE_LOCATION_2 = "39.96383,-82.96291";
+
+    private static Graph graph;
 
     @BeforeClass
     public static void setup() throws Exception {
@@ -50,6 +50,7 @@ public class EndpointsTooFarTest {
         AStar aStar = new AStar();
         ShortestPathTree spt = aStar.getShortestPathTree(opt, -1);
         assertFalse(spt.getPaths().isEmpty());
+        opt.cleanup();
     }
 
     @Test(expected = OriginTooFarException.class)
@@ -57,6 +58,7 @@ public class EndpointsTooFarTest {
         RoutingRequest opt = getOptions(MIDDLE_LOCATION_1, NEAR_STOP_S2);
         AStar aStar = new AStar();
         aStar.getShortestPathTree(opt, -1);
+        opt.cleanup();
     }
 
     @Test(expected = DestinationTooFarException.class)
@@ -64,6 +66,7 @@ public class EndpointsTooFarTest {
         RoutingRequest opt = getOptions(NEAR_STOP_S2, MIDDLE_LOCATION_1);
         AStar aStar = new AStar();
         aStar.getShortestPathTree(opt, -1);
+        opt.cleanup();
     }
 
     @Test(expected = BothEndpointsTooFarException.class)
@@ -71,14 +74,17 @@ public class EndpointsTooFarTest {
         RoutingRequest opt = getOptions(MIDDLE_LOCATION_2, MIDDLE_LOCATION_1);
         AStar aStar = new AStar();
         aStar.getShortestPathTree(opt, -1);
+        opt.cleanup();
     }
 
     @Test
     public void testStopsAreOk() {
-        RoutingRequest opt = getOptions("1:s1", "1:s2");
+        String feedId = graph.index.feedInfoForId.keySet().iterator().next();
+        RoutingRequest opt = getOptions(feedId + ":s1", feedId + ":s2");
         AStar aStar = new AStar();
         ShortestPathTree spt = aStar.getShortestPathTree(opt, -1);
         assertFalse(spt.getPaths().isEmpty());
+        opt.cleanup();
     }
 
     @Test
@@ -88,16 +94,17 @@ public class EndpointsTooFarTest {
         AStar aStar = new AStar();
         ShortestPathTree spt = aStar.getShortestPathTree(opt, -1);
         assertFalse(spt.getPaths().isEmpty());
+        opt.cleanup();
     }
 
     @Test
     public void testKissAndRideAfterOk() {
-        RoutingRequest opt = getOptions(MIDDLE_LOCATION_1, NEAR_STOP_S2);
+        RoutingRequest opt = getOptions(NEAR_STOP_S2, MIDDLE_LOCATION_1);
         opt.kissAndRide = true;
         opt.arriveBy = true;
         AStar aStar = new AStar();
         ShortestPathTree spt = aStar.getShortestPathTree(opt, -1);
-        assertFalse(spt.getPaths().isEmpty());
+        opt.cleanup();
     }
 
     private RoutingRequest getOptions(String origin, String destination) {

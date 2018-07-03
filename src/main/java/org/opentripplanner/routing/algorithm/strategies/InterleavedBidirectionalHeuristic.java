@@ -487,14 +487,12 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     }
 
     private void checkEndpoints() {
-        if (!routingRequest.farEndpointsException)
+        if (!routingRequest.farEndpointsException || routingRequest.kissAndRide || routingRequest.parkAndRide)
             return;
         boolean preTransitFar = preTransitStopsByDistance.empty()
-                || (preTransitStopsByDistance.peek_min_key() > routingRequest.maxWalkDistance
-                && !((routingRequest.kissAndRide || routingRequest.parkAndRide) && !routingRequest.arriveBy));
+                || preTransitStopsByDistance.peek_min_key() > routingRequest.maxWalkDistance;
         boolean postTransitFar = postTransitStopByDistance.empty()
-                || (postTransitStopByDistance.peek_min_key() > routingRequest.maxWalkDistance
-                && !((routingRequest.kissAndRide || routingRequest.parkAndRide) && routingRequest.arriveBy));
+                || postTransitStopByDistance.peek_min_key() > routingRequest.maxWalkDistance;
         if (preTransitFar && postTransitFar)
             throw new BothEndpointsTooFarException();
         else if (preTransitFar)
