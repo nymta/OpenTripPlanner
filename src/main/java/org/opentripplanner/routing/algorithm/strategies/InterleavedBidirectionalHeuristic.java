@@ -19,8 +19,12 @@ import org.onebusaway.gtfs.model.Route;
 import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.StreetTransitLink;
+import org.opentripplanner.routing.error.BothEndpointsTooFarException;
+import org.opentripplanner.routing.error.DestinationTooFarException;
+import org.opentripplanner.routing.error.OriginTooFarException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.StreetLocation;
@@ -180,6 +184,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             }
         }
         request.rctx.debugOutput.finishedPrecalculating();
+        checkEndpoints();
     }
 
     /**
@@ -479,5 +484,20 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             routeTypes.add(route.getType());
         }
         return routeTypes;
+    }
+
+    private void checkEndpoints() {
+        if (!routingRequest.farEndpointsException || routingRequest.kissAndRide || routingRequest.parkAndRide)
+            return;
+        boolean preTransitFar = preTransitStopsByDistance.empty()
+                || preTransitStopsByDistance.peek_min_key() > routingRequest.maxWalkDistance;
+        boolean postTransitFar = postTransitStopByDistance.empty()
+                || postTransitStopByDistance.peek_min_key() > routingRequest.maxWalkDistance;
+        if (preTransitFar && postTransitFar)
+            throw new BothEndpointsTooFarException();
+        else if (preTransitFar)
+            throw new OriginTooFarException();
+        else if (postTransitFar)
+            throw new DestinationTooFarException();
     }
 }
