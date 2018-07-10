@@ -63,10 +63,38 @@ public class VehiclePositionsUpdateHandler extends AbstractUpdateHandler {
             ArrayList<TimePeriod> periods = new ArrayList<TimePeriod>();
             periods.add(new TimePeriod(sd.getAsDate().getTime() / 1000, sd.next().getAsDate().getTime() / 1000));
             patch.setTimePeriods(periods);
-            String vehicleId = vehiclePosition.getVehicle().getId();
-            double lat = vehiclePosition.getPosition().getLatitude();
-            double lon = vehiclePosition.getPosition().getLongitude();
-            patch.setVehicleInfo(new VehicleInfo(vehicleId, lat, lon));
+
+            VehicleInfo vehicleInfo = new VehicleInfo();
+            if (vehiclePosition.getVehicle().hasId()) {
+                vehicleInfo.setVehicleId(vehiclePosition.getVehicle().getId());
+            }
+            if (vehiclePosition.getVehicle().hasLabel()) {
+                vehicleInfo.setVehicleLabel(vehiclePosition.getVehicle().getLabel());
+            }
+            if (vehiclePosition.hasPosition()) {
+                vehicleInfo.setLat(vehiclePosition.getPosition().getLatitude());
+                vehicleInfo.setLon(vehiclePosition.getPosition().getLongitude());
+            }
+            if (vehiclePosition.hasStopId()) {
+                vehicleInfo.setStop(vehiclePosition.getStopId());
+            }
+            if (vehiclePosition.hasCurrentStopSequence()) {
+                vehicleInfo.setCurrentStopSequence(vehiclePosition.getCurrentStopSequence());
+            }
+            if (vehiclePosition.hasCurrentStatus()) {
+                switch (vehiclePosition.getCurrentStatus()) {
+                    case INCOMING_AT:
+                        vehicleInfo.setCurrentStopStatus(VehicleInfo.StopStatus.INCOMING_AT);
+                        break;
+                    case STOPPED_AT:
+                        vehicleInfo.setCurrentStopStatus(VehicleInfo.StopStatus.STOPPED_AT);
+                        break;
+                    case IN_TRANSIT_TO:
+                        vehicleInfo.setCurrentStopStatus(VehicleInfo.StopStatus.IN_TRANSIT_TO);
+                        break;
+                }
+            }
+            patch.setVehicleInfo(vehicleInfo);
             String patchId = tripId + " " + vehiclePosition.getVehicle().getId();
             patch.setId(patchId);
             patchIds.add(patchId);
