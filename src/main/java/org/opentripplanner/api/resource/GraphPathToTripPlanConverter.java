@@ -881,7 +881,7 @@ public abstract class GraphPathToTripPlanConverter {
 
         Trip trip = states[states.length - 1].getBackTrip();
         if (trip != null && trip.getNote() != null) {
-            TimetableNote note = trip.getNote();
+            Note note = trip.getNote();
             Alert alert = Alert.createSimpleAlerts(note.getTitle(), note.getDesc());
             leg.addAlert(alert, requestedLocale);
         }
