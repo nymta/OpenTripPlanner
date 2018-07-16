@@ -381,6 +381,11 @@ public class TimetableSnapshotSource {
             return false;
         }
 
+        if (!hasPredictions(tripUpdate)) {
+            LOG.warn("TripUpdate contains no predictions, skipping.");
+            return false;
+        }
+
         // Apply update on the *scheduled* time table and set the updated trip times in the buffer
         final TripTimes updatedTripTimes = pattern.scheduledTimetable.createUpdatedTripTimes(tripUpdate,
                 timeZone, serviceDate);
@@ -395,6 +400,27 @@ public class TimetableSnapshotSource {
 
         final boolean success = buffer.update(feedId, pattern, updatedTripTimes, serviceDate);
         return success;
+    }
+
+    /**
+     * Determine if a TripUpdate has predictions.
+     * To have predictions, either
+     *  - TripUpdate has delay
+     *  - some StopTimeUpdate has arrival or departure set
+     *  - all StopTimeUpdates have ScheduleRelationship = CANCELLED or NO_DATA
+     */
+    private boolean hasPredictions(TripUpdate update) {
+        if (update.hasDelay())
+            return true;
+        boolean hasScheduledUpdate = false;
+        for (StopTimeUpdate stopTimeUpdate : update.getStopTimeUpdateList()) {
+            if (stopTimeUpdate.hasArrival() || stopTimeUpdate.hasDeparture()) {
+                return true;
+            }
+            hasScheduledUpdate |= StopTimeUpdate.ScheduleRelationship.SCHEDULED.equals(
+                    stopTimeUpdate.getScheduleRelationship());
+        }
+        return !hasScheduledUpdate;
     }
 
     /**
