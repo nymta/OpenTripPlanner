@@ -120,8 +120,9 @@ public abstract class GraphPathToTripPlanConverter {
         //set warning message in the TripPlan if the given travel time is beyond the GTFS service time range
         if (request.getOrigTravelDateTime() != null) {
             if (request.getOrigTravelDateTime().getTime() > request.getDateTime().getTime()) {
-                plan.setWarnMessage("The travel date is beyond " + (request.getRunboard()== null ? "the current run board." : (request.getRunboard() + " run board.")));
-
+                plan.addAlert(Alert.createSimpleAlerts(
+                        "The travel date is beyond " + (request.getRunboard()== null ? "the current run board."
+                                : (request.getRunboard() + " run board."))), requestedLocale);
             }
         }
 
