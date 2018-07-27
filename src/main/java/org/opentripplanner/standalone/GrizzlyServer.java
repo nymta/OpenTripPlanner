@@ -9,6 +9,8 @@ import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
@@ -135,7 +137,16 @@ public class GrizzlyServer {
         /* 3. A static content handler to serve local files from the filesystem, under the "local" path. */
         if (params.clientDirectory != null) {
             StaticHttpHandler localHandler = new StaticHttpHandler(
-                    params.clientDirectory.getAbsolutePath());
+                    params.clientDirectory.getAbsolutePath()) {
+                @Override
+                protected void onMissingResource(Request request, Response response) throws Exception {
+                    if (params.clientFallback) {
+                        handle("/", request, response);
+                    } else {
+                        super.onMissingResource(request, response);
+                    }
+                }
+            };
             localHandler.setFileCacheEnabled(false);
             httpServer.getServerConfiguration().addHttpHandler(localHandler, params.clientPath);
             LOG.info("deploying " + params.clientDirectory + " to path " + params.clientPath);

@@ -115,6 +115,9 @@ public class CommandLineParameters implements Cloneable {
     @Parameter(names = {"--disableNativeClient"}, description = "Disable default ui, if for instance clientFiles is provided.")
     public boolean disableNativeClient = false;
 
+    @Parameter(names = {"--clientFallback"}, description = "Force local client file server to redirect to root on a 404. This is necessary for webapps which use the HTML5 History API")
+    public boolean clientFallback = false;
+
     @Parameter(names = {"--disableFileCache"}, description = "Disable http server static file cache. Handy for development.")
     public boolean disableFileCache = false;
 
