@@ -458,16 +458,23 @@ public abstract class GraphPathToTripPlanConverter {
     }
 
     private static Calendar establishNextDeparture(Graph graph, State[] states, ServiceDate serviceDate, Leg leg) {
+        List<StopTimesInPattern> stopTimes = getStopTimesForStopOrParent(graph, leg.from.stopId, serviceDate);
+        List<StopTimesInPattern> endStopTimes = getStopTimesForStopOrParent(graph, leg.to.stopId, serviceDate);
+        return determineNextDepartureTimeForStop(graph, leg, stopTimes, endStopTimes);
+    }
 
-        List<StopTimesInPattern> stopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate, false);
-        stopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.from.stopId), serviceDate.next(), false));
-
-        List<StopTimesInPattern> endStopTimes = graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate, false);
-        endStopTimes.addAll(graph.index.getStopTimesForStop(graph.index.stopForId.get(leg.to.stopId), serviceDate.next(), false));
-
-        Calendar nextDeparture = determineNextDepartureTimeForStop(graph, leg, stopTimes, endStopTimes);
-
-        return nextDeparture;
+    private static List<StopTimesInPattern> getStopTimesForStopOrParent(Graph graph, AgencyAndId stopId, ServiceDate serviceDate) {
+        Stop stop = graph.index.stopForId.get(stopId);
+        List<StopTimesInPattern> stopTimes;
+        if (stop.getParentStation() != null) {
+            Stop parent = graph.index.getParentStopForStop(stop);
+            stopTimes = graph.index.getStopTimesForStopParent(parent, serviceDate, false);
+            stopTimes.addAll(graph.index.getStopTimesForStopParent(parent, serviceDate.next(), false));
+        } else {
+            stopTimes = graph.index.getStopTimesForStop(stop, serviceDate, false);
+            stopTimes.addAll(graph.index.getStopTimesForStop(stop, serviceDate.next(), false));
+        }
+        return stopTimes;
     }
 
     private static Calendar determineNextDepartureTimeForStop(Graph graph, Leg leg,

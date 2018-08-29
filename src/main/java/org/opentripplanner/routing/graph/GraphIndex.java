@@ -517,6 +517,22 @@ public class GraphIndex {
         return ret;
     }
 
+    /**
+     * Get a list of all trips that pass through all children of a  stop during a single ServiceDate.
+     * Useful when creating complete stop timetables for a single day.
+     *
+     * @param parent Stop object to perform the search for
+     * @param serviceDate Return all departures for the specified date
+     * @return
+     */
+    public List<StopTimesInPattern> getStopTimesForStopParent(Stop parent, ServiceDate serviceDate, boolean omitNonPickups) {
+        List<StopTimesInPattern> ret = new ArrayList<>();
+        for (Stop stop : stopsForParentStation.get(parent.getId())) {
+            ret.addAll(getStopTimesForStop(stop, serviceDate, omitNonPickups));
+        }
+        return ret;
+    }
+
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups, RouteMatcher routeMatcher, String headsign) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, null, headsign, null, null);
     }
