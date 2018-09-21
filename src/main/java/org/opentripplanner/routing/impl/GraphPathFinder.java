@@ -244,7 +244,7 @@ public class GraphPathFinder {
                     }
                 }
 
-                if (pathIgnoreStrategy.shouldIgnorePath(path)) {
+                if (pathIgnoreStrategy.shouldIgnorePath(path, options)) {
                     continue;
                 }
 

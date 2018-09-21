@@ -23,8 +23,7 @@ public class RTDPathIgnoreStrategy implements PathIgnoreStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(RTDPathIgnoreStrategy.class);
 
     @Override
-    public boolean shouldIgnorePath(GraphPath path) {
-        RoutingRequest options = path.states.getFirst().getOptions();
+    public boolean shouldIgnorePath(GraphPath path, RoutingRequest options) {
         return graphPathStartsLaterThanLimit(path, options.tripShownRangeTime, options);
     }
 

@@ -12,6 +12,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.impl;
 
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
 import org.opentripplanner.routing.spt.GraphPath;
 
@@ -20,7 +21,7 @@ public class MTAPathIgnoreStrategy implements PathIgnoreStrategy {
     private double bestDuration = -1.0;
 
     @Override
-    public boolean shouldIgnorePath(GraphPath path) {
+    public boolean shouldIgnorePath(GraphPath path, RoutingRequest options) {
         // Keep Track of the shortest duration of all paths found so far.
         if (bestDuration == -1.0) {
             bestDuration = path.getDuration();

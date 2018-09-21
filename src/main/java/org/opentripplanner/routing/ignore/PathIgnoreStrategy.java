@@ -12,8 +12,9 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.ignore;
 
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.spt.GraphPath;
 
 public interface PathIgnoreStrategy {
-    boolean shouldIgnorePath(GraphPath path);
+    boolean shouldIgnorePath(GraphPath path, RoutingRequest options);
 }
