@@ -32,6 +32,7 @@ import org.opentripplanner.routing.edgetype.flex.TemporaryPartialPatternHop;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.PatternDepartVertex;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
@@ -64,8 +65,12 @@ public class DeviatedRouteGraphModifier extends GtfsFlexGraphModifier {
 
     @Override
     public SearchTerminationStrategy getSearchTerminationStrategy() {
-        // No termination strategy -- need to search until we find destination, in case we are in demand-response zone.
-        return null;
+        return new SearchTerminationStrategy() {
+            @Override
+            public boolean shouldSearchTerminate(Vertex origin, Vertex target, State current, ShortestPathTree spt, RoutingRequest traverseOptions) {
+                return current.getElapsedTimeSeconds() > traverseOptions.maxCallAndRideSeconds;
+            }
+        };
     }
 
     @Override
