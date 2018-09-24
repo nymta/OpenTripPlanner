@@ -386,16 +386,12 @@ public abstract class RoutingResource {
     protected Double flagStopBufferSize;
 
     /**
-     * Whether to use reservation-based services
+     * Which, if any, special services should be used. Currently, the GTFS-flex spec supports
+     * "reservation-based" and "eligibility" services, so these are what are allowed. This should
+     * be a comma-delimited list, e.g. "RESERVATION,ELIGIBILITY"
      */
-    @QueryParam("useReservationServices")
-    protected Boolean useReservationServices = true;
-
-    /**
-     * Whether to use eligibility-based services
-     */
-    @QueryParam("useEligibilityServices")
-    protected Boolean useEligibilityServices = true;
+    @QueryParam("specialServices")
+    protected String specialServices;
 
     /**
      * Whether to ignore DRT time limits.
@@ -663,11 +659,8 @@ public abstract class RoutingResource {
         if (flagStopBufferSize != null)
             request.flagStopBufferSize = flagStopBufferSize;
 
-        if (useReservationServices != null)
-            request.useReservationServices = useReservationServices;
-
-        if (useEligibilityServices != null)
-            request.useEligibilityServices = useEligibilityServices;
+        if (specialServices != null)
+            request.setSpecialServices(specialServices);
 
         if (ignoreDrtAdvanceBookMin != null)
             request.ignoreDrtAdvanceBookMin = ignoreDrtAdvanceBookMin;

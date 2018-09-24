@@ -23,6 +23,7 @@ import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.common.model.NamedPlace;
 import org.opentripplanner.routing.edgetype.StreetEdge;
 import org.opentripplanner.routing.error.TrivialPathException;
+import org.opentripplanner.routing.flex.ServiceType;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -424,14 +426,9 @@ public class RoutingRequest implements Cloneable, Serializable {
     public double flagStopBufferSize;
 
     /**
-     * Whether to use reservation-based services
+     * What special services to use
      */
-    public boolean useReservationServices = true;
-
-    /**
-     * Whether to use eligibility-based services
-     */
-    public boolean useEligibilityServices = true;
+    public List<ServiceType> specialServices = Collections.emptyList();
 
     /**
      * Whether to ignore DRT time limits
@@ -1034,8 +1031,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && reduceCallAndRideSeconds == other.reduceCallAndRideSeconds
                 && reduceCallAndRideRatio == other.reduceCallAndRideRatio
                 && flagStopBufferSize == other.flagStopBufferSize
-                && useReservationServices == other.useReservationServices
-                && useEligibilityServices == other.useEligibilityServices
+                && specialServices.equals(other.specialServices)
                 && ignoreDrtAdvanceBookMin == other.ignoreDrtAdvanceBookMin
                 && excludeWalking == other.excludeWalking
                 && minPartialHopLength == other.minPartialHopLength
@@ -1078,8 +1074,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + Integer.hashCode(reduceCallAndRideSeconds) * 92356763
                 + Double.hashCode(reduceCallAndRideRatio) *  171157957
                 + Double.hashCode(flagStopBufferSize) * 803989
-                + Boolean.hashCode(useReservationServices) * 92429033
-                + Boolean.hashCode(useEligibilityServices) * 7916959
+                + specialServices.hashCode() * 92429033
                 + Boolean.hashCode(ignoreDrtAdvanceBookMin) * 179992387
                 + Boolean.hashCode(excludeWalking) * 989684221
                 + Integer.hashCode(minPartialHopLength) * 15485863
@@ -1327,5 +1322,12 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     public void resetClockTime() {
         this.clockTimeSec = System.currentTimeMillis() / 1000;
+    }
+
+    public void setSpecialServices(String servicesStr) {
+        specialServices = new ArrayList<>();
+        for (String service : servicesStr.split(",")) {
+            specialServices.add(ServiceType.valueOf(service));
+        }
     }
 }

@@ -30,6 +30,7 @@ import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.error.VertexNotFoundException;
 import org.opentripplanner.routing.flex.DeviatedRouteGraphModifier;
 import org.opentripplanner.routing.flex.FlagStopGraphModifier;
+import org.opentripplanner.routing.flex.ServiceType;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.spt.DominanceFunction;
@@ -147,11 +148,12 @@ public class GraphPathFinder {
             FlagStopGraphModifier svc1 = new FlagStopGraphModifier(router.graph);
             DeviatedRouteGraphModifier svc2 = new DeviatedRouteGraphModifier(router.graph);
             svc1.createForwardHops(options);
-            if (options.useReservationServices) {
+            boolean useReservationServices = options.specialServices.contains(ServiceType.RESERVATION);
+            if (useReservationServices) {
                 svc2.createForwardHops(options);
             }
             svc1.createBackwardHops(options);
-            if (options.useReservationServices) {
+            if (useReservationServices) {
                 svc2.createBackwardHops(options);
             }
         }

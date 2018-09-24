@@ -28,6 +28,7 @@ import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TransferTable;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
+import org.opentripplanner.routing.flex.ServiceType;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
@@ -149,7 +150,7 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
         }
 
         // if eligibility-restricted services are disallowed, check this route. Only supports 0/1 values.
-        if (!options.useEligibilityServices) {
+        if (!options.specialServices.contains(ServiceType.ELIGIBILITY)) {
             Route route = getPattern().route;
             if (route.hasEligibilityRestricted() && route.getEligibilityRestricted() == 1) {
                 return null;
