@@ -8,7 +8,7 @@
 
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0.0-vt-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -72,10 +72,11 @@
     </developers>
 
     <scm>
-        <connection>scm:git:http://github.com/opentripplanner/OpenTripPlanner.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/opentripplanner/OpenTripPlanner.git</developerConnection>
-        <url>http://github.com/opentripplanner/OpenTripPlanner</url>
-    </scm>
+        <connection>scm:git:http://github.com/camsys/OpenTripPlanner.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/camsys/OpenTripPlanner.git</developerConnection>
+        <url>http://github.com/camsys/OpenTripPlanner</url>
+      <tag>otp-1.4.0.0-vt</tag>
+  </scm>
 
     <properties>
         <geotools.version>10.5</geotools.version>
@@ -85,11 +86,15 @@
     </properties>
 
     <distributionManagement>
-        <!-- We are using Sonatype Nexus Staging instead of Maven Release plugin.
-             Only a snapshot repo should be configured. Releases are done from that snapshot staging repo. -->
+        <repository>
+            <id>nexus.onebusaway.org-releases</id>
+            <name>Nexus Release Repo</name>
+            <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+        </repository>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>nexus.onebusaway.org-snapshots</id>
+            <name>Nexus Snapshot Repo</name>
+            <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -179,18 +184,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <!-- Recommended way to deploy to OSSRH , which allows deferred manual release to Central. -->
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>com.webcohesion.enunciate</groupId>
                 <artifactId>enunciate-maven-plugin</artifactId>
                 <version>2.4.0</version>
@@ -235,21 +228,6 @@
                         <id>attach-sources</id>
                         <goals>
                             <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <!-- We sign in the verify phase, which means it will happen for install and deploy but not package. -->
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -361,6 +339,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -428,16 +414,6 @@
             <id>axis</id>
             <name>axis</name>
             <url>https://people.apache.org/repo/m1-ibiblio-rsync-repository/org.apache.axis2/</url>
-        </repository>
-        <repository>
-          <id>sonatype-oss</id>
-          <name>Sonatype OSS</name>
-          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>conveyal</id>
-            <name>Conveyal Maven Repository</name>
-            <url>https://maven.conveyal.com/</url>
         </repository>
         <repository>
             <id>onebusaway-releases</id>
@@ -728,7 +704,7 @@
         <dependency>
             <groupId>crosby.binary</groupId>
             <artifactId>osmpbf</artifactId>
-            <version>1.3.4-SNAPSHOT</version>
+            <version>1.3.4</version>
         </dependency>
         <!-- Command line parameter parsing -->
         <dependency>
@@ -815,7 +791,7 @@
         <dependency>
             <groupId>com.conveyal</groupId>
             <artifactId>r5</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-simple</artifactId>
