@@ -504,6 +504,9 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** Minimum length of partial hop edges */
     public int minPartialHopLength = 400;
 
+    /** How many extra ServiceDays to look out (or back) */
+    public int serviceDayLookout = -1;
+
     /** Saves split edge which can be split on origin/destination search
      *
      * This is used so that TrivialPathException is thrown if origin and destination search would split the same edge
@@ -1069,7 +1072,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && ignoreDrtAdvanceBookMin == other.ignoreDrtAdvanceBookMin
                 && excludeWalking == other.excludeWalking
                 && minPartialHopLength == other.minPartialHopLength
-                && clockTimeSec == other.clockTimeSec;
+                && clockTimeSec == other.clockTimeSec
+                && serviceDayLookout == other.serviceDayLookout;
     }
 
     /**
@@ -1113,7 +1117,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + Boolean.hashCode(ignoreDrtAdvanceBookMin) * 179992387
                 + Boolean.hashCode(excludeWalking) * 989684221
                 + Integer.hashCode(minPartialHopLength) * 15485863
-                + Long.hashCode(clockTimeSec) * 833389;
+                + Long.hashCode(clockTimeSec) * 833389
+                + Integer.hashCode(serviceDayLookout) * 31558519;
         if (batch) {
             hashCode *= -1;
             // batch mode, only one of two endpoints matters
@@ -1370,6 +1375,10 @@ public class RoutingRequest implements Cloneable, Serializable {
             }
         }
 
+    }
+
+    public void setServiceDayLookout(int serviceDayLookout) {
+        this.serviceDayLookout = serviceDayLookout;
     }
 
     public void resetClockTime() {
