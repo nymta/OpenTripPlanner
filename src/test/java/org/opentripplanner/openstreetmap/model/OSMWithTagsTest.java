@@ -123,5 +123,23 @@ public class OSMWithTagsTest {
         
         o.addTag("access", "private");
         assertTrue(o.isThroughTrafficExplicitlyDisallowed());
-    }   
+    }
+
+    @Test
+    public void testIsPedestrianExplicitlyAllowed() {
+        OSMWithTags o = new OSMWithTags();
+        assertFalse(o.isPedestrianExplicitlyAllowed());
+
+        o.addTag("foot", "foo");
+        assertFalse(o.isPedestrianExplicitlyAllowed());
+
+        o.addTag("foot", "yes");
+        assertTrue(o.isPedestrianExplicitlyAllowed());
+
+        o.addTag("foot", "true");
+        assertTrue(o.isPedestrianExplicitlyAllowed());
+
+        o.addTag("foot", "designated");
+        assertTrue(o.isPedestrianExplicitlyAllowed());
+    }
 }

@@ -675,7 +675,6 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                                         WayProperties wayData, OSMWithTags way) {
 
             Set<T2<Alert, NoteMatcher>> notes = wayPropertySet.getNoteForWay(way);
-            boolean noThruTraffic = way.isThroughTrafficExplicitlyDisallowed();
             // if (noThruTraffic) LOG.info("Way {} does not allow through traffic.", way.getId());
             if (street != null) {
                 double safety = wayData.getSafetyFeatures().first;
@@ -687,7 +686,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     for (T2<Alert, NoteMatcher> note : notes)
                         graph.streetNotesService.addStaticNote(street, note.first, note.second);
                 }
-                street.setNoThruTraffic(noThruTraffic);
+                street.setThruTrafficPermission(getThruTrafficPermission(street, way));
             }
 
             if (backStreet != null) {
@@ -700,8 +699,24 @@ public class OpenStreetMapModule implements GraphBuilderModule {
                     for (T2<Alert, NoteMatcher> note : notes)
                         graph.streetNotesService.addStaticNote(backStreet, note.first, note.second);
                 }
-                backStreet.setNoThruTraffic(noThruTraffic);
+                backStreet.setThruTrafficPermission(getThruTrafficPermission(backStreet, way));
             }
+        }
+
+        private StreetTraversalPermission getThruTrafficPermission(StreetEdge street, OSMWithTags way) {
+            StreetTraversalPermission permission = street.getPermission();
+            if (way.isThroughTrafficExplicitlyDisallowed()) {
+                if (!way.isPedestrianExplicitlyAllowed()) {
+                    permission = permission.remove(StreetTraversalPermission.PEDESTRIAN);
+                }
+                if (!way.isBicycleExplicitlyAllowed()) {
+                    permission = permission.remove(StreetTraversalPermission.BICYCLE);
+                }
+                if (!way.isMotorVehicleExplicitlyAllowed()) {
+                    permission = permission.remove(StreetTraversalPermission.CAR);
+                }
+            }
+            return permission;
         }
 
         private void setWayName(OSMWithTags way) {

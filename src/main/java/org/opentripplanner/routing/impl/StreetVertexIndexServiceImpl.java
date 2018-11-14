@@ -181,7 +181,7 @@ public class StreetVertexIndexServiceImpl implements StreetVertexIndexService {
 
             temporaryPartialStreetEdge.setElevationProfile(ElevationUtils
                     .getPartialElevationProfile(street.getElevationProfile(), 0, lengthIn), false);
-            temporaryPartialStreetEdge.setNoThruTraffic(street.isNoThruTraffic());
+            temporaryPartialStreetEdge.setThruTrafficPermission(street.getThruTrafficPermission());
             temporaryPartialStreetEdge.setStreetClass(street.getStreetClass());
         } else {
             TemporaryPartialStreetEdge temporaryPartialStreetEdge = new TemporaryPartialStreetEdge(
@@ -191,7 +191,7 @@ public class StreetVertexIndexServiceImpl implements StreetVertexIndexService {
                     .getPartialElevationProfile(street.getElevationProfile(), lengthIn,
                     lengthIn + lengthOut), false);
             temporaryPartialStreetEdge.setStreetClass(street.getStreetClass());
-            temporaryPartialStreetEdge.setNoThruTraffic(street.isNoThruTraffic());
+            temporaryPartialStreetEdge.setThruTrafficPermission(street.getThruTrafficPermission());
         }
     }
 

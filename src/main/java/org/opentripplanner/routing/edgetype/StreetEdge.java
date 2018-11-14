@@ -89,6 +89,10 @@ public class StreetEdge extends Edge implements Cloneable {
 
     private StreetTraversalPermission permission;
 
+    // OTP treats access=private as forbidding through-traffic. This can be overridden on a mode-
+    // specific basis via, for example, foot=yes.
+    private StreetTraversalPermission thruTrafficPermission;
+
     /** The OSM way ID from whence this came - needed to reference traffic data */
     public long wayId;
 
@@ -119,6 +123,7 @@ public class StreetEdge extends Edge implements Cloneable {
         this.bicycleSafetyFactor = 1.0f;
         this.name = name;
         this.setPermission(permission);
+        this.setThruTrafficPermission(permission);
         this.setCarSpeed(DEFAULT_CAR_SPEED);
         this.setWheelchairAccessible(true); // accessible by default
         if (geometry != null) {
@@ -386,9 +391,9 @@ public class StreetEdge extends Edge implements Cloneable {
         s1.setBackWalkingBike(walkingBike);
 
         /* Handle no through traffic areas. */
-        if (this.isNoThruTraffic()) {
+        if (this.isNoThruTraffic(traverseMode)) {
             // Record transition into no-through-traffic area.
-            if (backEdge instanceof StreetEdge && !((StreetEdge)backEdge).isNoThruTraffic()) {
+            if (backEdge instanceof StreetEdge && !((StreetEdge)backEdge).isNoThruTraffic(traverseMode)) {
                 s1.setEnteredNoThroughTrafficArea();
             }
             // If we transitioned into a no-through-traffic area at some point, check if we are exiting it.
@@ -396,7 +401,7 @@ public class StreetEdge extends Edge implements Cloneable {
                 // Only Edges are marked as no-thru, but really we need to avoid creating dominant, pruned states
                 // on thru _Vertices_. This could certainly be improved somehow.
                 for (StreetEdge se : Iterables.filter(s1.getVertex().getOutgoing(), StreetEdge.class)) {
-                    if (!se.isNoThruTraffic()) {
+                    if (!se.isNoThruTraffic(traverseMode)) {
                         // This vertex has at least one through-traffic edge. We can't dominate it with a no-thru state.
                         return null;
                     }
@@ -719,13 +724,17 @@ public class StreetEdge extends Edge implements Cloneable {
 	    flags = BitSetUtils.set(flags, HASBOGUSNAME_FLAG_INDEX, hasBogusName);
 	}
 
-	public boolean isNoThruTraffic() {
-            return BitSetUtils.get(flags, NOTHRUTRAFFIC_FLAG_INDEX);
+	public boolean isNoThruTraffic(TraverseMode mode) {
+	    return !thruTrafficPermission.allows(mode);
 	}
 
-	public void setNoThruTraffic(boolean noThruTraffic) {
-	    flags = BitSetUtils.set(flags, NOTHRUTRAFFIC_FLAG_INDEX, noThruTraffic);
+	public void setThruTrafficPermission(StreetTraversalPermission permission) {
+	    thruTrafficPermission = permission;
 	}
+
+	public StreetTraversalPermission getThruTrafficPermission() {
+	    return thruTrafficPermission;
+    }
 
 	/**
 	 * This street is a staircase
@@ -849,19 +858,15 @@ public class StreetEdge extends Edge implements Cloneable {
             if (((TemporarySplitterVertex) v).isEndVertex()) {
                 e1 = new TemporaryPartialStreetEdge(this, (StreetVertex) fromv, (TemporarySplitterVertex) v, geoms.first, name, 0);
                 e1.calculateLengthFromGeometry();
-                e1.setNoThruTraffic(this.isNoThruTraffic());
+                e1.setThruTrafficPermission(this.thruTrafficPermission);
                 e1.setStreetClass(this.getStreetClass());
             } else {
                 e2 = new TemporaryPartialStreetEdge(this, (TemporarySplitterVertex) v, (StreetVertex) tov, geoms.second, name, 0);
                 e2.calculateLengthFromGeometry();
-                e2.setNoThruTraffic(this.isNoThruTraffic());
+                e2.setThruTrafficPermission(this.thruTrafficPermission);
                 e2.setStreetClass(this.getStreetClass());
             }
         }
-
-
-
-
 
         return new P2<StreetEdge>(e1, e2);
     }

@@ -20,7 +20,7 @@ import com.vividsolutions.jts.geom.LineString;
 public class PlainStreetEdgeTest {
 
     private Graph graph;
-    private IntersectionVertex v0, v1, v2;
+    private IntersectionVertex v0, v1, v2, v3;
     private RoutingRequest proto;
 
     @Before
@@ -30,7 +30,8 @@ public class PlainStreetEdgeTest {
         v0 = vertex("maple_0th", 0.0, 0.0); // label, X, Y
         v1 = vertex("maple_1st", 2.0, 2.0);
         v2 = vertex("maple_2nd", 1.0, 2.0);
-        
+        v3 = vertex("maple_3rd", 1.0, 3.0);
+
         proto = new RoutingRequest();
         proto.setDummyRoutingContext(graph);
         proto.carSpeed = 15.0f;
@@ -250,6 +251,54 @@ public class PlainStreetEdgeTest {
         graph.addTurnRestriction(e1, new TurnRestriction(e1, e0, null, TraverseModeSet.allModes()));
 
         assertNotNull(e0.traverse(e1.traverse(state)));
+    }
+
+    @Test
+    public void testThruAccessDenied() {
+        StreetEdge e0 = edge(v0, v1, 50.0, StreetTraversalPermission.ALL);
+        StreetEdge e1 = edge(v1, v2, 18.4, StreetTraversalPermission.ALL);
+        e1.setThruTrafficPermission(StreetTraversalPermission.NONE);
+        StreetEdge e2 = edge(v2, v3, 20.0, StreetTraversalPermission.ALL);
+        e2.setThruTrafficPermission(StreetTraversalPermission.NONE);
+        StreetEdge e3 = edge(v3, v0, 30.0, StreetTraversalPermission.ALL);
+
+        // v1,v2,v3 form a no-thru traffic area. e2 has no outgoing edges which are still in the
+        // area, which is the condition for leaving the no-thru traffic area.
+
+        State state = new State(v0, 0, proto.clone());
+        state = e0.traverse(state);
+
+        // Entering thru traffic area should set appropriate field.
+        state = e1.traverse(state);
+        assertTrue(state.hasEnteredNoThruTrafficArea());
+
+        // Cannot leave a thru-traffic area
+        state = e2.traverse(state);
+        assertNull(state);
+    }
+
+    @Test
+    public void testThruAccessAllowedForMode() {
+        StreetEdge e0 = edge(v0, v1, 50.0, StreetTraversalPermission.ALL);
+        StreetEdge e1 = edge(v1, v2, 18.4, StreetTraversalPermission.ALL);
+        e1.setThruTrafficPermission(StreetTraversalPermission.BICYCLE);
+        StreetEdge e2 = edge(v2, v3, 20.0, StreetTraversalPermission.ALL);
+        e2.setThruTrafficPermission(StreetTraversalPermission.BICYCLE);
+        StreetEdge e3 = edge(v3, v0, 30.0, StreetTraversalPermission.ALL);
+
+        // Regular no-thru traffic behavior in pedestrian mode
+        State state = new State(v0, 0, proto.clone());
+        state = e0.traverse(state);
+        state = e1.traverse(state);
+        assertTrue(state.hasEnteredNoThruTrafficArea());
+        state = e2.traverse(state);
+        assertNull(state);
+
+        // Not applied if mode = bicycle
+        RoutingRequest options = proto.clone();
+        options.setMode(TraverseMode.BICYCLE);
+        state = new State(v0, 0, options);
+        assertNotNull(e3.traverse(e2.traverse(e1.traverse(e0.traverse(state)))));
     }
 
     /****
