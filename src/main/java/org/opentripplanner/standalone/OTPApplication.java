@@ -14,6 +14,7 @@ import org.opentripplanner.api.model.JSONObjectMapperProvider;
 import org.opentripplanner.api.resource.*;
 import org.opentripplanner.index.GeocoderResource;
 import org.opentripplanner.index.IndexAPI;
+import org.opentripplanner.pattern_graph.PatternGraphAPI;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.ws.rs.core.Application;
@@ -100,7 +101,8 @@ public class OTPApplication extends Application {
             CorsFilter.class,
             MultiPartFeature.class,
             NearbySchedulesResource.class,
-            RoutePatternsResource.class
+            RoutePatternsResource.class,
+            PatternGraphAPI.class
         ));
         
         if (this.secure) {
