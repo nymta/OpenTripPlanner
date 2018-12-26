@@ -11,6 +11,7 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.pattern_graph.model;
+import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.index.model.StopShort;
@@ -21,6 +22,8 @@ import java.util.Set;
 public class StopNode {
 
     private StopShort attributes;
+
+    private StopNodeAttribute nodeAttribute;
 
     private Set<AgencyAndId> successors = new HashSet<>();
 
@@ -48,5 +51,13 @@ public class StopNode {
 
     public void addSuccessor(StopNode node) {
         successors.add(node.getStopId());
+    }
+
+    public StopNodeAttribute getNodeAttribute() {
+        return nodeAttribute;
+    }
+
+    public void setNodeAttribute(StopNodeAttribute nodeAttribute) {
+        this.nodeAttribute = nodeAttribute;
     }
 }
