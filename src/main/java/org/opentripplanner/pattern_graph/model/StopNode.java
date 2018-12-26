@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class StopNode {
 
-    private StopShort stop;
+    private StopShort attributes;
 
     private Set<AgencyAndId> successors = new HashSet<>();
 
@@ -30,12 +30,12 @@ public class StopNode {
         this.stopId = stopId;
     }
 
-    public StopShort getStop() {
-        return stop;
+    public StopShort getAttributes() {
+        return attributes;
     }
 
-    public void setStop(StopShort stop) {
-        this.stop = stop;
+    public void setAttributes(StopShort attributes) {
+        this.attributes = attributes;
     }
 
     public Set<AgencyAndId> getSuccessors() {

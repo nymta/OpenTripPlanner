@@ -36,6 +36,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Path("/routers/{routerId}/patternGraph")
 @Produces(MediaType.APPLICATION_JSON)
 public class PatternGraphAPI {
@@ -56,9 +60,28 @@ public class PatternGraphAPI {
     @QueryParam("directionId")
     private String directionId;
 
+    @QueryParam("date")
+    private String date;
+
+    @QueryParam("time")
+    private String time;
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PatternGraph getGraph() {
+
+        String dateTime = "2018-12-25" + ' ' + time;
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mma");
+        Date timeOfInterest;
+        //Date midnight;
+        try {
+            timeOfInterest = format.parse(dateTime);
+            //midnight = format.parse(midnightString);
+        } catch (Exception e){
+            timeOfInterest = null;
+            //midnight = null;
+        }
+        //long secs_since_midnight = (timeOfInterest.getTime() - midnight.getTime())/1000;
         AgencyAndId routeId = AgencyAndId.convertFromString(this.routeId, ':');
 
         Route route = index.routeForId.get(routeId);
@@ -67,13 +90,15 @@ public class PatternGraphAPI {
         Map<AgencyAndId, StopNode> nodeForId = new HashMap<>();
 
         for (TripPattern pattern : patterns) {
-            if (!Integer.toString(pattern.directionId).equals(directionId)) {
+            if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
                 continue;
             }
             StopNode prev = null;
             for (Stop stop : pattern.getStops()) {
+
                 StopNode node = nodeForId.computeIfAbsent(stop.getId(), StopNode::new);
-                node.setStop(new StopShort(stop));
+
+                node.setAttributes(new StopShort(stop));
                 if (prev != null) {
                     prev.addSuccessor(node);
                 }

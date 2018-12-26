@@ -49,6 +49,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.*;
 
 /**
@@ -711,6 +715,38 @@ public class TripPattern implements Cloneable, Serializable {
     public String getFeedId() {
         // The feed id is the same as the agency id on the route, this allows us to obtain it from there.
         return route.getId().getAgencyId();
+    }
+
+    /**
+     * Determine if the pattern is operating at the given time.
+     *
+     * @return true if operating at the given time
+     */
+    public Boolean operatingAt(Date timeOfInterest) {
+        if(timeOfInterest == null){
+            return true;
+        }
+
+        String midnightString = "2018-12-25 12:00AM"; //This needs to use the date
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mma");
+        Date midnight;
+        try {
+            midnight = format.parse(midnightString);
+        } catch (Exception e){
+            midnight = null;
+        }
+        long secs_since_midnight = (timeOfInterest.getTime() - midnight.getTime())/1000;
+
+        Timetable table = this.scheduledTimetable;
+        for (TripTimes tripTime : table.tripTimes) {
+            long tripStartTime = tripTime.getDepartureTime(0);
+            long tripEndTime = tripTime.getArrivalTime(tripTime.getNumStops() - 1);
+            if (secs_since_midnight >= tripStartTime && secs_since_midnight <= tripEndTime) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

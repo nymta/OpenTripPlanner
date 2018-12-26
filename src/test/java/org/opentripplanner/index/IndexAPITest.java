@@ -14,7 +14,13 @@ package org.opentripplanner.index;
 
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
-import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeEvent;
+import com.google.transit.realtime.GtfsRealtime.TripUpdate.
+
+
+
+
+
+        StopTimeEvent;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import org.junit.BeforeClass;
 import org.junit.Test;
