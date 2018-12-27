@@ -20,6 +20,7 @@ import org.opentripplanner.index.model.StopTimesByStop;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
 import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
+import org.opentripplanner.profile.StopCluster;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.standalone.OTPServer;
@@ -91,7 +92,7 @@ public class PatternGraphAPI {
 
         Collection<TripPattern> patterns = index.patternsForRoute.get(route);
 
-        Map<AgencyAndId, StopNode> nodeForId = new HashMap<>();
+        Map<String, StopNode> nodeForId = new HashMap<>();
 
         for (TripPattern pattern : patterns) {
             if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
@@ -100,7 +101,8 @@ public class PatternGraphAPI {
             StopNode prev = null;
             for (Stop stop : pattern.getStops()) {
 
-                StopNode node = nodeForId.computeIfAbsent(stop.getId(), StopNode::new);
+                StopCluster cluster = index.stopClusterForStop.get(stop);
+                StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
 
                 node.setAttributes(new StopShort(stop));
                 node.setNodeAttribute(attribute);

@@ -15,6 +15,7 @@ import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.index.model.StopShort;
+import org.opentripplanner.profile.StopCluster;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,11 +26,11 @@ public class StopNode {
 
     private StopNodeAttribute nodeAttribute;
 
-    private Set<AgencyAndId> successors = new HashSet<>();
+    private Set<String> successors = new HashSet<>();
 
-    private AgencyAndId stopId;
+    private String stopId;
 
-    public StopNode(AgencyAndId stopId) {
+    public StopNode(String stopId) {
         this.stopId = stopId;
     }
 
@@ -41,11 +42,11 @@ public class StopNode {
         this.attributes = attributes;
     }
 
-    public Set<AgencyAndId> getSuccessors() {
+    public Set<String> getSuccessors() {
         return successors;
     }
 
-    public AgencyAndId getStopId() {
+    public String getStopId() {
         return stopId;
     }
 
