@@ -28,6 +28,8 @@ public class StopNode {
 
     private Set<String> successors = new HashSet<>();
 
+    private Set<SuccessorAttribute> realSuccessors = new HashSet<>();
+
     private String stopId;
 
     public StopNode(String stopId) {
@@ -46,6 +48,10 @@ public class StopNode {
         return successors;
     }
 
+    public Set<SuccessorAttribute> getRealSuccessors() {
+        return realSuccessors;
+    }
+
     public String getStopId() {
         return stopId;
     }
@@ -53,6 +59,8 @@ public class StopNode {
     public void addSuccessor(StopNode node) {
         successors.add(node.getStopId());
     }
+
+    public void addRealSuccessor(SuccessorAttribute sA) { realSuccessors.add(sA); }
 
     public StopNodeAttribute getNodeAttribute() {
         return nodeAttribute;

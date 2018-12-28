@@ -20,6 +20,7 @@ import org.opentripplanner.index.model.StopTimesByStop;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
 import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
+import org.opentripplanner.pattern_graph.model.SuccessorAttribute;
 import org.opentripplanner.profile.StopCluster;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.GraphIndex;
@@ -89,10 +90,12 @@ public class PatternGraphAPI {
         Route route = index.routeForId.get(routeId);
         StopNodeAttribute attribute = new StopNodeAttribute();
         attribute.setColor("#"+route.getColor());
+        //attribute.setRouteType('12');
 
         Collection<TripPattern> patterns = index.patternsForRoute.get(route);
 
         Map<String, StopNode> nodeForId = new HashMap<>();
+        Map<String, SuccessorAttribute> sAForId = new HashMap<>();
 
         for (TripPattern pattern : patterns) {
             if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
@@ -103,11 +106,22 @@ public class PatternGraphAPI {
 
                 StopCluster cluster = index.stopClusterForStop.get(stop);
                 StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
+                SuccessorAttribute sA = sAForId.get(cluster.id); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
+                if(sA == null){
+                    sA = new SuccessorAttribute();
+                    sAForId.put(cluster.id, sA);
+                }
 
                 node.setAttributes(new StopShort(stop));
                 node.setNodeAttribute(attribute);
+
+                //SuccessorAttribute sA = new SuccessorAttribute();
+                sA.setId(node.getStopId());
+                sA.setRouteType(route.getType());
+
                 if (prev != null) {
                     prev.addSuccessor(node);
+                    prev.addRealSuccessor(sA);
                 }
                 prev = node;
             }

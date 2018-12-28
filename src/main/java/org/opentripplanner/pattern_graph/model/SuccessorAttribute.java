@@ -10,17 +10,25 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+
+
 package org.opentripplanner.pattern_graph.model;
 
-public class StopNodeAttribute {
+public class SuccessorAttribute {
 
-    private String color;
+    private String id;
+    private Integer routeType;
 
-    public String getColor() {
-        return color;
+    public String getid() { return id; }
+    public void setId(String id) {
+        this.id = id;
     }
-    public void setColor(String color) {
-        this.color = color;
+
+    public Integer getRouteType() {
+        return routeType;
+    }
+    public void setRouteType(Integer routeType) {
+        this.routeType = routeType;
     }
 
 }
