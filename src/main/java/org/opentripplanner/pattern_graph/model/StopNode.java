@@ -11,7 +11,7 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.pattern_graph.model;
-import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
+import org.opentripplanner.pattern_graph.model.StopAttribute;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.index.model.StopShort;
@@ -22,51 +22,51 @@ import java.util.Set;
 
 public class StopNode {
 
-    private StopShort attributes;
+    private StopShort oldAttributes;
 
-    private StopNodeAttribute nodeAttribute;
+    private StopAttribute attribute;
 
-    private Set<String> successors = new HashSet<>();
+    private Set<String> oldSuccessors = new HashSet<>();
 
-    private Set<SuccessorAttribute> realSuccessors = new HashSet<>();
+    private Set<SuccessorAttribute> successors = new HashSet<>();
 
-    private String stopId;
+    private String id;
 
-    public StopNode(String stopId) {
-        this.stopId = stopId;
+    public StopNode(String id) {
+        this.id = id;
     }
 
-    public StopShort getAttributes() {
-        return attributes;
+    public StopShort getOldAttributes() {
+        return oldAttributes;
     }
 
-    public void setAttributes(StopShort attributes) {
-        this.attributes = attributes;
+    public void setOldAttributes(StopShort oldAttributes) {
+        this.oldAttributes = oldAttributes;
     }
 
-    public Set<String> getSuccessors() {
+    public Set<String> getOldSuccessors() {
+        return oldSuccessors;
+    }
+
+    public Set<SuccessorAttribute> getSuccessors() {
         return successors;
     }
 
-    public Set<SuccessorAttribute> getRealSuccessors() {
-        return realSuccessors;
+    public String getId() {
+        return this.id;
     }
 
-    public String getStopId() {
-        return stopId;
+    public void addOldSuccessor(StopNode node) {
+        oldSuccessors.add(node.getId());
     }
 
-    public void addSuccessor(StopNode node) {
-        successors.add(node.getStopId());
+    public void addSuccessor(SuccessorAttribute sA) { successors.add(sA); }
+
+    public StopAttribute getAttribute() {
+        return attribute;
     }
 
-    public void addRealSuccessor(SuccessorAttribute sA) { realSuccessors.add(sA); }
-
-    public StopNodeAttribute getNodeAttribute() {
-        return nodeAttribute;
-    }
-
-    public void setNodeAttribute(StopNodeAttribute nodeAttribute) {
-        this.nodeAttribute = nodeAttribute;
+    public void setAttribute(StopAttribute attribute) {
+        this.attribute = attribute;
     }
 }

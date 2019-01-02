@@ -12,7 +12,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.pattern_graph.model;
 
-public class StopNodeAttribute {
+public class StopAttribute {
 
     private String color;
 

@@ -19,7 +19,7 @@ import org.opentripplanner.index.model.StopShort;
 import org.opentripplanner.index.model.StopTimesByStop;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
-import org.opentripplanner.pattern_graph.model.StopNodeAttribute;
+import org.opentripplanner.pattern_graph.model.StopAttribute;
 import org.opentripplanner.pattern_graph.model.SuccessorAttribute;
 import org.opentripplanner.profile.StopCluster;
 import org.opentripplanner.routing.edgetype.TripPattern;
@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -57,8 +59,8 @@ public class PatternGraphAPI {
         index = router.graph.index;
     }
 
-    @QueryParam("routeId")
-    private String routeId;
+    @QueryParam("routeIds")
+    private String routeIds;
 
     @QueryParam("directionId")
     private String directionId;
@@ -84,46 +86,53 @@ public class PatternGraphAPI {
             timeOfInterest = null;
             //midnight = null;
         }
-        //long secs_since_midnight = (timeOfInterest.getTime() - midnight.getTime())/1000;
-        AgencyAndId routeId = AgencyAndId.convertFromString(this.routeId, ':');
 
-        Route route = index.routeForId.get(routeId);
-        StopNodeAttribute attribute = new StopNodeAttribute();
-        attribute.setColor("#"+route.getColor());
-        //attribute.setRouteType('12');
-
-        Collection<TripPattern> patterns = index.patternsForRoute.get(route);
+        List<String> routeIdArray = new ArrayList<String>( Arrays.asList(this.routeIds.split("\\s*,\\s*")) );
 
         Map<String, StopNode> nodeForId = new HashMap<>();
         Map<String, SuccessorAttribute> sAForId = new HashMap<>();
 
-        for (TripPattern pattern : patterns) {
-            if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
-                continue;
-            }
-            StopNode prev = null;
-            for (Stop stop : pattern.getStops()) {
+        for(String routeIdString : routeIdArray) {
+            System.out.println(routeIdString);
 
-                StopCluster cluster = index.stopClusterForStop.get(stop);
-                StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
-                SuccessorAttribute sA = sAForId.get(cluster.id); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
-                if(sA == null){
-                    sA = new SuccessorAttribute();
-                    sAForId.put(cluster.id, sA);
+            //long secs_since_midnight = (timeOfInterest.getTime() - midnight.getTime())/1000;
+            AgencyAndId routeId = AgencyAndId.convertFromString(routeIdString, ':');
+
+            Route route = index.routeForId.get(routeId);
+            StopAttribute attribute = new StopAttribute();
+            attribute.setColor("#" + route.getColor());
+            //attribute.setRouteType('12');
+
+            Collection<TripPattern> patterns = index.patternsForRoute.get(route);
+
+            for (TripPattern pattern : patterns) {
+                if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
+                    continue;
                 }
+                StopNode prev = null;
+                for (Stop stop : pattern.getStops()) {
 
-                node.setAttributes(new StopShort(stop));
-                node.setNodeAttribute(attribute);
+                    StopCluster cluster = index.stopClusterForStop.get(stop);
+                    StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
+                    SuccessorAttribute sA = sAForId.get(cluster.id); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
+                    if (sA == null) {
+                        sA = new SuccessorAttribute();
+                        sAForId.put(cluster.id, sA);
+                    }
 
-                //SuccessorAttribute sA = new SuccessorAttribute();
-                sA.setId(node.getStopId());
-                sA.setRouteType(route.getType());
+                    node.setOldAttributes(new StopShort(stop));
+                    node.setAttribute(attribute);
 
-                if (prev != null) {
-                    prev.addSuccessor(node);
-                    prev.addRealSuccessor(sA);
+                    //SuccessorAttribute sA = new SuccessorAttribute();
+                    sA.setId(node.getId());
+                    sA.setRouteType(route.getType());
+
+                    if (prev != null) {
+                        prev.addOldSuccessor(node);
+                        prev.addSuccessor(sA);
+                    }
+                    prev = node;
                 }
-                prev = node;
             }
         }
 
