@@ -99,10 +99,6 @@ public class PatternGraphAPI {
             AgencyAndId routeId = AgencyAndId.convertFromString(routeIdString, ':');
 
             Route route = index.routeForId.get(routeId);
-            StopAttribute attribute = new StopAttribute();
-            attribute.setColor("#" + route.getColor());
-            //attribute.setRouteType('12');
-
             Collection<TripPattern> patterns = index.patternsForRoute.get(route);
 
             for (TripPattern pattern : patterns) {
@@ -115,15 +111,20 @@ public class PatternGraphAPI {
                     StopCluster cluster = index.stopClusterForStop.get(stop);
                     StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
                     SuccessorAttribute sA = sAForId.get(cluster.id); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
+
+                    // If have not created an attribute for this node yet, create one.
                     if (sA == null) {
                         sA = new SuccessorAttribute();
                         sAForId.put(cluster.id, sA);
+                        StopAttribute attribute = new StopAttribute();
+                        node.setAttribute(attribute);
                     }
 
+                    // Update Attributes
+                    StopAttribute attribute;
                     node.setOldAttributes(new StopShort(stop));
-                    node.setAttribute(attribute);
-
-                    //SuccessorAttribute sA = new SuccessorAttribute();
+                    attribute = node.getAttribute();
+                    attribute.addColor("#" + route.getColor());
                     sA.setId(node.getId());
                     sA.setRouteType(route.getType());
 

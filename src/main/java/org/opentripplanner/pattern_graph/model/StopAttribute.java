@@ -11,16 +11,18 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.pattern_graph.model;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StopAttribute {
 
-    private String color;
-
-    public String getColor() {
-        return color;
+    private Set<String> colors = new HashSet<>();
+    public Set<String> getColor() {
+        return colors;
     }
-    public void setColor(String color) {
-        this.color = color;
+    public void addColor(String color) {
+        colors.add(color);
+        System.out.println(colors.size());
     }
 
 }
