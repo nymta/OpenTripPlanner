@@ -22,11 +22,7 @@ import java.util.Set;
 
 public class StopNode {
 
-    private StopShort oldAttributes;
-
     private StopAttribute attribute;
-
-    private Set<String> oldSuccessors = new HashSet<>();
 
     private Set<SuccessorAttribute> successors = new HashSet<>();
 
@@ -36,28 +32,12 @@ public class StopNode {
         this.id = id;
     }
 
-    public StopShort getOldAttributes() {
-        return oldAttributes;
-    }
-
-    public void setOldAttributes(StopShort oldAttributes) {
-        this.oldAttributes = oldAttributes;
-    }
-
-    public Set<String> getOldSuccessors() {
-        return oldSuccessors;
-    }
-
     public Set<SuccessorAttribute> getSuccessors() {
         return successors;
     }
 
     public String getId() {
         return this.id;
-    }
-
-    public void addOldSuccessor(StopNode node) {
-        oldSuccessors.add(node.getId());
     }
 
     public void addSuccessor(SuccessorAttribute sA) { successors.add(sA); }

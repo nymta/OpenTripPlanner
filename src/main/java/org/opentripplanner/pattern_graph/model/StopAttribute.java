@@ -16,13 +16,41 @@ import java.util.Set;
 
 public class StopAttribute {
 
-    private Set<String> colors = new HashSet<>();
+    private Set<String> colors = new HashSet<>(); //Strings representing HEX Colors
+    private Set<String> routes = new HashSet<>(); //Strings representing route names
+    private String name;
+    private Boolean isTerminal = false;
+
     public Set<String> getColor() {
         return colors;
     }
+
     public void addColor(String color) {
         colors.add(color);
-        System.out.println(colors.size());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<String> getRoutes() {
+        return routes;
+    }
+
+    public void addRoute(String route) {
+        routes.add(route);
+    }
+
+    public Boolean getIsTerminal() {
+        return isTerminal;
+    }
+
+    public void setIsTerminal(Boolean isTerminal){
+        this.isTerminal =isTerminal;
     }
 
 }

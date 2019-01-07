@@ -93,8 +93,6 @@ public class PatternGraphAPI {
         Map<String, SuccessorAttribute> sAForId = new HashMap<>();
 
         for(String routeIdString : routeIdArray) {
-            System.out.println(routeIdString);
-
             //long secs_since_midnight = (timeOfInterest.getTime() - midnight.getTime())/1000;
             AgencyAndId routeId = AgencyAndId.convertFromString(routeIdString, ':');
 
@@ -102,34 +100,49 @@ public class PatternGraphAPI {
             Collection<TripPattern> patterns = index.patternsForRoute.get(route);
 
             for (TripPattern pattern : patterns) {
+
                 if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
                     continue;
                 }
                 StopNode prev = null;
-                for (Stop stop : pattern.getStops()) {
+                List<Stop> stops = pattern.getStops();
+                Stop lastStop = stops.get(0);
 
-                    StopCluster cluster = index.stopClusterForStop.get(stop);
-                    StopNode node = nodeForId.computeIfAbsent(cluster.id, StopNode::new);
-                    SuccessorAttribute sA = sAForId.get(cluster.id); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
+                for (Stop stop : stops) {
+                    //StopCluster cluster = index.stopClusterForStop.get(stop);
+                    //String parent = cluster.id;
+                    String parent = stop.getParentStation();
+                    if(parent == null){
+                        parent = stop.getId().toString();
+                    }
+                    StopNode node = nodeForId.computeIfAbsent(parent, StopNode::new);
+                    SuccessorAttribute sA = sAForId.get(parent); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
 
                     // If have not created an attribute for this node yet, create one.
                     if (sA == null) {
                         sA = new SuccessorAttribute();
-                        sAForId.put(cluster.id, sA);
+                        sAForId.put(parent, sA);
                         StopAttribute attribute = new StopAttribute();
                         node.setAttribute(attribute);
                     }
 
                     // Update Attributes
                     StopAttribute attribute;
-                    node.setOldAttributes(new StopShort(stop));
                     attribute = node.getAttribute();
+                    attribute.setName(stop.getName());
                     attribute.addColor("#" + route.getColor());
+                    if(stop == lastStop){
+                        attribute.setIsTerminal(true);
+                    }
+                    String routeName = route.getShortName();
+                    if(routeName == null){
+                        routeName = route.getLongName();
+                    }
+                    attribute.addRoute(routeName);
                     sA.setId(node.getId());
                     sA.setRouteType(route.getType());
 
                     if (prev != null) {
-                        prev.addOldSuccessor(node);
                         prev.addSuccessor(sA);
                     }
                     prev = node;
