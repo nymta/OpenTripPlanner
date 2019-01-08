@@ -17,6 +17,7 @@ import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.index.model.StopShort;
 import org.opentripplanner.index.model.StopTimesByStop;
+import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
 import org.opentripplanner.pattern_graph.model.StopAttribute;
@@ -53,9 +54,12 @@ public class PatternGraphAPI {
 
     private GraphIndex index;
 
+    private Graph otpGraph;
+
     public PatternGraphAPI(@Context OTPServer otpServer, @PathParam("routerId") String routerId) {
         Router router = otpServer.getRouter(routerId);
         this.router = router;
+        otpGraph = router.graph;
         index = router.graph.index;
     }
 
@@ -75,7 +79,7 @@ public class PatternGraphAPI {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PatternGraph getGraph() {
 
-        String dateTime = "2018-12-25" + ' ' + time;
+        String dateTime = date + ' ' + time;
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mma");
         Date timeOfInterest;
         //Date midnight;
@@ -101,7 +105,7 @@ public class PatternGraphAPI {
 
             for (TripPattern pattern : patterns) {
 
-                if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(timeOfInterest)) {
+                if (!Integer.toString(pattern.directionId).equals(directionId) || !pattern.operatingAt(otpGraph, date, timeOfInterest)) {
                     continue;
                 }
                 StopNode prev = null;

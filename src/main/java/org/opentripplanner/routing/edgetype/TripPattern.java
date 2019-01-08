@@ -26,6 +26,8 @@ import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.services.calendar.CalendarService;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.api.resource.CoordinateArrayListSequence;
 import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.common.geometry.GeometryUtils;
@@ -722,12 +724,21 @@ public class TripPattern implements Cloneable, Serializable {
      *
      * @return true if operating at the given time
      */
-    public Boolean operatingAt(Date timeOfInterest) {
+    public Boolean operatingAt(Graph graph, String date, Date timeOfInterest) {
         if(timeOfInterest == null){
             return true;
         }
 
-        String midnightString = "2018-12-25 12:00AM"; //This needs to use the date
+        CalendarService calendar = graph.getCalendarService();
+        //ServiceDate serviceDate = new ServiceDate(2018, 12, 18); // there are other constructors too, like "new ServiceDate(new Date())"
+        ServiceDate serviceDate = new ServiceDate(timeOfInterest);
+        Set<AgencyAndId> serviceIds = calendar.getServiceIdsOnDate(serviceDate);
+        System.out.println(serviceIds);
+        //if (!serviceIds.contains(tt.trip.getServiceId())) {
+        //    return false; // does not run on 2019-12-18
+       // }
+
+        String midnightString = date + " 12:00AM"; //This needs to use the date
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mma");
         Date midnight;
         try {
@@ -741,7 +752,7 @@ public class TripPattern implements Cloneable, Serializable {
         for (TripTimes tripTime : table.tripTimes) {
             long tripStartTime = tripTime.getDepartureTime(0);
             long tripEndTime = tripTime.getArrivalTime(tripTime.getNumStops() - 1);
-            if (secs_since_midnight >= tripStartTime && secs_since_midnight <= tripEndTime) {
+            if (secs_since_midnight >= tripStartTime && secs_since_midnight <= tripEndTime && serviceIds.contains(tripTime.trip.getServiceId())) {
                 return true;
             }
         }
