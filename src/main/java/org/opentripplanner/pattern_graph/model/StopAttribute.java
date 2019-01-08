@@ -20,6 +20,7 @@ public class StopAttribute {
     private Set<String> routes = new HashSet<>(); //Strings representing route names
     private String name;
     private Boolean isTerminal = false;
+    private Boolean shuttling = false;
 
     public Set<String> getColor() {
         return colors;
@@ -50,7 +51,15 @@ public class StopAttribute {
     }
 
     public void setIsTerminal(Boolean isTerminal){
-        this.isTerminal =isTerminal;
+        this.isTerminal=isTerminal;
+    }
+
+    public Boolean getShuttling() {
+        return shuttling;
+    }
+
+    public void setShuttling(Boolean shuttling){
+        this.shuttling=shuttling;
     }
 
 }

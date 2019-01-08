@@ -145,6 +145,10 @@ public class PatternGraphAPI {
                     attribute.addRoute(routeName);
                     sA.setId(node.getId());
                     sA.setRouteType(route.getType());
+                    if(route.getType() == 714){
+                      attribute.setShuttling(true);
+                    }
+
 
                     if (prev != null) {
                         prev.addSuccessor(sA);
