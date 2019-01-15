@@ -342,7 +342,11 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+<<<<<<< HEAD
+                <artifactId>mavenreleaseplugin</artifactId>
+=======
                 <artifactId>maven-release-plugin</artifactId>
+>>>>>>> 0b37c100c13930a9d1301a1d5a950816c027fefe
                 <version>2.5.3</version>
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
