@@ -93,7 +93,10 @@ public class Place {
     public String bikeShareId;
 
     /**
-     * Type of board or alight (to distinguish flexible transit modes).
+     * This is an optional field which can be used to distinguish among ways a passenger's
+     * boarding or alighting at a stop can differ among services operated by a transit agency.
+     * This will be "default" in most cases. Currently the only non-default values are for
+     * GTFS-Flex board or alight types.
      */
     public BoardAlightType boardAlightType;
 
@@ -101,16 +104,6 @@ public class Place {
      * Board or alight area for flag stops
      */
     public EncodedPolylineBean flagStopArea;
-
-    /**
-     * The longitude of the route geometry endpoint for a deviated-route place.
-     */
-    public Double deviatedRouteLon = null;
-
-    /**
-     * The latitude of the route geometry endpoint for a deviated-route place.
-     */
-    public Double deviatedRouteLat = null;
 
     /**
      * Returns the geometry in GeoJSON format

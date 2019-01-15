@@ -17,7 +17,6 @@ import org.opentripplanner.routing.vertextype.OsmVertex;
 import org.opentripplanner.routing.vertextype.SplitterVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TemporarySplitterVertex;
-import org.opentripplanner.traffic.StreetSpeedSnapshot;
 import org.opentripplanner.util.BitSetUtils;
 import org.opentripplanner.util.I18NString;
 import org.opentripplanner.util.NonLocalizedString;
@@ -244,9 +243,6 @@ public class StreetEdge extends Edge implements Cloneable {
     public State traverse(State s0) {
         final RoutingRequest options = s0.getOptions();
         final TraverseMode currMode = s0.getNonTransitMode();
-        if (options.excludeWalking && currMode.equals(TraverseMode.WALK)) {
-            return null;
-        }
         StateEditor editor = doTraverse(s0, options, s0.getNonTransitMode());
         State state = (editor == null) ? null : editor.makeState();
         /* Kiss and ride support. Mode transitions occur without the explicit loop edges used in park-and-ride. */
@@ -549,18 +545,6 @@ public class StreetEdge extends Edge implements Cloneable {
             return Double.NaN;
         } else if (traverseMode.isDriving()) {
             // NOTE: Automobiles have variable speeds depending on the edge type
-            if (options.useTraffic) {
-                // the expected speed based on traffic
-                StreetSpeedSnapshot source = options.getRoutingContext().streetSpeedSnapshot;
-
-                if (source != null) {
-                    double congestedSpeed = source.getSpeed(this, traverseMode, timeMillis);
-
-                    if (!Double.isNaN(congestedSpeed))
-                        return congestedSpeed;
-                }
-            }
-
             return calculateCarSpeed(options);
         }
         return options.getSpeed(traverseMode);

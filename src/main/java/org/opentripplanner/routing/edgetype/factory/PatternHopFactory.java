@@ -17,7 +17,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.math3.util.FastMath;
 import org.opentripplanner.model.Agency;
-import org.opentripplanner.model.Area;
+import org.opentripplanner.model.FlexArea;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.FeedInfo;
 import org.opentripplanner.model.Frequency;
@@ -25,6 +25,7 @@ import org.opentripplanner.model.Pathway;
 import org.opentripplanner.model.Route;
 import org.opentripplanner.model.ShapePoint;
 import org.opentripplanner.model.Stop;
+import org.opentripplanner.model.StopPatternFlexFields;
 import org.opentripplanner.model.StopTime;
 import org.opentripplanner.model.Transfer;
 import org.opentripplanner.model.Trip;
@@ -255,7 +256,7 @@ public class PatternHopFactory {
 
     private Map<FeedScopedId, double[]> distancesByShapeId = new HashMap<FeedScopedId, double[]>();
 
-    private Map<String, Geometry> _areasById = new HashMap<>();
+    private Map<String, Geometry> flexAreasById = new HashMap<>();
 
     private FareServiceFactory fareServiceFactory;
 
@@ -301,8 +302,8 @@ public class PatternHopFactory {
         // Perhaps it is to allow name collisions with previously loaded feeds.
         clearCachedData(); 
 
-        loadAreaMap();
-        loadAreasIntoGraph(graph);
+        loadFlexAreaMap();
+        loadFlexAreasIntoGraph(graph);
 
         /* Assign 0-based numeric codes to all GTFS service IDs. */
         for (FeedScopedId serviceId : transitService.getAllServiceIds()) {
@@ -374,8 +375,13 @@ public class PatternHopFactory {
                 directionId = -1;
             }
 
+            boolean hasFlexService = stopTimes.stream().anyMatch(this::stopTimeHasFlex);
+
             /* Get the existing TripPattern for this filtered StopPattern, or create one. */
-            StopPattern stopPattern = new StopPattern(stopTimes, _areasById::get);
+            StopPattern stopPattern = new StopPattern(stopTimes, graph.deduplicator);
+            if (hasFlexService) {
+                stopPattern.setFlexFields(new StopPatternFlexFields(stopTimes, flexAreasById, graph.deduplicator));
+            }
             TripPattern tripPattern = findOrCreateTripPattern(stopPattern, trip.getRoute(), directionId);
 
             /* Create a TripTimes object for this list of stoptimes, which form one trip. */
@@ -1021,7 +1027,7 @@ public class PatternHopFactory {
         geometriesByShapeId.clear();
         distancesByShapeId.clear();
         geometriesByShapeSegmentKey.clear();
-        _areasById.clear();
+        flexAreasById.clear();
     }
 
     private void loadTransfers(Graph graph) {
@@ -1519,17 +1525,25 @@ public class PatternHopFactory {
             return expandedTransfers;
         }
     }
-    private void loadAreaMap() {
-        for (Area area : transitService.getAllAreas()) {
-            Geometry geometry = GeometryUtils.parseWkt(area.getWkt());
-            _areasById.put(area.getAreaId(), geometry);
+    private void loadFlexAreaMap() {
+        for (FlexArea flexArea : transitService.getAllAreas()) {
+            Geometry geometry = GeometryUtils.parseWkt(flexArea.getWkt());
+            flexAreasById.put(flexArea.getAreaId(), geometry);
         }
     }
 
-    private void loadAreasIntoGraph(Graph graph) {
-        for (Map.Entry<String, Geometry> entry : _areasById.entrySet()) {
+    private void loadFlexAreasIntoGraph(Graph graph) {
+        for (Map.Entry<String, Geometry> entry : flexAreasById.entrySet()) {
             FeedScopedId id = new FeedScopedId(feedId.getId(), entry.getKey());
-            graph.areasById.put(id, entry.getValue());
+            graph.flexAreasById.put(id, entry.getValue());
         }
+    }
+
+    private boolean stopTimeHasFlex(StopTime st) {
+        return (st.getContinuousPickup() != 1 && st.getContinuousPickup() != StopTime.MISSING_VALUE)
+                || (st.getContinuousDropOff() != 1 && st.getContinuousDropOff() != StopTime.MISSING_VALUE)
+                || st.getStartServiceArea() != null || st.getEndServiceArea() != null
+                || st.getStartServiceAreaRadius() != StopTime.MISSING_VALUE
+                || st.getEndServiceAreaRadius() != StopTime.MISSING_VALUE;
     }
 }

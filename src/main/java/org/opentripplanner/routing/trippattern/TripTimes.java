@@ -112,7 +112,14 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
     /** A Set of stop indexes that are marked as timepoints in the GTFS input. */
     private final BitSet timepoints;
 
-    /* DRT service parameters */
+    /**
+     * Demand-Response Transit (DRT) service parameters. In GTFS-Flex, DRT transit is transit which
+     * is reserved in advance with the provider. This includes call-and-ride service, and
+     * potentially the deviated portion of deviated-fixed routes. For DRT, the travel time is
+     * calculated by applying formulas to the direct vehicle time. The following parameters give
+     * the maximum possible and average travel time formulas, given a direct vehicle time.
+     */
+
     private DrtTravelTime maxTravelTime;
 
     private DrtTravelTime avgTravelTime;
@@ -312,13 +319,15 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         return getDepartureTime(stop) - (scheduledDepartureTimes[stop] + timeShift);
     }
 
-    public int getCallAndRideBoardTime(int stop, long currTime, ServiceDay sd, boolean useClockTime, long startClockTime) {
-        int ret = (int) Math.min(Math.max(currTime, getDepartureTime(stop)), getArrivalTime(stop + 1));
+    public int getCallAndRideBoardTime(int stop, long currTime, int directTime, ServiceDay sd, boolean useClockTime, long startClockTime) {
+        int travelTime = getDemandResponseMaxTime(directTime);
+        int minBoardTime = getArrivalTime(stop + 1) - travelTime;
+        int ret = (int) Math.min(Math.max(currTime, getDepartureTime(stop)), minBoardTime);
         if (useClockTime) {
             int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(trip.getDrtAdvanceBookMin() * 60.0));
             if (ret >= clockTime) {
                 return ret;
-            } else if (clockTime < getArrivalTime(stop + 1)) {
+            } else if (clockTime < minBoardTime) {
                 return clockTime;
             } else {
                 return -1;
@@ -329,19 +338,21 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
 
     public int getCallAndRideAlightTime(int stop, long currTime, int directTime, ServiceDay sd, boolean useClockTime, long startClockTime) {
         int travelTime = getDemandResponseMaxTime(directTime);
-        currTime -= travelTime;
-        int startOfService = (int) Math.min(Math.max(currTime, getDepartureTime(stop - 1)), getArrivalTime(stop));
+        int maxAlightTime = getDepartureTime(stop - 1) + travelTime;
+        int ret = (int) Math.max(Math.min(currTime, getArrivalTime(stop)), maxAlightTime);
         if (useClockTime) {
-            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(trip.getDrtAdvanceBookMin() * 60));
-            if (startOfService >= clockTime) {
-                // do nothing
-            } else if (clockTime < getArrivalTime(stop)) {
-                startOfService = clockTime;
-            } else {
+            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(trip.getDrtAdvanceBookMin() * 60.0));
+            // boarding time must be > clockTime
+            int boardTime = ret - travelTime;
+            if (boardTime >= clockTime) {
+                return ret;
+            }
+            ret += (clockTime - boardTime);
+            if (ret >= maxAlightTime) {
                 return -1;
             }
         }
-        return startOfService + travelTime;
+        return ret;
     }
 
     public int getDemandResponseMaxTime(int directTime) {

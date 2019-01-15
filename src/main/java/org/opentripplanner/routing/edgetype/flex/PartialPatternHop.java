@@ -18,7 +18,7 @@ import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PartialPatternHop extends PatternHop {
+public class PartialPatternHop extends FlexPatternHop {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,7 +28,7 @@ public class PartialPatternHop extends PatternHop {
     private double endIndex;
     private double originalHopLength;
     private double percentageOfHop;
-    private PatternHop originalHop;
+    private FlexPatternHop originalHop;
     private Geometry boardArea;
     private Geometry alightArea;
     private LineString displayGeometry;
@@ -42,8 +42,12 @@ public class PartialPatternHop extends PatternHop {
 
     // constructor for flag stops
     // this could be merged into deviated-route service constructor
-    public PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, double startIndex, double endIndex, double buffer) {
-        super(from, to, fromStop, toStop, hop.getStopIndex(), hop.getRequestPickup(), hop.getRequestDropoff(), hop.getServiceAreaRadius(), hop.getServiceArea(), false);
+    public PartialPatternHop(FlexPatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, double startIndex, double endIndex, double buffer) {
+        super(from, to, fromStop, toStop, hop.getStopIndex(), false);
+        setRequestPickup(hop.getRequestPickup());
+        setRequestDropoff(hop.getRequestDropoff());
+        setServiceAreaRadius(hop.getServiceAreaRadius());
+        setServiceArea(hop.getServiceArea());
         LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -54,10 +58,13 @@ public class PartialPatternHop extends PatternHop {
     }
 
     // constructor for deviated-route service
-    public PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, double startIndex, double endIndex,
+    public PartialPatternHop(FlexPatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, double startIndex, double endIndex,
                              LineString startGeometry, int startVehicleTime, LineString endGeometry, int endVehicleTime, double buffer) {
-        super(from, to, fromStop, toStop, hop.getStopIndex(), hop.getRequestPickup(), hop.getRequestDropoff(), hop.getServiceAreaRadius(), hop.getServiceArea(), false);
-
+        super(from, to, fromStop, toStop, hop.getStopIndex(), false);
+        setRequestPickup(hop.getRequestPickup());
+        setRequestDropoff(hop.getRequestDropoff());
+        setServiceAreaRadius(hop.getServiceAreaRadius());
+        setServiceArea(hop.getServiceArea());
         LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
         this.startIndex = startIndex;
         this.endIndex = endIndex;
@@ -95,8 +102,12 @@ public class PartialPatternHop extends PatternHop {
     }
 
     // pass-thru for TemporaryDirectPatternHop
-    public PartialPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop) {
-        super(from, to, fromStop, toStop, hop.getStopIndex(), hop.getRequestPickup(), hop.getRequestDropoff(), hop.getServiceAreaRadius(), hop.getServiceArea(), false);
+    public PartialPatternHop(FlexPatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop) {
+        super(from, to, fromStop, toStop, hop.getStopIndex(), false);
+        setRequestPickup(hop.getRequestPickup());
+        setRequestDropoff(hop.getRequestDropoff());
+        setServiceAreaRadius(hop.getServiceAreaRadius());
+        setServiceArea(hop.getServiceArea());
         this.originalHop = hop;
     }
 
@@ -120,12 +131,12 @@ public class PartialPatternHop extends PatternHop {
     }
 
     // given hop s0->s1 and a temporary position t, create a partial hop s0->t
-    public static PartialPatternHop startHop(PatternHop hop, PatternArriveVertex to, Stop toStop) {
+    public static PartialPatternHop startHop(FlexPatternHop hop, PatternArriveVertex to, Stop toStop) {
         LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
         return new PartialPatternHop(hop, (PatternStopVertex) hop.getFromVertex(), to, hop.getBeginStop(), toStop, line.getStartIndex(), line.project(to.getCoordinate()), 0);
     }
 
-    public static PartialPatternHop endHop(PatternHop hop, PatternDepartVertex from, Stop fromStop) {
+    public static PartialPatternHop endHop(FlexPatternHop hop, PatternDepartVertex from, Stop fromStop) {
         LengthIndexedLine line = new LengthIndexedLine(hop.getGeometry());
         return new PartialPatternHop(hop, from, (PatternStopVertex) hop.getToVertex(), fromStop, hop.getEndStop(), line.project(from.getCoordinate()), line.getEndIndex(), 0);
     }
@@ -167,7 +178,7 @@ public class PartialPatternHop extends PatternHop {
             return true;
         double length = SphericalDistanceLibrary.fastLength(getGeometry());
         double parentLength = SphericalDistanceLibrary.fastLength(getOriginalHop().getGeometry());
-        if (length == 0 || length < options.minPartialHopLength) {
+        if (length == 0 || length < options.flexMinPartialHopLength) {
             return true;
         }
         if (parentLength == 0) {
@@ -226,7 +237,7 @@ public class PartialPatternHop extends PatternHop {
         return alightArea != null;
     }
 
-    public PatternHop getOriginalHop() {
+    public FlexPatternHop getOriginalHop() {
         return originalHop;
     }
 

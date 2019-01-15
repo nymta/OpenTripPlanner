@@ -1,5 +1,6 @@
 package org.opentripplanner.routing.flex;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import org.apache.commons.math3.util.Pair;
 import org.opentripplanner.model.FeedScopedId;
@@ -12,15 +13,15 @@ import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.edgetype.flex.FlexPatternHop;
 import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.edgetype.TemporaryEdge;
+import org.opentripplanner.routing.edgetype.flex.FlexTransitBoardAlight;
 import org.opentripplanner.routing.edgetype.flex.TemporaryDirectPatternHop;
 import org.opentripplanner.routing.edgetype.flex.TemporaryPartialPatternHop;
 import org.opentripplanner.routing.edgetype.flex.TemporaryPreAlightEdge;
 import org.opentripplanner.routing.edgetype.flex.TemporaryPreBoardEdge;
 import org.opentripplanner.routing.edgetype.flex.TemporaryStreetTransitLink;
-import org.opentripplanner.routing.edgetype.flex.TemporaryTransitBoardAlight;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -29,6 +30,7 @@ import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.PatternDepartVertex;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
+import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.opentripplanner.routing.vertextype.TransitStopArrive;
 import org.opentripplanner.routing.vertextype.TransitStopDepart;
@@ -85,19 +87,19 @@ public abstract class GtfsFlexGraphModifier {
     // this the core of what's different: how the hops are created
 
     /**
-     * Create a new {@link PatternHop} with a new "to" location (from the route to a new destination).
+     * Create a new {@link FlexPatternHop} with a new "to" location (from the route to a new destination).
      *
      * @param opt Options for the graph search
-     * @param state State at which the original PatternHop was found during the graph search
+     * @param state State at which the original FlexPatternHop was found during the graph search
      * @param hop Original pattern hop to modify
      * @param to New "to" location
      * @param toStop Stop for new "to" location
      * @return new pattern hop
      */
-    public abstract TemporaryPartialPatternHop makeHopNewTo(RoutingRequest opt, State state, PatternHop hop, PatternArriveVertex to, Stop toStop);
+    public abstract TemporaryPartialPatternHop makeHopNewTo(RoutingRequest opt, State state, FlexPatternHop hop, PatternArriveVertex to, Stop toStop);
 
     /**
-     * Create a new {@link PatternHop} with a new "from" location (from a new destination to the route).
+     * Create a new {@link FlexPatternHop} with a new "from" location (from a new destination to the route).
      *
      * @param opt Options for the graph search
      * @param state Options for the graph search
@@ -106,7 +108,7 @@ public abstract class GtfsFlexGraphModifier {
      * @param fromStop Stop for new "from" location
      * @return new pattern hop
      */
-    public abstract TemporaryPartialPatternHop makeHopNewFrom(RoutingRequest opt, State state, PatternHop hop, PatternDepartVertex from, Stop fromStop);
+    public abstract TemporaryPartialPatternHop makeHopNewFrom(RoutingRequest opt, State state, FlexPatternHop hop, PatternDepartVertex from, Stop fromStop);
 
     /**
      * From an existing TemporaryPartialPatternHop which has a new "from" location, create a new
@@ -126,7 +128,7 @@ public abstract class GtfsFlexGraphModifier {
     /**
      * Returns true if the given hop can be boarded/alighted.
      */
-    public abstract boolean checkHopAllowsBoardAlight(State state, PatternHop hop, boolean boarding);
+    public abstract boolean checkHopAllowsBoardAlight(State state, FlexPatternHop hop, boolean boarding);
 
     /**
      * Subclasses can specify where the new temporary stop should be created, given a nearby
@@ -136,7 +138,7 @@ public abstract class GtfsFlexGraphModifier {
      * @param hop PatternHop found during graph search
      * @return location for new stop
      */
-    public abstract StreetVertex getLocationForTemporaryStop(State s, PatternHop hop);
+    public abstract StreetVertex getLocationForTemporaryStop(State s, FlexPatternHop hop);
 
     public void vertexVisitor(State state) {}
 
@@ -147,7 +149,6 @@ public abstract class GtfsFlexGraphModifier {
      */
     public void createForwardHops(RoutingRequest request) {
         RoutingRequest forward = request.clone();
-        forward.excludeWalking = false;
         forward.setMode(getMode());
         forward.setArriveBy(false);
         // allow discovery of stations even with car mode
@@ -162,7 +163,6 @@ public abstract class GtfsFlexGraphModifier {
      */
     public void createBackwardHops(RoutingRequest request) {
         RoutingRequest backward = request.clone();
-        backward.excludeWalking = false;
         backward.setMode(getMode());
         backward.setArriveBy(true);
         backward.enterStationsWithCar = true;
@@ -173,9 +173,9 @@ public abstract class GtfsFlexGraphModifier {
         if (TraverseMode.CAR.equals(getMode())) {
             modifyRequestForCarAccess(rr);
         }
-        for(Pair<State, PatternHop> p : getClosestPatternHops(rr)) {
+        for(Pair<State, FlexPatternHop> p : getClosestPatternHops(rr)) {
             State s = p.getKey();
-            PatternHop hop = p.getValue();
+            FlexPatternHop hop = p.getValue();
             TemporaryTransitStop flagTransitStop = getTemporaryStop(s, hop);
             if (flagTransitStop == null) {
                 continue;
@@ -188,7 +188,7 @@ public abstract class GtfsFlexGraphModifier {
         }
     }
 
-    private TemporaryTransitStop getTemporaryStop(State s, PatternHop hop) {
+    private TemporaryTransitStop getTemporaryStop(State s, FlexPatternHop hop) {
         StreetVertex streetVertex = getLocationForTemporaryStop(s, hop);
         if (streetVertex == null) {
             return null;
@@ -238,8 +238,8 @@ public abstract class GtfsFlexGraphModifier {
         return unnamed.toString();
     }
 
-    private Collection<Pair<State, PatternHop>> getClosestPatternHops(RoutingRequest rr) {
-        Map<PatternHop, State> patternHopStateMap = Maps.newHashMap();
+    private Collection<Pair<State, FlexPatternHop>> getClosestPatternHops(RoutingRequest rr) {
+        Map<FlexPatternHop, State> patternHopStateMap = Maps.newHashMap();
         GenericDijkstra gd = new GenericDijkstra(rr);
         gd.setHeuristic(new TrivialRemainingWeightHeuristic());
         gd.traverseVisitor = new TraverseVisitor() {
@@ -276,12 +276,12 @@ public abstract class GtfsFlexGraphModifier {
         flagStop.setLon(v.getLon());
         flagStop.setName(name);
         flagStop.setLocationType(99);
-        TemporaryTransitStop flagTransitStop = new TemporaryTransitStop(graph, flagStop, v);
+        TemporaryTransitStop flagTransitStop = new TemporaryTransitStop(flagStop, v);
         rctx.temporaryVertices.add(flagTransitStop);
         return flagTransitStop;
     }
 
-    private void createHopsToTemporaryStop(RoutingRequest rr, State state, TemporaryTransitStop flagTransitStop, PatternHop originalPatternHop) {
+    private void createHopsToTemporaryStop(RoutingRequest rr, State state, TemporaryTransitStop flagTransitStop, FlexPatternHop originalPatternHop) {
         Stop flagStop = flagTransitStop.getStop();
 
         TransitStopArrive transitStopArrive = createTransitStopArrive(rr, flagTransitStop);
@@ -293,12 +293,11 @@ public abstract class GtfsFlexGraphModifier {
 
             TemporaryPartialPatternHop newHop = shortenEnd(rr, state, reverseHop, patternArriveVertex, flagStop);
             if (newHop == null || newHop.isTrivial(rr)) {
-                if (newHop != null)
-                    newHop.dispose();
+                if (newHop != null) {
+                    removeEdge(newHop);
+                }
                 continue;
             }
-            rr.rctx.temporaryEdges.add(newHop);
-
             createAlightEdge(rr, transitStopArrive,  patternArriveVertex, newHop);
         }
 
@@ -307,19 +306,14 @@ public abstract class GtfsFlexGraphModifier {
         TemporaryPartialPatternHop hop = makeHopNewTo(rr, state, originalPatternHop, patternArriveVertex, flagStop);
         if (hop == null || hop.isTrivial(rr)) {
             if (hop != null) {
-                hop.dispose();
+                removeEdge(hop);
             }
             return;
         }
-        rr.rctx.temporaryEdges.add(hop);
-
-        // todo - david's code has this comment. why don't I need it?
-        //  flex point far away or is very close to the beginning or end of the hop.  Leave this hop unchanged;
-
         createAlightEdge(rr, transitStopArrive, patternArriveVertex, hop);
     }
 
-    private void createHopsFromTemporaryStop(RoutingRequest rr, State state, TemporaryTransitStop flagTransitStop, PatternHop originalPatternHop) {
+    private void createHopsFromTemporaryStop(RoutingRequest rr, State state, TemporaryTransitStop flagTransitStop, FlexPatternHop originalPatternHop) {
         Stop flagStop = flagTransitStop.getStop();
 
         TransitStopDepart transitStopDepart = createTransitStopDepart(rr, flagTransitStop);
@@ -329,16 +323,14 @@ public abstract class GtfsFlexGraphModifier {
         TemporaryPartialPatternHop hop = makeHopNewFrom(rr, state, originalPatternHop, patternDepartVertex, flagStop);
         if (hop == null || hop.isTrivial(rr)) {
             if (hop != null) {
-                hop.dispose();
+                removeEdge(hop);
             }
             return;
         }
-        rr.rctx.temporaryEdges.add(hop);
-
         createBoardEdge(rr, transitStopDepart, patternDepartVertex, hop);
     }
 
-    public void createDirectHop(RoutingRequest rr, PatternHop originalPatternHop, TransitStop fromStop, TransitStop toStop, GraphPath path) {
+    public void createDirectHop(RoutingRequest rr, FlexPatternHop originalPatternHop, TransitStop fromStop, TransitStop toStop, GraphPath path) {
         if (fromStop instanceof TemporaryTransitStop && fromStop.departVertex == null) {
             createTransitStopDepart(rr, (TemporaryTransitStop) fromStop);
         }
@@ -352,15 +344,14 @@ public abstract class GtfsFlexGraphModifier {
         // direct hop
         TemporaryDirectPatternHop newHop = new TemporaryDirectPatternHop(originalPatternHop, patternDepartVertex, patternArriveVertex, fromStop.getStop(), toStop.getStop(),
                 path.getGeometry(), path.getDuration());
-        rr.rctx.temporaryEdges.add(newHop);
 
         createBoardEdge(rr, fromStop.departVertex, patternDepartVertex, newHop);
         createAlightEdge(rr, toStop.arriveVertex, patternArriveVertex, newHop);
     }
 
-    private void addStateToPatternHopStateMap(Edge edge, State s, Map<PatternHop, State> patternHopStateMap) {
-        Collection<PatternHop> hops = graph.flexIndex.getHopsForEdge(edge);
-        for(PatternHop hop : hops){
+    private void addStateToPatternHopStateMap(Edge edge, State s, Map<FlexPatternHop, State> patternHopStateMap) {
+        Collection<FlexPatternHop> hops = graph.flexIndex.getHopsForEdge(edge);
+        for(FlexPatternHop hop : hops){
             if(patternHopStateMap.containsKey(hop)){
                 State oldState = patternHopStateMap.get(hop);
                 if(oldState.getBackState().getWeight() < s.getBackState().getWeight()) {
@@ -376,13 +367,11 @@ public abstract class GtfsFlexGraphModifier {
     private TransitStopDepart createTransitStopDepart(RoutingRequest rr, TemporaryTransitStop transitStop) {
         TransitStopDepart transitStopDepart;
         if (transitStop.departVertex == null) {
-            TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink(transitStop.getStreetVertex(), transitStop, true);
-            rr.rctx.temporaryEdges.add(streetTransitLink);
+            new TemporaryStreetTransitLink(transitStop.getStreetVertex(), transitStop, true);
 
-            transitStopDepart = new TemporaryTransitStopDepart(graph, transitStop.getStop(), transitStop);
+            transitStopDepart = new TemporaryTransitStopDepart(transitStop.getStop(), transitStop);
             rr.rctx.temporaryVertices.add(transitStopDepart);
-            TemporaryPreBoardEdge temporaryPreBoardEdge = new TemporaryPreBoardEdge(transitStop, transitStopDepart);
-            rr.rctx.temporaryEdges.add(temporaryPreBoardEdge);
+            new TemporaryPreBoardEdge(transitStop, transitStopDepart);
 
             transitStop.departVertex = transitStopDepart;
         } else {
@@ -393,36 +382,32 @@ public abstract class GtfsFlexGraphModifier {
 
     private TemporaryPatternDepartVertex createPatternDepartVertex(RoutingRequest rr, PatternHop hop, Stop stop) {
         TemporaryPatternDepartVertex patternDepartVertex =
-                new TemporaryPatternDepartVertex(graph, hop.getPattern(), hop.getStopIndex(), stop);
+                new TemporaryPatternDepartVertex(hop.getPattern(), hop.getStopIndex(), stop);
         rr.rctx.temporaryVertices.add(patternDepartVertex);
         return patternDepartVertex;
     }
 
-    private TemporaryTransitBoardAlight createBoardEdge(RoutingRequest rr, TransitStopDepart transitStopDepart, PatternDepartVertex patternDepartVertex,
-                                                        TemporaryPartialPatternHop hop) {
-        TemporaryTransitBoardAlight transitBoardAlight =
-                new TemporaryTransitBoardAlight(transitStopDepart, patternDepartVertex, hop.getStopIndex(), hop);
-        rr.rctx.temporaryEdges.add(transitBoardAlight);
+    private FlexTransitBoardAlight createBoardEdge(RoutingRequest rr, TransitStopDepart transitStopDepart, PatternDepartVertex patternDepartVertex,
+                                                   TemporaryPartialPatternHop hop) {
+        FlexTransitBoardAlight transitBoardAlight =
+                new FlexTransitBoardAlight(transitStopDepart, patternDepartVertex, hop.getStopIndex(), hop);
         return transitBoardAlight;
     }
 
-    private TemporaryTransitBoardAlight createAlightEdge(RoutingRequest rr, TransitStopArrive transitStopArrive, PatternArriveVertex patternArriveVertex, TemporaryPartialPatternHop hop) {
-        TemporaryTransitBoardAlight transitBoardAlight =
-                new TemporaryTransitBoardAlight(patternArriveVertex, transitStopArrive, hop.getStopIndex() + 1, hop);
-        rr.rctx.temporaryEdges.add(transitBoardAlight);
+    private FlexTransitBoardAlight createAlightEdge(RoutingRequest rr, TransitStopArrive transitStopArrive, PatternArriveVertex patternArriveVertex, TemporaryPartialPatternHop hop) {
+        FlexTransitBoardAlight transitBoardAlight =
+                new FlexTransitBoardAlight(patternArriveVertex, transitStopArrive, hop.getStopIndex() + 1, hop);
         return transitBoardAlight;
     }
 
     private TransitStopArrive createTransitStopArrive(RoutingRequest rr, TemporaryTransitStop transitStop) {
         TransitStopArrive transitStopArrive;
         if (transitStop.arriveVertex == null) {
-            TemporaryStreetTransitLink streetTransitLink = new TemporaryStreetTransitLink(transitStop, transitStop.getStreetVertex(), true);
-            rr.rctx.temporaryEdges.add(streetTransitLink);
+            new TemporaryStreetTransitLink(transitStop, transitStop.getStreetVertex(), true);
 
-            transitStopArrive = new TemporaryTransitStopArrive(graph, transitStop.getStop(), transitStop);
+            transitStopArrive = new TemporaryTransitStopArrive(transitStop.getStop(), transitStop);
             rr.rctx.temporaryVertices.add(transitStopArrive);
-            TemporaryPreAlightEdge preAlightEdge = new TemporaryPreAlightEdge(transitStopArrive, transitStop);
-            rr.rctx.temporaryEdges.add(preAlightEdge);
+            new TemporaryPreAlightEdge(transitStopArrive, transitStop);
 
             transitStop.arriveVertex = transitStopArrive;
         } else {
@@ -431,32 +416,32 @@ public abstract class GtfsFlexGraphModifier {
         return transitStopArrive;
     }
 
-    private TemporaryPatternArriveVertex createPatternArriveVertex(RoutingRequest rr, PatternHop hop, Stop stop) {
+    private TemporaryPatternArriveVertex createPatternArriveVertex(RoutingRequest rr, FlexPatternHop hop, Stop stop) {
         TemporaryPatternArriveVertex patternArriveVertex =
-                new TemporaryPatternArriveVertex(graph, hop.getPattern(), hop.getStopIndex() + 1, stop);
+                new TemporaryPatternArriveVertex(hop.getPattern(), hop.getStopIndex() + 1, stop);
         rr.rctx.temporaryVertices.add(patternArriveVertex);
         return patternArriveVertex;
     }
 
-    private Collection<TemporaryPartialPatternHop> findTemporaryPatternHops(RoutingRequest options, PatternHop patternHop) {
-        Collection<TemporaryPartialPatternHop> ret = new ArrayList<TemporaryPartialPatternHop>();
-        for (TemporaryEdge e : options.rctx.temporaryEdges) {
-            if (e instanceof TemporaryPartialPatternHop) {
-                TemporaryPartialPatternHop hop = (TemporaryPartialPatternHop) e;
-                if (hop.isOriginalHop(patternHop))
-                    ret.add(hop);
+    private Collection<TemporaryPartialPatternHop> findTemporaryPatternHops(RoutingRequest options, FlexPatternHop patternHop) {
+        Collection<TemporaryPartialPatternHop> edges = new ArrayList<TemporaryPartialPatternHop>();
+        for (Vertex vertex : options.rctx.temporaryVertices) {
+            for (Edge edge : Iterables.concat(vertex.getOutgoing(), vertex.getIncoming())) {
+                if (edge instanceof TemporaryPartialPatternHop) {
+                    TemporaryPartialPatternHop hop = (TemporaryPartialPatternHop) edge;
+                    if (hop.isOriginalHop(patternHop))
+                        edges.add(hop);
+                }
             }
         }
-        return ret;
+        return edges;
     }
 
     private void modifyRequestForCarAccess(RoutingRequest opt) {
         Vertex fromVertex = findCarAccessibleVertex(opt, opt.rctx.fromVertex, false);
         Vertex toVertex = findCarAccessibleVertex(opt, opt.rctx.toVertex, true);
-        Collection<TemporaryEdge> temporaryEdges = opt.rctx.temporaryEdges;
         Collection<Vertex> temporaryVertices = opt.rctx.temporaryVertices;
         opt.setRoutingContext(opt.rctx.graph, fromVertex, toVertex);
-        opt.rctx.temporaryEdges = temporaryEdges;
         opt.rctx.temporaryVertices = temporaryVertices;
     }
 
@@ -465,5 +450,10 @@ public abstract class GtfsFlexGraphModifier {
             return vertex;
         }
         return new CarPermissionSearch(opt, arriveBy).findVertexWithPermission(vertex, TraverseMode.CAR);
+    }
+
+    private void removeEdge(Edge edge) {
+        edge.getFromVertex().removeOutgoing(edge);
+        edge.getToVertex().removeIncoming(edge);
     }
 }

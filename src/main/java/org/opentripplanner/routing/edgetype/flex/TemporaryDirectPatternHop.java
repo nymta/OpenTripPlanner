@@ -5,7 +5,6 @@ import org.opentripplanner.model.Stop;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
-import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.edgetype.TemporaryEdge;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
@@ -23,7 +22,7 @@ public class TemporaryDirectPatternHop extends TemporaryPartialPatternHop implem
      */
     private int directTime;
 
-    public TemporaryDirectPatternHop(PatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, LineString geometry, int time) {
+    public TemporaryDirectPatternHop(FlexPatternHop hop, PatternStopVertex from, PatternStopVertex to, Stop fromStop, Stop toStop, LineString geometry, int time) {
         super(hop, from, to, fromStop, toStop);
         setGeometry(geometry);
         this.directTime = time;
@@ -52,7 +51,7 @@ public class TemporaryDirectPatternHop extends TemporaryPartialPatternHop implem
 
     @Override
     public int getWeight(State s0, int runningTime) {
-        return (int) Math.round(s0.getOptions().callAndRideReluctance * runningTime);
+        return (int) Math.round(s0.getOptions().flexCallAndRideReluctance * runningTime);
     }
 
     @Override
@@ -66,12 +65,6 @@ public class TemporaryDirectPatternHop extends TemporaryPartialPatternHop implem
     }
 
     @Override
-    public void dispose() {
-        fromv.removeOutgoing(this);
-        tov.removeIncoming(this);
-    }
-
-    @Override
     public int getDirectVehicleTime() {
         return directTime;
     }
@@ -80,7 +73,7 @@ public class TemporaryDirectPatternHop extends TemporaryPartialPatternHop implem
     public State traverse(State s0) {
         StateEditor s1 = s0.edit(this);
         s1.incrementCallAndRideTime(directTime);
-        if (s1.getCallAndRideTime() >= s0.getOptions().maxCallAndRideSeconds) {
+        if (s1.getCallAndRideTime() >= s0.getOptions().flexMaxCallAndRideSeconds) {
             return null;
         }
         return super.traverse(s0, s1);

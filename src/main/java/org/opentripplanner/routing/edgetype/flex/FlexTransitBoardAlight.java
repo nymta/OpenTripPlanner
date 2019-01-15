@@ -3,6 +3,7 @@ package org.opentripplanner.routing.edgetype.flex;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.edgetype.TemporaryEdge;
 import org.opentripplanner.routing.edgetype.Timetable;
 import org.opentripplanner.routing.edgetype.TransitBoardAlight;
 import org.opentripplanner.routing.trippattern.TripTimes;
@@ -11,7 +12,7 @@ import org.opentripplanner.routing.vertextype.TransitStopArrive;
 import org.opentripplanner.routing.vertextype.TransitStopDepart;
 import org.opentripplanner.routing.vertextype.flex.TemporaryTransitStop;
 
-public class FlexTransitBoardAlight extends TransitBoardAlight {
+public class FlexTransitBoardAlight extends TransitBoardAlight implements TemporaryEdge {
 
     // normalized to [0, 1]
     private double startIndex;
@@ -73,10 +74,10 @@ public class FlexTransitBoardAlight extends TransitBoardAlight {
     public int calculateWait(State s0, ServiceDay sd, TripTimes tripTimes) {
         if (hop.isUnscheduled()) {
             int currTime = sd.secondsSinceMidnight(s0.getTimeSeconds());
-            boolean useClockTime = !s0.getOptions().ignoreDrtAdvanceBookMin;
+            boolean useClockTime = !s0.getOptions().flexIgnoreDrtAdvanceBookMin;
             long clockTime = s0.getOptions().clockTimeSec;
             if (boarding) {
-                int scheduledTime = tripTimes.getCallAndRideBoardTime(getStopIndex(), currTime, sd, useClockTime, clockTime);
+                int scheduledTime = tripTimes.getCallAndRideBoardTime(getStopIndex(), currTime, (int) hop.timeLowerBound(s0.getOptions()), sd, useClockTime, clockTime);
                 if (scheduledTime < 0)
                     throw new IllegalArgumentException("Unexpected bad wait time");
                 return (int) (sd.time(scheduledTime) - s0.getTimeSeconds());
@@ -109,7 +110,7 @@ public class FlexTransitBoardAlight extends TransitBoardAlight {
     @Override
     public long getExtraWeight(RoutingRequest options) {
         boolean deviatedRoute = (boarding && hop.isDeviatedRouteBoard()) || (!boarding && hop.isDeviatedRouteAlight());
-        return (deviatedRoute ? options.deviatedRouteExtraPenalty : options.flagStopExtraPenalty);
+        return (deviatedRoute ? options.flexDeviatedRouteExtraPenalty : options.flexFlagStopExtraPenalty);
     }
 
     @Override

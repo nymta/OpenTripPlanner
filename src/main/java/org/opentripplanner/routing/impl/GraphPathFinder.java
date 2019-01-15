@@ -136,15 +136,15 @@ public class GraphPathFinder {
         if (options.maxWalkDistance > CLAMP_MAX_WALK) options.maxWalkDistance = CLAMP_MAX_WALK;
         if (options.modes.isTransit() && router.graph.useFlexService) {
             // create temporary flex stops/hops (just once even if we run multiple searches)
-            FlagStopGraphModifier svc1 = new FlagStopGraphModifier(router.graph);
-            DeviatedRouteGraphModifier svc2 = new DeviatedRouteGraphModifier(router.graph);
-            svc1.createForwardHops(options);
-            if (options.useReservationServices) {
-                svc2.createForwardHops(options);
+            FlagStopGraphModifier flagStopGraphModifier = new FlagStopGraphModifier(router.graph);
+            DeviatedRouteGraphModifier deviatedRouteGraphModifier = new DeviatedRouteGraphModifier(router.graph);
+            flagStopGraphModifier.createForwardHops(options);
+            if (options.flexUseReservationServices) {
+                deviatedRouteGraphModifier.createForwardHops(options);
             }
-            svc1.createBackwardHops(options);
-            if (options.useReservationServices) {
-                svc2.createBackwardHops(options);
+            flagStopGraphModifier.createBackwardHops(options);
+            if (options.flexUseReservationServices) {
+                deviatedRouteGraphModifier.createBackwardHops(options);
             }
         }
         long searchBeginTime = System.currentTimeMillis();
@@ -185,8 +185,9 @@ public class GraphPathFinder {
             for (GraphPath path : newPaths) {
                 // path.dump();
                 List<FeedScopedId> tripIds = path.getTrips();
+                List<FeedScopedId> callAndRideTripIds = path.getCallAndRideTrips();
                 for (FeedScopedId tripId : tripIds) {
-                    if (!router.graph.index.tripIsCallAndRide(tripId)) {
+                    if (!callAndRideTripIds.contains(tripId)) {
                         options.banTrip(tripId);
                     }
                 }
@@ -194,13 +195,16 @@ public class GraphPathFinder {
                     // This path does not use transit (is entirely on-street). Do not repeatedly find the same one.
                     options.onlyTransitTrips = true;
                 }
-                // for direct-hop trip banning, limit the allowable call-n-ride time to what it is currently
+                // Call-and-Ride trips should not use regular trip-banning, since call-and-ride trips can beused in
+                // multiple ways (e.g. from origin to destination, or from origin to a transfer stop.) Instead,
+                // after an itinerary which uses call-and-ride is found, reduce the allowable call-and-ride duration
+                // so that the same leg cannot be found in a subsequent search.
                 if (tripIds.size() < 2) {
                     int duration = path.getCallAndRideDuration();
-                    if (duration > 0) {
-                        int constantLimit = Math.min(0, duration - options.reduceCallAndRideSeconds);
-                        int ratioLimit = (int) Math.round(options.reduceCallAndRideRatio * duration);
-                        options.maxCallAndRideSeconds = Math.min(constantLimit, ratioLimit);
+                    if (duration > 0) { // only true if there are call-and-ride legs
+                        int constantLimit = Math.min(0, duration - options.flexReduceCallAndRideSeconds);
+                        int ratioLimit = (int) Math.round(options.flexReduceCallAndRideRatio * duration);
+                        options.flexMaxCallAndRideSeconds = Math.min(constantLimit, ratioLimit);
                     }
                 }
             }
@@ -219,7 +223,7 @@ public class GraphPathFinder {
             LOG.debug("we have {} paths", paths.size());
         }
         LOG.debug("END SEARCH ({} msec)", System.currentTimeMillis() - searchBeginTime);
-        paths.sort(options.getPathComparator(options.arriveBy));
+        Collections.sort(paths, options.getPathComparator(options.arriveBy));
         return paths;
     }
 
@@ -418,6 +422,7 @@ public class GraphPathFinder {
      * the end.
      */
     private List<GraphPath> getGraphPathsConsideringIntermediates (RoutingRequest request) {
+        Collection<Vertex> temporaryVertices = new ArrayList<>();
         if (request.hasIntermediatePlaces()) {
             List<GenericLocation> places = Lists.newArrayList(request.from);
             places.addAll(request.intermediatePlaces);
@@ -435,7 +440,7 @@ public class GraphPathFinder {
                 intermediateRequest.from = places.get(placeIndex - 1);
                 intermediateRequest.to = places.get(placeIndex);
                 intermediateRequest.rctx = null;
-                intermediateRequest.setRoutingContext(router.graph);
+                intermediateRequest.setRoutingContext(router.graph, temporaryVertices);
 
                 if (debugOutput != null) {// Restore the previous debug info accumulator
                     intermediateRequest.rctx.debugOutput = debugOutput;

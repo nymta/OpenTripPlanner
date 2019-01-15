@@ -14,11 +14,8 @@ import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TraverseMode;
-import org.opentripplanner.routing.trippattern.RealTimeState;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.PatternStopVertex;
-
-import java.util.Locale;
 
 /**
  * A transit vehicle's journey between departure at one stop and arrival at the next.
@@ -30,37 +27,22 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
 
     private Stop begin, end;
 
-    private RequestStops requestPickup;
-
-    private RequestStops requestDropoff;
-
-    private double serviceAreaRadius;
-
-    private Geometry serviceArea;
-
     public int stopIndex;
 
     private LineString geometry = null;
 
-    protected PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex, RequestStops requestPickup, RequestStops requestDropoff, double serviceAreaRadius, Geometry serviceArea, boolean setInPattern) {
+    protected PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex, boolean setInPattern) {
         super(from, to);
         this.begin = begin;
         this.end = end;
         this.stopIndex = stopIndex;
-        if (setInPattern)
+        if (setInPattern) {
             getPattern().setPatternHop(stopIndex, this);
-        this.requestPickup = requestPickup;
-        this.requestDropoff = requestDropoff;
-        this.serviceAreaRadius = serviceAreaRadius;
-        this.serviceArea = serviceArea;
+        }
     }
 
-    public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex, int continuousPickup, int continuousDropoff, double serviceAreaRadius, Geometry serviceArea) {
-        this(from, to, begin, end, stopIndex, RequestStops.fromGtfs(continuousPickup),
-                RequestStops.fromGtfs(continuousDropoff), serviceAreaRadius, serviceArea, true);
-    }
     public PatternHop(PatternStopVertex from, PatternStopVertex to, Stop begin, Stop end, int stopIndex) {
-        this(from, to, begin, end, stopIndex, 1, 1, 0d, null);
+        this(from, to, begin, end, stopIndex, true);
     }
 
     // made more accurate
@@ -191,63 +173,15 @@ public class PatternHop extends TablePatternEdge implements OnboardEdge, HopEdge
     	return "PatternHop(" + getFromVertex() + ", " + getToVertex() + ")";
     }
 
+    /**
+     * Return true if any GTFS-Flex service is defined for this hop.
+     */
+    public boolean hasFlexService() {
+        return false;
+    }
+
     @Override
     public int getStopIndex() {
         return stopIndex;
-    }
-
-    public RequestStops getRequestPickup() {
-        return requestPickup;
-    }
-
-    public RequestStops getRequestDropoff() {
-        return requestDropoff;
-    }
-
-    public boolean hasFlagStopService() {
-        return requestPickup.allowed() || requestDropoff.allowed();
-    }
-
-    public boolean hasFlexService() {
-        return hasFlagStopService() || getServiceAreaRadius() > 0 || getServiceArea() != null;
-    }
-
-    public boolean canRequestService(boolean boarding) {
-        return boarding ? requestPickup.allowed() : requestDropoff.allowed();
-    }
-
-    public double getServiceAreaRadius() {
-        return serviceAreaRadius;
-    }
-
-    public Geometry getServiceArea() {
-        return serviceArea;
-    }
-
-    public boolean hasServiceArea() {
-        return serviceArea != null;
-    }
-
-    private enum RequestStops {
-        NO(1), YES(0), PHONE(2), COORDINATE_WITH_DRIVER(3);
-
-        final int gtfsCode;
-
-        RequestStops(int gtfsCode) {
-            this.gtfsCode = gtfsCode;
-        }
-
-        private static RequestStops fromGtfs(int code) {
-            for (RequestStops it : values()) {
-                if(it.gtfsCode == code) {
-                    return it;
-                }
-            }
-            return NO;
-        }
-
-        boolean allowed() {
-            return this != NO;
-        }
     }
 }

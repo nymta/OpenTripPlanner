@@ -13,7 +13,6 @@ import org.opentripplanner.routing.algorithm.strategies.EuclideanRemainingWeight
 import org.opentripplanner.routing.algorithm.strategies.RemainingWeightHeuristic;
 import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHeuristic;
 import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.edgetype.TemporaryEdge;
 import org.opentripplanner.routing.edgetype.TemporaryPartialStreetEdge;
 import org.opentripplanner.routing.edgetype.TimetableSnapshot;
 import org.opentripplanner.routing.error.GraphNotFoundException;
@@ -27,7 +26,6 @@ import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.services.OnBoardDepartService;
 import org.opentripplanner.routing.vertextype.TemporaryVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
-import org.opentripplanner.traffic.StreetSpeedSnapshot;
 import org.opentripplanner.updater.stoptime.TimetableSnapshotSource;
 import org.opentripplanner.util.NonLocalizedString;
 import org.slf4j.Logger;
@@ -39,9 +37,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  * A RoutingContext holds information needed to carry out a search for a particular TraverseOptions, on a specific graph.
@@ -87,9 +85,6 @@ public class RoutingContext implements Cloneable {
     /** The timetableSnapshot is a {@link TimetableSnapshot} for looking up real-time updates. */
     public final TimetableSnapshot timetableSnapshot;
 
-    /** A snapshot of street speeds for looking up real-time or historical traffic data */
-    public final StreetSpeedSnapshot streetSpeedSnapshot;
-
     /**
      * Cache lists of which transit services run on which midnight-to-midnight periods. This ties a TraverseOptions to a particular start time for the
      * duration of a search so the same options cannot be used for multiple searches concurrently. To do so this cache would need to be moved into
@@ -116,8 +111,11 @@ public class RoutingContext implements Cloneable {
     /** Indicates that a maximum slope constraint was specified but was removed during routing to produce a result. */
     public boolean slopeRestrictionRemoved = false;
 
-    public Collection<TemporaryEdge> temporaryEdges = new ArrayList<>();
-
+    /**
+     * Temporary vertices created during the request. This is needed for GTFS-Flex support. The other temporary vertices which are created have
+     * known locations (the endpoints of the search), but GTFS-Flex routing may require temporary vertices to be created at other places in the
+     * graph. Temporary vertices are request-specific need to be disposed of at the end-of-life of a request.
+     */
     public Collection<Vertex> temporaryVertices = new ArrayList<>();
 
     /* CONSTRUCTORS */
@@ -126,14 +124,23 @@ public class RoutingContext implements Cloneable {
      * Constructor that automatically computes origin/target from RoutingRequest.
      */
     public RoutingContext(RoutingRequest routingRequest, Graph graph) {
-        this(routingRequest, graph, null, null, true);
+        this(routingRequest, graph, null, null, true, null);
+    }
+
+    /**
+     * Constructor that automatically computes origin/target from RoutingRequest, and sets the
+     * context's temporary vertices. This is needed for intermediate places, as a consequence of
+     * the check that temporary vertices are request-specific.
+     */
+    public RoutingContext(RoutingRequest routingRequest, Graph graph, Collection<Vertex> temporaryVertices) {
+        this(routingRequest, graph, null, null, true, temporaryVertices);
     }
 
     /**
      * Constructor that takes to/from vertices as input.
      */
     public RoutingContext(RoutingRequest routingRequest, Graph graph, Vertex from, Vertex to) {
-        this(routingRequest, graph, from, to, false);
+        this(routingRequest, graph, from, to, false, null);
     }
 
     /**
@@ -148,7 +155,7 @@ public class RoutingContext implements Cloneable {
         for (Edge e : Iterables.concat(u.getIncoming(), u.getOutgoing())) {
             uIds.add(e.getId());
         }
-        
+
         // Intesection of edge IDs between u and v.
         uIds.retainAll(vIds);
         Set<Integer> overlappingIds = uIds;
@@ -196,9 +203,10 @@ public class RoutingContext implements Cloneable {
      * TODO(flamholz): delete this flexible constructor and move the logic to constructors above appropriately.
      * 
      * @param findPlaces if true, compute origin and target from RoutingRequest using spatial indices.
+     * @param temporaryVerticesParam if not null, use this collection to keep track of temporary vertices.
      */
     private RoutingContext(RoutingRequest routingRequest, Graph graph, Vertex from, Vertex to,
-            boolean findPlaces) {
+            boolean findPlaces, Collection<Vertex> temporaryVerticesParam) {
         if (graph == null) {
             throw new GraphNotFoundException();
         }
@@ -229,13 +237,6 @@ public class RoutingContext implements Cloneable {
             timetableSnapshot = null;
             calendarService = null;
         }
-
-        // do the same for traffic
-        if (graph.streetSpeedSource != null)
-            this.streetSpeedSnapshot = graph.streetSpeedSource.getSnapshot();
-        else
-            this.streetSpeedSnapshot = null;
-
 
         Edge fromBackEdge = null;
         Edge toBackEdge = null;
@@ -297,7 +298,15 @@ public class RoutingContext implements Cloneable {
                 makePartialEdgeAlong(pse, fromStreetVertex, toStreetVertex);
             }
         }
-        
+
+        // Add temporary subgraphs to the routing context. If `fromVertex` or `toVertex` are not
+        // tempoorary vertices, their subgraphs are empty, so this has no effect.
+        if (temporaryVerticesParam != null) {
+            temporaryVertices = temporaryVerticesParam;
+        }
+        temporaryVertices.addAll(TemporaryVertex.findSubgraph(fromVertex));
+        temporaryVertices.addAll(TemporaryVertex.findSubgraph(toVertex));
+
         if (opt.startingTransitStopId != null) {
             Stop stop = graph.index.stopForId.get(opt.startingTransitStopId);
             TransitStop tstop = graph.index.stopVertexForStop.get(stop);
@@ -414,18 +423,12 @@ public class RoutingContext implements Cloneable {
     }
 
     /**
-     * Tear down this routing context, removing any temporary edges.
+     * Tear down this routing context, removing any temporary edges from
+     * the "permanent" graph objects. This enables all temporary objects
+     * for garbage collection.
      */
     public void destroy() {
-        if (origin instanceof TemporaryVertex) ((TemporaryVertex) origin).dispose();
-        if (target instanceof TemporaryVertex) ((TemporaryVertex) target).dispose();
-
-        LOG.debug("ms Cleaning up {} temporary edges", temporaryEdges.size());
-        temporaryEdges.forEach(TemporaryEdge::dispose);
-        temporaryEdges.clear();
-
-        temporaryVertices.forEach(graph::remove);
-        temporaryVertices.clear();
-
+       TemporaryVertex.disposeAll(temporaryVertices);
+       temporaryVertices.clear();
     }
 }

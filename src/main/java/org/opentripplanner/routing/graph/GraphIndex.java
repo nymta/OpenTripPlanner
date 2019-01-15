@@ -99,7 +99,7 @@ public class GraphIndex {
     final HashGridSpatialIndex<TransitStop> stopSpatialIndex = new HashGridSpatialIndex<TransitStop>();
     public final Map<Stop, StopCluster> stopClusterForStop = Maps.newHashMap();
     public final Map<String, StopCluster> stopClusterForId = Maps.newHashMap();
-    public final Map<FeedScopedId, Geometry> areasById = Maps.newHashMap();
+    public final Map<FeedScopedId, Geometry> flexAreasById = Maps.newHashMap();
 
     /* Should eventually be replaced with new serviceId indexes. */
     private final CalendarService calendarService;
@@ -190,9 +190,9 @@ public class GraphIndex {
                 )));
 
         LOG.info("Initializing areas....");
-        if (graph.areasById != null) {
-            for (FeedScopedId id : graph.areasById.keySet()) {
-                areasById.put(id, graph.areasById.get(id));
+        if (graph.flexAreasById != null) {
+            for (FeedScopedId id : graph.flexAreasById.keySet()) {
+                flexAreasById.put(id, graph.flexAreasById.get(id));
             }
         }
 
@@ -701,12 +701,5 @@ public class GraphIndex {
             allAgencies.addAll(agencyForId.values());
         }
         return allAgencies;
-    }
-
-    // Heuristic for deciding if trip is call-n-ride, only used for transfer and banning rules
-    public boolean tripIsCallAndRide(FeedScopedId tripId) {
-        Trip trip = tripForId.get(tripId);
-        TripPattern pattern = patternForTrip.get(trip);
-        return pattern.geometry == null;
     }
 }
