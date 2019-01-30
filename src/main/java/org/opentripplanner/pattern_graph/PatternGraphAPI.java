@@ -15,14 +15,11 @@ package org.opentripplanner.pattern_graph;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
-import org.opentripplanner.index.model.StopShort;
-import org.opentripplanner.index.model.StopTimesByStop;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
 import org.opentripplanner.pattern_graph.model.StopAttribute;
 import org.opentripplanner.pattern_graph.model.SuccessorAttribute;
-import org.opentripplanner.profile.StopCluster;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.standalone.OTPServer;
@@ -110,7 +107,7 @@ public class PatternGraphAPI {
                 }
                 StopNode prev = null;
                 List<Stop> stops = pattern.getStops();
-                Stop lastStop = stops.get(0);
+                Stop lastStop = stops.get(stops.size() - 1);
 
                 for (Stop stop : stops) {
                     //StopCluster cluster = index.stopClusterForStop.get(stop);
