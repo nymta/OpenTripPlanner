@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.graph_builder.GraphBuilder;
+import org.opentripplanner.plugin.Pluggable;
+import org.opentripplanner.plugin.PluginManager;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.DefaultStreetVertexIndexFactory;
 import org.opentripplanner.routing.impl.GraphScanner;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 /**
  * This is the main entry point to OpenTripPlanner. It allows both building graphs and starting up an OTP server
@@ -90,6 +93,9 @@ public class OTPMain {
         /* Create the top-level objects that represent the OTP server. */
         makeGraphService();
         otpServer = new OTPServer(params, graphService);
+        PluginManager pluginManager = new PluginManager();
+        otpServer.setPluginManager(pluginManager);
+        graphService.setPluginManager(pluginManager);
 
         /* Start graph builder if requested */
         if (params.build != null) {
@@ -142,6 +148,20 @@ public class OTPMain {
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+        }
+
+        /* Load plugins from configuration file */
+        if(params.pluginConfig != null) {
+            JsonNode pluginConfig = loadJson(new File(params.pluginConfig));
+            if (pluginConfig != null && pluginConfig.has("plugins")) {
+                Iterator<JsonNode> plugins = pluginConfig.get("plugins").elements();
+                while (plugins.hasNext()) {
+                    JsonNode plugin = plugins.next();
+                    String className = plugin.get("class").asText();
+                    JsonNode config = plugin.get("config");
+                    registerPlugin(className, config);
+                }
             }
         }
 
@@ -203,5 +223,16 @@ public class OTPMain {
         }
     }
 
-
+    private void registerPlugin(String className, JsonNode config) {
+        try {
+            Class<?> klass = Class.forName(className);
+            Pluggable plugin = (Pluggable) klass.newInstance();
+            plugin.init(config);
+            for (Class<?> messageType : plugin.getSubscriptions()) {
+                otpServer.getPluginManager().subscribe(messageType, plugin);
+            }
+        } catch(Exception ex) {
+            LOG.error("Error loading plugin: {}", className);
+        }
+    }
 }

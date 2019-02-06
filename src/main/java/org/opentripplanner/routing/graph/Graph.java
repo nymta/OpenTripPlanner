@@ -39,6 +39,7 @@ import org.opentripplanner.graph_builder.annotation.GraphBuilderAnnotation;
 import org.opentripplanner.graph_builder.annotation.NoFutureDates;
 import org.opentripplanner.kryo.HashBiMapSerializer;
 import org.opentripplanner.model.GraphBundle;
+import org.opentripplanner.plugin.PluginManager;
 import org.opentripplanner.profile.StopClusterMode;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.MortonVertexComparatorFactory;
@@ -214,6 +215,8 @@ public class Graph implements Serializable {
 
     /** Areas for flex service */
     public Map<FeedScopedId, Geometry> flexAreasById = new HashMap<>();
+
+    public transient PluginManager pluginManager;
 
     public Graph(Graph basedOn) {
         this();
