@@ -480,6 +480,13 @@ public class Graph implements Serializable {
 
     @SuppressWarnings("unchecked")
     public <T> T getService(Class<T> serviceType) {
+        // A plugin of this type overrides a service
+        if (pluginManager != null) {
+            T plugin = pluginManager.getPluginByType(serviceType);
+            if (plugin != null) {
+                return plugin;
+            }
+        }
         return (T) _services.get(serviceType);
     }
 

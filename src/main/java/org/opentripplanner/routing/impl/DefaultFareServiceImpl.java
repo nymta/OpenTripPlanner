@@ -215,7 +215,7 @@ public class DefaultFareServiceImpl implements FareService, Serializable {
         return hasFare ? fare : null;
     }
 
-    protected static Money getMoney(Currency currency, float cost) {
+    public static Money getMoney(Currency currency, float cost) {
         int fractionDigits = 2;
         if (currency != null)
             fractionDigits = currency.getDefaultFractionDigits();

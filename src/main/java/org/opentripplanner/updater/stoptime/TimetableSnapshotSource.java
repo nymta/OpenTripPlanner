@@ -100,9 +100,12 @@ public class TimetableSnapshotSource {
 
     public GtfsRealtimeFuzzyTripMatcher fuzzyTripMatcher;
 
+    private Graph graph;
+
     public TimetableSnapshotSource(final Graph graph) {
         timeZone = graph.getTimeZone();
         graphIndex = graph.index;
+        this.graph = graph;
 
         // Create dummy agency for added trips
         dummyAgency = new Agency();
@@ -155,14 +158,10 @@ public class TimetableSnapshotSource {
     /**
      * Method to apply a trip update list to the most recent version of the timetable snapshot. A
      * GTFS-RT feed is always applied against a single static feed (indicated by feedId).
-<<<<<<< HEAD
-     * 
-=======
      *
      * However, multi-feed support is not completed and we currently assume there is only one static
      * feed when matching IDs.
      *
->>>>>>> 7296be8ffd532a13afb0bec263a9f436ab787022
      * @param graph graph to update (needed for adding/changing stop patterns)
      * @param fullDataset true iff the list with updates represent all updates that are active right
      *        now, i.e. all previous updates should be disregarded
@@ -174,6 +173,14 @@ public class TimetableSnapshotSource {
             LOG.warn("updates is null");
             return;
         }
+        int appliedUpdates = 0;
+        int totalUpdates = updates.size();
+        int addedUpdates = 0;
+        int addedSuccess = 0;
+        int scheduledUpdates = 0;
+        int scheduledSuccess = 0;
+        int cancelledUpdates = 0;
+        int cancelledSuccess = 0;
 
         // Acquire lock on buffer
         bufferLock.lock();
@@ -224,15 +231,27 @@ public class TimetableSnapshotSource {
                 switch (tripScheduleRelationship) {
                     case SCHEDULED:
                         applied = handleScheduledTrip(tripUpdate, feedId, serviceDate);
+                        if (applied) {
+                            scheduledSuccess++;
+                        }
+                        scheduledUpdates++;
                         break;
                     case ADDED:
                         applied = validateAndHandleAddedTrip(graph, tripUpdate, feedId, serviceDate);
+                        if (applied) {
+                            addedSuccess++;
+                        }
+                        addedUpdates++;
                         break;
                     case UNSCHEDULED:
                         applied = handleUnscheduledTrip(tripUpdate, feedId, serviceDate);
                         break;
                     case CANCELED:
                         applied = handleCanceledTrip(tripUpdate, feedId, serviceDate);
+                        if (applied) {
+                            cancelledSuccess++;
+                        }
+                        cancelledUpdates++;
                         break;
                     case MODIFIED:
                         applied = validateAndHandleModifiedTrip(graph, tripUpdate, feedId, serviceDate);
@@ -241,6 +260,7 @@ public class TimetableSnapshotSource {
 
                 if (applied) {
                     appliedBlockCount++;
+                    appliedUpdates++;
                 } else {
                     LOG.warn("Failed to apply TripUpdate.");
                     LOG.trace(" Contents: {}", tripUpdate);
@@ -264,6 +284,20 @@ public class TimetableSnapshotSource {
         } finally {
             // Always release lock
             bufferLock.unlock();
+
+            if (graph.pluginManager != null) {
+                TripUpdateStats stats = new TripUpdateStats();
+                stats.setAppliedUpdates(appliedUpdates);
+                stats.setTotalUpdates(totalUpdates);
+                stats.setScheduledSuccess(scheduledSuccess);
+                stats.setScheduledUpdates(scheduledUpdates);
+                stats.setAddedSuccess(addedSuccess);
+                stats.setAddedUpdates(addedUpdates);
+                stats.setCancelledSuccess(cancelledSuccess);
+                stats.setCancelledUpdates(cancelledUpdates);
+                stats.setFeedId(feedId);
+                graph.pluginManager.publish(stats);
+            }
         }
     }
 

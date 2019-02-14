@@ -121,6 +121,7 @@ public class PlannerResource extends RoutingResource {
             }
             router.requestLogger.info(sb.toString());
         }
+        otpServer.getPluginManager().publish(response);
         return response;
     }
 
