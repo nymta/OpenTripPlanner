@@ -8,7 +8,7 @@
 
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0-oc-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -72,9 +72,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:http://github.com/opentripplanner/OpenTripPlanner.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/opentripplanner/OpenTripPlanner.git</developerConnection>
-        <url>http://github.com/opentripplanner/OpenTripPlanner</url>
+        <connection>scm:git:http://github.com/camsys/OpenTripPlanner.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/camsys/OpenTripPlanner.git</developerConnection>
+        <url>http://github.com/camsys/OpenTripPlanner</url>
     </scm>
 
     <properties>
@@ -86,11 +86,15 @@
     </properties>
 
     <distributionManagement>
-        <!-- We are using Sonatype Nexus Staging instead of Maven Release plugin.
-             Only a snapshot repo should be configured. Releases are done from that snapshot staging repo. -->
+        <repository>
+            <id>nexus.onebusaway.org-releases</id>
+            <name>Nexus Release Repo</name>
+            <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+        </repository>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>nexus.onebusaway.org-snapshots</id>
+            <name>Nexus Snapshot Repo</name>
+            <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -430,16 +434,6 @@
             <id>axis</id>
             <name>axis</name>
             <url>https://people.apache.org/repo/m1-ibiblio-rsync-repository/org.apache.axis2/</url>
-        </repository>
-        <repository>
-          <id>sonatype-oss</id>
-          <name>Sonatype OSS</name>
-          <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </repository>
-        <repository>
-            <id>conveyal</id>
-            <name>Conveyal Maven Repository</name>
-            <url>https://maven.conveyal.com/</url>
         </repository>
         <repository>
             <id>onebusaway-releases</id>
