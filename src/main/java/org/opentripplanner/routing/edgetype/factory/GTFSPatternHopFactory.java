@@ -990,7 +990,7 @@ public class GTFSPatternHopFactory {
             int locationType = stop.getLocationType();
 
             //add a vertex representing the stop
-            if (locationType == 1) {
+            if (locationType == 1 || locationType > 2) {
                 context.stationStopNodes.put(stop, new TransitStation(graph, stop));
             } else {
                 TransitStop stopVertex = new TransitStop(graph, stop);
