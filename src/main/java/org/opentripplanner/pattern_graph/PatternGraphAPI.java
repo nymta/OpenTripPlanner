@@ -72,6 +72,17 @@ public class PatternGraphAPI {
     @QueryParam("time")
     private String time;
 
+    // Should this be moved to OBA. Stop is an OBA object.
+    private Stop getStation(Stop stop){
+        if(stop == null){
+            return null;
+        }else if(stop.getLocationType() == 3){
+            return stop;
+        }else{
+            return this.getStation(index.getParentStopForStop(stop));
+        }
+    }
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public PatternGraph getGraph() {
@@ -112,10 +123,11 @@ public class PatternGraphAPI {
                 for (Stop stop : stops) {
                     //StopCluster cluster = index.stopClusterForStop.get(stop);
                     //String parent = cluster.id;
-                    String parent = stop.getParentStation();
-                    if(parent == null){
-                        parent = stop.getId().toString();
+                    Stop station = this.getStation(stop);
+                    if(station == null){
+                        station = stop;
                     }
+                    String parent = station.getId().toString();
                     StopNode node = nodeForId.computeIfAbsent(parent, StopNode::new);
                     SuccessorAttribute sA = sAForId.get(parent); //computeIfAbsent(cluster.id, SuccessorAttribute::new);
 
