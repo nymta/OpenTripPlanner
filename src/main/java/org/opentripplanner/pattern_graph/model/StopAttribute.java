@@ -11,13 +11,19 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.pattern_graph.model;
+
+import org.opentripplanner.pattern_graph.model.RouteStop;
+
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+
 
 public class StopAttribute {
 
     private Set<String> colors = new HashSet<>(); //Strings representing HEX Colors
-    private Set<String> routes = new HashSet<>(); //Strings representing route names
+    private List<RouteStop> routes = new ArrayList<>();
     private String name;
     private Boolean isTerminal = false;
     private Boolean shuttling = false;
@@ -38,11 +44,16 @@ public class StopAttribute {
         this.name = name;
     }
 
-    public Set<String> getRoutes() {
+    public List<RouteStop> getRoutes() {
         return routes;
     }
 
-    public void addRoute(String route) {
+    public void addRoute(RouteStop route) {
+        List<RouteStop> routes = getRoutes();
+        for(int i = 0; i < routes.size(); i++){
+            if(routes.get(i).getRoute() == route.getRoute() && routes.get(i).getStop() == route.getStop())
+                return;
+        }
         routes.add(route);
     }
 

@@ -18,6 +18,7 @@ import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.pattern_graph.model.PatternGraph;
 import org.opentripplanner.pattern_graph.model.StopNode;
+import org.opentripplanner.pattern_graph.model.RouteStop;
 import org.opentripplanner.pattern_graph.model.StopAttribute;
 import org.opentripplanner.pattern_graph.model.SuccessorAttribute;
 import org.opentripplanner.routing.edgetype.TripPattern;
@@ -142,16 +143,33 @@ public class PatternGraphAPI {
                     // Update Attributes
                     StopAttribute attribute;
                     attribute = node.getAttribute();
+
+                    // Set Names
                     attribute.setName(stop.getName());
+
+                    // Set Colors
                     attribute.addColor("#" + route.getColor());
+
+                    // Check to See if this Stop is a Terminal
                     if(stop == lastStop){
                         attribute.setIsTerminal(true);
                     }
+
+                    // Set the RouteStop e.g., the Routes and Parent Stops Served
                     String routeName = route.getShortName();
                     if(routeName == null){
                         routeName = route.getLongName();
                     }
-                    attribute.addRoute(routeName);
+                    RouteStop rS = new RouteStop();
+                    String parentId = stop.getParentStation();
+                    if(parentId == null){
+                        parentId = stop.getId().toString();
+                    }
+                    rS.setRoute(routeName);
+                    rS.setStop(parentId);
+                    attribute.addRoute(rS);
+
+                    // Set
                     sA.setId(node.getId());
                     sA.setRouteType(route.getType());
                     if(route.getType() == 714){
