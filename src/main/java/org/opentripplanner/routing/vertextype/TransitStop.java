@@ -108,7 +108,7 @@ public class TransitStop extends TransitStationStop {
     }
     
     public boolean isStreetLinkable() {
-        return isEntrance() || !hasEntrances();
+        return isEntrance() || (!hasEntrances() && !isExtendedLocationType());
     }
 
     @Override
