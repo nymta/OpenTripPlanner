@@ -9,6 +9,8 @@ import org.glassfish.grizzly.http.server.CLStaticHttpHandler;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.ssl.SSLContextConfigurator;
 import org.glassfish.grizzly.ssl.SSLEngineConfigurator;
@@ -120,20 +122,34 @@ public class GrizzlyServer {
         HttpHandler dynamicHandler = ContainerFactory.createContainer(HttpHandler.class, app);
         httpServer.getServerConfiguration().addHttpHandler(dynamicHandler, "/otp/");
 
-        /* 2. A static content handler to serve the client JS apps etc. from the classpath. */
-        CLStaticHttpHandler staticHandler = new CLStaticHttpHandler(GrizzlyServer.class.getClassLoader(), "/client/");
-        if (params.disableFileCache) {
-            LOG.info("Disabling HTTP server static file cache.");
-            staticHandler.setFileCacheEnabled(false);
+        if (!params.disableNativeClient) {
+            /* 2. A static content handler to serve the client JS apps etc. from the classpath. */
+            CLStaticHttpHandler staticHandler = new CLStaticHttpHandler(GrizzlyServer.class.getClassLoader(), "/client/");
+            if (params.disableFileCache) {
+                LOG.info("Disabling HTTP server static file cache.");
+                staticHandler.setFileCacheEnabled(false);
+            }
+            httpServer.getServerConfiguration().addHttpHandler(staticHandler, "/");
+        } else {
+            LOG.info("disabling native UI");
         }
-        httpServer.getServerConfiguration().addHttpHandler(staticHandler, "/");
 
         /* 3. A static content handler to serve local files from the filesystem, under the "local" path. */
         if (params.clientDirectory != null) {
             StaticHttpHandler localHandler = new StaticHttpHandler(
-                    params.clientDirectory.getAbsolutePath());
+                    params.clientDirectory.getAbsolutePath()) {
+                @Override
+                protected void onMissingResource(Request request, Response response) throws Exception {
+                    if (params.clientFallback) {
+                        handle("/", request, response);
+                    } else {
+                        super.onMissingResource(request, response);
+                    }
+                }
+            };
             localHandler.setFileCacheEnabled(false);
-            httpServer.getServerConfiguration().addHttpHandler(localHandler, "/local");
+            httpServer.getServerConfiguration().addHttpHandler(localHandler, params.clientPath);
+            LOG.info("deploying " + params.clientDirectory + " to path " + params.clientPath);
         }
 
         /* 3. Test alternate HTTP handling without Jersey. */
