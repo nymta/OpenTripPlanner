@@ -840,7 +840,7 @@ public abstract class GraphPathToTripPlanConverter {
                 // reset to avoid confusion with 'Elevator on floor 1 to floor 1'
                 step.streetName = ((ElevatorAlightEdge) edge).getName(requestedLocale);
 
-                step.relativeDirection = RelativeDirection.ELEVATOR;
+                step.setRelativeDirection(RelativeDirection.ELEVATOR, requestedLocale);
 
                 steps.add(step);
                 continue;
@@ -862,10 +862,10 @@ public abstract class GraphPathToTripPlanConverter {
                 steps.add(step);
                 double thisAngle = DirectionUtils.getFirstAngle(geom);
                 if (previous == null) {
-                    step.setAbsoluteDirection(thisAngle);
-                    step.relativeDirection = RelativeDirection.DEPART;
+                    step.setAbsoluteDirection(thisAngle, requestedLocale);
+                    step.setRelativeDirection(RelativeDirection.DEPART, requestedLocale);
                 } else {
-                    step.setDirections(previous.angle, thisAngle, false);
+                    step.setDirections(previous.angle, thisAngle, false, requestedLocale);
                 }
                 // new step, set distance to length of first edge
                 distance = edge.getDistance();
@@ -898,7 +898,7 @@ public abstract class GraphPathToTripPlanConverter {
                         roundaboutPreviousStreet = roundaboutPreviousStreet.substring(0, idx - 1);
                 }
                 double thisAngle = DirectionUtils.getFirstAngle(geom);
-                step.setDirections(lastAngle, thisAngle, edge.isRoundabout());
+                step.setDirections(lastAngle, thisAngle, edge.isRoundabout(), requestedLocale);
                 // new step, set distance to length of first edge
                 distance = edge.getDistance();
             } else {
@@ -974,7 +974,7 @@ public abstract class GraphPathToTripPlanConverter {
                         step = createWalkStep(graph, forwardState, requestedLocale);
                         createdNewStep = true;
                         steps.add(step);
-                        step.setDirections(lastAngle, thisAngle, false);
+                        step.setDirections(lastAngle, thisAngle, false, requestedLocale);
                         step.stayOn = true;
                         // new step, set distance to length of first edge
                         distance = edge.getDistance();
@@ -1021,9 +1021,9 @@ public abstract class GraphPathToTripPlanConverter {
                             // A U-turn to the left, typical in the US. 
                             if (lastStep.relativeDirection == RelativeDirection.LEFT || 
                                     lastStep.relativeDirection == RelativeDirection.HARD_LEFT)
-                                lastStep.relativeDirection = RelativeDirection.UTURN_LEFT;
+                                lastStep.setRelativeDirection(RelativeDirection.UTURN_LEFT, requestedLocale);
                             else
-                                lastStep.relativeDirection = RelativeDirection.UTURN_RIGHT;
+                                lastStep.setRelativeDirection(RelativeDirection.UTURN_RIGHT, requestedLocale);
                             
                             // in this case, we're definitely staying on the same street 
                             // (since it's zag removal, the street names are the same)

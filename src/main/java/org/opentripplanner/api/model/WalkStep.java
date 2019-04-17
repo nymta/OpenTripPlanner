@@ -17,6 +17,7 @@ import org.opentripplanner.routing.graph.Edge;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Lists;
+import org.opentripplanner.util.ResourceBundleSingleton;
 
 /**
  * Represents one instruction in walking directions. Three examples from New York City:
@@ -109,6 +110,10 @@ public class WalkStep {
     @JsonSerialize
     public List<LocalizedAlert> alerts;
 
+    public String localizedRelativeDirection;
+
+    public String localizedAbsoluteDirection;
+
     public transient double angle;
 
     /**
@@ -130,8 +135,18 @@ public class WalkStep {
     public transient BikeRentalStationInfo bikeRentalOnStation, bikeRentalOffStation;
 
     public void setDirections(double lastAngle, double thisAngle, boolean roundabout) {
+       setDirections(lastAngle, thisAngle, roundabout, null);
+    }
+
+    public void setDirections(double lastAngle, double thisAngle, boolean roundabout, Locale locale) {
         relativeDirection = getRelativeDirection(lastAngle, thisAngle, roundabout);
-        setAbsoluteDirection(thisAngle);
+        setAbsoluteDirection(thisAngle, locale);
+        localizedRelativeDirection = ResourceBundleSingleton.INSTANCE.localize(relativeDirection.toString(), locale);
+    }
+
+    public void setRelativeDirection(RelativeDirection relativeDirection, Locale locale) {
+        this.relativeDirection = relativeDirection;
+        this.localizedRelativeDirection = ResourceBundleSingleton.INSTANCE.localize(relativeDirection.toString(), locale);
     }
 
     public String toString() {
@@ -178,9 +193,16 @@ public class WalkStep {
         }
     }
 
-    public void setAbsoluteDirection(double thisAngle) {
+    public void setAbsoluteDirection(double thisAngle, Locale locale) {
         int octant = (int) (8 + Math.round(thisAngle * 8 / (Math.PI * 2))) % 8;
         absoluteDirection = AbsoluteDirection.values()[octant];
+        if (locale != null) {
+            localizedAbsoluteDirection = ResourceBundleSingleton.INSTANCE.localize(absoluteDirection.toString(), locale);
+        }
+    }
+
+    public void setAbsoluteDirection(double thisAngle) {
+        setAbsoluteDirection(thisAngle, null);
     }
 
     public void addAlerts(Collection<Alert> newAlerts, Locale locale) {
