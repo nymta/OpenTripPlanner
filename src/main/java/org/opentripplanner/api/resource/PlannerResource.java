@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Locale;
 
 import static org.opentripplanner.api.resource.ServerInfo.Q;
 
@@ -72,7 +73,8 @@ public class PlannerResource extends RoutingResource {
             response.setPlan(plan);
 
         } catch (Exception e) {
-            PlannerError error = new PlannerError(e);
+            Locale locale = request == null ? null : request.locale;
+            PlannerError error = new PlannerError(e, locale);
             if(!PlannerError.isPlanningError(e.getClass()))
                 LOG.warn("Error while planning path: ", e);
             response.setError(error);

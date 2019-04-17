@@ -2,6 +2,7 @@ package org.opentripplanner.api.model.error;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.opentripplanner.api.common.Message;
@@ -41,14 +42,14 @@ public class PlannerError {
         noPath = true;
     }
 
-    public PlannerError(Exception e) {
+    public PlannerError(Exception e, Locale locale) {
         this();
         message = messages.get(e.getClass());
         if (message == null) {
             LOG.error("exception planning trip: ", e);
             message = Message.SYSTEM_ERROR;
         }
-        this.setMsg(message);
+        this.setMsg(message, locale);
         if (e instanceof VertexNotFoundException)
             this.setMissing(((VertexNotFoundException)e).getMissing());
     }
@@ -74,6 +75,11 @@ public class PlannerError {
     public void setMsg(Message msg) {
         this.msg = msg.get();
         this.id  = msg.getId();
+    }
+
+    public void setMsg(Message msg, Locale locale) {
+        this.msg = locale == null ? msg.get() : msg.get(locale);
+        this.id = msg.getId();
     }
 
     /**
