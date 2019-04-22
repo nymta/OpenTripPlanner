@@ -114,6 +114,14 @@ public class OTPMain {
         if (params.build != null) {
             GraphBuilder graphBuilder = GraphBuilder.forDirectory(params, params.build); // TODO multiple directories
             if (graphBuilder != null) {
+                // Load any existing graphs
+                if (graphBuilder.isBaseGraphSet()) {
+                    LOG.info("Loading base graph as requested.");
+                    graphBuilder.loadBaseGraph();
+                    Graph graph = graphBuilder.getGraph();
+                    graph.index(new DefaultStreetVertexIndexFactory());
+                }
+
                 graphBuilder.run();
                 /* If requested, hand off the graph to the server as the default graph using an in-memory GraphSource. */
                 if (params.inMemory || params.preFlight) {

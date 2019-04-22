@@ -137,8 +137,8 @@ public class SimpleStreetSplitter {
     }
 
     /** Link all relevant vertices to the street network */
-    public void link () {	
-        for (Vertex v : graph.getVertices()) {
+    public void link () {
+        for (Vertex v : new ArrayList<>(graph.getVertices())) {
             if (v.shouldLinkToStreet())
                 if (!link(v)) {
                     if (v instanceof TransitStop)

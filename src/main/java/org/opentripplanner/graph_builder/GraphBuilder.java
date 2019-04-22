@@ -72,13 +72,17 @@ public class GraphBuilder implements Runnable {
     private boolean _alwaysRebuild = true;
 
     private List<RoutingRequest> _modeList;
-    
-    private String _baseGraph = null;
+
+    private File baseGraphFile;
     
     private Graph graph = new Graph();
 
     /** Should the graph be serialized to disk after being created or not? */
     public boolean serializeGraph = true;
+
+    public GraphBuilder(File path, GraphBuilderParameters builderParams, CommandLineParameters commandLineParameters) {
+        graphFile = new File(path, commandLineParameters.saveGraphName);
+    }
 
     public void addModule(GraphBuilderModule loader) {
         _graphBuilderModules.add(loader);
@@ -92,13 +96,20 @@ public class GraphBuilder implements Runnable {
         _alwaysRebuild = alwaysRebuild;
     }
     
-    public void setBaseGraph(String baseGraph) {
-        this._baseGraph = baseGraph;
+    public void setBaseGraph(File file) {
+        baseGraphFile = file;
+    }
+
+    public void loadBaseGraph() {
         try {
-            graph = Graph.load(new File(baseGraph));
+            graph = Graph.load(baseGraphFile);
         } catch (Exception e) {
             throw new RuntimeException("error loading base graph");
         }
+    }
+
+    public boolean isBaseGraphSet() {
+        return baseGraphFile != null;
     }
 
     public void addMode(RoutingRequest mo) {
@@ -107,14 +118,6 @@ public class GraphBuilder implements Runnable {
 
     public void setModes(List<RoutingRequest> modeList) {
         _modeList = modeList;
-    }
-    
-    public void setPath (String path) {
-        graphFile = new File(path.concat("/Graph.obj"));
-    }
-    
-    public void setPath (File path) {
-        graphFile = new File(path, "Graph.obj");
     }
 
     public Graph getGraph() {
@@ -160,6 +163,7 @@ public class GraphBuilder implements Runnable {
         graph.summarizeBuilderAnnotations();
         if (serializeGraph) {
             try {
+                LOG.info("Saving graph as " + graphFile.getName());
                 graph.save(graphFile);
             } catch (Exception ex) {
                 throw new IllegalStateException(ex);
@@ -182,9 +186,8 @@ public class GraphBuilder implements Runnable {
      */
     public static GraphBuilder forDirectory(CommandLineParameters params, File dir) {
         LOG.info("Wiring up and configuring graph builder task.");
-        GraphBuilder graphBuilder = new GraphBuilder();
         List<File> gtfsFiles = Lists.newArrayList();
-        List<File> osmFiles =  Lists.newArrayList();
+        List<File> osmFiles = Lists.newArrayList();
         File crossFeedTransfers = null;
         File landmarks = null;
         JsonNode builderConfig = null;
@@ -192,19 +195,27 @@ public class GraphBuilder implements Runnable {
         File versionFile = null;
         File demFile = null;
         LOG.info("Searching for graph builder input files in {}", dir);
-        if ( ! dir.isDirectory() && dir.canRead()) {
+        if (!dir.isDirectory() && dir.canRead()) {
             LOG.error("'{}' is not a readable directory.", dir);
             return null;
         }
-        graphBuilder.setPath(dir);
+
         // Find and parse config files first to reveal syntax errors early without waiting for graph build.
         builderConfig = OTPMain.loadJson(new File(dir, BUILDER_CONFIG_FILENAME));
         GraphBuilderParameters builderParams = new GraphBuilderParameters(builderConfig);
+        GraphBuilder graphBuilder = new GraphBuilder(dir, builderParams, params);
+
         // Load the router config JSON to fail fast, but we will only apply it later when a router starts up
         routerConfig = OTPMain.loadJson(new File(dir, Router.ROUTER_CONFIG_FILENAME));
         LOG.info(ReflectionLibrary.dumpFields(builderParams));
         for (File file : dir.listFiles()) {
             switch (InputFileType.forFile(file)) {
+                case BASEGRAPH:
+                    if (file.getName().equals(params.loadBaseGraphName)) {
+                        LOG.info("Found base graph file {}", file);
+                        graphBuilder.setBaseGraph(file);
+                    }
+                    break;
                 case GTFS:
                     LOG.info("Found GTFS file {}", file);
                     gtfsFiles.add(file);
@@ -237,13 +248,13 @@ public class GraphBuilder implements Runnable {
                     LOG.warn("Skipping unrecognized file '{}'", file);
             }
         }
-        boolean hasOSM  = builderParams.streets && !osmFiles.isEmpty();
+        boolean hasOSM = builderParams.streets && !osmFiles.isEmpty();
         boolean hasGTFS = builderParams.transit && !gtfsFiles.isEmpty();
-        if ( ! ( hasOSM || hasGTFS )) {
+        if (!(hasOSM || hasGTFS)) {
             LOG.error("Found no input files from which to build a graph in {}", dir);
             return null;
         }
-        if ( hasOSM ) {
+        if (hasOSM) {
             List<OpenStreetMapProvider> osmProviders = Lists.newArrayList();
             for (File osmFile : osmFiles) {
                 OpenStreetMapProvider osmProvider = new AnyFileBasedOpenStreetMapProviderImpl(osmFile);
@@ -268,34 +279,7 @@ public class GraphBuilder implements Runnable {
             pruneFloatingIslands.setPruningThresholdIslandWithStops(builderParams.pruningThresholdIslandWithStops);
             graphBuilder.addModule(pruneFloatingIslands);
         }
-        if ( hasGTFS ) {
-            List<GtfsBundle> gtfsBundles = Lists.newArrayList();
-            for (File gtfsFile : gtfsFiles) {
-                GtfsBundle gtfsBundle = new GtfsBundle(gtfsFile);
-                gtfsBundle.setTransfersTxtDefinesStationPaths(builderParams.useTransfersTxt);
-                if (builderParams.parentStopLinking) {
-                    gtfsBundle.linkStopsToParentStations = true;
-                }
-                gtfsBundle.parentStationTransfers = builderParams.stationTransfers;
-                gtfsBundle.subwayAccessTime = (int)(builderParams.subwayAccessTime * 60);
-                gtfsBundle.maxInterlineDistance = builderParams.maxInterlineDistance;
-                gtfsBundles.add(gtfsBundle);
-            }
-            GtfsModule gtfsModule = new GtfsModule(gtfsBundles);
-            gtfsModule.setFareServiceFactory(builderParams.fareServiceFactory);
-            gtfsModule.setMaxHopTime(builderParams.maxHopTime);
 
-            graphBuilder.addModule(gtfsModule);
-            if ( hasOSM ) {
-                if (builderParams.matchBusRoutesToStreets) {
-                    graphBuilder.addModule(new BusRouteStreetMatcher());
-                }
-                graphBuilder.addModule(new TransitToTaggedStopsModule());
-            }
-        }
-        // This module is outside the hasGTFS conditional block because it also links things like bike rental
-        // which need to be handled even when there's no transit.
-        graphBuilder.addModule(new StreetLinkerModule());
         // Load elevation data and apply it to the streets.
         // We want to do run this module after loading the OSM street network but before finding transfers.
         if (builderParams.elevationBucket != null) {
@@ -323,30 +307,62 @@ public class GraphBuilder implements Runnable {
             GraphBuilderModule elevationBuilder = new ElevationModule(gcf);
             graphBuilder.addModule(elevationBuilder);
         }
-        if ( hasGTFS ) {
-            // Make transfer edges from feed_transfers.txt
-            if (crossFeedTransfers != null)  {
-                CrossFeedTransferGenerator module = new CrossFeedTransferGenerator(crossFeedTransfers);
-                graphBuilder.addModule(module);
+
+        if (!params.skipLinking) {
+            if (hasGTFS) {
+                List<GtfsBundle> gtfsBundles = Lists.newArrayList();
+                for (File gtfsFile : gtfsFiles) {
+                    GtfsBundle gtfsBundle = new GtfsBundle(gtfsFile);
+                    gtfsBundle.setTransfersTxtDefinesStationPaths(builderParams.useTransfersTxt);
+                    if (builderParams.parentStopLinking) {
+                        gtfsBundle.linkStopsToParentStations = true;
+                    }
+                    gtfsBundle.parentStationTransfers = builderParams.stationTransfers;
+                    gtfsBundle.subwayAccessTime = (int) (builderParams.subwayAccessTime * 60);
+                    gtfsBundle.maxInterlineDistance = builderParams.maxInterlineDistance;
+                    gtfsBundles.add(gtfsBundle);
+                }
+                GtfsModule gtfsModule = new GtfsModule(gtfsBundles);
+                gtfsModule.setFareServiceFactory(builderParams.fareServiceFactory);
+                gtfsModule.setMaxHopTime(builderParams.maxHopTime);
+
+                graphBuilder.addModule(gtfsModule);
+                if (hasOSM) {
+                    if (builderParams.matchBusRoutesToStreets) {
+                        graphBuilder.addModule(new BusRouteStreetMatcher());
+                    }
+                    graphBuilder.addModule(new TransitToTaggedStopsModule());
+                }
             }
-            // The stops can be linked to each other once they are already linked to the street network.
-            if (!builderParams.useTransfersTxt) {
-                // This module will use streets or straight line distance depending on whether OSM data is found in the graph.
-                graphBuilder.addModule(new DirectTransferGenerator(builderParams.maxTransferDistance));
+            // This module is outside the hasGTFS conditional block because it also links things like bike rental
+            // which need to be handled even when there's no transit.
+            graphBuilder.addModule(new StreetLinkerModule());
+
+            if (hasGTFS) {
+                // Make transfer edges from feed_transfers.txt
+                if (crossFeedTransfers != null) {
+                    CrossFeedTransferGenerator module = new CrossFeedTransferGenerator(crossFeedTransfers);
+                    graphBuilder.addModule(module);
+                }
+                // The stops can be linked to each other once they are already linked to the street network.
+                if (!builderParams.useTransfersTxt) {
+                    // This module will use streets or straight line distance depending on whether OSM data is found in the graph.
+                    graphBuilder.addModule(new DirectTransferGenerator(builderParams.maxTransferDistance));
+                }
             }
-        }
-        graphBuilder.addModule(new EmbedConfig(builderConfig, routerConfig));
-        if (builderParams.htmlAnnotations) {
-            graphBuilder.addModule(new AnnotationsToHTML(params.build, builderParams.maxHtmlAnnotationsPerFile));
-        }
-        if (landmarks != null) {
-            graphBuilder.addModule(new LandmarksModule(landmarks));
-        }
-        if (versionFile != null) {
-            LOG.info("found versionFile=" + versionFile);
-            graphBuilder.addModule(new VersionModule(versionFile));
-        } else {
-            LOG.info("no versionFile found.");
+            graphBuilder.addModule(new EmbedConfig(builderConfig, routerConfig));
+            if (builderParams.htmlAnnotations) {
+                graphBuilder.addModule(new AnnotationsToHTML(params.build, builderParams.maxHtmlAnnotationsPerFile));
+            }
+            if (landmarks != null) {
+                graphBuilder.addModule(new LandmarksModule(landmarks));
+            }
+            if (versionFile != null) {
+                LOG.info("found versionFile=" + versionFile);
+                graphBuilder.addModule(new VersionModule(versionFile));
+            } else {
+                LOG.info("no versionFile found.");
+            }
         }
         graphBuilder.serializeGraph = ( ! params.inMemory ) || params.preFlight;
         return graphBuilder;
@@ -358,7 +374,7 @@ public class GraphBuilder implements Runnable {
      * types are present. This helps point out when config files have been misnamed (builder-config vs. build-config).
      */
     private static enum InputFileType {
-        GTFS, OSM, DEM, CONFIG, GRAPH, TRANSFERS, LANDMARKS, VERSION, OTHER;
+        GTFS, OSM, BASEGRAPH, DEM, CONFIG, GRAPH, TRANSFERS, LANDMARKS, VERSION, OTHER;
         public static InputFileType forFile(File file) {
             String name = file.getName();
             if (name.endsWith(".zip")) {
@@ -373,7 +389,7 @@ public class GraphBuilder implements Runnable {
             if (name.endsWith(".osm")) return OSM;
             if (name.endsWith(".osm.xml")) return OSM;
             if (name.endsWith(".tif") || name.endsWith(".tiff")) return DEM; // Digital elevation model (elevation raster)
-            if (name.equals("Graph.obj")) return GRAPH;
+            if (name.endsWith(".obj")) return BASEGRAPH;
             if (name.equals("feed_transfers.txt")) return TRANSFERS;
             if (name.equals("landmarks.json")) return LANDMARKS;
             if (name.equals("version.json")) return VERSION;
