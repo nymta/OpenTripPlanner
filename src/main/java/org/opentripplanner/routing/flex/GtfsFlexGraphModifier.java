@@ -446,7 +446,7 @@ public abstract class GtfsFlexGraphModifier {
     }
 
     private Vertex findCarAccessibleVertex(RoutingRequest opt, Vertex vertex, boolean arriveBy) {
-        if (vertex instanceof TransitStop && ((TransitStop) vertex).getModes().contains(TraverseMode.BUS)) {
+        if (vertex instanceof TransitStop) {
             return vertex;
         }
         return new CarPermissionSearch(opt, arriveBy).findVertexWithPermission(vertex, TraverseMode.CAR);
