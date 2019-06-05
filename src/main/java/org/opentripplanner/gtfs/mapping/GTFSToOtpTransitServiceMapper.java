@@ -44,6 +44,8 @@ public class GTFSToOtpTransitServiceMapper {
 
     private final AreaMapper areaMapper = new AreaMapper();
 
+    private final TranslationMapper translationMapper = new TranslationMapper();
+
     /**
      * Map from GTFS data to the internal OTP model
      */
@@ -69,6 +71,7 @@ public class GTFSToOtpTransitServiceMapper {
         builder.getTransfers().addAll(transferMapper.map(data.getAllTransfers()));
         builder.getTrips().addAll(tripMapper.map(data.getAllTrips()));
         builder.getFlexAreas().addAll(areaMapper.map(data.getAllAreas()));
+        builder.getTranslations().addAll(translationMapper.map(data.getAllTranslations()));
 
         return builder.build();
     }
