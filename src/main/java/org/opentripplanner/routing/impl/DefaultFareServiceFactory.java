@@ -178,6 +178,9 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
         case "new-york":
             retval = new NycFareServiceFactory();
             break;
+        case "new-york-advanced":
+            retval = new NycAdvancedFareServiceFactory();
+            break;
         case "seattle":
             retval = new SeattleFareServiceFactory();
             break;
