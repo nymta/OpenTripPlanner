@@ -296,7 +296,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             return null;
         }
 
-        // Holds traveled services for following legs in the same ride
+        // Holds previously traveled services in the same ride
         Set<NycTraveledService> traveledServices = new HashSet<NycTraveledService>();
 
         float totalFare = 0.0f;
@@ -423,7 +423,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     private NycAgencyFare findAgencyFare(Ride ride, FareType fareType) {
         String serviceIdString = ride.agency + "_" + ride.routeType;
         boolean isPeak = isInPeakHour(ride);
-        // then check zone-pair fare
+        // zone-pair key component (used in finding specific fare rule)
         String zoneKey = "";
         if(ride.startZone != null && !ride.startZone.isEmpty()) {
             zoneKey += '_' + ride.startZone;
