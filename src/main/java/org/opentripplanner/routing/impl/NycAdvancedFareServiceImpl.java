@@ -14,6 +14,7 @@
 package org.opentripplanner.routing.impl;
 
 import com.sun.jdi.connect.spi.TransportService;
+import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Trip;
@@ -53,7 +54,7 @@ enum NycPeakHourRuleType {
 }
 
 /** A service is a combination of agency and route type */
-class NycServiceId {
+class NycServiceId implements Serializable {
     String agencyId;
     int routeType;
 
@@ -79,7 +80,7 @@ class NycServiceId {
 }
 
 /** Holds service basic fare info */
-class NycAgencyFare {
+class NycAgencyFare implements Serializable {
     NycServiceId serviceId;
     FareType fareType;
     NycFareConditionType fareConditionType;
@@ -118,7 +119,7 @@ class NycAgencyFare {
 }
 
 /** Holds agency peak hours */
-class NycAgencyPeakHour {
+class NycAgencyPeakHour implements Serializable {
     NycServiceId serviceId;
     NycPeakHourRuleType peakHourRuleType; //departure, arrival, or both
     String stopId; //peak hour only applied to certain stops if configured
@@ -146,7 +147,7 @@ class NycAgencyPeakHour {
 }
 
 /** Holds transfer agreement rules between a pair of services */
-class NycTransferRule {
+class NycTransferRule implements Serializable {
     NycServiceId serviceId;
     NycServiceId otherServiceId;
     NycTransferType transferType;
@@ -165,7 +166,7 @@ class NycTransferRule {
 }
 
 /** Internal class to hold previous traveled services */
-class NycTraveledService {
+class NycTraveledService implements Serializable {
     NycServiceId serviceId;
     AgencyAndId agencyAndId;
     long rideTime;
@@ -202,8 +203,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     public NycAdvancedFareServiceImpl() {
         //add some testing data
         NycServiceId nyctSubway = new NycServiceId("MTASBWY", 1);
-        NycServiceId nyctLocalBus = new NycServiceId("MTA", 3);
-        NycServiceId nyctExpressBus = new NycServiceId("MTA", 702);
+        NycServiceId nyctLocalBus = new NycServiceId("MTA NYCT", 3);
+        NycServiceId nyctExpressBus = new NycServiceId("MTA NYCT", 702);
+        NycServiceId mtabcLocalBus = new NycServiceId("MTABC", 3);
+        NycServiceId mtabcExpressBus = new NycServiceId("MTABC", 702);
 
         // agency fares
         NycAgencyFare nyctSubwayRegularFare = new NycAgencyFare(nyctSubway, FareType.regular, null, 2.75f, null, null);
@@ -212,28 +215,60 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycAgencyFare nyctLocalBusReducedFare = new NycAgencyFare(nyctLocalBus, FareType.special, null, 1.35f, null, null);
         NycAgencyFare nyctExpressBusRegularFare = new NycAgencyFare(nyctExpressBus, FareType.regular, null, 6.75f, null, null);
         NycAgencyFare nyctExpressBusReducedFare = new NycAgencyFare(nyctExpressBus, FareType.special, NycFareConditionType.peak_hour_only, 3.35f, null, null);
+        NycAgencyFare mtabcLocalBusRegularFare = new NycAgencyFare(mtabcLocalBus, FareType.regular, null, 2.75f, null, null);
+        NycAgencyFare mtabcLocalBusReducedFare = new NycAgencyFare(mtabcLocalBus, FareType.special, null, 1.35f, null, null);
+        NycAgencyFare mtabcExpressBusRegularFare = new NycAgencyFare(mtabcExpressBus, FareType.regular, null, 6.75f, null, null);
+        NycAgencyFare mtabcExpressBusReducedFare = new NycAgencyFare(mtabcExpressBus, FareType.special, NycFareConditionType.peak_hour_only, 3.35f, null, null);
         agencyFares.put(nyctSubwayRegularFare.getKey(), nyctSubwayRegularFare);
         agencyFares.put(nyctSubwayReducedFare.getKey(), nyctSubwayReducedFare);
         agencyFares.put(nyctLocalBusRegularFare.getKey(), nyctLocalBusRegularFare);
         agencyFares.put(nyctLocalBusReducedFare.getKey(), nyctLocalBusReducedFare);
         agencyFares.put(nyctExpressBusRegularFare.getKey(), nyctExpressBusRegularFare);
         agencyFares.put(nyctExpressBusReducedFare.getKey(), nyctExpressBusReducedFare);
+        agencyFares.put(mtabcLocalBusRegularFare.getKey(), mtabcLocalBusRegularFare);
+        agencyFares.put(mtabcLocalBusReducedFare.getKey(), mtabcLocalBusReducedFare);
+        agencyFares.put(mtabcExpressBusRegularFare.getKey(), mtabcExpressBusRegularFare);
+        agencyFares.put(mtabcExpressBusReducedFare.getKey(), mtabcExpressBusReducedFare);
 
         // transfer rules
+        // same service
         NycTransferRule nyctSubwayToSubway = new NycTransferRule(nyctSubway, nyctSubway, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctLocalToLocal = new NycTransferRule(nyctLocalBus, nyctLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule mtabcLocalToLocal = new NycTransferRule(mtabcLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
+
+        // local bus
         NycTransferRule nyctSubwayToLocalBus = new NycTransferRule(nyctSubway, nyctLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctSubwayToMtabcLocal = new NycTransferRule(nyctSubway, mtabcLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctLocalToMtabcLocal = new NycTransferRule(nyctLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
+
+        // express bus
         NycTransferRule nyctSubwayToExpressBus = new NycTransferRule(nyctSubway, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule nyctSubwayToMtabcExpress = new NycTransferRule(nyctSubway, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
         NycTransferRule nyctLocalToExpressBus = new NycTransferRule(nyctLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule nyctLocalToMtabcExpress = new NycTransferRule(nyctLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule mtabcLocalToExpressBus = new NycTransferRule(mtabcLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule mtabcLocalToNyctExpress = new NycTransferRule(mtabcLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+
         transferRules.put(nyctSubwayToSubway.getKey(), nyctSubwayToSubway);
         transferRules.put(nyctSubwayToLocalBus.getKey(), nyctSubwayToLocalBus);
         transferRules.put(nyctSubwayToExpressBus.getKey(), nyctSubwayToExpressBus);
         transferRules.put(nyctLocalToExpressBus.getKey(), nyctLocalToExpressBus);
+        transferRules.put(nyctLocalToLocal.getKey(), nyctLocalToLocal);
+        transferRules.put(mtabcLocalToLocal.getKey(), mtabcLocalToLocal);
+        transferRules.put(nyctSubwayToMtabcLocal.getKey(), nyctSubwayToMtabcLocal);
+        transferRules.put(nyctLocalToMtabcLocal.getKey(), nyctLocalToMtabcLocal);
+        transferRules.put(nyctSubwayToMtabcExpress.getKey(), nyctSubwayToMtabcExpress);
+        transferRules.put(nyctLocalToMtabcExpress.getKey(), nyctLocalToMtabcExpress);
+        transferRules.put(mtabcLocalToExpressBus.getKey(), mtabcLocalToExpressBus);
+        transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
 
         // peak hours
         int[] weekdays = new int[]{1,2,3,4,5};
         int[] hours = new int[] {6,7,8,9,10,15,16,17,18,19};
         NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours);
+        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours);
         agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
+        agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
     }
 
     @Override
@@ -268,12 +303,14 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 continue;
             }
             AgencyAndId routeId = state.getRoute();
-            String agencyId = state.getBackTrip().getRoute().getAgency().getId();
+            Agency agency = state.getBackTrip().getRoute().getAgency();
+            String agencyId = agency.getId();
             if (routeId == null) {
                 newRide = null;
             } else {
                 if (newRide == null || !routeId.equals(newRide.route)) {
                     newRide = new Ride();
+                    newRide.agency = agency.getId();
                     rides.add(newRide);
 
                     newRide.firstStop = ((HopEdge) backEdge).getBeginStop();
@@ -433,7 +470,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         }
 
         // check if there's fare without conditions
-        String nonConditionFareKey = serviceIdString;
+        String nonConditionFareKey = serviceIdString + '_' + fareType.toString();
         if(!zoneKey.isEmpty()) {
             nonConditionFareKey += zoneKey;
         }
@@ -448,6 +485,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             if(conditionFare == null) {
                 fareKey += zoneKey;
                 conditionFare = agencyFares.get(fareKey);
+            }
+
+            if(conditionFare == null) {
+                continue;
             }
 
             // check if meet fare conditions
