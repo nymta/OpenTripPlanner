@@ -20,6 +20,7 @@ import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.routing.core.Fare;
 import org.opentripplanner.routing.core.Fare.FareType;
+import org.opentripplanner.routing.core.FareBundle;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.WrappedCurrency;
 import org.opentripplanner.routing.edgetype.DwellEdge;
@@ -184,7 +185,6 @@ class NycTraveledService implements Serializable {
     }
 }
 
-
 /**
  * This handles the New York City advanced fare rules:
  * 1. fixed fare
@@ -273,6 +273,17 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
     @Override
     public Fare getCost(GraphPath path) {
+        FareBundle fareBundle = getLegCostBreakDown(path);
+
+        if(fareBundle != null) {
+            return fareBundle.fare;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public FareBundle getLegCostBreakDown(GraphPath path) {
         LinkedList<State> states = path.states;
         final int WALK = -1;
         final int SUBWAY = 1;
@@ -333,128 +344,149 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             return null;
         }
 
-        // Holds previously traveled services in the same ride
-        Set<NycTraveledService> traveledServices = new HashSet<NycTraveledService>();
+        Currency currency = Currency.getInstance("USD");
+        Fare totalFare = new Fare();
+        Map<String, Fare> legFares = new HashMap<String, Fare>();
+        for (FareType fareType : FareType.values()) {
+            // Holds previously traveled services in the same ride
+            Set<NycTraveledService> traveledServices = new HashSet<NycTraveledService>();
 
-        float totalFare = 0.0f;
-        FareType fareType = FareType.regular; //TODO: to set on the fly based on request params
-        HashSet<AgencyAndId> unknownFareRoutes = new HashSet<AgencyAndId>(); //TODO: how to include it into the response
-        int prevRouteType = WALK;
+            float totalPrice = 0.0f;
+            HashSet<AgencyAndId> unknownFareRoutes = new HashSet<AgencyAndId>(); //TODO: how to include it into the response
+            int prevRouteType = WALK;
 
-        //iterate rides to calculate total fare
-        for (Ride ride : rides) {
-            // walk is free
-            if(ride.classifier.equals(WALK)) {
-                prevRouteType = WALK;
-                continue;
-            }
 
-            // if in-station subway transfer, then free
-            if(ride.routeType == prevRouteType && ride.routeType == SUBWAY) {
-                prevRouteType = ride.routeType;
-                continue;
-            }
-
-            long currentRideTime = ride.startTime;
-
-            // find agency fare settings
-            NycAgencyFare agencyFare = findAgencyFare(ride, fareType);
-
-            // log it if fare unknown
-            if(agencyFare == null) {
-                if (!unknownFareRoutes.contains(ride.route)) {
-                    unknownFareRoutes.add(ride.route);
-                }
-                prevRouteType = ride.routeType;
-                continue;
-            }
-
-            // get basic fare without transfer
-            float basicFare = agencyFare.price;
-
-            // start calculating transfer fare
-            boolean transferFound = false;
-            float transferFare = basicFare;
-
-            NycTraveledService targetPrevTraveledService = null; // the target that applies transfer rule into current ride
-            for(NycTraveledService traveledService : traveledServices) {
-                String prevServiceIdString = traveledService.serviceId.toString();
-
-                Set<NycTransferRule> rules = getRelatedTransferRules(prevServiceIdString);
-                if(rules.isEmpty()) {
+            //iterate rides to calculate total fare
+            boolean hasFare = false; // whether fare exists
+            for (Ride ride : rides) {
+                // walk is free
+                if (ride.classifier.equals(WALK)) {
+                    prevRouteType = WALK;
                     continue;
                 }
 
-                // calculate transfer fare
-                long prevServiceRideTime = traveledService.rideTime;
-                for(NycTransferRule tRule : rules) {
-                    if(tRule.transferDuration > 0) {
-                        // first check transfer duration
-                        if((currentRideTime - prevServiceRideTime > tRule.transferDuration)) {
-                            continue;
+                // if in-station subway transfer, then free
+                if (ride.routeType == prevRouteType && ride.routeType == SUBWAY) {
+                    prevRouteType = ride.routeType;
+                    continue;
+                }
+
+                long currentRideTime = ride.startTime;
+
+                // find agency fare settings
+                NycAgencyFare agencyFare = findAgencyFare(ride, fareType);
+
+                // log it if fare unknown
+                if (agencyFare == null) {
+                    unknownFareRoutes.add(ride.route);
+                    prevRouteType = ride.routeType;
+                    continue;
+                }
+
+                hasFare = true;
+
+                // get basic fare without transfer
+                float basicFare = agencyFare.price;
+
+                // start calculating transfer fare
+                boolean transferFound = false;
+                float transferFare = basicFare;
+
+                NycTraveledService targetPrevTraveledService = null; // the target that applies transfer rule into current ride
+                for (NycTraveledService traveledService : traveledServices) {
+                    String prevServiceIdString = traveledService.serviceId.toString();
+
+                    Set<NycTransferRule> rules = getRelatedTransferRules(prevServiceIdString);
+                    if (rules.isEmpty()) {
+                        continue;
+                    }
+
+                    // calculate transfer fare
+                    long prevServiceRideTime = traveledService.rideTime;
+                    for (NycTransferRule tRule : rules) {
+                        if (tRule.transferDuration > 0) {
+                            // first check transfer duration
+                            if ((currentRideTime - prevServiceRideTime > tRule.transferDuration)) {
+                                continue;
+                            }
+                        }
+
+                        // loop transfer type
+                        switch (tRule.transferType) {
+                            case free:
+                                transferFound = true;
+                                transferFare = 0.0f;
+                                break;
+                            case free_step_up:
+                                transferFound = true;
+                                if (traveledService.price >= transferFare) {
+                                    transferFare = 0.0f;
+                                } else {
+                                    transferFare -= traveledService.price;
+                                }
+                                break;
+                            default:
+                                break;
+
+                        }
+
+                        // transfer found
+                        if (transferFound) {
+                            break;
                         }
                     }
 
-                    // loop transfer type
-                    switch (tRule.transferType) {
-                        case free:
-                            transferFound = true;
-                            transferFare = 0.0f;
-                            break;
-                        case free_step_up:
-                            transferFound = true;
-                            if(traveledService.price >= transferFare) {
-                                transferFare = 0.0f;
-                            } else {
-                                transferFare -= traveledService.price;
-                            }
-                            break;
-                        default:
-                            break;
-
-                    }
-
-                    // transfer found
-                    if(transferFound) {
+                    if (transferFound) {
+                        targetPrevTraveledService = traveledService;
                         break;
                     }
                 }
 
-                if(transferFound) {
-                    targetPrevTraveledService = traveledService;
-                    break;
+                float legPrice = 0;
+                if (!transferFound) {
+                    legPrice = basicFare;
+                    // no transfer rules from previous services, add basic fare to total
+                    totalPrice += legPrice;
+                    if (legPrice > 0) {
+                        // log paid service so future rides can check transfer rules
+                        NycTraveledService traveledService = new NycTraveledService(new NycServiceId(ride.agency, ride.routeType), ride.route, currentRideTime, basicFare);
+                        traveledServices.add(traveledService);
+                    }
+                } else {
+                    legPrice = transferFare;
+                    // transfer rule found, add transfer fare to total
+                    totalPrice += legPrice;
+
+                    // One transfer is allowed in one trip
+                    // remove the service that covers the transfer to current ride
+                    if (targetPrevTraveledService != null) {
+                        traveledServices.remove(targetPrevTraveledService);
+                    }
                 }
+
+                String routeId = ride.route.toString();
+                if(!legFares.containsKey(routeId)) {
+                    legFares.put(routeId, new Fare());
+                }
+
+                Fare legFare = legFares.get(routeId);
+                legFare.addFare(fareType, new WrappedCurrency(currency),
+                        (int) Math.round(legPrice
+                                * Math.pow(10, currency.getDefaultFractionDigits())));
+
+                prevRouteType = ride.routeType;
             }
 
-            if(!transferFound) {
-                // no transfer rules from previous services, add basic fare to total
-                totalFare += basicFare;
-                if(basicFare > 0) {
-                    // log paid service so future rides can check transfer rules
-                    NycTraveledService traveledService = new NycTraveledService(new NycServiceId(ride.agency, ride.routeType), ride.route, currentRideTime, basicFare);
-                    traveledServices.add(traveledService);
-                }
-            } else {
-                // transfer rule found, add transfer fare to total
-                totalFare += transferFare;
-
-                // One transfer is allowed in one trip
-                // remove the service that covers the transfer to current ride
-                if(targetPrevTraveledService != null) {
-                    traveledServices.remove(targetPrevTraveledService);
-                }
+            if(hasFare) {
+                totalFare.addFare(fareType, new WrappedCurrency(currency),
+                        (int) Math.round(totalPrice
+                                * Math.pow(10, currency.getDefaultFractionDigits())));
             }
-
-            prevRouteType = ride.routeType;
         }
 
-        Currency currency = Currency.getInstance("USD");
-        Fare fare = new Fare();
-        fare.addFare(fareType, new WrappedCurrency(currency),
-                (int) Math.round(totalFare
-                        * Math.pow(10, currency.getDefaultFractionDigits())));
-        return fare;
+        return new FareBundle(totalFare, legFares);
     }
+
 
     /** find agency fare for the ride based on requested fare type */
     private NycAgencyFare findAgencyFare(Ride ride, FareType fareType) {
@@ -565,11 +597,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
-        if(Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour)) {
-            return true;
-        } else {
-            return false;
-        }
+        return Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour);
     }
 
     /** query transfer rules related to a specific service */

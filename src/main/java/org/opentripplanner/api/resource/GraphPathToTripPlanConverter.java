@@ -30,6 +30,7 @@ import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.*;
+import org.opentripplanner.routing.core.Fare.FareType;
 import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.error.TrivialPathException;
 import org.opentripplanner.routing.graph.Edge;
@@ -169,12 +170,32 @@ public abstract class GraphPathToTripPlanConverter {
 
         State[][] legsStates = sliceStates(states);
 
-        if (fareService != null) {
-            itinerary.fare = fareService.getCost(path);
-        }
-
         for (State[] legStates : legsStates) {
             itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, disableAlertFiltering, requestedLocale));
+        }
+
+        if (fareService != null) {
+            // for all fare types
+            FareBundle fareBundle = fareService.getLegCostBreakDown(path);
+            if(fareBundle != null) {
+                itinerary.fare = fareBundle.fare;
+
+                for(Leg leg : itinerary.legs) {
+                    if(leg.routeId == null) {
+                        continue;
+                    }
+
+                    if (!fareBundle.legFares.isEmpty()) {
+                        Fare legFare = fareBundle.legFares.get(leg.routeId.toString());
+                        if (legFare != null) {
+                            leg.fare = legFare;
+                        }
+                    }
+                }
+            } else {
+                // only calculate regular fare
+                itinerary.fare = fareService.getCost(path);
+            }
         }
 
         addWalkSteps(graph, itinerary.legs, legsStates, requestedLocale);
@@ -1028,7 +1049,7 @@ public abstract class GraphPathToTripPlanConverter {
                 // exit != null and uses to <exit>
                 // the floor name is the AlightEdge name
                 // reset to avoid confusion with 'Elevator on floor 1 to floor 1'
-                step.streetName = ((ElevatorAlightEdge) edge).getName(requestedLocale);
+                step.streetName = edge.getName(requestedLocale);
 
                 step.relativeDirection = RelativeDirection.ELEVATOR;
 

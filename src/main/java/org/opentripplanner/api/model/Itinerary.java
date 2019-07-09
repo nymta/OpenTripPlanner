@@ -122,7 +122,7 @@ public class Itinerary {
      */
     public boolean tooSloped = false;
 
-    /** 
+    /**
      * adds leg to array list
      * @param leg
      */
