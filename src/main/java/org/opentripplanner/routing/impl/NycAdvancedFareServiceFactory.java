@@ -11,25 +11,25 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-package org.opentripplanner.routing.services;
+package org.opentripplanner.routing.impl;
 
-import org.opentripplanner.routing.core.Fare;
-import org.opentripplanner.routing.core.Fare.FareType;
-import org.opentripplanner.routing.core.FareBundle;
-import org.opentripplanner.routing.spt.GraphPath;
+import org.onebusaway.gtfs.services.GtfsRelationalDao;
+import org.opentripplanner.routing.services.FareService;
+import org.opentripplanner.routing.services.FareServiceFactory;
 
-import java.util.Map;
-import java.util.HashMap;
+import com.fasterxml.jackson.databind.JsonNode;
 
-/**
- * Computes a fare for a given GraphPath.
- * @author novalis
- *
- */
-public interface FareService {
-	Fare getCost(GraphPath path);
+public class NycAdvancedFareServiceFactory implements FareServiceFactory {
 
-	default FareBundle getLegCostBreakDown(GraphPath path) {
-		return null;
-	}
+    public FareService makeFareService() {
+        return new NycAdvancedFareServiceImpl();
+    }
+
+    @Override
+    public void processGtfs(GtfsRelationalDao dao) {
+    }
+
+    @Override
+    public void configure(JsonNode config) {
+    }
 }

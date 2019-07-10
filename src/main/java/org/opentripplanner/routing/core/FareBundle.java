@@ -1,7 +1,7 @@
 /* This program is free software: you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public License
  as published by the Free Software Foundation, either version 3 of
- the License, or (props, at your option) any later version.
+ the License, or (at your option) any later version.
 
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -11,25 +11,21 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
-package org.opentripplanner.routing.services;
+package org.opentripplanner.routing.core;
 
 import org.opentripplanner.routing.core.Fare;
 import org.opentripplanner.routing.core.Fare.FareType;
-import org.opentripplanner.routing.core.FareBundle;
-import org.opentripplanner.routing.spt.GraphPath;
-
 import java.util.Map;
-import java.util.HashMap;
 
 /**
- * Computes a fare for a given GraphPath.
- * @author novalis
- *
+ * A fare bundle is a combination of total fare and each leg's fare
  */
-public interface FareService {
-	Fare getCost(GraphPath path);
+public class FareBundle {
+    public Fare fare;
+    public Map<String, Fare> legFares; // a map of leg identifier and its fare
 
-	default FareBundle getLegCostBreakDown(GraphPath path) {
-		return null;
-	}
+    public FareBundle( Fare fare, Map<String, Fare> legFares) {
+        this.fare = fare;
+        this.legFares = legFares;
+    }
 }

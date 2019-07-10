@@ -49,6 +49,8 @@ class Ride {
 
     AgencyAndId route;
 
+    int routeType;
+
     AgencyAndId trip;
     
     Set<String> zones;
