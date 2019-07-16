@@ -8,6 +8,7 @@ import org.onebusaway.gtfs.model.Route;
 import org.opentripplanner.gtfs.GtfsLibrary;
 
 import com.beust.jcommander.internal.Lists;
+import org.opentripplanner.routing.core.TraverseMode;
 
 public class RouteShort {
 
@@ -38,6 +39,8 @@ public class RouteShort {
     /** route type */
     public int routeType;
 
+    public boolean regionalFareCardAccepted;
+
     public RouteShort (Route route) {
         id = route.getId();
         shortName = route.getShortName();
@@ -49,6 +52,9 @@ public class RouteShort {
         if (route.getSortOrder() >= 0)
             sortOrder = route.getSortOrder();
         routeType = route.getType();
+        if (GtfsLibrary.getTraverseMode(route) == TraverseMode.BUS) {
+            regionalFareCardAccepted = route.getRegionalFareCardAccepted() != 0;
+        }
     }
 
     public static List<RouteShort> list (Collection<Route> in) {
