@@ -820,7 +820,9 @@ public abstract class GraphPathToTripPlanConverter {
                 ((TransitVertex) firstVertex).getStop(): null;
 
         /* addPlaces is called after addTripFields, so leave regionalFareCardAccepted true if already set */
-        leg.regionalFareCardAccepted |= firstStop.getRegionalFareCardAccepted() != 0;
+        if (firstStop != null) {
+            leg.regionalFareCardAccepted |= firstStop.getRegionalFareCardAccepted() != 0;
+        }
 
         Stop lastStop = lastVertex instanceof TransitVertex ?
                 ((TransitVertex) lastVertex).getStop(): null;
