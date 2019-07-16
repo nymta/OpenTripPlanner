@@ -320,6 +320,13 @@ public class Leg {
      @JsonSerialize
      public Fare fare = new Fare();
 
+      /**
+      * For transit legs, whether or not fare card is accepted.
+      * For non-transit legs, false.
+      */
+     @JsonSerialize
+    public boolean regionalFareCardAccepted = false;
+
     /**
      * Whether this leg is a transit leg or not.
      * @return Boolean true if the leg is a transit leg
