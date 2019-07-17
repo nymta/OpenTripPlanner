@@ -111,6 +111,9 @@ public class TripTimeShort {
     /** realtime sign text, if given in data */
     public String realtimeSignText;
 
+    /** indicate whether or not a fare card, e.g. OMNY, can be used on trip */
+    public boolean regionalFareCardAccepted = false;
+
     /**
      * This is stop-specific, so the index i is a stop index, not a hop index.
      */
@@ -119,6 +122,7 @@ public class TripTimeShort {
         stopName           = stop.getName();
         stopLat            = stop.getLat();
         stopLon            = stop.getLon();
+        regionalFareCardAccepted = stop.getRegionalFareCardAccepted() != 0;
         stopIndex          = i;
         stopCount          = tt.getNumStops();
         scheduledArrival   = tt.getScheduledArrivalTime(i);
@@ -196,5 +200,9 @@ public class TripTimeShort {
 
     public int getRealtimeDeparture() {
         return realtimeDeparture;
+    }
+
+    public void setRegionalFareCardAccepted(boolean regionalFareCardAccepted) {
+        this.regionalFareCardAccepted = regionalFareCardAccepted;
     }
 }

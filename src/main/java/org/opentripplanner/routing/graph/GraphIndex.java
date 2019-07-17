@@ -409,7 +409,7 @@ public class GraphIndex {
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
                                                      RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction,
-                headsign, null, bannedAgencies, bannedRouteTypes, null, false, false);
+                headsign, null, null, bannedAgencies, bannedRouteTypes, null, false, false);
     }
 
     /**
@@ -428,7 +428,7 @@ public class GraphIndex {
      * @return
      */
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
-                                                     RouteMatcher routeMatcher, Integer direction, String headsign, String tripHeadsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes,
+                                                     RouteMatcher routeMatcher, Integer direction, String headsign, String tripHeadsign, Stop requiredStop, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes,
                                                      Collection<String> trackIds, boolean showCancelledTrips, boolean includeStopsForTrip) {
         if (startTime == 0) {
             startTime = System.currentTimeMillis() / 1000;
@@ -452,11 +452,15 @@ public class GraphIndex {
                 continue;
             }
 
-            if(bannedRouteTypes != null && bannedRouteTypes.contains(pattern.route.getType())) {
+            if (bannedRouteTypes != null && bannedRouteTypes.contains(pattern.route.getType())) {
                 continue;
             }
 
-            if(bannedAgencies != null && bannedAgencies.contains(pattern.route.getAgency().getId())){
+            if (bannedAgencies != null && bannedAgencies.contains(pattern.route.getAgency().getId())) {
+                continue;
+            }
+
+            if (requiredStop != null && !pattern.getStops().contains(requiredStop)){
                 continue;
             }
 

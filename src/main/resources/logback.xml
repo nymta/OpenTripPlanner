@@ -1,5 +1,7 @@
 <configuration>
 
+  <property name="LOG_FILE_ROOT"
+            value="${otp.logging.dir:-/var/log/opentripplanner}" />
   <!--
     This suppresses the meta-log entries about Logback configuration (how Java).
     This is a stopgap measure.
@@ -11,7 +13,13 @@
        for logging and debug log messages will never make it to slf4j. -->
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
-  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="application" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${LOG_FILE_ROOT}/application.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_FILE_ROOT}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>14</maxHistory>
+    </rollingPolicy>
+
     <encoder>
       <!-- print out file and line number in parenthesis, which Eclipse and IDEA will link -->
       <pattern>%d{HH:mm:ss.SSS} %level \(%F:%L\) %msg%n</pattern>
@@ -20,7 +28,7 @@
 
   <!-- Change this to debug to let more messages through. -->
   <root level="info">
-    <appender-ref ref="stdout" />
+    <appender-ref ref="application" />
   </root>
   <logger name="ch.qos.logback" level="warn"/>
   <logger name="com.amazonaws" level="info"/>

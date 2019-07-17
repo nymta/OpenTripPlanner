@@ -155,6 +155,12 @@ public class NearbySchedulesResource {
     private String tripHeadsign;
 
     /**
+     * if given, only include trips that visit this stop
+     */
+    @QueryParam("stoppingAt")
+    private String stoppingAt;
+
+    /**
      * If true, group arrivals/departures by parent stop (station), instead of by stop.
      */
     @QueryParam("groupByParent")
@@ -277,8 +283,14 @@ public class NearbySchedulesResource {
                 continue;
             }
 
+            Stop requiredStop = null;
+            if (stoppingAt != null){
+                AgencyAndId id = AgencyAndId.convertFromString(stoppingAt, ':');
+                requiredStop = index.stopForId.get(id);
+            }
+
             List<StopTimesInPattern> stopTimesPerPattern = index.stopTimesForStop(
-                    stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction, null, tripHeadsign,
+                    stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction, null, tripHeadsign, requiredStop,
                     bannedAgencies, bannedRouteTypes, getTrackIds(), showCancelledTrips, includeStopsForTrip);
 
             StopTimesByStop stopTimes = stopIdAndStopTimesMap.get(key);
