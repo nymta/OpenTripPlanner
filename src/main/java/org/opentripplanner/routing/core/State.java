@@ -851,7 +851,7 @@ public class State implements Cloneable {
      * Check that transfer is allowed - after transit, or if we've started at a TransitVertex.
      */
     public boolean isTransferPermissible() {
-        return stateData.transferPermissible || backEdge == null;
+        return stateData.transferPermissible || backEdge == null || backEdge instanceof PathwayEdge;
     }
 
     // allow one transfer, needed for DirectTransferGenerator
