@@ -207,6 +207,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycServiceId nyctExpressBus = new NycServiceId("MTA NYCT", 702);
         NycServiceId mtabcLocalBus = new NycServiceId("MTABC", 3);
         NycServiceId mtabcExpressBus = new NycServiceId("MTABC", 702);
+        NycServiceId lirr = new NycServiceId("LI", 2);
 
         // agency fares
         NycAgencyFare nyctSubwayRegularFare = new NycAgencyFare(nyctSubway, FareType.regular, null, 2.75f, null, null);
@@ -219,6 +220,17 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycAgencyFare mtabcLocalBusReducedFare = new NycAgencyFare(mtabcLocalBus, FareType.special, null, 1.35f, null, null);
         NycAgencyFare mtabcExpressBusRegularFare = new NycAgencyFare(mtabcExpressBus, FareType.regular, null, 6.75f, null, null);
         NycAgencyFare mtabcExpressBusReducedFare = new NycAgencyFare(mtabcExpressBus, FareType.special, NycFareConditionType.peak_hour_only, 3.35f, null, null);
+
+        // LIRR
+        NycAgencyFare lirrPeakZ1Z1Fare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, 8.75f, "1", "1");
+        NycAgencyFare lirrOffPeakZ1Z1Fare = new NycAgencyFare(lirr, FareType.regular, null, 6.25f, "1", "1");
+        NycAgencyFare lirrPeakZ1Z3Fare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, 10.25f, "1", "3");
+        NycAgencyFare lirrOffPeakZ1Z3Fare = new NycAgencyFare(lirr, FareType.regular, null, 7.5f, "1", "3");
+        agencyFares.put(lirrPeakZ1Z1Fare.getKey(), lirrPeakZ1Z1Fare);
+        agencyFares.put(lirrOffPeakZ1Z1Fare.getKey(), lirrOffPeakZ1Z1Fare);
+        agencyFares.put(lirrPeakZ1Z3Fare.getKey(), lirrPeakZ1Z3Fare);
+        agencyFares.put(lirrOffPeakZ1Z3Fare.getKey(), lirrOffPeakZ1Z3Fare);
+
         agencyFares.put(nyctSubwayRegularFare.getKey(), nyctSubwayRegularFare);
         agencyFares.put(nyctSubwayReducedFare.getKey(), nyctSubwayReducedFare);
         agencyFares.put(nyctLocalBusRegularFare.getKey(), nyctLocalBusRegularFare);
@@ -325,7 +337,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                     rides.add(newRide);
 
                     newRide.firstStop = ((HopEdge) backEdge).getBeginStop();
-
+                    newRide.startZone = newRide.firstStop.getZoneId();
                     newRide.route = routeId;
                     Trip trip = state.getBackTrip();
                     Route route = trip.getRoute();
@@ -336,6 +348,9 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                     newRide.startTime = state.getTimeSeconds();
                 }
                 newRide.lastStop = ((HopEdge) backEdge).getBeginStop();
+                newRide.endZone = newRide.lastStop.getZoneId();
+
+
             }
         }
 
