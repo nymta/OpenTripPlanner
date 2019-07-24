@@ -221,16 +221,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycAgencyFare mtabcExpressBusRegularFare = new NycAgencyFare(mtabcExpressBus, FareType.regular, null, 6.75f, null, null);
         NycAgencyFare mtabcExpressBusReducedFare = new NycAgencyFare(mtabcExpressBus, FareType.special, NycFareConditionType.peak_hour_only, 3.35f, null, null);
 
-        // LIRR
-        NycAgencyFare lirrPeakZ1Z1Fare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, 8.75f, "1", "1");
-        NycAgencyFare lirrOffPeakZ1Z1Fare = new NycAgencyFare(lirr, FareType.regular, null, 6.25f, "1", "1");
-        NycAgencyFare lirrPeakZ1Z3Fare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, 10.25f, "1", "3");
-        NycAgencyFare lirrOffPeakZ1Z3Fare = new NycAgencyFare(lirr, FareType.regular, null, 7.5f, "1", "3");
-        agencyFares.put(lirrPeakZ1Z1Fare.getKey(), lirrPeakZ1Z1Fare);
-        agencyFares.put(lirrOffPeakZ1Z1Fare.getKey(), lirrOffPeakZ1Z1Fare);
-        agencyFares.put(lirrPeakZ1Z3Fare.getKey(), lirrPeakZ1Z3Fare);
-        agencyFares.put(lirrOffPeakZ1Z3Fare.getKey(), lirrOffPeakZ1Z3Fare);
-
         agencyFares.put(nyctSubwayRegularFare.getKey(), nyctSubwayRegularFare);
         agencyFares.put(nyctSubwayReducedFare.getKey(), nyctSubwayReducedFare);
         agencyFares.put(nyctLocalBusRegularFare.getKey(), nyctLocalBusRegularFare);
@@ -241,6 +231,98 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         agencyFares.put(mtabcLocalBusReducedFare.getKey(), mtabcLocalBusReducedFare);
         agencyFares.put(mtabcExpressBusRegularFare.getKey(), mtabcExpressBusRegularFare);
         agencyFares.put(mtabcExpressBusReducedFare.getKey(), mtabcExpressBusReducedFare);
+
+        // LIRR
+        HashMap<String, Float> lirrFareMap = new HashMap<String, Float>();
+        // Zone 1
+        lirrFareMap.put("1to1", 6.25f);
+        lirrFareMap.put("1to3", 7.5f);
+        lirrFareMap.put("1to4", 8.75f);
+        lirrFareMap.put("1to7", 9.75f);
+        lirrFareMap.put("1to9", 11.5f);
+        lirrFareMap.put("1to10", 13.75f);
+        lirrFareMap.put("1to12", 16.25f);
+        lirrFareMap.put("1to14", 21.25f);
+
+        // Zone 3
+        lirrFareMap.put("3to1", 7.5f);
+        lirrFareMap.put("3to3", 4f);
+        lirrFareMap.put("3to4", 5.75f);
+        lirrFareMap.put("3to7", 7f);
+        lirrFareMap.put("3to9", 8.5f);
+        lirrFareMap.put("3to10", 10.5f);
+        lirrFareMap.put("3to12", 14f);
+        lirrFareMap.put("3to14", 18.25f);
+
+        // Zone 4
+        lirrFareMap.put("4to1", 8.75f);
+        lirrFareMap.put("4to3", 5.75f);
+        lirrFareMap.put("4to4", 3.25f);
+        lirrFareMap.put("4to7", 3.25f);
+        lirrFareMap.put("4to9", 5.75f);
+        lirrFareMap.put("4to10", 7.25f);
+        lirrFareMap.put("4to12", 10.75f);
+        lirrFareMap.put("4to14", 17.25f);
+
+        // Zone 7
+        lirrFareMap.put("7to1", 9.75f);
+        lirrFareMap.put("7to3", 7f);
+        lirrFareMap.put("7to4", 3.25f);
+        lirrFareMap.put("7to7", 3.25f);
+        lirrFareMap.put("7to9", 3.25f);
+        lirrFareMap.put("7to10", 5.25f);
+        lirrFareMap.put("7to12", 9.5f);
+        lirrFareMap.put("7to14", 16f);
+
+        // Zone 9
+        lirrFareMap.put("9to1", 11.5f);
+        lirrFareMap.put("9to3", 8.5f);
+        lirrFareMap.put("9to4", 5.75f);
+        lirrFareMap.put("9to7", 3.25f);
+        lirrFareMap.put("9to9", 3.25f);
+        lirrFareMap.put("9to10", 3.25f);
+        lirrFareMap.put("9to12", 7.25f);
+        lirrFareMap.put("9to14", 13f);
+
+        // Zone 10
+        lirrFareMap.put("10to1", 13.75f);
+        lirrFareMap.put("10to3", 10.5f);
+        lirrFareMap.put("10to4", 7.25f);
+        lirrFareMap.put("10to7", 5.75f);
+        lirrFareMap.put("10to9", 3.25f);
+        lirrFareMap.put("10to10", 3.25f);
+        lirrFareMap.put("10to12", 3.25f);
+        lirrFareMap.put("10to14", 9.25f);
+
+        // Zone 12
+        lirrFareMap.put("12to1", 16.25f);
+        lirrFareMap.put("12to3", 14f);
+        lirrFareMap.put("12to4", 10.75f);
+        lirrFareMap.put("12to7", 9.5f);
+        lirrFareMap.put("12to9", 7.25f);
+        lirrFareMap.put("12to10", 3.25f);
+        lirrFareMap.put("12to12", 3.25f);
+        lirrFareMap.put("12to14", 6.25f);
+
+        // Zone 14
+        lirrFareMap.put("14to1", 21.25f);
+        lirrFareMap.put("14to3", 18.25f);
+        lirrFareMap.put("14to4", 17.25f);
+        lirrFareMap.put("14to7", 16f);
+        lirrFareMap.put("14to9", 13f);
+        lirrFareMap.put("14to10", 9.25f);
+        lirrFareMap.put("14to12", 6.25f);
+        lirrFareMap.put("14to14", 3.25f);
+
+        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, null, value.floatValue(), startZone, endZone);
+            agencyFares.put(lirrFare.getKey(), lirrFare);
+        }
+
 
         // transfer rules
         // same service
