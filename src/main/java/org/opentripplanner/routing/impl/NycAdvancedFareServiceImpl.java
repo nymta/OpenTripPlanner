@@ -125,10 +125,10 @@ class NycAgencyPeakHour implements Serializable {
     NycServiceId serviceId;
     NycPeakHourRuleType peakHourRuleType; //departure, arrival, or both
     String stopId; //peak hour only applied to certain stops if configured
-    int[] days; // most likely weekday
-    int[] hours;
+    Integer[] days; // most likely weekday
+    Integer[] hours;
 
-    NycAgencyPeakHour(NycServiceId serviceId, NycPeakHourRuleType peakHourRuleType, String stopId, int[] days, int[] hours) {
+    NycAgencyPeakHour(NycServiceId serviceId, NycPeakHourRuleType peakHourRuleType, String stopId, Integer[] days, Integer[] hours) {
         this.serviceId = serviceId;
         this.peakHourRuleType = peakHourRuleType;
         this.stopId = stopId;
@@ -325,6 +325,22 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
+        // LIRR PEAK
+        lirrFareMap.clear();
+        // Zone 1
+        lirrFareMap.put("1to3", 10.75f);
+
+
+        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone);
+            agencyFares.put(lirrFare.getKey(), lirrFare);
+        }
+
+
         // LIRR Transfer Rules
         NycTransferRule nyctLirrToLirr = new NycTransferRule(lirr, lirr, NycTransferType.merge,-1);
         transferRules.put(nyctLirrToLirr.getKey(), nyctLirrToLirr);
@@ -362,12 +378,14 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
 
         // peak hours
-        int[] weekdays = new int[]{1,2,3,4,5};
-        int[] hours = new int[] {6,7,8,9,10,15,16,17,18,19};
+        Integer[] weekdays = {1,2,3,4,5};
+        Integer[] hours = {6,7,8,9,10,15,16,17,18,19};
         NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours);
         NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours);
+        NycAgencyPeakHour lirrPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, hours);
         agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
         agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
+        agencyPeakHours.put(lirrPeakHours.getKey(), lirrPeakHours);
     }
 
     @Override
@@ -651,6 +669,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                     if(!isPeak) {
                         conditionFare = null; // reset if not meet
                     }
+                    break;
                 case non_peak_hour_only :
                     if(isPeak) {
                         conditionFare = null; // reset if not meet
@@ -716,9 +735,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         Date rideTime = new Date(rideTimeSeconds * 1000);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(rideTime);
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        Integer dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        Integer hour = calendar.get(Calendar.HOUR_OF_DAY);
 
+        //List<int> days = Arrays.asList(peakHours.days);
         return Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour);
     }
 
