@@ -39,7 +39,9 @@ import java.util.stream.Collectors;
 /** NYC fare condition types */
 enum NycFareConditionType {
     peak_hour_only,
-    non_peak_hour_only
+    am_peak_only,
+    pm_peak_only,
+    non_peak_hour_only,
 }
 
 /** NYC transfer agreement types */
@@ -127,13 +129,17 @@ class NycAgencyPeakHour implements Serializable {
     String stopId; //peak hour only applied to certain stops if configured
     Integer[] days; // most likely weekday
     Integer[] hours;
+    boolean am_only;
+    boolean pm_only;
 
-    NycAgencyPeakHour(NycServiceId serviceId, NycPeakHourRuleType peakHourRuleType, String stopId, Integer[] days, Integer[] hours) {
+    NycAgencyPeakHour(NycServiceId serviceId, NycPeakHourRuleType peakHourRuleType, String stopId, Integer[] days, Integer[] hours, boolean am_only, boolean pm_only) {
         this.serviceId = serviceId;
         this.peakHourRuleType = peakHourRuleType;
         this.stopId = stopId;
         this.days = days;
         this.hours = hours;
+        this.am_only = am_only;
+        this.pm_only = pm_only;
     }
 
     public String getKey() {
@@ -143,6 +149,12 @@ class NycAgencyPeakHour implements Serializable {
         }
         if(this.peakHourRuleType != null) {
             internalKey += '_' + this.peakHourRuleType.toString();
+        }
+        if (this.am_only) {
+            internalKey += "_AM";
+        }
+        if (this.pm_only) {
+            internalKey += "_PM";
         }
         return internalKey;
     }
@@ -238,6 +250,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         HashMap<String, Float> lirrFareMap = new HashMap<String, Float>();
         // Zone 1
         lirrFareMap.put("1to1", 6.50f);
+        lirrFareMap.put("1to1A", 6.50f);
         lirrFareMap.put("1to3", 7.75f);
         lirrFareMap.put("1to4", 9.25f);
         lirrFareMap.put("1to7", 10.25f);
@@ -246,8 +259,19 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("1to12", 17f);
         lirrFareMap.put("1to14", 22.25f);
 
+        // Zone 1A
+        lirrFareMap.put("1Ato1", 6.50f);
+        lirrFareMap.put("1Ato3", 7.75f);
+        lirrFareMap.put("1Ato4", 9.25f);
+        lirrFareMap.put("1Ato7", 10.25f);
+        lirrFareMap.put("1Ato9", 12f);
+        lirrFareMap.put("1Ato10", 14.25f);
+        lirrFareMap.put("1Ato12", 17f);
+        lirrFareMap.put("1Ato14", 22.25f);
+
         // Zone 3
         lirrFareMap.put("3to1", 7.75f);
+        lirrFareMap.put("3to1A", 7.75f);
         lirrFareMap.put("3to3", 4f);
         lirrFareMap.put("3to4", 6f);
         lirrFareMap.put("3to7", 7.25f);
@@ -258,6 +282,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 4
         lirrFareMap.put("4to1", 9.25f);
+        lirrFareMap.put("4to1A", 9.25f);
         lirrFareMap.put("4to3", 6f);
         lirrFareMap.put("4to4", 3.25f);
         lirrFareMap.put("4to7", 3.25f);
@@ -268,6 +293,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 7
         lirrFareMap.put("7to1", 10.25f);
+        lirrFareMap.put("7to1A", 10.25f);
         lirrFareMap.put("7to3", 7.25f);
         lirrFareMap.put("7to4", 3.25f);
         lirrFareMap.put("7to7", 3.25f);
@@ -278,6 +304,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 9
         lirrFareMap.put("9to1", 12f);
+        lirrFareMap.put("9to1A", 12f);
         lirrFareMap.put("9to3", 9f);
         lirrFareMap.put("9to4", 6f);
         lirrFareMap.put("9to7", 3.25f);
@@ -288,6 +315,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 10
         lirrFareMap.put("10to1", 14.25f);
+        lirrFareMap.put("10to1A", 14.25f);
         lirrFareMap.put("10to3", 11f);
         lirrFareMap.put("10to4", 7.50f);
         lirrFareMap.put("10to7", 6f);
@@ -298,6 +326,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 12
         lirrFareMap.put("12to1", 17f);
+        lirrFareMap.put("12to1A", 17f);
         lirrFareMap.put("12to3", 14.75f);
         lirrFareMap.put("12to4", 11.25f);
         lirrFareMap.put("12to7", 10f);
@@ -308,6 +337,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // Zone 14
         lirrFareMap.put("14to1", 22.25f);
+        lirrFareMap.put("14to1A", 22.25f);
         lirrFareMap.put("14to3", 19f);
         lirrFareMap.put("14to4", 17.75f);
         lirrFareMap.put("14to7", 16.5f);
@@ -327,8 +357,16 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // LIRR PEAK
         lirrFareMap.clear();
-        // Zone 1
-        lirrFareMap.put("1to3", 10.75f);
+
+        // Zone 1 Inbound
+        lirrFareMap.put("1Ato1", 8.75f);
+        lirrFareMap.put("3to1", 10.25f);
+        lirrFareMap.put("4Ato1", 12f);
+        lirrFareMap.put("7Ato1", 13.5f);
+        lirrFareMap.put("9Ato1", 16f);
+        lirrFareMap.put("10Ato1", 19f);
+        lirrFareMap.put("12to1", 22.5f);
+        lirrFareMap.put("14to1", 29.25f);
 
 
         for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
@@ -336,9 +374,32 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             Float value = entry.getValue();
             String startZone = key.split("to")[0];
             String endZone = key.split("to")[1];
-            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone);
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.am_peak_only, value.floatValue(), startZone, endZone);
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
+
+        lirrFareMap.clear();
+
+        // Zone 1 Outbound
+        lirrFareMap.put("1to1", 8.75f);
+        lirrFareMap.put("1to1A", 8.75f);
+        lirrFareMap.put("1to3", 10.25f);
+        lirrFareMap.put("1to4", 12.0f);
+        lirrFareMap.put("1to7", 13.5f);
+        lirrFareMap.put("1to9", 16f);
+        lirrFareMap.put("1to10", 19f);
+        lirrFareMap.put("1to12", 22.5f);
+        lirrFareMap.put("1to14", 29.25f);
+
+        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.pm_peak_only, value.floatValue(), startZone, endZone);
+            agencyFares.put(lirrFare.getKey(), lirrFare);
+        }
+
 
 
         // LIRR Transfer Rules
@@ -377,15 +438,21 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         transferRules.put(mtabcLocalToExpressBus.getKey(), mtabcLocalToExpressBus);
         transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
 
-        // peak hours
+        // Bus and Subway Peak Hours
         Integer[] weekdays = {1,2,3,4,5};
         Integer[] hours = {6,7,8,9,10,15,16,17,18,19};
-        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours);
-        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours);
-        NycAgencyPeakHour lirrPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, hours);
+        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours, false, false);
+        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours, false, false);
         agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
         agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
-        agencyPeakHours.put(lirrPeakHours.getKey(), lirrPeakHours);
+
+        // LIRR Peak hours
+        Integer[] am_hours = {6,7,8,9};
+        Integer[] pm_hours  = {4,5,6,7};
+        NycAgencyPeakHour lirrAmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, am_hours, true, false);
+        NycAgencyPeakHour lirrPmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, pm_hours, false, true);
+        agencyPeakHours.put(lirrAmPeakHours.getKey(), lirrAmPeakHours);
+        agencyPeakHours.put(lirrPmPeakHours.getKey(), lirrPmPeakHours);
     }
 
     @Override
@@ -627,7 +694,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     /** find agency fare for the ride based on requested fare type */
     private NycAgencyFare findAgencyFare(Ride ride, FareType fareType) {
         String serviceIdString = ride.agency + "_" + ride.routeType;
-        boolean isPeak = isInPeakHour(ride);
+        boolean isPeak = isInPeakHour(ride, null);
+        boolean isAmPeak = isInPeakHour(ride, "AM");
+        boolean isPmPeak = isInPeakHour(ride, "PM");
+
         // zone-pair key component (used in finding specific fare rule)
         String zoneKey = "";
         if(ride.mergeStartZone != null && !ride.mergeStartZone.isEmpty()) {
@@ -636,10 +706,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         else if(ride.startZone != null && !ride.startZone.isEmpty()) {
             zoneKey += '_' + ride.startZone;
         }
-
         if(ride.endZone != null && !ride.endZone.isEmpty()) {
             zoneKey += '_' + ride.endZone;
         }
+
 
         // check if there's fare without conditions
         String nonConditionFareKey = serviceIdString + '_' + fareType.toString();
@@ -670,6 +740,16 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                         conditionFare = null; // reset if not meet
                     }
                     break;
+                case am_peak_only :
+                    if(!isAmPeak) {
+                        conditionFare = null; // reset if not meet
+                    }
+                    break;
+                case pm_peak_only :
+                    if(!isPmPeak) {
+                        conditionFare = null; // reset if not meet
+                    }
+                    break;
                 case non_peak_hour_only :
                     if(isPeak) {
                         conditionFare = null; // reset if not meet
@@ -693,8 +773,11 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     }
 
     /** check if the ride is in Peak Hour */
-    private boolean isInPeakHour(Ride ride) {
+    private boolean isInPeakHour(Ride ride, String am_pm) {
         String ruleKey = ride.agency + "_" + ride.routeType;
+        if(am_pm != null){
+            ruleKey += am_pm;
+        }
         NycAgencyPeakHour peakHours = agencyPeakHours.get(ruleKey);
         // get peak hour rules
         if(peakHours == null) {
@@ -741,6 +824,8 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         //List<int> days = Arrays.asList(peakHours.days);
         return Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour);
     }
+
+
 
     /** query transfer rules related to a specific service */
     private Set<NycTransferRule> getRelatedTransferRules(String serviceIdString) {
