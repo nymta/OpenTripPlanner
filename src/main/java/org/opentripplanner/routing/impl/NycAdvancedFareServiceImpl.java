@@ -215,15 +215,18 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     HashMap<String, NycAgencyPeakHour> agencyPeakHours = new HashMap<String, NycAgencyPeakHour>();
 
     public NycAdvancedFareServiceImpl() {
-        //add some testing data
+        //Create the Agencies
         NycServiceId nyctSubway = new NycServiceId("MTASBWY", 1);
         NycServiceId nyctLocalBus = new NycServiceId("MTA NYCT", 3);
         NycServiceId nyctExpressBus = new NycServiceId("MTA NYCT", 702);
         NycServiceId mtabcLocalBus = new NycServiceId("MTABC", 3);
         NycServiceId mtabcExpressBus = new NycServiceId("MTABC", 702);
         NycServiceId lirr = new NycServiceId("LI", 2);
+        NycServiceId mnr = new NycServiceId("MNR", 2);
 
-        // agency fares
+        ////////////////////////////
+        // Subway and Bus Fares
+        ////////////////////////////
         NycAgencyFare nyctSubwayRegularFare = new NycAgencyFare(nyctSubway, FareType.regular, null, 2.75f, null, null);
         NycAgencyFare nyctSubwayReducedFare = new NycAgencyFare(nyctSubway, FareType.special, null, 1.35f, null, null);
         NycAgencyFare nyctLocalBusRegularFare = new NycAgencyFare(nyctLocalBus, FareType.regular, null, 2.75f, null, null);
@@ -234,7 +237,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycAgencyFare mtabcLocalBusReducedFare = new NycAgencyFare(mtabcLocalBus, FareType.special, null, 1.35f, null, null);
         NycAgencyFare mtabcExpressBusRegularFare = new NycAgencyFare(mtabcExpressBus, FareType.regular, null, 6.75f, null, null);
         NycAgencyFare mtabcExpressBusReducedFare = new NycAgencyFare(mtabcExpressBus, FareType.special, NycFareConditionType.peak_hour_only, 3.35f, null, null);
-
         agencyFares.put(nyctSubwayRegularFare.getKey(), nyctSubwayRegularFare);
         agencyFares.put(nyctSubwayReducedFare.getKey(), nyctSubwayReducedFare);
         agencyFares.put(nyctLocalBusRegularFare.getKey(), nyctLocalBusRegularFare);
@@ -246,8 +248,53 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         agencyFares.put(mtabcExpressBusRegularFare.getKey(), mtabcExpressBusRegularFare);
         agencyFares.put(mtabcExpressBusReducedFare.getKey(), mtabcExpressBusReducedFare);
 
-        // LIRR
+        // Subway and Bus Transfer Rules
+        // same service
+        NycTransferRule nyctSubwayToSubway = new NycTransferRule(nyctSubway, nyctSubway, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctLocalToLocal = new NycTransferRule(nyctLocalBus, nyctLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule mtabcLocalToLocal = new NycTransferRule(mtabcLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
+
+        // local bus
+        NycTransferRule nyctSubwayToLocalBus = new NycTransferRule(nyctSubway, nyctLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctSubwayToMtabcLocal = new NycTransferRule(nyctSubway, mtabcLocalBus, NycTransferType.free, 120 * 60);
+        NycTransferRule nyctLocalToMtabcLocal = new NycTransferRule(nyctLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
+
+        // express bus
+        NycTransferRule nyctSubwayToExpressBus = new NycTransferRule(nyctSubway, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule nyctSubwayToMtabcExpress = new NycTransferRule(nyctSubway, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule nyctLocalToExpressBus = new NycTransferRule(nyctLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule nyctLocalToMtabcExpress = new NycTransferRule(nyctLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule mtabcLocalToExpressBus = new NycTransferRule(mtabcLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
+        NycTransferRule mtabcLocalToNyctExpress = new NycTransferRule(mtabcLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
+
+        transferRules.put(nyctSubwayToSubway.getKey(), nyctSubwayToSubway);
+        transferRules.put(nyctSubwayToLocalBus.getKey(), nyctSubwayToLocalBus);
+        transferRules.put(nyctSubwayToExpressBus.getKey(), nyctSubwayToExpressBus);
+        transferRules.put(nyctLocalToExpressBus.getKey(), nyctLocalToExpressBus);
+        transferRules.put(nyctLocalToLocal.getKey(), nyctLocalToLocal);
+        transferRules.put(mtabcLocalToLocal.getKey(), mtabcLocalToLocal);
+        transferRules.put(nyctSubwayToMtabcLocal.getKey(), nyctSubwayToMtabcLocal);
+        transferRules.put(nyctLocalToMtabcLocal.getKey(), nyctLocalToMtabcLocal);
+        transferRules.put(nyctSubwayToMtabcExpress.getKey(), nyctSubwayToMtabcExpress);
+        transferRules.put(nyctLocalToMtabcExpress.getKey(), nyctLocalToMtabcExpress);
+        transferRules.put(mtabcLocalToExpressBus.getKey(), mtabcLocalToExpressBus);
+        transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
+
+        // Subway and Bus Peak Hours
+        Integer[] weekdays = {1,2,3,4,5};
+        Integer[] hours = {6,7,8,9,10,15,16,17,18,19};
+        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours, false, false);
+        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours, false, false);
+        agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
+        agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
+
+        ////////////////////////////
+        // LIRR Fares
+        ////////////////////////////
+
+        // LIRR Non Peak Fares
         HashMap<String, Float> lirrFareMap = new HashMap<String, Float>();
+
         // Zone 1
         lirrFareMap.put("1to1", 6.50f);
         lirrFareMap.put("1to1A", 6.50f);
@@ -355,10 +402,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
-        // LIRR PEAK
-        lirrFareMap.clear();
+        // LIRR Peak Fares
 
-        // Zone 1 Inbound
+        // Inbound Peak
+        lirrFareMap.clear();
         lirrFareMap.put("1Ato1", 8.75f);
         lirrFareMap.put("3to1", 10.25f);
         lirrFareMap.put("4Ato1", 12f);
@@ -367,7 +414,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("10Ato1", 19f);
         lirrFareMap.put("12to1", 22.5f);
         lirrFareMap.put("14to1", 29.25f);
-
 
         for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
             String key = entry.getKey();
@@ -378,9 +424,8 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
+        // Outbound Peak
         lirrFareMap.clear();
-
-        // Zone 1 Outbound
         lirrFareMap.put("1to1", 8.75f);
         lirrFareMap.put("1to1A", 8.75f);
         lirrFareMap.put("1to3", 10.25f);
@@ -400,51 +445,9 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
-
-
         // LIRR Transfer Rules
         NycTransferRule nyctLirrToLirr = new NycTransferRule(lirr, lirr, NycTransferType.merge,-1);
         transferRules.put(nyctLirrToLirr.getKey(), nyctLirrToLirr);
-
-        // transfer rules
-        // same service
-        NycTransferRule nyctSubwayToSubway = new NycTransferRule(nyctSubway, nyctSubway, NycTransferType.free, 120 * 60);
-        NycTransferRule nyctLocalToLocal = new NycTransferRule(nyctLocalBus, nyctLocalBus, NycTransferType.free, 120 * 60);
-        NycTransferRule mtabcLocalToLocal = new NycTransferRule(mtabcLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
-
-        // local bus
-        NycTransferRule nyctSubwayToLocalBus = new NycTransferRule(nyctSubway, nyctLocalBus, NycTransferType.free, 120 * 60);
-        NycTransferRule nyctSubwayToMtabcLocal = new NycTransferRule(nyctSubway, mtabcLocalBus, NycTransferType.free, 120 * 60);
-        NycTransferRule nyctLocalToMtabcLocal = new NycTransferRule(nyctLocalBus, mtabcLocalBus, NycTransferType.free, 120 * 60);
-
-        // express bus
-        NycTransferRule nyctSubwayToExpressBus = new NycTransferRule(nyctSubway, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
-        NycTransferRule nyctSubwayToMtabcExpress = new NycTransferRule(nyctSubway, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
-        NycTransferRule nyctLocalToExpressBus = new NycTransferRule(nyctLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
-        NycTransferRule nyctLocalToMtabcExpress = new NycTransferRule(nyctLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
-        NycTransferRule mtabcLocalToExpressBus = new NycTransferRule(mtabcLocalBus, mtabcExpressBus, NycTransferType.free_step_up, 120 * 60);
-        NycTransferRule mtabcLocalToNyctExpress = new NycTransferRule(mtabcLocalBus, nyctExpressBus, NycTransferType.free_step_up, 120 * 60);
-
-        transferRules.put(nyctSubwayToSubway.getKey(), nyctSubwayToSubway);
-        transferRules.put(nyctSubwayToLocalBus.getKey(), nyctSubwayToLocalBus);
-        transferRules.put(nyctSubwayToExpressBus.getKey(), nyctSubwayToExpressBus);
-        transferRules.put(nyctLocalToExpressBus.getKey(), nyctLocalToExpressBus);
-        transferRules.put(nyctLocalToLocal.getKey(), nyctLocalToLocal);
-        transferRules.put(mtabcLocalToLocal.getKey(), mtabcLocalToLocal);
-        transferRules.put(nyctSubwayToMtabcLocal.getKey(), nyctSubwayToMtabcLocal);
-        transferRules.put(nyctLocalToMtabcLocal.getKey(), nyctLocalToMtabcLocal);
-        transferRules.put(nyctSubwayToMtabcExpress.getKey(), nyctSubwayToMtabcExpress);
-        transferRules.put(nyctLocalToMtabcExpress.getKey(), nyctLocalToMtabcExpress);
-        transferRules.put(mtabcLocalToExpressBus.getKey(), mtabcLocalToExpressBus);
-        transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
-
-        // Bus and Subway Peak Hours
-        Integer[] weekdays = {1,2,3,4,5};
-        Integer[] hours = {6,7,8,9,10,15,16,17,18,19};
-        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours, false, false);
-        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours, false, false);
-        agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
-        agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
 
         // LIRR Peak hours
         Integer[] am_hours = {6,7,8,9};
@@ -453,6 +456,69 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         NycAgencyPeakHour lirrPmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, pm_hours, false, true);
         agencyPeakHours.put(lirrAmPeakHours.getKey(), lirrAmPeakHours);
         agencyPeakHours.put(lirrPmPeakHours.getKey(), lirrPmPeakHours);
+
+        ////////////////////////////
+        // MNR Fares
+        ////////////////////////////
+
+        // LIRR Non Peak Fares
+        HashMap<String, Float> mnrFareMap = new HashMap<String, Float>();
+
+        // GCT
+        mnrFareMap.put("0to1", 8.25f);
+        mnrFareMap.put("0to2", 9.75f);
+        mnrFareMap.put("0to3", 11.5f);
+        mnrFareMap.put("0to4", 12.75f);
+        mnrFareMap.put("0to5", 14.75f);
+        mnrFareMap.put("0to6", 17.5f);
+        mnrFareMap.put("0to7", 20f);
+        mnrFareMap.put("0to8", 23f);
+        mnrFareMap.put("0to9", 25.75f);
+        mnrFareMap.put("0to10", 27.25f);
+
+        // Zone 1
+        mnrFareMap.put("1to0", 8.25f);
+
+        // Zone 2
+        mnrFareMap.put("2to0", 9.75f);
+
+        // Zone 3
+        mnrFareMap.put("3to0", 11.5f);
+
+        // Zone 4
+        mnrFareMap.put("4to0", 12.75f);
+
+        // Zone 5
+        mnrFareMap.put("5to0", 14.75f);
+
+        // Zone 6
+        mnrFareMap.put("6to0", 17.5f);
+
+        // Zone 7
+        mnrFareMap.put("7to0", 20f);
+
+        // Zone 8
+        mnrFareMap.put("8to0", 23f);
+
+        // Zone 9
+        mnrFareMap.put("9to0", 25.75f);
+        
+        // Zone 10
+        mnrFareMap.put("10to0", 27.25f);
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+            NycAgencyFare mnrFare= new NycAgencyFare(mnr, FareType.regular, null, value.floatValue(), startZone, endZone);
+            agencyFares.put(mnrFare.getKey(), mnrFare);
+        }
+
+        // MNRTransfer Rules
+        NycTransferRule nyctMnrToMnr = new NycTransferRule(mnr, mnr, NycTransferType.merge,-1);
+        transferRules.put(nyctMnrToMnr.getKey(), nyctMnrToMnr);
+
     }
 
     @Override
