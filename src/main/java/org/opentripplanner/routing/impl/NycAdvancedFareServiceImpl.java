@@ -409,7 +409,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("1Ato1", 8.75f);
         lirrFareMap.put("3to1", 10.25f);
         lirrFareMap.put("4to1", 12f);
-        lirrFareMap.put("7to1", 13.5f);
+        lirrFareMap.put("7to1", 14f);
         lirrFareMap.put("9to1", 16f);
         lirrFareMap.put("10to1", 19f);
         lirrFareMap.put("12to1", 22.5f);
@@ -430,7 +430,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("1to1A", 8.75f);
         lirrFareMap.put("1to3", 10.25f);
         lirrFareMap.put("1to4", 12.0f);
-        lirrFareMap.put("1to7", 13.5f);
+        lirrFareMap.put("1to7", 14f);
         lirrFareMap.put("1to9", 16f);
         lirrFareMap.put("1to10", 19f);
         lirrFareMap.put("1to12", 22.5f);
@@ -451,7 +451,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // LIRR Peak hours
         Integer[] am_hours = {6,7,8,9};
-        Integer[] pm_hours  = {4,5,6,7};
+        Integer[] pm_hours  = {16,17,18,19};
         NycAgencyPeakHour lirrAmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, am_hours, true, false);
         NycAgencyPeakHour lirrPmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, pm_hours, false, true);
         agencyPeakHours.put(lirrAmPeakHours.getKey(), lirrAmPeakHours);
@@ -941,7 +941,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     private boolean isInPeakHour(Ride ride, String am_pm) {
         String ruleKey = ride.agency + "_" + ride.routeType;
         if(am_pm != null){
-            ruleKey += am_pm;
+            ruleKey += "_" + am_pm;
         }
         NycAgencyPeakHour peakHours = agencyPeakHours.get(ruleKey);
         // get peak hour rules
