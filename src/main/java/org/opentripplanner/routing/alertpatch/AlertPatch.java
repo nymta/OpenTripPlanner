@@ -18,20 +18,13 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.*;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
-import org.opentripplanner.api.adapters.AgencyAndIdAdapter;
 import org.opentripplanner.api.model.VehicleInfo;
 import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.edgetype.PreAlightEdge;
-import org.opentripplanner.routing.edgetype.PreBoardEdge;
 import org.opentripplanner.routing.edgetype.TransitBoardAlight;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
@@ -46,7 +39,6 @@ import org.slf4j.LoggerFactory;
  * @author novalis
  *
  */
-@XmlRootElement(name = "AlertPatch")
 public class AlertPatch implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(AlertPatch.class);
 
@@ -89,7 +81,6 @@ public class AlertPatch implements Serializable {
     /** Vehicle info, if available */
     private VehicleInfo vehicleInfo;
 
-    @XmlElement
     public Alert getAlert() {
         return alert;
     }
@@ -109,7 +100,6 @@ public class AlertPatch implements Serializable {
         return false;
     }
 
-    @XmlElement
     public String getId() {
         return id;
     }
@@ -270,17 +260,15 @@ public class AlertPatch implements Serializable {
         return agency;
     }
 
-    @XmlJavaTypeAdapter(AgencyAndIdAdapter.class)
+
     public AgencyAndId getRoute() {
         return route;
     }
 
-    @XmlJavaTypeAdapter(AgencyAndIdAdapter.class)
     public AgencyAndId getTrip() {
         return trip;
     }
 
-    @XmlJavaTypeAdapter(AgencyAndIdAdapter.class)
     public AgencyAndId getStop() {
         return stop;
     }
@@ -308,12 +296,10 @@ public class AlertPatch implements Serializable {
         this.directionId = direction;
     }
 
-    @XmlElement
     public String getDirection() {
         return direction;
     }
 
-    @XmlElement
     public int getDirectionId() {
         return directionId;
     }

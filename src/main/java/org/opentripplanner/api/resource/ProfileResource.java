@@ -13,7 +13,6 @@ import org.opentripplanner.profile.Option;
 import org.opentripplanner.profile.ProfileRequest;
 import org.opentripplanner.profile.ProfileResponse;
 import org.opentripplanner.profile.ProfileRouter;
-import org.opentripplanner.profile.RepeatedRaptorProfileRouter;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.standalone.OTPServer;
@@ -129,33 +128,15 @@ public class ProfileResource {
         req.bikeTime     = bikeTime;
         req.suboptimalMinutes = suboptimalMinutes;
 
-        if (req.analyst) {
-            if (surfaceCache == null) {
-                LOG.error ("You must run OTP with the --analyst option to enable spatial analysis features.");
-            }
-            TimeSurface.RangeSet result;
-
-            /* There are rarely frequency-only graphs. Use the Raptor profile router for both freqs and schedules. */
-            RepeatedRaptorProfileRouter router = new RepeatedRaptorProfileRouter(graph, req);
-            router.banAgency = banAgency;
-            router.route();
-            result = router.timeSurfaceRangeSet;
-            Map<String, Integer> idForSurface = Maps.newHashMap();
-            idForSurface.put("min", surfaceCache.add(result.min)); // requires analyst mode turned on
-            idForSurface.put("avg", surfaceCache.add(result.avg));
-            idForSurface.put("max", surfaceCache.add(result.max));
-            return Response.status(Status.OK).entity(idForSurface).build();
-        } else {
-            ProfileRouter router = new ProfileRouter(graph, req);
-            try {
-                ProfileResponse response = router.route();
-                return Response.status(Status.OK).entity(response).build();
-            } catch (Throwable throwable) {
-                LOG.error("Exception caught in profile routing", throwable);
-                return Response.status(Status.INTERNAL_SERVER_ERROR).entity(throwable.toString()).build();
-            } finally {
-                router.cleanup(); // destroy routing contexts even when an exception happens
-            }
+        ProfileRouter router = new ProfileRouter(graph, req);
+        try {
+            ProfileResponse response = router.route();
+            return Response.status(Status.OK).entity(response).build();
+        } catch (Throwable throwable) {
+            LOG.error("Exception caught in profile routing", throwable);
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(throwable.toString()).build();
+        } finally {
+            router.cleanup(); // destroy routing contexts even when an exception happens
         }
     }
     

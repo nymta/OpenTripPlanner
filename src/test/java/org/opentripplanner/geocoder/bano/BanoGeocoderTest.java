@@ -13,6 +13,7 @@
 
 package org.opentripplanner.geocoder.bano;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.geocoder.GeocoderResult;
@@ -26,6 +27,7 @@ public class BanoGeocoderTest {
      * TODO -- This unit-test rely on an on-line API to be up and running, which may not be the case
      * if a network connection is not active or the server is down.
      */
+    @Ignore
     @Test
     public void testOnLine() throws Exception {
 

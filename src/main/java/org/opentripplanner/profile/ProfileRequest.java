@@ -129,7 +129,7 @@ public class ProfileRequest implements Serializable, Cloneable {
     public float reachabilityThreshold = 0.5f;
 
     /** What assumption should be used when boarding frequency vehicles? */
-    public RaptorWorkerTimetable.BoardingAssumption boardingAssumption = RaptorWorkerTimetable.BoardingAssumption.RANDOM;
+    public BoardingAssumption boardingAssumption = BoardingAssumption.RANDOM;
 
     /* The relative importance of different factors when biking */
     /** The relative importance of maximizing safety when cycling */

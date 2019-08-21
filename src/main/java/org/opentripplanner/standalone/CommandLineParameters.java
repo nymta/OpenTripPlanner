@@ -146,9 +146,9 @@ public class CommandLineParameters implements Cloneable {
     @Parameter(names = { "--enableScriptingWebService" }, description = "enable scripting through a web-service (Warning! Very unsafe for public facing servers)")
     boolean enableScriptingWebService = false;
 
-    @Parameter(names = {"--awsConfig"}, validateWith = ReadableFile.class,
-            description = "Path to aws configuration file")
-    public String awsConfig = null;
+    @Parameter(names = {"--pluginConfig"}, validateWith = ReadableFile.class,
+            description = "Path to plugin configuration file")
+    public String pluginConfig = null;
 
     /** Set some convenience parameters based on other parameters' values. */
     public void infer() {

@@ -1,6 +1,6 @@
 package org.opentripplanner.analyst.scenario;
 
-import org.opentripplanner.profile.RaptorWorkerTimetable;
+import org.opentripplanner.profile.BoardingAssumption;
 
 import java.util.stream.IntStream;
 
@@ -12,7 +12,7 @@ public class TransferRule extends Modification {
     private static final long serialVersionUID = 1L;
 
     /** The boarding assumption to use for matched transfers */
-    public RaptorWorkerTimetable.BoardingAssumption assumption;
+    public BoardingAssumption assumption;
 
     /** From GTFS modes; note constants in Route */
     public int[] fromMode;
@@ -61,13 +61,4 @@ public class TransferRule extends Modification {
         return "transfer-rule";
     }
 
-    public boolean matches (RaptorWorkerTimetable from, RaptorWorkerTimetable to) {
-        if (fromMode != null && !IntStream.of(fromMode).anyMatch(m -> m == from.mode))
-            return false;
-
-        if (toMode != null && !IntStream.of(toMode).anyMatch(m -> m == to.mode))
-            return false;
-
-        return true;
-    }
 }

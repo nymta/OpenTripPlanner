@@ -23,6 +23,7 @@ import org.opentripplanner.common.geometry.DirectionUtils;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.PackedCoordinateSequence;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.gtfs.GtfsLibrary;
 import org.opentripplanner.index.model.FrequencyDetail;
 import org.opentripplanner.index.model.StopTimesByStop;
 import org.opentripplanner.index.model.StopTimesInPattern;
@@ -30,6 +31,7 @@ import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.*;
+import org.opentripplanner.routing.core.Fare.FareType;
 import org.opentripplanner.routing.edgetype.*;
 import org.opentripplanner.routing.error.TrivialPathException;
 import org.opentripplanner.routing.graph.Edge;
@@ -169,12 +171,32 @@ public abstract class GraphPathToTripPlanConverter {
 
         State[][] legsStates = sliceStates(states);
 
-        if (fareService != null) {
-            itinerary.fare = fareService.getCost(path);
-        }
-
         for (State[] legStates : legsStates) {
             itinerary.addLeg(generateLeg(graph, legStates, showIntermediateStops, disableAlertFiltering, requestedLocale));
+        }
+
+        if (fareService != null) {
+            // for all fare types
+            FareBundle fareBundle = fareService.getLegCostBreakDown(path);
+            if(fareBundle != null) {
+                itinerary.fare = fareBundle.fare;
+
+                for(Leg leg : itinerary.legs) {
+                    if(leg.routeId == null) {
+                        continue;
+                    }
+
+                    if (!fareBundle.legFares.isEmpty()) {
+                        Fare legFare = fareBundle.legFares.get(leg.routeId.toString());
+                        if (legFare != null) {
+                            leg.fare = legFare;
+                        }
+                    }
+                }
+            } else {
+                // only calculate regular fare
+                itinerary.fare = fareService.getCost(path);
+            }
         }
 
         addWalkSteps(graph, itinerary.legs, legsStates, requestedLocale);
@@ -691,7 +713,7 @@ public abstract class GraphPathToTripPlanConverter {
 
         Trip trip = states[states.length - 1].getBackTrip();
         if (trip != null && trip.getNote() != null) {
-            TimetableNote note = trip.getNote();
+            Note note = trip.getNote();
             Alert alert = Alert.createSimpleAlerts(note.getTitle(), note.getDesc());
             leg.addAlert(alert, requestedLocale);
         }
@@ -772,6 +794,10 @@ public abstract class GraphPathToTripPlanConverter {
             if (tripTimes.isFrequencyBased()) {
                 leg.frequencyDetail = new FrequencyDetail(tripTimes.getFrequencyEntry());
             }
+
+            if (GtfsLibrary.getTraverseMode(route) == TraverseMode.BUS) {
+                leg.regionalFareCardAccepted = (route.getRegionalFareCardAccepted() != 0);
+            }
         }
     }
 
@@ -792,6 +818,12 @@ public abstract class GraphPathToTripPlanConverter {
 
         Stop firstStop = firstVertex instanceof TransitVertex ?
                 ((TransitVertex) firstVertex).getStop(): null;
+
+        /* addPlaces is called after addTripFields, so leave regionalFareCardAccepted true if already set */
+        if (firstStop != null) {
+            leg.regionalFareCardAccepted |= firstStop.getRegionalFareCardAccepted() != 0;
+        }
+
         Stop lastStop = lastVertex instanceof TransitVertex ?
                 ((TransitVertex) lastVertex).getStop(): null;
         TripTimes tripTimes = states[states.length - 1].getTripTimes();
@@ -1028,7 +1060,7 @@ public abstract class GraphPathToTripPlanConverter {
                 // exit != null and uses to <exit>
                 // the floor name is the AlightEdge name
                 // reset to avoid confusion with 'Elevator on floor 1 to floor 1'
-                step.streetName = ((ElevatorAlightEdge) edge).getName(requestedLocale);
+                step.streetName = edge.getName(requestedLocale);
 
                 step.relativeDirection = RelativeDirection.ELEVATOR;
 

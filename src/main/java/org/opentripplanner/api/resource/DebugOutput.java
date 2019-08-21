@@ -13,6 +13,7 @@
 
 package org.opentripplanner.api.resource;
 
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -42,6 +43,7 @@ public class DebugOutput {
     private List<Long> foundPaths = Lists.newArrayList();
     private long finishedCalculating;
     private long finishedRendering;
+    private Date requestDate;
 
     /* Results, public to cause JAX-RS serialization */
     public long precalculationTime;
@@ -62,28 +64,38 @@ public class DebugOutput {
         startedCalculating = finishedPrecalculating = System.currentTimeMillis();
     }
 
-    /** Record the time when we finished heuristic pre-calculation. */
+    /**
+     * Record the time when we finished heuristic pre-calculation.
+     */
     public void finishedPrecalculating() {
         finishedPrecalculating = System.currentTimeMillis();
     }
 
-    /** Record the time when a path was found. */
+    /**
+     * Record the time when a path was found.
+     */
     public void foundPath() {
         foundPaths.add(System.currentTimeMillis());
     }
 
-    /** Record the time when we finished calculating paths for this request. */
+    /**
+     * Record the time when we finished calculating paths for this request.
+     */
     public void finishedCalculating() {
         finishedCalculating = System.currentTimeMillis();
     }
 
-    /** Record the time when we finished converting paths into itineraries. */
+    /**
+     * Record the time when we finished converting paths into itineraries.
+     */
     public void finishedRendering() {
         finishedRendering = System.currentTimeMillis();
         computeSummary();
     }
 
-    /** Summarize and calculate elapsed times. */
+    /**
+     * Summarize and calculate elapsed times.
+     */
     private void computeSummary() {
         precalculationTime = finishedPrecalculating - startedCalculating;
         pathCalculationTime = finishedCalculating - finishedPrecalculating;
@@ -102,6 +114,14 @@ public class DebugOutput {
     }
 
     public String getStartedCalculatingFmt() {
-        return DateUtils.formatDateIso(startedCalculating/1000,  TimeZone.getDefault());
+        return DateUtils.formatDateIso(startedCalculating / 1000, TimeZone.getDefault());
+    }
+
+    public Date getRequestDate() {
+        return requestDate;
+    }
+
+    public void setRequestDate(Date requestDate) {
+        this.requestDate = requestDate;
     }
 }

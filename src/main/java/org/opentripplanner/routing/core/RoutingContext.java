@@ -213,6 +213,7 @@ public class RoutingContext implements Cloneable {
         this.opt = routingRequest;
         this.graph = graph;
         this.debugOutput.startedCalculating();
+        this.debugOutput.setRequestDate(routingRequest.getDateTime());
 
         // The following block contains potentially resource-intensive things that are only relevant for transit.
         // In normal searches the impact is low, because the routing context is only constructed once at the beginning

@@ -409,7 +409,7 @@ public class GraphIndex {
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
                                                      RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction,
-                headsign, bannedAgencies, bannedRouteTypes, false, false);
+                headsign, null, null, bannedAgencies, bannedRouteTypes, null, false, false);
     }
 
     /**
@@ -428,8 +428,8 @@ public class GraphIndex {
      * @return
      */
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
-                                                     RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes,
-                                                     boolean showCancelledTrips, boolean includeStopsForTrip) {
+                                                     RouteMatcher routeMatcher, Integer direction, String headsign, String tripHeadsign, Stop requiredStop, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes,
+                                                     Collection<String> trackIds, boolean showCancelledTrips, boolean includeStopsForTrip) {
         if (startTime == 0) {
             startTime = System.currentTimeMillis() / 1000;
         }
@@ -452,11 +452,15 @@ public class GraphIndex {
                 continue;
             }
 
-            if(bannedRouteTypes != null && bannedRouteTypes.contains(pattern.route.getType())) {
+            if (bannedRouteTypes != null && bannedRouteTypes.contains(pattern.route.getType())) {
                 continue;
             }
 
-            if(bannedAgencies != null && bannedAgencies.contains(pattern.route.getAgency().getId())){
+            if (bannedAgencies != null && bannedAgencies.contains(pattern.route.getAgency().getId())) {
+                continue;
+            }
+
+            if (requiredStop != null && !pattern.getStops().contains(requiredStop)){
                 continue;
             }
 
@@ -489,8 +493,11 @@ public class GraphIndex {
                     if (currStop == stop) {
                         if(omitNonPickups && pattern.stopPattern.pickups[sidx] == pattern.stopPattern.PICKDROP_NONE) continue;
                         for (TripTimes t : tt.tripTimes) {
+                            if (tripHeadsign != null && !tripHeadsign.equals(t.trip.getTripHeadsign())) continue;
                             if (!sd.serviceRunning(t.serviceCode)) continue;
                             if (headsign != null && !headsign.equals(t.getHeadsign(sidx))) continue;
+                            if (trackIds != null && t.getTrack(sidx) != null && !trackIds.contains(t.getTrack(sidx)))
+                                continue;
                             if (shouldShowDeparture(t.getDepartureTime(sidx), secondsSinceMidnight)
                                     || (showCancelledTrips && shouldShowDeparture(t.getScheduledDepartureTime(sidx), secondsSinceMidnight))) {
                                 pq.insertWithOverflow(new TripTimeShort(pattern, t, sidx, stop, sd, graph.getTimeZone(), includeStopsForTrip));

@@ -17,8 +17,15 @@ import org.opentripplanner.routing.spt.GraphPath;
 import java.util.Comparator;
 
 public class TransfersComparator implements Comparator<GraphPath> {
+
+    private WalkingComparator walkingComparator = new WalkingComparator();
+
     @Override
     public int compare(GraphPath o1, GraphPath o2) {
+        // if one path has no transfers, compare walking distance
+        if (o1.getTrips().isEmpty() || o2.getTrips().isEmpty()) {
+            return walkingComparator.compare(o1, o2);
+        }
         return o1.getTrips().size() - o2.getTrips().size();
     }
 }

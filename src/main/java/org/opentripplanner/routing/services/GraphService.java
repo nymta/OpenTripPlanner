@@ -15,6 +15,7 @@ package org.opentripplanner.routing.services;
 
 import org.geotools.referencing.factory.DeferredAuthorityFactory;
 import org.geotools.util.WeakCollectionCleaner;
+import org.opentripplanner.plugin.PluginManager;
 import org.opentripplanner.routing.error.GraphNotFoundException;
 import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
@@ -66,6 +67,8 @@ public class GraphService {
 
     private ScheduledExecutorService scanExecutor;
 
+    private PluginManager pluginManager;
+
     public GraphService() {
         this(false);
     }
@@ -85,6 +88,10 @@ public class GraphService {
     /** @param defaultRouterId The ID of the default router to return when no one is specified */
     public void setDefaultRouterId(String defaultRouterId) {
         this.defaultRouterId = defaultRouterId;
+    }
+
+    public void setPluginManager(PluginManager pluginManager) {
+        this.pluginManager = pluginManager;
     }
 
     /**
@@ -167,6 +174,8 @@ public class GraphService {
             boolean success = graphSource.reload(force, preEvict);
             if (!success) {
                 evictRouter(routerId);
+            } else {
+                graphSource.getRouter().graph.pluginManager = pluginManager;
             }
             return success;
         }
@@ -205,6 +214,7 @@ public class GraphService {
                 return false;
             }
             graphSources.put(routerId, graphSource);
+            graphSource.getRouter().graph.pluginManager = pluginManager;
             return true;
         }
     }
@@ -287,6 +297,8 @@ public class GraphService {
                 boolean success = graphSource.reload(false, AUTORELOAD_PREEVICT);
                 if (!success) {
                     evictRouter(routerId);
+                } else {
+                    graphSource.getRouter().graph.pluginManager = pluginManager;
                 }
             }
         }

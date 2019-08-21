@@ -12,6 +12,8 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.index.model;
 
+import org.opentripplanner.gtfs.GtfsLibrary;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.trippattern.TripTimes;
 
 import java.util.Comparator;
@@ -24,20 +26,29 @@ public class StopTimesByRouteAndHeadsign {
 
     private RouteShort route;
 
-    private SortedSet<TripTimeShort> times = new TreeSet<>(Comparator.<TripTimeShort>comparingLong(tt -> (tt.serviceDay+tt.realtimeArrival) ));
+    // Order times by actual arrival time, then by hashCode (just to prevent collisions if two
+    // arrival/departures have the same time)
+    private SortedSet<TripTimeShort> times = new TreeSet<>(Comparator.<TripTimeShort>comparingLong(
+            tt -> (tt.serviceDay+tt.realtimeArrival)).thenComparing(TripTimeShort::hashCode));
 
     private String headsign;
 
     private boolean isStopHeadsign;
 
+    private boolean isBusRoute;
+
     public StopTimesByRouteAndHeadsign(RouteShort route, String headsign, boolean isStopHeadsign) {
         this.route = route;
         this.headsign = headsign;
         this.isStopHeadsign = isStopHeadsign;
+        this.isBusRoute = (route.mode == TraverseMode.BUS.toString());
     }
 
     public void addTime(TripTimeShort tripTime) {
         times.add(tripTime);
+        if (isBusRoute) {
+            tripTime.setRegionalFareCardAccepted(route.regionalFareCardAccepted);
+        }
     }
 
     /** Route which these arrival-departures are associated with. */

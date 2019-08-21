@@ -24,13 +24,8 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.vividsolutions.jts.geom.Geometry;
-
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.vividsolutions.jts.geom.Coordinate;
+
 import org.opentripplanner.routing.bike_rental.BikeRentalStationService;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.graph.Graph;
@@ -38,26 +33,20 @@ import org.opentripplanner.util.TravelOption;
 import org.opentripplanner.util.TravelOptionsMaker;
 import org.opentripplanner.util.WorldEnvelope;
 
-@XmlRootElement(name = "RouterInfo")
 public class RouterInfo {
 
     private final BikeRentalStationService service;
 
-    @XmlElement
     public String routerId;
-    
+
     @JsonSerialize(using=GeometrySerializer.class)
     @JsonDeserialize(using=GeometryDeserializer.class)
-    @XmlJavaTypeAdapter(value=GeometryAdapter.class,type=Geometry.class)
     public Geometry polygon;
 
-    @XmlElement
     public Date buildTime;
 
-    @XmlElement
     public long transitServiceStarts;
 
-    @XmlElement
     public long transitServiceEnds;
 
     public HashSet<TraverseMode> transitModes;
@@ -71,7 +60,6 @@ public class RouterInfo {
     public boolean hasParkRide;
 
     public List<TravelOption> travelOptions;
-
 
     public RouterInfo(String routerId, Graph graph) {
         this.routerId = routerId;

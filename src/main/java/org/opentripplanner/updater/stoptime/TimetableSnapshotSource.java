@@ -36,8 +36,6 @@ import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.trippattern.RealTimeState;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.updater.GtfsRealtimeFuzzyTripMatcher;
-import org.opentripplanner.util.aws.cloudwatch.CloudWatchService;
-import org.opentripplanner.util.aws.cloudwatch.metrics.CountMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +43,6 @@ import com.google.common.base.Preconditions;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
-
-import javax.annotation.PreDestroy;
 
 /**
  * This class should be used to create snapshots of lookup tables of realtime data. This is
@@ -113,20 +109,19 @@ public class TimetableSnapshotSource {
 
     private final Agency dummyAgency;
 
-    private CloudWatchService _cloudWatchService;
-
     public GtfsRealtimeFuzzyTripMatcher fuzzyTripMatcher;
+
+    private Graph graph;
 
     public TimetableSnapshotSource(final Graph graph) {
         timeZone = graph.getTimeZone();
         graphIndex = graph.index;
+        this.graph = graph;
 
         // Create dummy agency for added trips
         dummyAgency = new Agency();
         dummyAgency.setId("");
         dummyAgency.setName("");
-
-        _cloudWatchService = CloudWatchService.getInstance();
     }
 
     /**
@@ -308,35 +303,21 @@ public class TimetableSnapshotSource {
             long delta = stop - start;
             LOG.info("Feed {}: applied {} of {} updates in {} ms", feedId, appliedUpdates, totalUpdates, delta);
 
-            if(_cloudWatchService.enabled()){
-                CountMetrics countMetrics = new CountMetrics();
-
-                countMetrics.addCountMetric("totalTripUpdatesSuccess", appliedUpdates, "Feed Id", feedId);
-                countMetrics.addCountMetric("totalTripUpdatesFailed", totalUpdates - appliedUpdates, "Feed Id", feedId);
-                countMetrics.addCountMetric("totalTripUpdates", totalUpdates, "Feed Id", feedId);
-                countMetrics.addCountMetric("scheduledSuccess", scheduledSuccess, "Feed Id", feedId);
-                countMetrics.addCountMetric("scheduledUpdates", scheduledUpdates, "Feed Id", feedId);
-                countMetrics.addCountMetric("addedSuccess", addedSuccess, "Feed Id", feedId);
-                countMetrics.addCountMetric("addedUpdates", addedUpdates, "Feed Id", feedId);
-                countMetrics.addCountMetric("cancelledSuccess", cancelledSuccess, "Feed Id", feedId);
-                countMetrics.addCountMetric("cancelledUpdates", cancelledUpdates, "Feed Id", feedId);
-
-                countMetrics.addPercentMetric("vehiclesInServicePct", getMetricPctValues(totalUpdates, appliedUpdates), "Feed Id", feedId);
-                countMetrics.addPercentMetric("scheduledTripsSuccessPct", getMetricPctValues(scheduledUpdates, scheduledSuccess), "Feed Id", feedId );
-                countMetrics.addPercentMetric("addedTripsSuccessPct", getMetricPctValues(addedUpdates, addedSuccess), "Feed Id", feedId);
-                countMetrics.addPercentMetric("cancelledTripsSuccessPct", getMetricPctValues(cancelledUpdates, cancelledSuccess), "Feed Id", feedId);
-
-                _cloudWatchService.publishMetric("OpenTripPlanner", countMetrics);
+            if (graph.pluginManager != null) {
+                TripUpdateStats stats = new TripUpdateStats();
+                stats.setAppliedUpdates(appliedUpdates);
+                stats.setTotalUpdates(totalUpdates);
+                stats.setScheduledSuccess(scheduledSuccess);
+                stats.setScheduledUpdates(scheduledUpdates);
+                stats.setAddedSuccess(addedSuccess);
+                stats.setAddedUpdates(addedUpdates);
+                stats.setCancelledSuccess(cancelledSuccess);
+                stats.setCancelledUpdates(cancelledUpdates);
+                stats.setFeedId(feedId);
+                graph.pluginManager.publish(stats);
             }
         }
     }
-
-    private double getMetricPctValues(int total, int successful){
-        if(total < 1)
-            return total;
-        return (double)(total - (total-successful))/total;
-    }
-
 
     /**
      * Determine how the trip update should be handled.
@@ -668,6 +649,12 @@ public class TimetableSnapshotSource {
         String tripHeadsign = tripUpdate.getExtension(GtfsRealtimeOneBusAway.obaTripUpdate).getTripHeadsign();
         if(StringUtil.isNotBlank(tripHeadsign)){
             trip.setTripHeadsign(tripHeadsign);
+        }
+
+        // Add trip direciton
+        String tripDirection = tripUpdate.getExtension(GtfsRealtimeOneBusAway.obaTripUpdate).getTripDirection();
+        if (StringUtil.isNotBlank(tripDirection)) {
+            trip.setDirectionId(tripDirection);
         }
 
         final boolean success = addTripToGraphAndBuffer(feedId, graph, trip, tripUpdate, stops, serviceDate, RealTimeState.ADDED, timestamp);

@@ -70,7 +70,7 @@ public class NearbySchedulesResource {
     private Double lon;
 
     /**
-     * Maximum walking distance that the search will use to find stops.
+     * Maximum walking distance, in meters, that the search will use to find stops.
      */
     @QueryParam("radius")
     private Double radius;
@@ -149,6 +149,18 @@ public class NearbySchedulesResource {
     private boolean omitNonPickups;
 
     /**
+     * if given, tripHeadsign to return arrival/departure time for.
+     */
+    @QueryParam("tripHeadsign")
+    private String tripHeadsign;
+
+    /**
+     * if given, only include trips that visit this stop
+     */
+    @QueryParam("stoppingAt")
+    private String stoppingAt;
+
+    /**
      * If true, group arrivals/departures by parent stop (station), instead of by stop.
      */
     @QueryParam("groupByParent")
@@ -203,6 +215,12 @@ public class NearbySchedulesResource {
     @DefaultValue("false")
     private boolean includeStopsForTrip;
 
+    /**
+     * A list of tracks for which to display arrivals, e.g. "1" or "1,2". Default to all tracks.
+     */
+    @QueryParam("tracks")
+    private String trackIds = null;
+
     private GraphIndex index;
 
     private Router router;
@@ -249,47 +267,59 @@ public class NearbySchedulesResource {
         Map<AgencyAndId, StopTimesByStop> stopIdAndStopTimesMap = new LinkedHashMap<>();
         RouteMatcher routeMatcher = RouteMatcher.parse(routesStr);
         for (TransitStop tstop : transitStops) {
-            Stop stop = tstop.getStop();
-            AgencyAndId key = key(stop);
+            if(tstop == null || tstop.equals(null))
+            {
+                //TODO add a warning here to indicate no stop found??
+            } else
+            {
+                Stop stop = tstop.getStop();
+                AgencyAndId key = key(stop);
 
-            Set<TraverseMode> modes = getModes();
-            Set<String> bannedAgencies = getBannedAgencies();
-            Set<Integer> bannedRouteTypes = getBannedRouteTypes();
+                Set<TraverseMode> modes = getModes();
+                Set<String> bannedAgencies = getBannedAgencies();
+                Set<Integer> bannedRouteTypes = getBannedRouteTypes();
 
-            /* filter by mode */
-            if(modes != null && !stopHasMode(tstop, modes)){
-                continue;
-            }
-
-            if (router.defaultRoutingRequest.bannedStopsNearby.matches(stop)) {
-                continue;
-            }
-
-            List<StopTimesInPattern> stopTimesPerPattern = index.stopTimesForStop(
-                    stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction, null,
-                    bannedAgencies, bannedRouteTypes, showCancelledTrips, includeStopsForTrip);
-
-            StopTimesByStop stopTimes = stopIdAndStopTimesMap.get(key);
-
-            if (stopTimes == null) {
-                if (stateMap != null) {
-                    State state = stateMap.get(tstop);
-                    double distance = state.getWalkDistance();
-                    LinkedList<Coordinate> coords = new LinkedList<>();
-                    for (State s = state; s != null; s = s.getBackState()) {
-                        coords.addFirst(s.getVertex().getCoordinate());
-                    }
-                    long time = state.getElapsedTimeSeconds();
-                    stopTimes = new StopTimesByStop(stop, distance, time, coords, groupByParent);
-                } else {
-                    stopTimes = new StopTimesByStop(stop, groupByParent);
+                /* filter by mode */
+                if(modes != null && !stopHasMode(tstop, modes)){
+                    continue;
                 }
-                stopIdAndStopTimesMap.put(key, stopTimes);
+
+                if (router.defaultRoutingRequest.bannedStopsNearby.matches(stop)) {
+                    continue;
+                }
+
+                Stop requiredStop = null;
+                if (stoppingAt != null){
+                    AgencyAndId id = AgencyAndId.convertFromString(stoppingAt, ':');
+                    requiredStop = index.stopForId.get(id);
+                }
+
+                List<StopTimesInPattern> stopTimesPerPattern = index.stopTimesForStop(
+                        stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction, null, tripHeadsign, requiredStop,
+                        bannedAgencies, bannedRouteTypes, getTrackIds(), showCancelledTrips, includeStopsForTrip);
+
+                StopTimesByStop stopTimes = stopIdAndStopTimesMap.get(key);
+
+                if (stopTimes == null) {
+                    if (stateMap != null) {
+                        State state = stateMap.get(tstop);
+                        double distance = state.getWalkDistance();
+                        LinkedList<Coordinate> coords = new LinkedList<>();
+                        for (State s = state; s != null; s = s.getBackState()) {
+                            coords.addFirst(s.getVertex().getCoordinate());
+                        }
+                        long time = state.getElapsedTimeSeconds();
+                        stopTimes = new StopTimesByStop(stop, distance, time, coords, groupByParent);
+                    } else {
+                        stopTimes = new StopTimesByStop(stop, groupByParent);
+                    }
+                    stopIdAndStopTimesMap.put(key, stopTimes);
+                }
+                stopTimes.addPatterns(stopTimesPerPattern);
+
+
+                addAlertsToStopTimes(stop, stopTimes);
             }
-            stopTimes.addPatterns(stopTimesPerPattern);
-
-
-            addAlertsToStopTimes(stop, stopTimes);
         }
 
 
@@ -366,7 +396,7 @@ public class NearbySchedulesResource {
                 // first try interpreting stop as a parent
                 Collection<Stop> children = index.stopsForParentStation.get(id);
                 if (children.isEmpty()) {
-                    throw new IllegalArgumentException("Unknown stop: " + st);
+                    stops.add(null);
                 }
                 stops.addAll(children);
             } else {
@@ -418,5 +448,9 @@ public class NearbySchedulesResource {
             }
         }
         return null;
+    }
+
+    private Collection<String> getTrackIds() {
+        return trackIds == null ? null : Arrays.asList(trackIds.split(","));
     }
 }

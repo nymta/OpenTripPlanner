@@ -17,7 +17,7 @@ import com.google.transit.realtime.GtfsRealtimeNYCT;
 import org.junit.BeforeClass;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.graph_builder.module.CrossFeedTransferGenerator;
-import org.opentripplanner.routing.accessibility.MTAStopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.MTAStopAccessibilityStrategy;
 import org.opentripplanner.routing.algorithm.AStar;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;

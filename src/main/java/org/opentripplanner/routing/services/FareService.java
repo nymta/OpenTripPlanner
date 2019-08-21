@@ -14,7 +14,12 @@
 package org.opentripplanner.routing.services;
 
 import org.opentripplanner.routing.core.Fare;
+import org.opentripplanner.routing.core.Fare.FareType;
+import org.opentripplanner.routing.core.FareBundle;
 import org.opentripplanner.routing.spt.GraphPath;
+
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Computes a fare for a given GraphPath.
@@ -22,5 +27,9 @@ import org.opentripplanner.routing.spt.GraphPath;
  *
  */
 public interface FareService {
-	public Fare getCost(GraphPath path);
+	Fare getCost(GraphPath path);
+
+	default FareBundle getLegCostBreakDown(GraphPath path) {
+		return null;
+	}
 }

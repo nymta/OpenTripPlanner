@@ -14,8 +14,6 @@
 package org.opentripplanner.api.model; 
 
 import java.util.Calendar;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement; 
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.util.Constants; 
@@ -81,28 +79,24 @@ public class Place {
      */
     public String departureFmt = null;
 
-    @XmlAttribute
-    @JsonSerialize
-    public String orig;
-
     /**
      * For transit stops, the zone of the stop, if given in GTFS.
      */
-    @XmlAttribute
+    @JsonSerialize
+    public String orig;
+
     @JsonSerialize
     public String zoneId;
 
     /**
      * For transit trips, the stop index (numbered from zero from the start of the trip
      */
-    @XmlAttribute
     @JsonSerialize
     public Integer stopIndex;
 
     /**
      * For transit trips, the sequence number of the stop. Per GTFS, these numbers are increasing.
      */
-    @XmlAttribute
     @JsonSerialize
     public Integer stopSequence;
 
@@ -110,7 +104,6 @@ public class Place {
      * Type of vertex. (Normal, Bike sharing station, Bike P+R, Transit stop)
      * Mostly used for better localization of bike sharing and P+R station names
      */
-    @XmlAttribute
     @JsonSerialize
     public VertexType vertexType;
 
@@ -122,7 +115,6 @@ public class Place {
     /**
      * If we have track data
      */
-    @XmlAttribute
     @JsonSerialize
     public String track;
 
@@ -130,7 +122,6 @@ public class Place {
      * Returns the geometry in GeoJSON format
      * @return
      */
-    @XmlElement
     String getGeometry() {
         return Constants.GEO_JSON_POINT + lon + "," + lat + Constants.GEO_JSON_TAIL;
     }

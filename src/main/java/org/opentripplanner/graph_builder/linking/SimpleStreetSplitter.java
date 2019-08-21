@@ -23,7 +23,7 @@ import org.opentripplanner.graph_builder.annotation.BikeRentalStationUnlinked;
 import org.opentripplanner.graph_builder.annotation.StopLinkedToSubgraph;
 import org.opentripplanner.graph_builder.annotation.StopUnlinked;
 import org.opentripplanner.graph_builder.annotation.StopLinkedTooFar;
-import org.opentripplanner.routing.accessibility.AccessibilityResult;
+import org.opentripplanner.routing.connectivity.AccessibilityResult;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;

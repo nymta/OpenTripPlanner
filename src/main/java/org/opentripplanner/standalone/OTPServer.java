@@ -7,6 +7,7 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.opentripplanner.analyst.DiskBackedPointSetCache;
 import org.opentripplanner.analyst.PointSetCache;
 import org.opentripplanner.analyst.SurfaceCache;
+import org.opentripplanner.plugin.PluginManager;
 import org.opentripplanner.routing.error.GraphNotFoundException;
 import org.opentripplanner.routing.services.GraphService;
 import org.opentripplanner.scripting.impl.ScriptingService;
@@ -33,6 +34,8 @@ public class OTPServer {
     public ScriptingService scriptingService;
 
     public CommandLineParameters params;
+
+    private PluginManager pluginManager;
 
     public OTPServer (CommandLineParameters params, GraphService gs) {
         LOG.info("Wiring up and configuring server.");
@@ -91,6 +94,13 @@ public class OTPServer {
                 bind(OTPServer.this).to(OTPServer.class);
             }
         };
+     }
+
+    public PluginManager getPluginManager() {
+        return pluginManager;
     }
 
+    public void setPluginManager(PluginManager pluginManager) {
+        this.pluginManager = pluginManager;
+    }
 }

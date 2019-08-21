@@ -49,6 +49,8 @@ class Ride {
 
     AgencyAndId route;
 
+    int routeType;
+
     AgencyAndId trip;
     
     Set<String> zones;
@@ -56,6 +58,8 @@ class Ride {
     String startZone;
 
     String endZone;
+
+    String mergeStartZone; // used for zone merge transfers
 
     long startTime;
 

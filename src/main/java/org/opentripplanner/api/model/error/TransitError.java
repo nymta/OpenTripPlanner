@@ -13,10 +13,6 @@
 
 package org.opentripplanner.api.model.error;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class TransitError {
     private String message;
     
@@ -30,7 +26,6 @@ public class TransitError {
         this.message = message;
     }
 
-    @XmlElement(name="message")
     public String getMessage() {
         return message;
     }

@@ -14,7 +14,6 @@ import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.profile.AnalystProfileRouterPrototype;
 import org.opentripplanner.profile.ProfileRequest;
 import org.opentripplanner.profile.ProfileRouter;
-import org.opentripplanner.profile.RepeatedRaptorProfileRouter;
 import org.opentripplanner.profile.RoundBasedProfileRouter;
 import org.opentripplanner.profile.TimeRange;
 import org.opentripplanner.routing.core.State;
@@ -126,16 +125,6 @@ public class TimeSurface implements Serializable {
         id = makeUniqueId();
         dateTime = req.fromTime; // FIXME
         routerId = profileRouter.graph.routerId;
-    }
-
-    public TimeSurface(RepeatedRaptorProfileRouter profileRouter) {
-        ProfileRequest req = profileRouter.request;
-        lon = req.fromLon;
-        lat = req.fromLat;
-        id = makeUniqueId();
-        dateTime = req.fromTime; // FIXME
-        routerId = profileRouter.graph.routerId;
-        cutoffMinutes = 120; // FIXME is there any well-defined cutoff? This is needed for generating isochrone curves.
     }
 
 	public static TimeSurface.RangeSet makeSurfaces (AnalystProfileRouterPrototype profileRouter) {

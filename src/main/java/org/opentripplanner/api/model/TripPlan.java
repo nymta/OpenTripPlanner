@@ -18,8 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import javax.xml.bind.annotation.XmlElementWrapper;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
 import org.opentripplanner.routing.alertpatch.Alert;
@@ -39,7 +37,6 @@ public class TripPlan {
     public Place to = null;
 
     /** A list of possible itineraries */
-    @XmlElementWrapper(name="itineraries") //TODO: why don't we just change the variable name?
     @JsonProperty(value="itineraries")
     public List<Itinerary> itinerary = new ArrayList<Itinerary>();
 

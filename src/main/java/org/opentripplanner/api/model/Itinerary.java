@@ -18,9 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-
 import org.onebusaway.gtfs.model.calendar.CalendarServiceData;
 import org.opentripplanner.routing.core.Fare;
 
@@ -117,8 +114,6 @@ public class Itinerary {
      * trip on a particular vehicle. So a trip where the use walks to the Q train, transfers to the
      * 6, then walks to their destination, has four legs.
      */
-    @XmlElementWrapper(name = "legs")
-    @XmlElement(name = "leg")
     public List<Leg> legs = new ArrayList<Leg>();
 
     /**
@@ -127,7 +122,7 @@ public class Itinerary {
      */
     public boolean tooSloped = false;
 
-    /** 
+    /**
      * adds leg to array list
      * @param leg
      */

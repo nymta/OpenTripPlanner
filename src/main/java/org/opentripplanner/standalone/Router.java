@@ -12,8 +12,8 @@ import org.opentripplanner.analyst.request.*;
 import org.opentripplanner.analyst.scenario.ScenarioStore;
 import org.opentripplanner.inspector.TileRendererManager;
 import org.opentripplanner.reflect.ReflectiveInitializer;
-import org.opentripplanner.routing.accessibility.DefaultStopAccessibilityStrategy;
-import org.opentripplanner.routing.accessibility.MTAStopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.DefaultStopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.MTAStopAccessibilityStrategy;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.graph.Graph;
@@ -198,7 +198,7 @@ public class Router {
 
         graph.consequencesStrategy = getConsequencesStrategyConfig(config.get("consequences"));
 
-        graph.stopAccessibilityStrategy = new DefaultStopAccessibilityStrategy();
+        graph.stopAccessibilityStrategy = new DefaultStopAccessibilityStrategy(graph);
         JsonNode stopAccessibilityStrategy = config.get("stopAccessibilityStrategy");
         if (stopAccessibilityStrategy != null) {
             if (stopAccessibilityStrategy.asText().equals("mta")) {

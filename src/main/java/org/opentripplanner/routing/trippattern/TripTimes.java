@@ -127,7 +127,13 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
     private final BitSet timepoints;
 
     /** Track information, if available */
-    private String[] tracks;
+    private final String[] tracks;
+
+    /** Realtime track information */
+    private String[] realtimeTracks;
+
+    /** Train status */
+    private String[] realtimeSignText;
 
     /** For materialized TripTimes, save the FrequencyEntry which the TripTimes was materialized from. */
     private transient FrequencyEntry frequencyEntry;
@@ -143,9 +149,11 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         final int[] arrivals   = new int[nStops];
         final int[] sequences  = new int[nStops];
         final int[] departureBuffers = new int[nStops];
-        String[] tracks = null;
+        final String[] tracks;
         if (stopTimes.stream().anyMatch(st -> st.getTrack() != null)) {
             tracks = new String[nStops];
+        } else {
+            tracks = null;
         }
         boolean hasDepartureBuffers = false;
         final BitSet timepoints = new BitSet(nStops);
@@ -186,7 +194,11 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         }
         if (tracks != null) {
             this.tracks = deduplicator.deduplicateStringArray(tracks);
+        } else {
+            this.tracks = null;
         }
+        this.realtimeTracks = null;
+        this.realtimeSignText = null;
         LOG.trace("trip {} has timepoint at indexes {}", trip, timepoints);
     }
 
@@ -449,6 +461,15 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
             realTimeState = RealTimeState.UPDATED;
         }
     }
+    private void createRealtimeTracksArray() {
+        if (realtimeTracks == null) {
+            if (tracks != null) {
+                realtimeTracks = Arrays.copyOf(tracks, tracks.length);
+            } else {
+                realtimeTracks = new String[getNumStops()];
+            }
+        }
+    }
 
     public int getNumStops () {
         return scheduledArrivalTimes.length;
@@ -515,14 +536,26 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
     }
 
     public void setTrack(int stop, String track) {
-        if (tracks == null) {
-            tracks = new String[getNumStops()];
-        }
-        tracks[stop] = track;
+        createRealtimeTracksArray();
+        realtimeTracks[stop] = track;
     }
 
     public String getTrack(int stop) {
+        if (realtimeTracks != null && realtimeTracks[stop] != null) {
+            return realtimeTracks[stop];
+        }
         return tracks == null ? null : tracks[stop];
+    }
+
+    public void setRealtimeSignText(int stop, String signText) {
+        if (realtimeSignText == null) {
+            realtimeSignText = new String[getNumStops()];
+        }
+        realtimeSignText[stop] = signText;
+    }
+
+    public String getRealtimeSignText(int stop) {
+        return realtimeSignText == null ? null : realtimeSignText[stop];
     }
 
     public boolean hasStopHeadsigns() {

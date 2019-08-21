@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
+import com.google.transit.realtime.GtfsRealtimeMNR;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
@@ -44,6 +45,7 @@ import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeEvent;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate.StopTimeUpdate;
 import com.google.transit.realtime.GtfsRealtimeNYCT;
 import com.google.transit.realtime.GtfsRealtimeNYCT.NyctStopTimeUpdate;
+import com.google.transit.realtime.GtfsRealtimeMNR.MnrStopTimeUpdate;
 
 /**
  * Timetables provide most of the TripPattern functionality. Each TripPattern may possess more than
@@ -541,6 +543,14 @@ public class Timetable implements Serializable {
                             newTimes.setTrack(i, ext.getActualTrack());
                         } else if (ext.hasScheduledTrack()) {
                             newTimes.setTrack(i, ext.getScheduledTrack());
+                        }
+                    }
+
+                    MnrStopTimeUpdate mnrStopTimeUpdate = update.getExtension(GtfsRealtimeMNR.mnrStopTimeUpdate);
+                    if (mnrStopTimeUpdate != null) {
+                        String signText = mnrStopTimeUpdate.getTrainStatus();
+                        if (signText != null) {
+                            newTimes.setRealtimeSignText(i, signText);
                         }
                     }
 

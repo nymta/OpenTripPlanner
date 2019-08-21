@@ -9,7 +9,7 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.onebusaway.gtfs.model.Stop;
-import org.opentripplanner.profile.RaptorWorkerTimetable;
+import org.opentripplanner.profile.BoardingAssumption;
 import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.trippattern.FrequencyEntry;
@@ -48,7 +48,7 @@ public class ConvertToFrequency extends Modification {
     /** How to group trips for conversion to frequencies: by route, route and direction, or by trip pattern. */
     public ConversionGroup groupBy;
 
-    public void apply (List<FrequencyEntry> frequencyEntries, List<TripTimes> scheduledTrips, Graph graph, BitSet servicesRunning, RaptorWorkerTimetable.BoardingAssumption assumption) {
+    public void apply (List<FrequencyEntry> frequencyEntries, List<TripTimes> scheduledTrips, Graph graph, BitSet servicesRunning, BoardingAssumption assumption) {
         // preserve existing frequency entries
         this.frequencyEntries.addAll(frequencyEntries);
 
@@ -164,7 +164,7 @@ public class ConvertToFrequency extends Modification {
 
             // the headway that we will use
             int aggregateHeadway;
-            if (assumption == RaptorWorkerTimetable.BoardingAssumption.WORST_CASE)
+            if (assumption == BoardingAssumption.WORST_CASE)
                 // simple: worst case analysis should use the worst case headway
                 aggregateHeadway = Ints.max(headway);
             else {

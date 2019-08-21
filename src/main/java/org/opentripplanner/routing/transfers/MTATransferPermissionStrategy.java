@@ -13,10 +13,9 @@
 package org.opentripplanner.routing.transfers;
 
 import org.onebusaway.gtfs.model.Stop;
-import org.opentripplanner.routing.accessibility.StopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.StopAccessibilityStrategy;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.core.StopTransfer;
 import org.opentripplanner.routing.core.TransferTable;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.vertextype.TransitStop;
