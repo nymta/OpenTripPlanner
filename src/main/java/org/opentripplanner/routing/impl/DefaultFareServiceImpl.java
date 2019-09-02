@@ -61,6 +61,8 @@ class Ride {
 
     String mergeStartZone; // used for zone merge transfers
 
+    String mergeMidZone; // used for indirect zone merge transfers
+
     long startTime;
 
     long endTime;
