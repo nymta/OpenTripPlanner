@@ -855,6 +855,7 @@ public class IndexAPI {
     @Path("/landmarks/{landmark}")
     @TypeHint(StopShort[].class)
     public Response getLandmarkStops(@PathParam("landmark") String name) {
+
         Landmark landmark = index.graph.landmarksByName.get(name);
         if (landmark == null) {
             return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
