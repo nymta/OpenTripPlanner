@@ -346,7 +346,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("3to1", 10.25f);
         lirrFareMap.put("4Ato1", 12f);
 
-
         lirrFareMap.put("7Ato1", 13.5f);
         lirrFareMap.put("9Ato1", 16f);
         lirrFareMap.put("10Ato1", 19f);
@@ -381,7 +380,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             Float value = entry.getValue();
             String startZone = key.split("to")[0];
             String endZone = key.split("to")[1];
-            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, null, value.floatValue(), startZone, endZone, null);
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone, null);
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
@@ -531,6 +530,23 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         }
 
 
+        lirrFareMap.put("3to1to3", 100f);
+
+        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String midZone = key.split("to")[1];
+            String endZone = key.split("to")[2];
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone, midZone);
+            agencyFares.put(lirrFare.getKey(), lirrFare);
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseLirrFare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), endZone, startZone, midZone);
+                agencyFares.put(reverseLirrFare.getKey(), reverseLirrFare);
+            }
+        }
+
+
 
         // LIRR Transfer Rules
         NycTransferRule nyctLirrToLirr = new NycTransferRule(lirr, lirr, NycTransferType.merge,-1);
@@ -601,6 +617,8 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         // create rides
         List<Ride> rides = new ArrayList<Ride>();
         Ride newRide = null;
+        RideChain newChain = new RideChain();
+        newChain.isPeak = false;
 
         for (State state : states) {
             Edge backEdge = state.getBackEdge();
@@ -609,6 +627,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                     if (rides.size() == 0 || !rides.get(rides.size() - 1).classifier.equals(WALK)) {
                         newRide = new Ride();
                         newRide.classifier = WALK;
+                        newRide.chain = newChain;
                         rides.add(newRide);
                     }
                 }
@@ -632,6 +651,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 if (newRide == null || !routeId.equals(newRide.route)) {
                     newRide = new Ride();
                     newRide.agency = agency.getId();
+                    newRide.chain = newChain;
                     rides.add(newRide);
 
                     newRide.firstStop = ((HopEdge) backEdge).getBeginStop();
@@ -901,6 +921,9 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
     /** check if the ride is in Peak Hour */
     private boolean isInPeakHour(Ride ride) {
+        if(ride.chain.isPeak){
+            return true;
+        }
         String ruleKey = ride.agency + "_" + ride.routeType;
         NycAgencyPeakHour peakHours = agencyPeakHours.get(ruleKey);
 
@@ -911,8 +934,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         // if GTFS defines peak or off peak
         if(peakHours.useGtfs) {
-            if (ride.gtfsTrip.getPeakOffpeak() == 1)
+            if (ride.gtfsTrip.getPeakOffpeak() == 1) {
+                ride.chain.isPeak = true;
                 return true;
+            }
             else
                 return false;
         }
@@ -926,8 +951,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         Integer hour = calendar.get(Calendar.HOUR_OF_DAY);
 
         //List<int> days = Arrays.asList(peakHours.days);
-        if(Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour))
+        if(Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour)) {
+            ride.chain.isPeak = true;
             return true;
+        }
         else
             return false;
     }

@@ -43,9 +43,16 @@ import org.opentripplanner.routing.spt.GraphPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** A group of chains **/
+class RideChain{
+    boolean isPeak;
+}
+
 /** A set of edges on a single route, with associated information for calculating fares */
 class Ride {
-    
+
+    RideChain chain;
+
     String agency; // route agency
 
     AgencyAndId route;
