@@ -390,6 +390,140 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.clear();
 
         // via Woodside Station (ZONE 1) (Page 12-5)
+        lirrFareMap.put("1to1to1", 7.25f);
+        lirrFareMap.put("3to1to1", 8.25f);
+        lirrFareMap.put("4to1to1", 9.5f);
+        lirrFareMap.put("7to1to1", 10.5f);
+        lirrFareMap.put("9to1to1", 12.5f);
+        lirrFareMap.put("10to1to1", 24.75f);
+        lirrFareMap.put("12to1to1", 18f);
+        lirrFareMap.put("14to1to1", 22.5f);
+
+        lirrFareMap.put("3to1to3", 8.75f);
+        lirrFareMap.put("4to1to3", 9.75f);
+        lirrFareMap.put("7to1to3", 11.5f);
+        lirrFareMap.put("9to1to3", 13.25f);
+        lirrFareMap.put("10to1to3", 15f);
+        lirrFareMap.put("12to1to3", 18.25f);
+        lirrFareMap.put("14to1to3", 23.25f);
+
+        lirrFareMap.put("4to1to4", 10.75f);
+        lirrFareMap.put("7to1to4", 12.5f);
+        lirrFareMap.put("9to1to4", 14.25f);
+        lirrFareMap.put("10to1to4", 26.25f);
+        lirrFareMap.put("12to1to4", 19.75f);
+        lirrFareMap.put("14to1to4", 24.5f);
+
+
+        // via Jamaica Station (ZONE 3) (Page 12-6)
+        lirrFareMap.put("1to3to1", 8.75f);
+
+        lirrFareMap.put("3to3to3", 4f);
+        lirrFareMap.put("4to3to3", 6.5f);
+        lirrFareMap.put("7to3to3", 7.75f);
+        lirrFareMap.put("9to3to3", 9.5f);
+        lirrFareMap.put("10to3to3", 11.5f);
+        lirrFareMap.put("12to3to3", 15f);
+        lirrFareMap.put("14to3to3", 19.75f);
+
+        lirrFareMap.put("4to3to4", 7.25f);
+        lirrFareMap.put("7to3to4", 8f);
+        lirrFareMap.put("9to3to4", 9.75f);
+        lirrFareMap.put("10to3to4", 12f);
+        lirrFareMap.put("12to3to4", 15.5f);
+        lirrFareMap.put("14to3to4", 20.25f);
+
+        lirrFareMap.put("7to3to7", 9f);
+        lirrFareMap.put("9to3to7", 11.5f);
+        lirrFareMap.put("10to3to7", 13.25f);
+        lirrFareMap.put("12to3to7", 16.5f);
+        lirrFareMap.put("14to3to7", 21.75f);
+
+        lirrFareMap.put("9to3to9", 13.5f);
+        lirrFareMap.put("10to3to9", 15.5f);
+        lirrFareMap.put("12to3to9", 19f);
+        lirrFareMap.put("14to3to9", 23.75f);
+
+        lirrFareMap.put("10to3to10", 16.5f);
+        lirrFareMap.put("12to3to10", 20.25f);
+        lirrFareMap.put("14to3to10", 25.25f);
+
+        lirrFareMap.put("12to3to12", 24f);
+        lirrFareMap.put("14to3to12", 29f);
+
+        lirrFareMap.put("14to3to14", 31.75f);
+
+        // via Lynbrook, Mineola, Valley Stream (ZONE 4) (Page 12-7)
+        lirrFareMap.put("4to4to4", 4.25f);
+        lirrFareMap.put("7to4to4", 4.25f);
+        lirrFareMap.put("9to4to4", 6f);
+        lirrFareMap.put("10to4to4", 8.25f);
+        lirrFareMap.put("12to4to4", 12f);
+        lirrFareMap.put("14to4to4", 18.5f);
+
+        lirrFareMap.put("7to4to7", 4.5f);
+        lirrFareMap.put("9to4to7", 6.5f);
+        lirrFareMap.put("10to4to7", 9f);
+        lirrFareMap.put("12to4to7", 12.25f);
+        lirrFareMap.put("14to4to7", 18.75f);
+
+        lirrFareMap.put("9to4to9", 9.25f);
+        lirrFareMap.put("10to4to9", 11f);
+        lirrFareMap.put("12to4to9", 14.75f);
+        lirrFareMap.put("14to4to9", 21.75f);
+
+        lirrFareMap.put("10to4to10", 13.5f);
+        lirrFareMap.put("12to4to10", 17.75f);
+        lirrFareMap.put("14to4to10", 24.5f);
+
+        lirrFareMap.put("12to4to12", 21.75f);
+        lirrFareMap.put("14to4to12", 28f);
+
+        lirrFareMap.put("14to4to14", 30.75f);
+
+        // via Hicksville (ZONE 7) (Page 12-8)
+        lirrFareMap.put("7to7to7", 4.25f);
+        lirrFareMap.put("9to7to7", 4.25f);
+        lirrFareMap.put("10to7to7", 6f);
+        lirrFareMap.put("12to7to7", 10.5f);
+        lirrFareMap.put("14to7to7", 17.25f);
+
+        lirrFareMap.put("9to7to9", 4.5f);
+        lirrFareMap.put("10to7to9", 6.5f);
+        lirrFareMap.put("12to7to9", 11f);
+        lirrFareMap.put("14to7to9", 17.75f);
+
+        lirrFareMap.put("10to7to10", 10f);
+        lirrFareMap.put("12to7to10", 13.5f);
+        lirrFareMap.put("14to7to10", 20.25f);
+
+        lirrFareMap.put("12to7to12", 17.75f);
+        lirrFareMap.put("14to7to12", 24.5f);
+
+        lirrFareMap.put("14to7to14", 28f);
+
+
+        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String midZone = key.split("to")[1];
+            String endZone = key.split("to")[2];
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.non_peak_hour_only, value.floatValue(), startZone, endZone, midZone);
+            agencyFares.put(lirrFare.getKey(), lirrFare);
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseLirrFare = new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.non_peak_hour_only, value.floatValue(), endZone, startZone, midZone);
+                agencyFares.put(reverseLirrFare.getKey(), reverseLirrFare);
+            }
+        }
+
+        //////
+        // LIRR Peak In-Direct Routes
+        //////
+
+        lirrFareMap.clear();
+
+        // via Woodside Station (ZONE 1) (Page 12-5)
         lirrFareMap.put("1to1to1", 10.25f);
         lirrFareMap.put("3to1to1", 11.5f);
         lirrFareMap.put("4to1to1", 13f);
@@ -398,7 +532,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("10to1to1", 20.25f);
         lirrFareMap.put("12to1to1", 24.75f);
         lirrFareMap.put("14to1to1", 31f);
-        lirrFareMap.put("91to1to1", 9f);
 
         lirrFareMap.put("3to1to3", 12f);
         lirrFareMap.put("4to1to3", 13.5f);
@@ -407,7 +540,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("10to1to3", 20.5f);
         lirrFareMap.put("12to1to3", 25f);
         lirrFareMap.put("14to1to3", 32f);
-        lirrFareMap.put("91to1to3", 10.75f);
 
         lirrFareMap.put("4to1to4", 14.75f);
         lirrFareMap.put("7to1to4", 17.25f);
@@ -415,17 +547,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.put("10to1to4", 22.25f);
         lirrFareMap.put("12to1to4", 27f);
         lirrFareMap.put("14to1to4", 33.75f);
-        lirrFareMap.put("91to1to4", 12.5f);
-
-        lirrFareMap.put("91to1to7", 14f);
-
-        lirrFareMap.put("91to1to9", 16.5f);
-
-        lirrFareMap.put("91to1to10", 19.75f);
-
-        lirrFareMap.put("91to1to12", 23.5f);
-
-        lirrFareMap.put("91to1to14", 30.5f);
 
 
         // via Jamaica Station (ZONE 3) (Page 12-6)
@@ -522,26 +643,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             String startZone = key.split("to")[0];
             String midZone = key.split("to")[1];
             String endZone = key.split("to")[2];
-            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, null, value.floatValue(), startZone, endZone, midZone);
-            agencyFares.put(lirrFare.getKey(), lirrFare);
-            if(!endZone.equals(startZone)) {
-                NycAgencyFare reverseLirrFare = new NycAgencyFare(lirr, FareType.regular, null, value.floatValue(), endZone, startZone, midZone);
-                agencyFares.put(reverseLirrFare.getKey(), reverseLirrFare);
-            }
-        }
-
-        //////
-        // LIRR Peak In-Direct Routes
-        //////
-
-        lirrFareMap.put("3to1to3", 100f);
-
-        for (HashMap.Entry<String, Float> entry : lirrFareMap.entrySet()) {
-            String key = entry.getKey();
-            Float value = entry.getValue();
-            String startZone = key.split("to")[0];
-            String midZone = key.split("to")[1];
-            String endZone = key.split("to")[2];
             NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone, midZone);
             agencyFares.put(lirrFare.getKey(), lirrFare);
             if(!endZone.equals(startZone)) {
@@ -555,11 +656,16 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         // TRANSFER RULES
         ///////////////////////////////////////////////////////
 
+        //////////
         // LIRR Transfer Rules
+        //////////
         NycTransferRule nyctLirrToLirr = new NycTransferRule(lirr, lirr, NycTransferType.merge,-1);
         transferRules.put(nyctLirrToLirr.getKey(), nyctLirrToLirr);
 
-        // transfer rules
+        //////////
+        // Bus and Subway Transfer Rules
+        //////////
+
         // same service
         NycTransferRule nyctSubwayToSubway = new NycTransferRule(nyctSubway, nyctSubway, NycTransferType.free, 120 * 60);
         NycTransferRule nyctLocalToLocal = new NycTransferRule(nyctLocalBus, nyctLocalBus, NycTransferType.free, 120 * 60);
@@ -590,6 +696,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         transferRules.put(nyctLocalToMtabcExpress.getKey(), nyctLocalToMtabcExpress);
         transferRules.put(mtabcLocalToExpressBus.getKey(), mtabcLocalToExpressBus);
         transferRules.put(mtabcLocalToNyctExpress.getKey(), mtabcLocalToNyctExpress);
+
+        ////////////////////////////////////////////////////////
+        // Peak Hours
+        ///////////////////////////////////////////////////////
 
         // Bus and Subway Peak Hours
         Integer[] weekdays = {1,2,3,4,5};
@@ -779,8 +889,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                                 ride.mergeStartZone = traveledService.startZone;
 
                                 //Look for indirect route patterns
-                                if (isLessThan(lastRide.endZone, traveledService.midZone)){
-                                    traveledService.midZone = lastRide.endZone;
+                                if(lastRide != null) {
+                                    if (isLessThan(lastRide.endZone, traveledService.midZone)) {
+                                        traveledService.midZone = lastRide.endZone;
+                                    }
                                 }
                                 ride.mergeMidZone = traveledService.midZone;
 
