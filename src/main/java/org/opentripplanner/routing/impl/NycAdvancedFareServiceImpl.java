@@ -39,9 +39,7 @@ import java.util.stream.Collectors;
 /** NYC fare condition types */
 enum NycFareConditionType {
     peak_hour_only,
-    am_peak_only,
-    pm_peak_only,
-    non_peak_hour_only,
+    non_peak_hour_only
 }
 
 /** NYC transfer agreement types */
@@ -49,12 +47,6 @@ enum NycTransferType {
     free,
     free_step_up,
     merge //Used for Zones fares with transfers
-}
-
-/** NYC peak hour rule types */
-enum NycPeakHourRuleType {
-    departure,
-    arrival
 }
 
 /** A service is a combination of agency and route type */
@@ -117,11 +109,9 @@ class NycAgencyFare implements Serializable {
         if(this.startZone != null && !this.startZone.isEmpty()) {
             internalKey += "_" + this.startZone;
         }
-
         if(this.midZone != null && !this.midZone.isEmpty()) {
             internalKey += "_" + this.midZone;
         }
-
         if(this.endZone != null && !this.endZone.isEmpty()) {
             internalKey += "_" + this.endZone;
         }
@@ -134,38 +124,19 @@ class NycAgencyFare implements Serializable {
 /** Holds agency peak hours */
 class NycAgencyPeakHour implements Serializable {
     NycServiceId serviceId;
-    NycPeakHourRuleType peakHourRuleType; //departure, arrival, or both
-    String stopId; //peak hour only applied to certain stops if configured
     Integer[] days; // most likely weekday
     Integer[] hours;
-    boolean am_only;
-    boolean pm_only;
+    boolean useGtfs;
 
-    NycAgencyPeakHour(NycServiceId serviceId, NycPeakHourRuleType peakHourRuleType, String stopId, Integer[] days, Integer[] hours, boolean am_only, boolean pm_only) {
+    NycAgencyPeakHour(NycServiceId serviceId, Integer[] days, Integer[] hours, boolean useGtfs) {
         this.serviceId = serviceId;
-        this.peakHourRuleType = peakHourRuleType;
-        this.stopId = stopId;
         this.days = days;
         this.hours = hours;
-        this.am_only = am_only;
-        this.pm_only = pm_only;
+        this.useGtfs = useGtfs;
     }
 
     public String getKey() {
-        String internalKey = this.serviceId.toString();
-        if(this.stopId != null && !this.stopId.isEmpty()) {
-            internalKey += '_' + this.stopId;
-        }
-        if(this.peakHourRuleType != null) {
-            internalKey += '_' + this.peakHourRuleType.toString();
-        }
-        if (this.am_only) {
-            internalKey += "_AM";
-        }
-        if (this.pm_only) {
-            internalKey += "_PM";
-        }
-        return internalKey;
+        return this.serviceId.toString();
     }
 }
 
@@ -369,9 +340,13 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         lirrFareMap.clear();
 
         // Zone 1 Inbound
+        lirrFareMap.put("4to1", 41f);
+        lirrFareMap.put("4to3", 43f);
         lirrFareMap.put("1Ato1", 8.75f);
         lirrFareMap.put("3to1", 10.25f);
         lirrFareMap.put("4Ato1", 12f);
+
+
         lirrFareMap.put("7Ato1", 13.5f);
         lirrFareMap.put("9Ato1", 16f);
         lirrFareMap.put("10Ato1", 19f);
@@ -384,7 +359,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             Float value = entry.getValue();
             String startZone = key.split("to")[0];
             String endZone = key.split("to")[1];
-            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.am_peak_only, value.floatValue(), startZone, endZone,null);
+            NycAgencyFare lirrFare= new NycAgencyFare(lirr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone,null);
             agencyFares.put(lirrFare.getKey(), lirrFare);
         }
 
@@ -596,18 +571,14 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         // Bus and Subway Peak Hours
         Integer[] weekdays = {1,2,3,4,5};
         Integer[] hours = {6,7,8,9,10,15,16,17,18,19};
-        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, null, null, weekdays, hours, false, false);
-        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, null, null, weekdays, hours, false, false);
+        NycAgencyPeakHour nyctPeakHours = new NycAgencyPeakHour(nyctExpressBus, weekdays, hours, false);
+        NycAgencyPeakHour mtabcPeakHours = new NycAgencyPeakHour(mtabcExpressBus, weekdays, hours, false);
         agencyPeakHours.put(nyctPeakHours.getKey(), nyctPeakHours);
         agencyPeakHours.put(mtabcPeakHours.getKey(), mtabcPeakHours);
 
         // LIRR Peak hours
-        Integer[] am_hours = {6,7,8,9};
-        Integer[] pm_hours  = {4,5,6,7};
-        NycAgencyPeakHour lirrAmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, am_hours, true, false);
-        NycAgencyPeakHour lirrPmPeakHours = new NycAgencyPeakHour(lirr, null, null, weekdays, pm_hours, false, true);
-        agencyPeakHours.put(lirrAmPeakHours.getKey(), lirrAmPeakHours);
-        agencyPeakHours.put(lirrPmPeakHours.getKey(), lirrPmPeakHours);
+        NycAgencyPeakHour lirrPeakHours = new NycAgencyPeakHour(lirr, null, null, true);
+        agencyPeakHours.put(lirrPeakHours.getKey(), lirrPeakHours);
     }
 
     @Override
@@ -667,6 +638,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                     newRide.startZone = newRide.firstStop.getZoneId();
                     newRide.route = routeId;
                     Trip trip = state.getBackTrip();
+                    newRide.gtfsTrip = trip;
                     Route route = trip.getRoute();
                     int type = route.getType();
                     newRide.routeType = type;
@@ -858,9 +830,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     /** find agency fare for the ride based on requested fare type */
     private NycAgencyFare findAgencyFare(Ride ride, FareType fareType) {
         String serviceIdString = ride.agency + "_" + ride.routeType;
-        boolean isPeak = isInPeakHour(ride, null);
-        boolean isAmPeak = isInPeakHour(ride, "AM");
-        boolean isPmPeak = isInPeakHour(ride, "PM");
+        boolean isPeak = isInPeakHour(ride);
 
         // zone-pair key component (used in finding specific fare rule)
         String zoneKey = "";
@@ -870,12 +840,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         else if(ride.startZone != null && !ride.startZone.isEmpty()) {
             zoneKey += '_' + ride.startZone;
         }
-
         if(ride.mergeMidZone != null && !ride.mergeMidZone.isEmpty()
                 && isLessThan(ride.mergeMidZone,ride.mergeStartZone) && isLessThan(ride.mergeMidZone, ride.endZone)){
             zoneKey += '_' + ride.mergeMidZone;
         }
-
         if(ride.endZone != null && !ride.endZone.isEmpty()) {
             zoneKey += '_' + ride.endZone;
         }
@@ -909,16 +877,6 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                         conditionFare = null; // reset if not meet
                     }
                     break;
-                case am_peak_only :
-                    if(!isAmPeak) {
-                        conditionFare = null; // reset if not meet
-                    }
-                    break;
-                case pm_peak_only :
-                    if(!isPmPeak) {
-                        conditionFare = null; // reset if not meet
-                    }
-                    break;
                 case non_peak_hour_only :
                     if(isPeak) {
                         conditionFare = null; // reset if not meet
@@ -942,48 +900,25 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     }
 
     /** check if the ride is in Peak Hour */
-    private boolean isInPeakHour(Ride ride, String am_pm) {
+    private boolean isInPeakHour(Ride ride) {
         String ruleKey = ride.agency + "_" + ride.routeType;
-        if(am_pm != null){
-            ruleKey += am_pm;
-        }
         NycAgencyPeakHour peakHours = agencyPeakHours.get(ruleKey);
-        // get peak hour rules
-        if(peakHours == null) {
-            // check specific stop, first with startZone
-            if(ride.startZone != null && !ride.startZone.isEmpty()) {
-                String startZoneRuleKey = ruleKey + "_" + ride.startZone;
-                peakHours = agencyPeakHours.get(startZoneRuleKey);
-                if(peakHours == null) {
-                    // check rule type
-                    startZoneRuleKey += startZoneRuleKey + '_' + NycPeakHourRuleType.departure;
-                    peakHours = agencyPeakHours.get(startZoneRuleKey);
-                }
-            }
-
-            // check end zone
-            if(peakHours == null && ride.endZone != null && !ride.endZone.isEmpty()) {
-                String endZoneRuleKey = ruleKey + "_" + ride.endZone;
-                peakHours = agencyPeakHours.get(endZoneRuleKey);
-                if (peakHours == null) {
-                    // check rule type
-                    endZoneRuleKey = endZoneRuleKey + '_' + NycPeakHourRuleType.arrival;
-                    peakHours = agencyPeakHours.get(endZoneRuleKey);
-                }
-            }
-        }
 
         // no peak hour rules for this service
-        if(peakHours == null) {
+        if (peakHours == null) {
             return false;
         }
 
-        // check ride time against peak hour days and hours
-        long rideTimeSeconds = ride.startTime;
-        if(peakHours.peakHourRuleType == NycPeakHourRuleType.arrival) {
-            rideTimeSeconds = ride.endTime;
+        // if GTFS defines peak or off peak
+        if(peakHours.useGtfs) {
+            if (ride.gtfsTrip.getPeakOffpeak() == 1)
+                return true;
+            else
+                return false;
         }
 
+        // if we manually check the hours
+        long rideTimeSeconds = ride.startTime;
         Date rideTime = new Date(rideTimeSeconds * 1000);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(rideTime);
@@ -991,7 +926,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         Integer hour = calendar.get(Calendar.HOUR_OF_DAY);
 
         //List<int> days = Arrays.asList(peakHours.days);
-        return Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour);
+        if(Arrays.asList(peakHours.days).contains(dayOfWeek) && Arrays.asList(peakHours.hours).contains(hour))
+            return true;
+        else
+            return false;
     }
 
 

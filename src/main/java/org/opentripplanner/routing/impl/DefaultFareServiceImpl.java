@@ -28,6 +28,7 @@ import java.util.Set;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FareAttribute;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.routing.core.Fare;
 import org.opentripplanner.routing.core.Fare.FareType;
 import org.opentripplanner.routing.core.FareComponent;
@@ -52,6 +53,8 @@ class Ride {
     int routeType;
 
     AgencyAndId trip;
+
+    Trip gtfsTrip;
     
     Set<String> zones;
 
