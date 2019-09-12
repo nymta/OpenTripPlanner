@@ -880,9 +880,12 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                             case merge:
                                 // If we found a merge zone transfer, then set the traveled Service origin for future reference.
                                 Ride lastRide = null;
+
+                                int index = rides.indexOf(ride);
+                                if(index > 0)
+                                  lastRide = rides.get(index-1);
+
                                 if(traveledService.startZone == null){
-                                    int index = rides.indexOf(ride);
-                                    lastRide = rides.get(index-1);
                                     traveledService.startZone = lastRide.startZone;
                                     traveledService.midZone = lastRide.endZone;
                                 }
@@ -890,7 +893,11 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
                                 //Look for indirect route patterns
                                 if(lastRide != null) {
-                                    if (isLessThan(lastRide.endZone, traveledService.midZone)) {
+                                    //if (isLessThan(lastRide.endZone, traveledService.midZone)) {
+                                    //    traveledService.midZone = lastRide.endZone;
+                                    //}
+                                    if ((isLessThan(lastRide.endZone, traveledService.midZone) && isLessThan(traveledService.midZone, ride.mergeStartZone)) ||
+                                            (isGreaterThan(lastRide.endZone, traveledService.midZone) && isGreaterThan(traveledService.midZone, ride.mergeStartZone))) {
                                         traveledService.midZone = lastRide.endZone;
                                     }
                                 }
@@ -980,7 +987,8 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             zoneKey += '_' + ride.startZone;
         }
         if(ride.mergeMidZone != null && !ride.mergeMidZone.isEmpty()
-                && isLessThan(ride.mergeMidZone,ride.mergeStartZone) && isLessThan(ride.mergeMidZone, ride.endZone)){
+                && ((isLessThan(ride.mergeMidZone,ride.mergeStartZone) && isLessThan(ride.mergeMidZone, ride.endZone))
+                    || (isGreaterThan(ride.mergeMidZone,ride.mergeStartZone) && isGreaterThan(ride.mergeMidZone, ride.endZone)))){
             zoneKey += '_' + ride.mergeMidZone;
         }
         if(ride.endZone != null && !ride.endZone.isEmpty()) {
@@ -1082,11 +1090,11 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     /** check to see if zone A is less than zone B */
     private boolean isLessThan(String zoneA, String zoneB){
         return Integer.parseInt(zoneA) < Integer.parseInt(zoneB);
-        //if(zoneA.compareTo(zoneB) < 0){
-        //    return true;
-        //} else {
-        //    return false;
-        // }
+    }
+
+    /** check to see if zone A is less than zone B */
+    private boolean isGreaterThan(String zoneA, String zoneB){
+        return Integer.parseInt(zoneA) > Integer.parseInt(zoneB);
     }
 
     /** query transfer rules related to a specific service */
