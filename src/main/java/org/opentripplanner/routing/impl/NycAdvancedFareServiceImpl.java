@@ -663,7 +663,7 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
         HashMap<String, Float> mnrFareMap = new HashMap<String, Float>();
 
-        // GCT
+        // Manhattan
         mnrFareMap.put("0to1", 6.25f);
         mnrFareMap.put("0to2", 7.25f);
         mnrFareMap.put("0to3", 8.75f);
@@ -817,20 +817,145 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         mnrFareMap.clear();
 
         // GCT
-        mnrFareMap.put("0to1", 116.25f);
-        mnrFareMap.put("0to2", 117.25f);
-        mnrFareMap.put("0to3", 118.75f);
-        mnrFareMap.put("0to4", 119.75f);
-        mnrFareMap.put("0to5", 1111.25f);
-        mnrFareMap.put("0to6", 1113.25f);
-        mnrFareMap.put("0to7", 115f);
-        mnrFareMap.put("0to8", 117.5f);
-        mnrFareMap.put("0to9", 119.25f);
-        mnrFareMap.put("0to10",120.25f);
+        mnrFareMap.put("0to1", 8.25f);
+        mnrFareMap.put("0to2", 9.75f);
+        mnrFareMap.put("0to3", 11.5f);
+        mnrFareMap.put("0to4", 12.75f);
+        mnrFareMap.put("0to5", 14.75f);
+        mnrFareMap.put("0to6", 17.5f);
+        mnrFareMap.put("0to7", 20f);
+        mnrFareMap.put("0to8", 23f);
+        mnrFareMap.put("0to9", 25.75f);
+        mnrFareMap.put("0to10", 27.25f);
 
-        // GCT
-        mnrFareMap.put("3to0", 500.25f);
+        // Zone 1
+        mnrFareMap.put("1to0", 8.25f);
+        mnrFareMap.put("1to2", 8.25f);
+        mnrFareMap.put("1to3", 9.75f);
+        mnrFareMap.put("1to4", 10.75f);
+        mnrFareMap.put("1to5", 12.25f);
+        mnrFareMap.put("1to6", 14.25f);
+        mnrFareMap.put("1to7", 16f);
+        mnrFareMap.put("1to8", 18.5f);
+        mnrFareMap.put("1to9", 20.25f);
+        mnrFareMap.put("1to10", 21.25f);
 
+        // Zone 2
+        mnrFareMap.put("2to0", 9.75f);
+        mnrFareMap.put("2to1", 7.25f);
+        mnrFareMap.put("2to2", 3f);
+        mnrFareMap.put("2to3", 3f);
+        mnrFareMap.put("2to4", 4.25f);
+        mnrFareMap.put("2to5", 5.75f);
+        mnrFareMap.put("2to6", 8f);
+        mnrFareMap.put("2to7", 11.5f);
+        mnrFareMap.put("2to8", 14.5f);
+        mnrFareMap.put("2to9", 16.75f);
+        mnrFareMap.put("2to10", 18f);
+
+        // Zone 3
+        mnrFareMap.put("3to0", 11.5f);
+        mnrFareMap.put("3to1", 8.75f);
+        mnrFareMap.put("3to2", 3f);
+        mnrFareMap.put("3to3", 3f);
+        mnrFareMap.put("3to4", 4f);
+        mnrFareMap.put("3to5", 5f);
+        mnrFareMap.put("3to6", 7.25f);
+        mnrFareMap.put("3to7", 8.75f);
+        mnrFareMap.put("3to8", 13f);
+        mnrFareMap.put("3to9", 15.25f);
+        mnrFareMap.put("3to10", 16f);
+
+        // Zone 4
+        mnrFareMap.put("4to0", 12.75f);
+        mnrFareMap.put("4to1", 9.75f);
+        mnrFareMap.put("4to2", 4.25f);
+        mnrFareMap.put("4to3", 4f);
+        mnrFareMap.put("4to4", 3f);
+        mnrFareMap.put("4to5", 3f);
+        mnrFareMap.put("4to6", 6f);
+        mnrFareMap.put("4to7", 7.75f);
+        mnrFareMap.put("4to8", 11.5f);
+        mnrFareMap.put("4to9", 13.75f);
+        mnrFareMap.put("4to10", 14.75f);
+
+        // Zone 5
+        mnrFareMap.put("5to0", 14.75f);
+        mnrFareMap.put("5to1", 11.25f);
+        mnrFareMap.put("5to2", 5.75f);
+        mnrFareMap.put("5to3", 5f);
+        mnrFareMap.put("5to4", 3f);
+        mnrFareMap.put("5to5", 3f);
+        mnrFareMap.put("5to6", 3f);
+        mnrFareMap.put("5to7", 6.75f);
+        mnrFareMap.put("5to8", 8.25f);
+        mnrFareMap.put("5to9", 12f);
+        mnrFareMap.put("5to10", 12.75f);
+
+        // Zone 6
+        mnrFareMap.put("6to0", 17.5f);
+        mnrFareMap.put("6to1", 13.25f);
+        mnrFareMap.put("6to2", 8f);
+        mnrFareMap.put("6to3", 7.25f);
+        mnrFareMap.put("6to4", 6f);
+        mnrFareMap.put("6to5", 3f);
+        mnrFareMap.put("6to6", 3f);
+        mnrFareMap.put("6to7", 3f);
+        mnrFareMap.put("6to8", 6.75f);
+        mnrFareMap.put("6to9", 8.25f);
+        mnrFareMap.put("6to10", 10f);
+
+        // Zone 7
+        mnrFareMap.put("7to0", 20f);
+        mnrFareMap.put("7to1", 15f);
+        mnrFareMap.put("7to2", 11.5f);
+        mnrFareMap.put("7to3", 8.75f);
+        mnrFareMap.put("7to4", 7.75f);
+        mnrFareMap.put("7to5", 6.75f);
+        mnrFareMap.put("7to6", 3f);
+        mnrFareMap.put("7to7", 3f);
+        mnrFareMap.put("7to8", 4.25f);
+        mnrFareMap.put("7to9", 6.5f);
+        mnrFareMap.put("7to10", 7.5f);
+
+        // Zone 8
+        mnrFareMap.put("8to0", 23f);
+        mnrFareMap.put("8to1", 17.5f);
+        mnrFareMap.put("8to2", 14.5f);
+        mnrFareMap.put("8to3", 13f);
+        mnrFareMap.put("8to4", 11.5f);
+        mnrFareMap.put("8to5", 8.25f);
+        mnrFareMap.put("8to6", 6.75f);
+        mnrFareMap.put("8to7", 4.25f);
+        mnrFareMap.put("8to8", 3f);
+        mnrFareMap.put("8to9", 4.25f);
+        mnrFareMap.put("8to10", 4.5f);
+
+        // Zone 9
+        mnrFareMap.put("9to0", 25.75f);
+        mnrFareMap.put("9to1", 19.25f);
+        mnrFareMap.put("9to2", 16.75f);
+        mnrFareMap.put("9to3", 15.25f);
+        mnrFareMap.put("9to4", 13.75f);
+        mnrFareMap.put("9to5", 12f);
+        mnrFareMap.put("9to6", 8.25f);
+        mnrFareMap.put("9to7", 6.5f);
+        mnrFareMap.put("9to8", 4.25f);
+        mnrFareMap.put("9to9", 3f);
+        mnrFareMap.put("9to10", 3f);
+
+        // Zone 10
+        mnrFareMap.put("10to0", 27.25f);
+        mnrFareMap.put("10to1", 20.25f);
+        mnrFareMap.put("10to2", 18f);
+        mnrFareMap.put("10to3", 16f);
+        mnrFareMap.put("10to4", 14.75f);
+        mnrFareMap.put("10to5", 12.75f);
+        mnrFareMap.put("10to6", 10f);
+        mnrFareMap.put("10to7", 7.5f);
+        mnrFareMap.put("10to8", 4.5f);
+        mnrFareMap.put("10to9", 3f);
+        mnrFareMap.put("10to10", 3f);
 
         for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
             String key = entry.getKey();
