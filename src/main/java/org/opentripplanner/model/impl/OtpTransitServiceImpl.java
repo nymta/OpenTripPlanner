@@ -16,6 +16,7 @@ import org.opentripplanner.model.ShapePoint;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.StopTime;
 import org.opentripplanner.model.Transfer;
+import org.opentripplanner.model.Translation;
 import org.opentripplanner.model.Trip;
 import org.opentripplanner.model.OtpTransitService;
 
@@ -77,6 +78,8 @@ class OtpTransitServiceImpl implements OtpTransitService {
 
     private Collection<FlexArea> flexAreas;
 
+    private Collection<Translation> translations;
+
     // Indexes
     private Map<FeedScopedId, List<String>> tripAgencyIdsByServiceId = null;
 
@@ -99,7 +102,7 @@ class OtpTransitServiceImpl implements OtpTransitService {
             List<FareRule> fareRules, List<FeedInfo> feedInfos, List<Frequency> frequencies,
             List<Pathway> pathways, List<Route> routes, List<ShapePoint> shapePoints,
             List<Stop> stops, List<StopTime> stopTimes, List<Transfer> transfers,
-            List<Trip> trips, List<FlexArea> flexAreas) {
+            List<Trip> trips, List<FlexArea> flexAreas, List<Translation> translations) {
         this.agencies = nullSafeUnmodifiableList(agencies);
         this.calendarDates = nullSafeUnmodifiableList(calendarDates);
         this.calendars = nullSafeUnmodifiableList(calendars);
@@ -115,6 +118,8 @@ class OtpTransitServiceImpl implements OtpTransitService {
         this.transfers = nullSafeUnmodifiableList(transfers);
         this.trips = nullSafeUnmodifiableList(trips);
         this.flexAreas = nullSafeUnmodifiableList(flexAreas);
+        this.translations = nullSafeUnmodifiableList(translations);
+        this.translations = nullSafeUnmodifiableList(translations);
     }
 
     @Override
@@ -291,6 +296,11 @@ class OtpTransitServiceImpl implements OtpTransitService {
     @Override
     public Collection<FlexArea> getAllAreas() {
         return flexAreas;
+    }
+
+    @Override
+    public Collection<Translation> getAllTranslations() {
+        return translations;
     }
 
     /*  Private Methods */

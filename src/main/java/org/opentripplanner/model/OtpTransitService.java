@@ -58,4 +58,6 @@ public interface OtpTransitService {
     List<Stop> getStopsForStation(Stop station);
 
     Collection<FlexArea> getAllAreas();
+
+    Collection<Translation> getAllTranslations();
 }

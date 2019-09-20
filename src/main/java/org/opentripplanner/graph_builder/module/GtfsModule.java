@@ -34,10 +34,13 @@ import org.opentripplanner.gtfs.BikeAccess;
 import org.opentripplanner.gtfs.GtfsContext;
 import org.opentripplanner.gtfs.GtfsLibrary;
 import org.opentripplanner.model.OtpTransitService;
+import org.opentripplanner.model.translation.TranslationServiceData;
 import org.opentripplanner.routing.edgetype.factory.PatternHopFactory;
 import org.opentripplanner.routing.edgetype.factory.GtfsStopContext;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.services.FareServiceFactory;
+import org.opentripplanner.translation.MultiTranslationServiceImpl;
+import org.opentripplanner.translation.TranslationServiceDataFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +95,7 @@ public class GtfsModule implements GraphBuilderModule {
         graph.clearTimeZone();
 
         MultiCalendarServiceImpl calendarService = new MultiCalendarServiceImpl();
+        MultiTranslationServiceImpl translationService = new MultiTranslationServiceImpl();
         GtfsStopContext stopContext = new GtfsStopContext();
 
         try {
@@ -120,6 +124,7 @@ public class GtfsModule implements GraphBuilderModule {
                         createCalendarSrvDataWithoutDatesForLocalizedSrvId(transitService),
                         transitService
                 );
+                translationService.addData(TranslationServiceDataFactoryImpl.createData(transitService));
 
                 hf.subwayAccessTime = gtfsBundle.subwayAccessTime;
                 hf.maxInterlineDistance = gtfsBundle.maxInterlineDistance;
@@ -145,6 +150,8 @@ public class GtfsModule implements GraphBuilderModule {
                 calendarService.getData()
         );
         graph.updateTransitFeedValidity(calendarService.getData());
+
+        graph.putService(TranslationServiceData.class, translationService.getData());
 
         graph.hasTransit = true;
         graph.calculateTransitCenter();

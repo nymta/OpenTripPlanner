@@ -12,6 +12,7 @@ import org.opentripplanner.model.Agency;
 import org.opentripplanner.model.Route;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.Trip;
+import org.opentripplanner.model.translation.TranslationService;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
@@ -588,14 +589,17 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeTextColor = route.getTextColor();
             leg.routeType = route.getType();
             leg.routeBrandingUrl = route.getBrandingUrl();
-            leg.tripId = trip.getId();
-            leg.tripShortName = trip.getTripShortName();
-            leg.tripBlockId = trip.getBlockId();
-            leg.flexDrtAdvanceBookMin = trip.getDrtAdvanceBookMin();
-            leg.flexDrtPickupMessage = trip.getDrtPickupMessage();
-            leg.flexDrtDropOffMessage = trip.getDrtDropOffMessage();
-            leg.flexFlagStopPickupMessage = trip.getContinuousPickupMessage();
-            leg.flexFlagStopDropOffMessage = trip.getContinuousDropOffMessage();
+
+            TranslationService translationService = states[states.length - 1].getOptions().rctx.graph.getTranslationService();
+            Trip translatedTrip = translationService.getTranslatedEntity(requestedLocale.getLanguage(), Trip.class, trip);
+            leg.tripId = translatedTrip.getId();
+            leg.tripShortName = translatedTrip.getTripShortName();
+            leg.tripBlockId = translatedTrip.getBlockId();
+            leg.flexDrtAdvanceBookMin = translatedTrip.getDrtAdvanceBookMin();
+            leg.flexDrtPickupMessage = translatedTrip.getDrtPickupMessage();
+            leg.flexDrtDropOffMessage = translatedTrip.getDrtDropOffMessage();
+            leg.flexFlagStopPickupMessage = translatedTrip.getContinuousPickupMessage();
+            leg.flexFlagStopDropOffMessage = translatedTrip.getContinuousDropOffMessage();
 
             if (serviceDay != null) {
                 leg.serviceDate = serviceDay.getServiceDate().getAsString();

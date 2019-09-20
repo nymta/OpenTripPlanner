@@ -39,6 +39,8 @@ import org.opentripplanner.graph_builder.annotation.GraphBuilderAnnotation;
 import org.opentripplanner.graph_builder.annotation.NoFutureDates;
 import org.opentripplanner.kryo.HashBiMapSerializer;
 import org.opentripplanner.model.GraphBundle;
+import org.opentripplanner.model.translation.TranslationService;
+import org.opentripplanner.model.translation.TranslationServiceData;
 import org.opentripplanner.profile.StopClusterMode;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.MortonVertexComparatorFactory;
@@ -55,6 +57,7 @@ import org.opentripplanner.routing.services.notes.StreetNotesService;
 import org.opentripplanner.routing.trippattern.Deduplicator;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
+import org.opentripplanner.translation.TranslationServiceImpl;
 import org.opentripplanner.updater.GraphUpdaterConfigurator;
 import org.opentripplanner.updater.GraphUpdaterManager;
 import org.opentripplanner.updater.stoptime.TimetableSnapshotSource;
@@ -101,6 +104,8 @@ public class Graph implements Serializable {
     private transient Map<String, Vertex> vertices;
 
     private transient CalendarService calendarService;
+
+    private transient TranslationService translationService;
 
     // TODO this would be more efficient if it was just an array.
     private transient Map<Integer, Vertex> vertexById;
@@ -857,6 +862,18 @@ public class Graph implements Serializable {
             }
         }
         return this.calendarService;
+    }
+
+    public TranslationService getTranslationService() {
+        if (translationService == null) {
+            TranslationServiceData data = this.getService(TranslationServiceData.class);
+            if (data != null) {
+                TranslationServiceImpl translationService = new TranslationServiceImpl();
+                translationService.setData(data);
+                this.translationService = translationService;
+            }
+        }
+        return this.translationService;
     }
 
     public int removeEdgelessVertices() {

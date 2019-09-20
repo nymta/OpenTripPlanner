@@ -21,6 +21,8 @@ public final class FeedInfo extends IdentityBean<String> {
 
     private String version;
 
+    private String defaultLang;
+
     public String getPublisherName() {
         return publisherName;
     }
@@ -67,6 +69,14 @@ public final class FeedInfo extends IdentityBean<String> {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getDefaultLang() {
+        return defaultLang;
+    }
+
+    public void setDefaultLang(String defaultLang) {
+        this.defaultLang = defaultLang;
     }
 
     @Override
