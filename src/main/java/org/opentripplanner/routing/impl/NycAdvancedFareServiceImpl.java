@@ -653,12 +653,12 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         }
 
         ////////////////////////////
-        // MNR Fares
+        // Hudson Harlem Fares
         ////////////////////////////
 
 
         //////
-        // MNR Non-Peak Fares
+        // Hudson Harlem Non-Peak Fares
         //////
 
         HashMap<String, Float> mnrFareMap = new HashMap<String, Float>();
@@ -814,6 +814,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(mnrFare.getKey(), mnrFare);
         }
 
+        //////
+        // Hudson Harlem Peak Fares
+        //////
+
         mnrFareMap.clear();
 
         // GCT
@@ -967,6 +971,434 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             agencyFares.put(mnrFare.getKey(), mnrFare);
         }
 
+        ////////////////////////////
+        // New Haven Line
+        ////////////////////////////
+
+
+        //////
+        // NHL Non-Peak Fares
+        //////
+
+        mnrFareMap.clear();
+
+        // Manhattan
+        mnrFareMap.put("0to12", 8.50f);
+        mnrFareMap.put("0to13", 9.75f);
+        mnrFareMap.put("0to14", 10.25f);
+        mnrFareMap.put("0to15", 10.25f);
+        mnrFareMap.put("0to16", 11.50f);
+        mnrFareMap.put("0to17", 12.50f);
+        mnrFareMap.put("0to18", 13.50f);
+        mnrFareMap.put("0to19", 14.75f);
+        mnrFareMap.put("0to20", 15.75f);
+        mnrFareMap.put("0to21", 17.75f);
+        mnrFareMap.put("0to31", 11.50f);
+        mnrFareMap.put("0to41", 12.75f);
+        mnrFareMap.put("0to42", 13.25f);
+        mnrFareMap.put("0to51", 15.5f);
+
+        mnrFareMap.put("1to12", 8.50f);
+        mnrFareMap.put("1to13", 9.75f);
+        mnrFareMap.put("1to14", 10.25f);
+        mnrFareMap.put("1to15", 10.25f);
+        mnrFareMap.put("1to16", 11.50f);
+        mnrFareMap.put("1to17", 12.50f);
+        mnrFareMap.put("1to18", 13.50f);
+        mnrFareMap.put("1to19", 14.75f);
+        mnrFareMap.put("1to20", 15.75f);
+        mnrFareMap.put("1to21", 17.75f);
+        mnrFareMap.put("1to31", 11.50f);
+        mnrFareMap.put("1to41", 12.75f);
+        mnrFareMap.put("1to42", 13.25f);
+        mnrFareMap.put("1to51", 15.5f);
+
+        // 12
+        mnrFareMap.put("12to2", 9.5f);
+        mnrFareMap.put("12to11", 3f);
+        mnrFareMap.put("12to12", 3f);
+
+        // 13
+        mnrFareMap.put("13to2", 13.75f);
+        mnrFareMap.put("13to11", 4.25f);
+        mnrFareMap.put("13to12", 3f);
+        mnrFareMap.put("13to13", 3f);
+
+        // 14
+        mnrFareMap.put("14to2", 11.25f);
+        mnrFareMap.put("14to11", 5f);
+        mnrFareMap.put("14to12", 4f);
+        mnrFareMap.put("14to13", 3.75f);
+        mnrFareMap.put("14to14", 3f);
+
+        // 15
+        mnrFareMap.put("15to2", 11.25f);
+        mnrFareMap.put("15to11", 5f);
+        mnrFareMap.put("15to12", 4.75f);
+        mnrFareMap.put("15to13", 3.75f);
+        mnrFareMap.put("15to14", 3.5f);
+        mnrFareMap.put("15to15", 2.75f);
+
+        // 16
+        mnrFareMap.put("16to2", 12.5f);
+        mnrFareMap.put("16to11", 6f);
+        mnrFareMap.put("16to12", 6f);
+        mnrFareMap.put("16to13", 5f);
+        mnrFareMap.put("16to14", 4.75f);
+        mnrFareMap.put("16to15", 2.75f);
+        mnrFareMap.put("16to16", 2.75f);
+
+        // 17
+        mnrFareMap.put("17to2", 13.5f);
+        mnrFareMap.put("17to11", 7f);
+        mnrFareMap.put("17to12", 7f);
+        mnrFareMap.put("17to13", 6f);
+        mnrFareMap.put("17to14", 5.35f);
+        mnrFareMap.put("17to15", 3.5f);
+        mnrFareMap.put("17to16", 2.75f);
+        mnrFareMap.put("17to17", 2.75f);
+
+        // 18
+        mnrFareMap.put("18to2", 14.5f);
+        mnrFareMap.put("18to11", 8.5f);
+        mnrFareMap.put("18to12", 8.5f);
+        mnrFareMap.put("18to13", 7.25f);
+        mnrFareMap.put("18to14", 7f);
+        mnrFareMap.put("18to15", 4.5f);
+        mnrFareMap.put("18to16", 2.75f);
+        mnrFareMap.put("18to17", 2.75f);
+        mnrFareMap.put("18to18", 2.75f);
+
+        // 19
+        mnrFareMap.put("19to2", 15.75f);
+        mnrFareMap.put("19to11", 10.25f);
+        mnrFareMap.put("19to12", 10.25f);
+        mnrFareMap.put("19to13", 9f);
+        mnrFareMap.put("19to14", 8.25f);
+        mnrFareMap.put("19to15", 6f);
+        mnrFareMap.put("19to16", 4.50f);
+        mnrFareMap.put("19to17", 3.75f);
+        mnrFareMap.put("19to18", 2.75f);
+
+        // 20
+        mnrFareMap.put("20to2", 16.75f);
+        mnrFareMap.put("20to11", 11.5f);
+        mnrFareMap.put("20to12", 11.5f);
+        mnrFareMap.put("20to13", 10.25f);
+        mnrFareMap.put("20to14", 9.5f);
+        mnrFareMap.put("20to15", 7.25f);
+        mnrFareMap.put("20to16", 5.75f);
+        mnrFareMap.put("20to17", 4.5f);
+        mnrFareMap.put("20to18", 3.5f);
+        mnrFareMap.put("20to19", 2.75f);
+        mnrFareMap.put("20to20", 2.75f);
+
+        // 21
+        mnrFareMap.put("21to2", 18.75f);
+        mnrFareMap.put("21to11", 14f);
+        mnrFareMap.put("21to12", 14f);
+        mnrFareMap.put("21to13", 12.75f);
+        mnrFareMap.put("21to14", 12f);
+        mnrFareMap.put("21to15", 9.75f);
+        mnrFareMap.put("21to16", 8.25f);
+        mnrFareMap.put("21to17", 7f);
+        mnrFareMap.put("21to18", 5.5f);
+        mnrFareMap.put("21to19", 3.75f);
+        mnrFareMap.put("21to20", 3.5f);
+        mnrFareMap.put("21to21", 2.75f);
+
+        // 31
+        mnrFareMap.put("31to2", 12.5f);
+        mnrFareMap.put("31to11", 6f);
+        mnrFareMap.put("31to12", 6f);
+        mnrFareMap.put("31to13", 5f);
+        mnrFareMap.put("31to14", 4.75f);
+        mnrFareMap.put("31to15", 2.75f);
+        mnrFareMap.put("31to16", 2.75f);
+        mnrFareMap.put("31to17", 3.5f);
+        mnrFareMap.put("31to18", 4.5f);
+        mnrFareMap.put("31to19", 5.75f);
+        mnrFareMap.put("31to20", 6.25f);
+        mnrFareMap.put("31to21", 8.5f);
+        mnrFareMap.put("31to31", 2.75f);
+
+        // 41
+        mnrFareMap.put("41to2", 13.75f);
+        mnrFareMap.put("41to11", 7.5f);
+        mnrFareMap.put("41to12", 7.5f);
+        mnrFareMap.put("41to13", 6.25f);
+        mnrFareMap.put("41to14", 6f);
+        mnrFareMap.put("41to15", 4f);
+        mnrFareMap.put("41to16", 3.5f);
+        mnrFareMap.put("41to17", 2.75f);
+        mnrFareMap.put("41to18", 3.5f);
+        mnrFareMap.put("41to19", 4.50f);
+        mnrFareMap.put("41to20", 5f);
+        mnrFareMap.put("41to21", 7f);
+        mnrFareMap.put("41to31", 4.5f);
+        mnrFareMap.put("41to41", 2.5f);
+
+        // 42
+        mnrFareMap.put("42to2", 14.25f);
+        mnrFareMap.put("42to11", 9.75f);
+        mnrFareMap.put("42to12", 8.5f);
+        mnrFareMap.put("42to13", 7.5f);
+        mnrFareMap.put("42to14", 7f);
+        mnrFareMap.put("42to15", 5.25f);
+        mnrFareMap.put("42to16", 4.25f);
+        mnrFareMap.put("42to17", 3.5f);
+        mnrFareMap.put("42to18", 5f);
+        mnrFareMap.put("42to19", 6f);
+        mnrFareMap.put("42to20", 6.25f);
+        mnrFareMap.put("42to21", 9f);
+        mnrFareMap.put("42to31", 5.25f);
+        mnrFareMap.put("42to41", 2.5f);
+        mnrFareMap.put("42to42", 2.5f);
+
+        // 51
+        mnrFareMap.put("51to2", 16.5f);
+        mnrFareMap.put("51to11", 12f);
+        mnrFareMap.put("51to12", 11.75f);
+        mnrFareMap.put("51to13", 10.75f);
+        mnrFareMap.put("51to14", 10.5f);
+        mnrFareMap.put("51to15", 8f);
+        mnrFareMap.put("51to16", 6.75f);
+        mnrFareMap.put("51to17", 6f);
+        mnrFareMap.put("51to18", 5f);
+        mnrFareMap.put("51to19", 2.75f);
+        mnrFareMap.put("51to20", 2.75f);
+        mnrFareMap.put("51to21", 6f);
+        mnrFareMap.put("51to31", 8f);
+        mnrFareMap.put("51to41", 7f);
+        mnrFareMap.put("51to42", 9f);
+        mnrFareMap.put("51to51", 2.5f);
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare mnrFare= new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.non_peak_hour_only, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(mnrFare.getKey(), mnrFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseMnrFare = new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.non_peak_hour_only, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseMnrFare.getKey(), reverseMnrFare);
+            }
+        }
+
+        //////
+        // NHL Peak Fares
+        //////
+
+        mnrFareMap.clear();
+
+        // Manhattan
+        mnrFareMap.put("0to12", 11.25f);
+        mnrFareMap.put("0to13", 12.75f);
+        mnrFareMap.put("0to14", 13.75f);
+        mnrFareMap.put("0to15", 13.75f);
+        mnrFareMap.put("0to16", 15.25f);
+        mnrFareMap.put("0to17", 16.50f);
+        mnrFareMap.put("0to18", 18f);
+        mnrFareMap.put("0to19", 19.75f);
+        mnrFareMap.put("0to20", 21f);
+        mnrFareMap.put("0to21", 23.5f);
+        mnrFareMap.put("0to31", 15.25f);
+        mnrFareMap.put("0to41", 17f);
+        mnrFareMap.put("0to42", 17.75f);
+        mnrFareMap.put("0to51", 20.75f);
+
+        mnrFareMap.put("1to12", 11.25f);
+        mnrFareMap.put("1to13", 12.75f);
+        mnrFareMap.put("1to14", 13.75f);
+        mnrFareMap.put("1to15", 13.75f);
+        mnrFareMap.put("1to16", 15.25f);
+        mnrFareMap.put("1to17", 16.50f);
+        mnrFareMap.put("1to18", 18f);
+        mnrFareMap.put("1to19", 19.75f);
+        mnrFareMap.put("1to20", 21f);
+        mnrFareMap.put("1to21", 23.5f);
+        mnrFareMap.put("1to31", 15.25f);
+        mnrFareMap.put("1to41", 17f);
+        mnrFareMap.put("1to42", 17.75f);
+        mnrFareMap.put("1to51", 20.75f);
+
+        // 12
+        mnrFareMap.put("12to2", 12.5f);
+        mnrFareMap.put("12to11", 3f);
+        mnrFareMap.put("12to12", 3f);
+
+        // 13
+        mnrFareMap.put("13to2", 14f);
+        mnrFareMap.put("13to11", 4.25f);
+        mnrFareMap.put("13to12", 3f);
+        mnrFareMap.put("13to13", 3f);
+
+        // 14
+        mnrFareMap.put("14to2", 15f);
+        mnrFareMap.put("14to11", 5f);
+        mnrFareMap.put("14to12", 4f);
+        mnrFareMap.put("14to13", 3.75f);
+        mnrFareMap.put("14to14", 3f);
+
+        // 15
+        mnrFareMap.put("15to2", 15f);
+        mnrFareMap.put("15to11", 5f);
+        mnrFareMap.put("15to12", 4.75f);
+        mnrFareMap.put("15to13", 3.75f);
+        mnrFareMap.put("15to14", 3.5f);
+        mnrFareMap.put("15to15", 2.75f);
+
+        // 16
+        mnrFareMap.put("16to2", 16.5f);
+        mnrFareMap.put("16to11", 6f);
+        mnrFareMap.put("16to12", 6f);
+        mnrFareMap.put("16to13", 5f);
+        mnrFareMap.put("16to14", 4.75f);
+        mnrFareMap.put("16to15", 2.75f);
+        mnrFareMap.put("16to16", 2.75f);
+
+        // 17
+        mnrFareMap.put("17to2", 17.75f);
+        mnrFareMap.put("17to11", 7f);
+        mnrFareMap.put("17to12", 7f);
+        mnrFareMap.put("17to13", 6f);
+        mnrFareMap.put("17to14", 5.35f);
+        mnrFareMap.put("17to15", 3.5f);
+        mnrFareMap.put("17to16", 2.75f);
+        mnrFareMap.put("17to17", 2.75f);
+
+        // 18
+        mnrFareMap.put("18to2", 19.25f);
+        mnrFareMap.put("18to11", 8.5f);
+        mnrFareMap.put("18to12", 8.5f);
+        mnrFareMap.put("18to13", 7.25f);
+        mnrFareMap.put("18to14", 7f);
+        mnrFareMap.put("18to15", 4.5f);
+        mnrFareMap.put("18to16", 2.75f);
+        mnrFareMap.put("18to17", 2.75f);
+        mnrFareMap.put("18to18", 2.75f);
+
+        // 19
+        mnrFareMap.put("19to2", 21f);
+        mnrFareMap.put("19to11", 10.25f);
+        mnrFareMap.put("19to12", 10.25f);
+        mnrFareMap.put("19to13", 9f);
+        mnrFareMap.put("19to14", 8.25f);
+        mnrFareMap.put("19to15", 6f);
+        mnrFareMap.put("19to16", 4.50f);
+        mnrFareMap.put("19to17", 3.75f);
+        mnrFareMap.put("19to18", 2.75f);
+
+        // 20
+        mnrFareMap.put("20to2", 22.25f);
+        mnrFareMap.put("20to11", 11.5f);
+        mnrFareMap.put("20to12", 11.5f);
+        mnrFareMap.put("20to13", 10.25f);
+        mnrFareMap.put("20to14", 9.5f);
+        mnrFareMap.put("20to15", 7.25f);
+        mnrFareMap.put("20to16", 5.75f);
+        mnrFareMap.put("20to17", 4.5f);
+        mnrFareMap.put("20to18", 3.5f);
+        mnrFareMap.put("20to19", 2.75f);
+        mnrFareMap.put("20to20", 2.75f);
+
+        // 21
+        mnrFareMap.put("21to2", 24.75f);
+        mnrFareMap.put("21to11", 14f);
+        mnrFareMap.put("21to12", 14f);
+        mnrFareMap.put("21to13", 12.75f);
+        mnrFareMap.put("21to14", 12f);
+        mnrFareMap.put("21to15", 9.75f);
+        mnrFareMap.put("21to16", 8.25f);
+        mnrFareMap.put("21to17", 7f);
+        mnrFareMap.put("21to18", 5.5f);
+        mnrFareMap.put("21to19", 3.75f);
+        mnrFareMap.put("21to20", 3.5f);
+        mnrFareMap.put("21to21", 2.75f);
+
+        // 31
+        mnrFareMap.put("31to2", 16.5f);
+        mnrFareMap.put("31to11", 6f);
+        mnrFareMap.put("31to12", 6f);
+        mnrFareMap.put("31to13", 5f);
+        mnrFareMap.put("31to14", 4.75f);
+        mnrFareMap.put("31to15", 2.75f);
+        mnrFareMap.put("31to16", 2.75f);
+        mnrFareMap.put("31to17", 3.5f);
+        mnrFareMap.put("31to18", 4.5f);
+        mnrFareMap.put("31to19", 5.75f);
+        mnrFareMap.put("31to20", 6.25f);
+        mnrFareMap.put("31to21", 8.5f);
+        mnrFareMap.put("31to31", 2.75f);
+
+        // 41
+        mnrFareMap.put("41to2", 18.25f);
+        mnrFareMap.put("41to11", 7.5f);
+        mnrFareMap.put("41to12", 7.5f);
+        mnrFareMap.put("41to13", 6.25f);
+        mnrFareMap.put("41to14", 6f);
+        mnrFareMap.put("41to15", 4f);
+        mnrFareMap.put("41to16", 3.5f);
+        mnrFareMap.put("41to17", 2.75f);
+        mnrFareMap.put("41to18", 3.5f);
+        mnrFareMap.put("41to19", 4.50f);
+        mnrFareMap.put("41to20", 5f);
+        mnrFareMap.put("41to21", 7f);
+        mnrFareMap.put("41to31", 4.5f);
+        mnrFareMap.put("41to41", 2.5f);
+
+        // 42
+        mnrFareMap.put("42to2", 19f);
+        mnrFareMap.put("42to11", 9.75f);
+        mnrFareMap.put("42to12", 8.5f);
+        mnrFareMap.put("42to13", 7.5f);
+        mnrFareMap.put("42to14", 7f);
+        mnrFareMap.put("42to15", 5.25f);
+        mnrFareMap.put("42to16", 4.25f);
+        mnrFareMap.put("42to17", 3.5f);
+        mnrFareMap.put("42to18", 5f);
+        mnrFareMap.put("42to19", 6f);
+        mnrFareMap.put("42to20", 6.25f);
+        mnrFareMap.put("42to21", 9f);
+        mnrFareMap.put("42to31", 5.25f);
+        mnrFareMap.put("42to41", 2.5f);
+        mnrFareMap.put("42to42", 2.5f);
+
+        // 51
+        mnrFareMap.put("51to2", 22f);
+        mnrFareMap.put("51to11", 12f);
+        mnrFareMap.put("51to12", 11.75f);
+        mnrFareMap.put("51to13", 10.75f);
+        mnrFareMap.put("51to14", 10.5f);
+        mnrFareMap.put("51to15", 8f);
+        mnrFareMap.put("51to16", 6.75f);
+        mnrFareMap.put("51to17", 6f);
+        mnrFareMap.put("51to18", 5f);
+        mnrFareMap.put("51to19", 2.75f);
+        mnrFareMap.put("51to20", 2.75f);
+        mnrFareMap.put("51to21", 6f);
+        mnrFareMap.put("51to31", 8f);
+        mnrFareMap.put("51to41", 7f);
+        mnrFareMap.put("51to42", 9f);
+        mnrFareMap.put("51to51", 2.5f);
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare mnrFare= new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(mnrFare.getKey(), mnrFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseMnrFare = new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseMnrFare.getKey(), reverseMnrFare);
+            }
+        }
 
 
         ////////////////////////////////////////////////////////
@@ -1231,6 +1663,8 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                                 ride.mergeMidZone = traveledService.midZone;
 
                                 agencyFare = findAgencyFare(ride, fareType);
+                                if(agencyFare == null)
+                                    break;
                                 transferFare = agencyFare.price - traveledService.price;
                                 traveledService.price = agencyFare.price;
                                 transferFound = true;
