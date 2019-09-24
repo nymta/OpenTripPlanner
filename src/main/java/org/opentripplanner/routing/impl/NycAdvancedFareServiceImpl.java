@@ -1400,6 +1400,43 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             }
         }
 
+        //////
+        // West of Hudson
+        //////
+
+        HashMap<String, String> westOfHudsonZoneMap = new HashMap<String, Float>();
+
+        westOfHudsonZoneMap.put("",""); //Penn Station
+
+        //Penn Station: 329
+        // Hoboken: 336
+        // Secaucus Junction: 333 and 329
+
+        mnrFareMap.clear();
+
+
+        // From Table A-5
+
+        //Sloatsburg
+        //mnrFareMap.put("51to41", 7f);
+        //mnrFareMap.put("51to42", 9f);
+        //mnrFareMap.put("51to51", 2.5f);
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare mnrFare= new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(mnrFare.getKey(), mnrFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseMnrFare = new NycAgencyFare(mnr, FareType.regular, NycFareConditionType.peak_hour_only, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseMnrFare.getKey(), reverseMnrFare);
+            }
+        }
+
 
         ////////////////////////////////////////////////////////
         // TRANSFER RULES
