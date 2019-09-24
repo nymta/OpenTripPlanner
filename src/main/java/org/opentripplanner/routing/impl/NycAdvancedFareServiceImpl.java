@@ -1314,8 +1314,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
             zoneKey += '_' + ride.startZone;
         }
         if(ride.mergeMidZone != null && !ride.mergeMidZone.isEmpty()
-                && ((isLessThan(ride.mergeMidZone,ride.mergeStartZone) && isLessThan(ride.mergeMidZone, ride.endZone))
-                    || (isGreaterThan(ride.mergeMidZone,ride.mergeStartZone) && isGreaterThan(ride.mergeMidZone, ride.endZone)))){
+                && (
+                        (isLessThan(ride.mergeMidZone,ride.mergeStartZone) && isLessThan(ride.mergeMidZone, ride.endZone))
+                    || (isGreaterThan(ride.mergeMidZone,ride.mergeStartZone) && isGreaterThan(ride.mergeMidZone, ride.endZone))
+                    || ride.mergeMidZone.equals(ride.endZone))){
             zoneKey += '_' + ride.mergeMidZone;
         }
         if(ride.endZone != null && !ride.endZone.isEmpty()) {
