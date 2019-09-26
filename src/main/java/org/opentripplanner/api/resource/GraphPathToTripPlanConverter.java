@@ -591,7 +591,14 @@ public abstract class GraphPathToTripPlanConverter {
             leg.routeBrandingUrl = route.getBrandingUrl();
 
             TranslationService translationService = states[states.length - 1].getOptions().rctx.graph.getTranslationService();
-            Trip translatedTrip = translationService.getTranslatedEntity(requestedLocale.getLanguage(), Trip.class, trip);
+            Trip translatedTrip;
+            if(translationService != null){
+                translatedTrip = translationService.getTranslatedEntity(requestedLocale.getLanguage(), Trip.class, trip);
+            }else {
+                translatedTrip = trip;
+            }
+
+
             leg.tripId = translatedTrip.getId();
             leg.tripShortName = translatedTrip.getTripShortName();
             leg.tripBlockId = translatedTrip.getBlockId();
