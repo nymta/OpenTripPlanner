@@ -27,7 +27,7 @@ public class BanoGeocoderTest {
 
         boolean found = false;
         for (GeocoderResult result : results.getResults()) {
-            if ("55 Rue du Faubourg Saint-Honoré 75008 Paris".equals(result.getDescription())) {
+            if ("55 Rue du Faubourg Saint-honore 75008 Paris".equals(result.getDescription())) {
                 double dist = SphericalDistanceLibrary.distance(result.getLat(),
                         result.getLng(), 48.870637, 2.316939);
                 assert (dist < 100);
