@@ -1583,6 +1583,298 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
 
 
+        // From Table B-5
+
+        mnrFareMap.clear();
+
+        // Pearl River
+        mnrFareMap.put("211to0", 10.75f);
+        mnrFareMap.put("211to1", 9.75f);
+        mnrFareMap.put("211to203", 6.5f);
+        mnrFareMap.put("211to204", 5.5f);
+        mnrFareMap.put("211to205", 4.5f);
+        mnrFareMap.put("211to206", 3.75f);
+        mnrFareMap.put("211to207", 3f);
+        mnrFareMap.put("211to208", 2.5f);
+        mnrFareMap.put("211to209", 2.25f);
+        mnrFareMap.put("211to210", 2.25f);
+
+        // Nanuet
+        mnrFareMap.put("212to0", 10.75f);
+        mnrFareMap.put("212to1", 9.75f);
+        mnrFareMap.put("212to203", 6.5f);
+        mnrFareMap.put("212to204", 5.5f);
+        mnrFareMap.put("212to205", 4.5f);
+        mnrFareMap.put("212to206", 3.75f);
+        mnrFareMap.put("212to207", 3f);
+        mnrFareMap.put("212to208", 2.5f);
+        mnrFareMap.put("212to209", 2.25f);
+        mnrFareMap.put("212to210", 2.25f);
+        mnrFareMap.put("212to211", 2.25f);
+
+        // Spring Valley
+        mnrFareMap.put("213to0", 10.75f);
+        mnrFareMap.put("213to1", 9.75f);
+        mnrFareMap.put("213to203", 6.5f);
+        mnrFareMap.put("213to204", 5.5f);
+        mnrFareMap.put("213to205", 4.5f);
+        mnrFareMap.put("213to206", 3.75f);
+        mnrFareMap.put("213to207", 3f);
+        mnrFareMap.put("213to208", 2.5f);
+        mnrFareMap.put("213to209", 2.25f);
+        mnrFareMap.put("213to210", 2.25f);
+        mnrFareMap.put("213to211", 2.25f);
+        mnrFareMap.put("213to212", 2.25f);
+
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare njtFare= new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(njtFare.getKey(), njtFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseNjtFare = new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseNjtFare.getKey(), reverseNjtFare);
+            }
+        }
+
+        // From Table C-5
+
+        mnrFareMap.clear();
+
+        // Sloatsburg
+        mnrFareMap.put("115to0", 11f);
+        mnrFareMap.put("115to1", 11f);
+        mnrFareMap.put("115to203", 11f);
+        mnrFareMap.put("115to204", 11f);
+        mnrFareMap.put("115to205", 11f);
+        mnrFareMap.put("115to206", 11f);
+        mnrFareMap.put("115to207", 11f);
+        mnrFareMap.put("115to208", 11f);
+        mnrFareMap.put("115to209", 11f);
+        mnrFareMap.put("115to210", 11f);
+        mnrFareMap.put("115to211", 11f);
+        mnrFareMap.put("115to212", 11f);
+        mnrFareMap.put("115to213", 11f);
+
+        // Tuxedo
+        mnrFareMap.put("116to0", 11f);
+        mnrFareMap.put("116to1", 11f);
+        mnrFareMap.put("116to203", 11f);
+        mnrFareMap.put("116to204", 11f);
+        mnrFareMap.put("116to205", 11f);
+        mnrFareMap.put("116to206", 11f);
+        mnrFareMap.put("116to207", 11f);
+        mnrFareMap.put("116to208", 11f);
+        mnrFareMap.put("116to209", 11f);
+        mnrFareMap.put("116to210", 11f);
+        mnrFareMap.put("116to211", 11f);
+        mnrFareMap.put("116to212", 11f);
+        mnrFareMap.put("116to213", 11f);
+
+        // Harriman
+        mnrFareMap.put("117to0", 12.5f);
+        mnrFareMap.put("117to1", 12.5f);
+        mnrFareMap.put("117to203", 12.5f);
+        mnrFareMap.put("117to204", 12.5f);
+        mnrFareMap.put("117to205", 12.5f);
+        mnrFareMap.put("117to206", 12.5f);
+        mnrFareMap.put("117to207", 12.5f);
+        mnrFareMap.put("117to208", 12.5f);
+        mnrFareMap.put("117to209", 12.5f);
+        mnrFareMap.put("117to210", 12.5f);
+        mnrFareMap.put("117to211", 12.5f);
+        mnrFareMap.put("117to212", 12.5f);
+        mnrFareMap.put("117to213", 12.5f);
+
+        // Salisbury Mills
+        mnrFareMap.put("118to0", 14f);
+        mnrFareMap.put("118to1", 14f);
+        mnrFareMap.put("118to203", 14f);
+        mnrFareMap.put("118to204", 14f);
+        mnrFareMap.put("118to205", 14f);
+        mnrFareMap.put("118to206", 14f);
+        mnrFareMap.put("118to207", 14f);
+        mnrFareMap.put("118to208", 14f);
+        mnrFareMap.put("118to209", 14f);
+        mnrFareMap.put("118to210", 14f);
+        mnrFareMap.put("118to211", 14f);
+        mnrFareMap.put("118to212", 14f);
+        mnrFareMap.put("118to213", 14f);
+
+        // Campbell Hall
+        mnrFareMap.put("119to0", 15.5f);
+        mnrFareMap.put("119to1", 15.5f);
+        mnrFareMap.put("119to203", 15.5f);
+        mnrFareMap.put("119to204", 15.5f);
+        mnrFareMap.put("119to205", 15.5f);
+        mnrFareMap.put("119to206", 15.5f);
+        mnrFareMap.put("119to207", 15.5f);
+        mnrFareMap.put("119to208", 15.5f);
+        mnrFareMap.put("119to209", 15.5f);
+        mnrFareMap.put("119to210", 15.5f);
+        mnrFareMap.put("119to211", 15.5f);
+        mnrFareMap.put("119to212", 15.5f);
+        mnrFareMap.put("119to213", 15.5f);
+
+        // Middletown
+        mnrFareMap.put("120to0", 16.5f);
+        mnrFareMap.put("120to1", 16.5f);
+        mnrFareMap.put("120to203", 16.5f);
+        mnrFareMap.put("120to204", 16.5f);
+        mnrFareMap.put("120to205", 16.5f);
+        mnrFareMap.put("120to206", 16.5f);
+        mnrFareMap.put("120to207", 16.5f);
+        mnrFareMap.put("120to208", 16.5f);
+        mnrFareMap.put("120to209", 16.5f);
+        mnrFareMap.put("120to210", 16.5f);
+        mnrFareMap.put("120to211", 16.5f);
+        mnrFareMap.put("120to212", 16.5f);
+        mnrFareMap.put("120to213", 16.5f);
+
+        // Otisville
+        mnrFareMap.put("121to0", 18f);
+        mnrFareMap.put("121to1", 18f);
+        mnrFareMap.put("121to203", 18f);
+        mnrFareMap.put("121to204", 18f);
+        mnrFareMap.put("121to205", 18f);
+        mnrFareMap.put("121to206", 18f);
+        mnrFareMap.put("121to207", 18f);
+        mnrFareMap.put("121to208", 18f);
+        mnrFareMap.put("121to209", 18f);
+        mnrFareMap.put("121to210", 18f);
+        mnrFareMap.put("121to211", 18f);
+        mnrFareMap.put("121to212", 18f);
+        mnrFareMap.put("121to213", 18f);
+
+        // Port Jervis
+        mnrFareMap.put("122to0", 20.25f);
+        mnrFareMap.put("122to1", 20.25f);
+        mnrFareMap.put("122to203", 20.25f);
+        mnrFareMap.put("122to204", 20.25f);
+        mnrFareMap.put("122to205", 20.25f);
+        mnrFareMap.put("122to206", 20.25f);
+        mnrFareMap.put("122to207", 20.25f);
+        mnrFareMap.put("122to208", 20.25f);
+        mnrFareMap.put("122to209", 20.25f);
+        mnrFareMap.put("122to210", 20.25f);
+        mnrFareMap.put("122to211", 20.25f);
+        mnrFareMap.put("122to212", 20.25f);
+        mnrFareMap.put("122to213", 20.25f);
+
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare njtFare= new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(njtFare.getKey(), njtFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseNjtFare = new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseNjtFare.getKey(), reverseNjtFare);
+            }
+        }
+
+        // From Table D-5
+
+        mnrFareMap.clear();
+
+        // Pearl River
+        mnrFareMap.put("211to102", 9.75f);
+        mnrFareMap.put("211to103", 9.75f);
+        mnrFareMap.put("211to104", 9.75f);
+        mnrFareMap.put("211to105", 9.75f);
+        mnrFareMap.put("211to106", 9.75f);
+        mnrFareMap.put("211to107", 9.75f);
+        mnrFareMap.put("211to108", 9.75f);
+        mnrFareMap.put("211to109", 9.75f);
+        mnrFareMap.put("211to110", 9.75f);
+        mnrFareMap.put("211to111", 9.75f);
+        mnrFareMap.put("211to112", 9.75f);
+        mnrFareMap.put("211to113", 9.75f);
+        mnrFareMap.put("211to114", 9.75f);
+        mnrFareMap.put("211to115", 11f);
+        mnrFareMap.put("211to116", 11f);
+        mnrFareMap.put("211to117", 12.5f);
+        mnrFareMap.put("211to118", 14f);
+        mnrFareMap.put("211to119", 15.5f);
+        mnrFareMap.put("211to120", 16.5f);
+        mnrFareMap.put("211to121", 18f);
+        mnrFareMap.put("211to122", 20.25f);
+
+        // Nanuet
+        mnrFareMap.put("212to102", 9.75f);
+        mnrFareMap.put("212to103", 9.75f);
+        mnrFareMap.put("212to104", 9.75f);
+        mnrFareMap.put("212to105", 9.75f);
+        mnrFareMap.put("212to106", 9.75f);
+        mnrFareMap.put("212to107", 9.75f);
+        mnrFareMap.put("212to108", 9.75f);
+        mnrFareMap.put("212to109", 9.75f);
+        mnrFareMap.put("212to110", 9.75f);
+        mnrFareMap.put("212to111", 9.75f);
+        mnrFareMap.put("212to112", 9.75f);
+        mnrFareMap.put("212to113", 9.75f);
+        mnrFareMap.put("212to114", 9.75f);
+        mnrFareMap.put("212to115", 11f);
+        mnrFareMap.put("212to116", 11f);
+        mnrFareMap.put("212to117", 12.5f);
+        mnrFareMap.put("212to118", 14f);
+        mnrFareMap.put("212to119", 15.5f);
+
+        mnrFareMap.put("212to120", 16.5f);
+        mnrFareMap.put("212to121", 18f);
+        mnrFareMap.put("212to122", 20.25f);
+
+        // Spring Valley
+        mnrFareMap.put("213to102", 9.75f);
+        mnrFareMap.put("213to103", 9.75f);
+        mnrFareMap.put("213to104", 9.75f);
+        mnrFareMap.put("213to105", 9.75f);
+        mnrFareMap.put("213to106", 9.75f);
+        mnrFareMap.put("213to107", 9.75f);
+        mnrFareMap.put("213to108", 9.75f);
+        mnrFareMap.put("213to109", 9.75f);
+        mnrFareMap.put("213to110", 9.75f);
+        mnrFareMap.put("213to111", 9.75f);
+        mnrFareMap.put("213to112", 9.75f);
+        mnrFareMap.put("213to113", 9.75f);
+        mnrFareMap.put("213to114", 9.75f);
+        mnrFareMap.put("213to115", 11f);
+        mnrFareMap.put("213to116", 11f);
+        mnrFareMap.put("213to117", 12.5f);
+        mnrFareMap.put("213to118", 14f);
+        mnrFareMap.put("213to119", 15.5f);
+        mnrFareMap.put("213to120", 16.5f);
+        mnrFareMap.put("213to121", 18f);
+        mnrFareMap.put("213to122", 20.25f);
+
+
+
+        for (HashMap.Entry<String, Float> entry : mnrFareMap.entrySet()) {
+            String key = entry.getKey();
+            Float value = entry.getValue();
+            String startZone = key.split("to")[0];
+            String endZone = key.split("to")[1];
+
+            NycAgencyFare njtFare= new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), startZone, endZone, null);
+            agencyFares.put(njtFare.getKey(), njtFare);
+
+            if(!endZone.equals(startZone)) {
+                NycAgencyFare reverseNjtFare = new NycAgencyFare(njt, FareType.regular, null, value.floatValue(), endZone, startZone, null);
+                agencyFares.put(reverseNjtFare.getKey(), reverseNjtFare);
+            }
+        }
+
+
+
         ////////////////////////////////////////////////////////
         // TRANSFER RULES
         ///////////////////////////////////////////////////////
