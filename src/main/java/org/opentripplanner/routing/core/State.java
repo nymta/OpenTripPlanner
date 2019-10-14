@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
+import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
@@ -860,4 +861,34 @@ public class State implements Cloneable {
         s.stateData.transferPermissible = true;
         return s;
     }
+
+    /**
+     * Check the stop where the passenger started using the current agency.
+    */
+    public AgencyAndId enteredThisAgencyAt() {
+        String initialAgency = null;
+        AgencyAndId enteredAt = null;
+        if(this.getVertex() instanceof TransitVertex){
+            initialAgency = ((TransitVertex) this.getVertex()).getStopId().getAgencyId();
+            enteredAt = ((TransitVertex) this.getVertex()).getStopId();
+        }
+        else {
+            return null;
+        }
+
+        State backState = this.getBackState();
+        while(backState != null){
+            if(backState.getVertex() instanceof TransitVertex){
+                String agency = ((TransitVertex) backState.getVertex()).getStopId().getAgencyId();
+                if(!agency.equals(initialAgency))
+                    return enteredAt;
+                else
+                    enteredAt = ((TransitVertex) backState.getVertex()).getStopId();
+            }
+            backState = backState.getBackState();
+        }
+
+        return enteredAt;
+    }
+
 }

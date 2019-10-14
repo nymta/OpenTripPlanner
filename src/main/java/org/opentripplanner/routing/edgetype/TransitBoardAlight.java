@@ -309,9 +309,13 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
             /* If this is not the first boarding, then we are transferring. */
             if (s0.isEverBoarded()) {
                 TransferTable transferTable = options.getRoutingContext().transferTable;
-                int transferTime = transferTable.getTransferTime(s0.getPreviousStop(), 
+                int transferTime = transferTable.getTransferTime(s0.enteredThisAgencyAt(), s0.getPreviousStop(),
                                    getStop(), s0.getPreviousTrip(), trip, boarding);
-                transferPenalty  = transferTable.determineTransferPenalty(transferTime, 
+
+                if(transferTime == -1 || transferTime == -999) // This transfer is not allowed
+                    return null;
+
+                transferPenalty  = transferTable.determineTransferPenalty(transferTime,
                                    options.nonpreferredTransferPenalty);
             }
 

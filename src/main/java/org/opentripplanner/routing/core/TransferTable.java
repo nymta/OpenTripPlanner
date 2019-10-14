@@ -73,7 +73,7 @@ public class TransferTable implements Serializable {
      *   can be found in the StopTransfer.*_TRANSFER constants. If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    public int getTransferTime(Stop fromStop, Stop toStop, Trip fromTrip, Trip toTrip, boolean forwardInTime) {
+    public int getTransferTime(AgencyAndId enteredAgency, Stop fromStop, Stop toStop, Trip fromTrip, Trip toTrip, boolean forwardInTime) {
         checkNotNull(fromStop);
         checkNotNull(toStop);
         
@@ -88,7 +88,7 @@ public class TransferTable implements Serializable {
         }
         
         // Get transfer time between the two stops
-        int transferTime = getTransferTime(fromStop.getId(), toStop.getId(), fromTrip, toTrip);
+        int transferTime = getTransferTime(enteredAgency, fromStop.getId(), toStop.getId(), fromTrip, toTrip);
         
         // Check parents of stops if no transfer was found
         if (transferTime == StopTransfer.UNKNOWN_TRANSFER) {
@@ -108,20 +108,20 @@ public class TransferTable implements Serializable {
             
             // Check parent of from stop if no transfer was found
             if (fromStopParentId != null) {
-                transferTime = getTransferTime(fromStopParentId, toStop.getId(), fromTrip, toTrip);
+                transferTime = getTransferTime(enteredAgency, fromStopParentId, toStop.getId(), fromTrip, toTrip);
             }
 
             // Check parent of to stop if still no transfer was found
             if (transferTime == StopTransfer.UNKNOWN_TRANSFER
                     && toStopParentId != null) {
-                transferTime = getTransferTime(fromStop.getId(), toStopParentId, fromTrip, toTrip);
+                transferTime = getTransferTime(enteredAgency, fromStop.getId(), toStopParentId, fromTrip, toTrip);
             }
 
             // Check parents of both stops if still no transfer was found
             if (transferTime == StopTransfer.UNKNOWN_TRANSFER
                     && fromStopParentId != null
                     && toStopParentId != null) {
-                transferTime = getTransferTime(fromStopParentId, toStopParentId, fromTrip, toTrip);
+                transferTime = getTransferTime(enteredAgency, fromStopParentId, toStopParentId, fromTrip, toTrip);
             }
         }
         
@@ -165,7 +165,7 @@ public class TransferTable implements Serializable {
      *   can be found in the StopTransfer.*_TRANSFER constants. If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    private int getTransferTime(AgencyAndId fromStopId, AgencyAndId toStopId, Trip fromTrip, Trip toTrip) {
+    private int getTransferTime(AgencyAndId enteredAgency, AgencyAndId fromStopId, AgencyAndId toStopId, Trip fromTrip, Trip toTrip) {
         checkNotNull(fromStopId);
         checkNotNull(toStopId);
         
@@ -175,7 +175,7 @@ public class TransferTable implements Serializable {
         StopTransfer stopTransfer = table.get(new P2<AgencyAndId>(fromStopId, toStopId));
         if (stopTransfer != null) {
             // Lookup correct transfer time between two stops and two trips
-            transferTime = stopTransfer.getTransferTime(fromTrip, toTrip);
+            transferTime = stopTransfer.getTransferTime(enteredAgency, fromTrip, toTrip);
         }
         return transferTime;
     }
@@ -192,7 +192,7 @@ public class TransferTable implements Serializable {
      *   which meaning can be found in the StopTransfer.*_TRANSFER constants.  If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    public void addTransferTime(Stop fromStop, Stop toStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+    public void addTransferTime(Stop fromStop, Stop toStop, Stop requiredStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
         checkNotNull(fromStop);
         checkNotNull(toStop);
 
@@ -214,7 +214,7 @@ public class TransferTable implements Serializable {
         assert(stopTransfer != null);
         
         // Create and add a specific transfer to the stop transfer
-        SpecificTransfer specificTransfer = new SpecificTransfer(fromRoute, toRoute, fromTrip, toTrip, transferTime);
+        SpecificTransfer specificTransfer = new SpecificTransfer(requiredStop, fromRoute, toRoute, fromTrip, toTrip, transferTime);
         stopTransfer.addSpecificTransfer(specificTransfer);
     }
     

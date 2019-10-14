@@ -253,7 +253,7 @@ public class AStar {
                 runState.options.rctx.aborted = true; // signal search cancellation up to higher stack frames
                 runState.options.rctx.debugOutput.timedOut = true; // signal timeout in debug output object
 
-                break;
+                //break;
             }
             
             /*

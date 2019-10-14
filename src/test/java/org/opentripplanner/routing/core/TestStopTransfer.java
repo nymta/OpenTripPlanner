@@ -48,32 +48,32 @@ public class TestStopTransfer extends TestCase {
         
         // Create StopTransfer
         StopTransfer transfer = new StopTransfer();
-        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
         
         // Add empty SpecificTransfer, specificity 0
-        transfer.addSpecificTransfer(new SpecificTransfer((AgencyAndId) null, null, null, null, StopTransfer.FORBIDDEN_TRANSFER));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        transfer.addSpecificTransfer(new SpecificTransfer(null, (AgencyAndId) null, null, null, null, StopTransfer.FORBIDDEN_TRANSFER));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
         
         // Add SpecificTransfer one route, specificity 1
-        transfer.addSpecificTransfer(new SpecificTransfer(null, toRoute2.getId(), null, null, StopTransfer.PREFERRED_TRANSFER));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.PREFERRED_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        transfer.addSpecificTransfer(new SpecificTransfer(null, null, toRoute2.getId(), null, null, StopTransfer.PREFERRED_TRANSFER));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.PREFERRED_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
         
         // Add SpecificTransfer one trip (and one ignored route), specificity 2
-        transfer.addSpecificTransfer(new SpecificTransfer(null, toRoute2.getId(), null, toTrip2.getId(), StopTransfer.TIMED_TRANSFER));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.TIMED_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        transfer.addSpecificTransfer(new SpecificTransfer(null, null, toRoute2.getId(), null, toTrip2.getId(), StopTransfer.TIMED_TRANSFER));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.TIMED_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
         
         // Add SpecificTransfer one trip and one route, specificity 3
-        transfer.addSpecificTransfer(new SpecificTransfer(fromRoute.getId(), toRoute2.getId(), fromTrip.getId(), null, StopTransfer.UNKNOWN_TRANSFER));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        transfer.addSpecificTransfer(new SpecificTransfer(null, fromRoute.getId(), toRoute2.getId(), fromTrip.getId(), null, StopTransfer.UNKNOWN_TRANSFER));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
         
         // Add SpecificTransfer one route, specificity 1
-        transfer.addSpecificTransfer(new SpecificTransfer(fromRoute.getId(), null, null, null, 3));
-        assertEquals(3, transfer.getTransferTime(fromTrip, toTrip));
-        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(fromTrip, toTrip2));
+        transfer.addSpecificTransfer(new SpecificTransfer(null, fromRoute.getId(), null, null, null, 3));
+        assertEquals(3, transfer.getTransferTime(null, fromTrip, toTrip));
+        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transfer.getTransferTime(null, fromTrip, toTrip2));
     }
 }

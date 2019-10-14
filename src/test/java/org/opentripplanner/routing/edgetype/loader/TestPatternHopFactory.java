@@ -351,11 +351,11 @@ public class TestPatternHopFactory extends TestCase {
         Stop stopM = ((TransitStopDepart)graph.getVertex(feedId + ":M_depart")).getStop();
         
         assertTrue(transferTable.hasPreferredTransfers());
-        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transferTable.getTransferTime(stopN, stopM, fromTrip, toTrip, true));
-        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transferTable.getTransferTime(stopK, stopM, fromTrip, toTrip, true));
-        assertEquals(StopTransfer.PREFERRED_TRANSFER, transferTable.getTransferTime(stopN, stopK, toTrip, toTrip2, true));
-        assertEquals(StopTransfer.TIMED_TRANSFER, transferTable.getTransferTime(stopN, stopK, fromTrip, toTrip, true));
-        assertEquals(15, transferTable.getTransferTime(stopN, stopK, fromTrip, toTrip2, true));
+        assertEquals(StopTransfer.UNKNOWN_TRANSFER, transferTable.getTransferTime(null, stopN, stopM, fromTrip, toTrip, true));
+        assertEquals(StopTransfer.FORBIDDEN_TRANSFER, transferTable.getTransferTime(null, stopK, stopM, fromTrip, toTrip, true));
+        assertEquals(StopTransfer.PREFERRED_TRANSFER, transferTable.getTransferTime(null, stopN, stopK, toTrip, toTrip2, true));
+        assertEquals(StopTransfer.TIMED_TRANSFER, transferTable.getTransferTime(null, stopN, stopK, fromTrip, toTrip, true));
+        assertEquals(15, transferTable.getTransferTime(null, stopN, stopK, fromTrip, toTrip2, true));
         
         TransitStop e_arrive = (TransitStop) graph.getVertex(feedId + ":E");
         TransitStop f_depart = (TransitStop) graph.getVertex(feedId + ":F");

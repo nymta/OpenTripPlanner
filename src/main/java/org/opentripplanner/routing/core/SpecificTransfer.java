@@ -5,6 +5,7 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Trip;
 
@@ -26,6 +27,11 @@ public class SpecificTransfer implements Serializable {
      * Constant containing the maximum specificity that is allowed by the specifications
      */
     public static final int MAX_SPECIFICITY = 4;
+
+    /**
+     * Required origin of the passenger to be able to use this transfer.
+     */
+    final private Stop requiredStop;
     
     /**
      * Route id of arriving trip. Is allowed to be null. Is ignored when fromTripId is not null.
@@ -52,8 +58,13 @@ public class SpecificTransfer implements Serializable {
      * can be found in the Transfer.*_TRANSFER constants.
      */
     final int transferTime;
-    
-    public SpecificTransfer(AgencyAndId fromRouteId, AgencyAndId toRouteId, AgencyAndId fromTripId, AgencyAndId toTripId, int transferTime) {
+
+    public Stop getRequiredStop() {
+        return requiredStop;
+    }
+
+    public SpecificTransfer(Stop requiredStop, AgencyAndId fromRouteId, AgencyAndId toRouteId, AgencyAndId fromTripId, AgencyAndId toTripId, int transferTime) {
+        this.requiredStop = requiredStop;
         this.fromRouteId = fromRouteId;
         this.toRouteId = toRouteId;
         this.fromTripId = fromTripId;
@@ -61,7 +72,14 @@ public class SpecificTransfer implements Serializable {
         this.transferTime = transferTime;
     }
 
-    public SpecificTransfer(Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+    public SpecificTransfer(Stop requiredStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+        if (requiredStop != null) {
+            this.requiredStop = requiredStop;
+        }
+        else {
+            this.requiredStop = null;
+        }
+
         if (fromRoute != null) {
             this.fromRouteId = fromRoute.getId();
         }
