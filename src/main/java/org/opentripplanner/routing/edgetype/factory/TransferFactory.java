@@ -68,6 +68,7 @@ public class TransferFactory {
             for (Transfer t : expandTransfer(sourceTransfer)) {
                 Stop fromStop = t.getFromStop();
                 Stop toStop = t.getToStop();
+                Stop requiredStop = t.getRequiredStop();
                 Route fromRoute = t.getFromRoute();
                 Route toRoute = t.getToRoute();
                 Trip fromTrip = t.getFromTrip();
@@ -95,20 +96,20 @@ public class TransferFactory {
                             new TimedTransferEdge(fromVertex, toVertex);
                         }
                         // add to transfer table to handle specificity
-                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.TIMED_TRANSFER);
+                        transferTable.addTransferTime(fromStop, toStop, null, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.TIMED_TRANSFER);
                         break;
                     case 2:
                         // min transfer time
-                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, t.getMinTransferTime());
+                        transferTable.addTransferTime(fromStop, toStop, null, fromRoute, toRoute, fromTrip, toTrip, t.getMinTransferTime());
                         break;
                     case 3:
                         // forbidden transfer
-                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.FORBIDDEN_TRANSFER);
+                        transferTable.addTransferTime(fromStop, toStop, null, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.FORBIDDEN_TRANSFER);
                         break;
                     case 0:
                     default:
                         // preferred transfer
-                        transferTable.addTransferTime(fromStop, toStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.PREFERRED_TRANSFER);
+                        transferTable.addTransferTime(fromStop, toStop, requiredStop, fromRoute, toRoute, fromTrip, toTrip, StopTransfer.PREFERRED_TRANSFER);
                         break;
                 }
             }
@@ -148,7 +149,7 @@ public class TransferFactory {
         }
     }
 
-   private Collection<Transfer> expandTransfer (Transfer source) {
+    private Collection<Transfer> expandTransfer (Transfer source) {
         Stop fromStop = source.getFromStop();
         Stop toStop = source.getToStop();
 

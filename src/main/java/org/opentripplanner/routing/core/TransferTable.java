@@ -192,7 +192,7 @@ public class TransferTable implements Serializable {
      *   which meaning can be found in the StopTransfer.*_TRANSFER constants.  If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    public void addTransferTime(Stop fromStop, Stop toStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+    public void addTransferTime(Stop fromStop, Stop toStop, Stop requiredStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
         checkNotNull(fromStop);
         checkNotNull(toStop);
 
@@ -214,7 +214,7 @@ public class TransferTable implements Serializable {
         assert(stopTransfer != null);
         
         // Create and add a specific transfer to the stop transfer
-        SpecificTransfer specificTransfer = new SpecificTransfer(fromRoute, toRoute, fromTrip, toTrip, transferTime);
+        SpecificTransfer specificTransfer = new SpecificTransfer(requiredStop, fromRoute, toRoute, fromTrip, toTrip, transferTime);
         stopTransfer.addSpecificTransfer(specificTransfer);
     }
     

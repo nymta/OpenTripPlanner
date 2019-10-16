@@ -5,6 +5,7 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Trip;
 
@@ -14,7 +15,7 @@ import org.onebusaway.gtfs.model.Trip;
  * @see TransferTable
  */
 public class SpecificTransfer implements Serializable {
-    
+
     private static final long serialVersionUID = 5058028994896044775L;
 
     /**
@@ -26,34 +27,44 @@ public class SpecificTransfer implements Serializable {
      * Constant containing the maximum specificity that is allowed by the specifications
      */
     public static final int MAX_SPECIFICITY = 4;
-    
+
+    /**
+     * Required origin of the passenger to be able to use this transfer.
+     */
+    final private Stop requiredStop;
+
     /**
      * Route id of arriving trip. Is allowed to be null. Is ignored when fromTripId is not null.
      */
     final private AgencyAndId fromRouteId;
-        
+
     /**
      * Route id of departing trip. Is allowed to be null. Is ignored when toTripId is not null.
      */
     final private AgencyAndId toRouteId;
-    
+
     /**
      * Trip id of arriving trip. Is allowed to be null.
      */
     final private AgencyAndId fromTripId;
-    
+
     /**
      * Trip id of departing trip. Is allowed to be null.
      */
     final private AgencyAndId toTripId;
-    
+
     /**
      * Value indicating the minimum transfer time in seconds. May contain special (negative) values which meaning
      * can be found in the Transfer.*_TRANSFER constants.
      */
     final int transferTime;
-    
-    public SpecificTransfer(AgencyAndId fromRouteId, AgencyAndId toRouteId, AgencyAndId fromTripId, AgencyAndId toTripId, int transferTime) {
+
+    public Stop getRequiredStop() {
+        return requiredStop;
+    }
+
+    public SpecificTransfer(Stop requiredStop, AgencyAndId fromRouteId, AgencyAndId toRouteId, AgencyAndId fromTripId, AgencyAndId toTripId, int transferTime) {
+        this.requiredStop = requiredStop;
         this.fromRouteId = fromRouteId;
         this.toRouteId = toRouteId;
         this.fromTripId = fromTripId;
@@ -61,28 +72,35 @@ public class SpecificTransfer implements Serializable {
         this.transferTime = transferTime;
     }
 
-    public SpecificTransfer(Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+    public SpecificTransfer(Stop requiredStop, Route fromRoute, Route toRoute, Trip fromTrip, Trip toTrip, int transferTime) {
+        if (requiredStop != null) {
+            this.requiredStop = requiredStop;
+        }
+        else {
+            this.requiredStop = null;
+        }
+
         if (fromRoute != null) {
             this.fromRouteId = fromRoute.getId();
         }
         else {
             this.fromRouteId = null;
         }
-        
+
         if (toRoute != null) {
             this.toRouteId = toRoute.getId();
         }
         else {
             this.toRouteId = null;
         }
-        
+
         if (fromTrip != null) {
             this.fromTripId = fromTrip.getId();
         }
         else {
             this.fromTripId = null;
         }
-        
+
         if (toTrip != null) {
             this.toTripId = toTrip.getId();
         }
@@ -106,7 +124,7 @@ public class SpecificTransfer implements Serializable {
         assert(specificity <= MAX_SPECIFICITY);
         return specificity;
     }
-    
+
     private int getFromSpecificity() {
         int specificity = 0;
         if (fromTripId != null) {
@@ -128,7 +146,7 @@ public class SpecificTransfer implements Serializable {
         }
         return specificity;
     }
-    
+
     /**
      * Returns whether this specific transfer is applicable to a transfer between
      * two trips.
@@ -144,7 +162,7 @@ public class SpecificTransfer implements Serializable {
 
     private boolean matchesFrom(Trip trip) {
         checkNotNull(trip);
-        
+
         boolean match = false;
         int specificity = getFromSpecificity();
         if (specificity == 0) {
@@ -162,7 +180,7 @@ public class SpecificTransfer implements Serializable {
         }
         return match;
     }
-    
+
     private boolean matchesTo(Trip trip) {
         checkNotNull(trip);
 
@@ -183,5 +201,5 @@ public class SpecificTransfer implements Serializable {
         }
         return match;
     }
-    
+
 }
