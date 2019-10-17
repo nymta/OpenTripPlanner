@@ -254,7 +254,7 @@ public class TestTransfers extends TestCase {
         stopK.setId(new AgencyAndId(feedId, "K"));
         Stop stopF = new Stop();
         stopF.setId(new AgencyAndId(feedId, "F"));
-        table.addTransferTime(stopK, stopF, null, null, null, null, 27601);
+        table.addTransferTime(stopK, stopF, null,null, null, null, null, 27601);
 
         // Plan journey
         path = planJourney(options);
@@ -296,7 +296,7 @@ public class TestTransfers extends TestCase {
         stopK.setId(new AgencyAndId(feedId, "K"));
         Stop stopF = new Stop();
         stopF.setId(new AgencyAndId(feedId, "F"));
-        table.addTransferTime(stopK, stopF, null, null, null, null, 27601);
+        table.addTransferTime(stopK, stopF, null, null, null, null, null, 27601);
 
         // Plan journey
         path = planJourney(options, true);
@@ -346,7 +346,7 @@ public class TestTransfers extends TestCase {
         stopP.setId(new AgencyAndId(feedId, "P"));
         Stop stopU = new Stop();
         stopU.setId(new AgencyAndId(feedId, "U"));
-        table.addTransferTime(stopP, stopU, null, null, null, null, 3675);
+        table.addTransferTime(stopP, stopU, null,null, null, null, null, 3675);
 
         // Plan journey
         path = planJourney(options);
@@ -409,7 +409,7 @@ public class TestTransfers extends TestCase {
         stopV.setId(new AgencyAndId(feedId, "V"));
         Stop stopI = new Stop();
         stopI.setId(new AgencyAndId(feedId, "I"));
-        table.addTransferTime(stopV, stopI, null, null, null, null, 3675);
+        table.addTransferTime(stopV, stopI, null,null, null, null, null, 3675);
 
         // Plan journey
         path = planJourney(options);
@@ -462,7 +462,7 @@ public class TestTransfers extends TestCase {
         stopK.setId(new AgencyAndId(feedId, "K"));
         Stop stopF = new Stop();
         stopF.setId(new AgencyAndId(feedId, "F"));
-        table.addTransferTime(stopK, stopF, null, null, null, null,
+        table.addTransferTime(stopK, stopF, null,null, null, null, null,
                 StopTransfer.FORBIDDEN_TRANSFER);
 
         // Plan journey
@@ -504,7 +504,7 @@ public class TestTransfers extends TestCase {
         stopV.setId(new AgencyAndId(feedId, "V"));
         Stop stopI = new Stop();
         stopI.setId(new AgencyAndId(feedId, "I"));
-        table.addTransferTime(stopV, stopI, null, null, null, null,
+        table.addTransferTime(stopV, stopI, null, null, null, null, null,
                 StopTransfer.FORBIDDEN_TRANSFER);
 
         // Plan journey
@@ -547,7 +547,7 @@ public class TestTransfers extends TestCase {
         stopK.setId(new AgencyAndId(feedId, "K"));
         Stop stopF = new Stop();
         stopF.setId(new AgencyAndId(feedId, "F"));
-        table.addTransferTime(stopK, stopF, null, null, null, null, StopTransfer.TIMED_TRANSFER);
+        table.addTransferTime(stopK, stopF, null, null, null, null, null, StopTransfer.TIMED_TRANSFER);
         // Don't forget to also add a TimedTransferEdge
         Vertex fromVertex = graph.getVertex(feedId + ":K_arrive");
         Vertex toVertex = graph.getVertex(feedId + ":F_depart");
