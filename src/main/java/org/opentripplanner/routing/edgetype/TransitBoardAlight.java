@@ -311,6 +311,8 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
                 TransferTable transferTable = options.getRoutingContext().transferTable;
                 int transferTime = transferTable.getTransferTime(s0.getPreviousStop(), 
                                    getStop(), s0.getPreviousTrip(), trip, boarding);
+                //int transferTime = transferTable.getTransferRequiredStop(s0.getPreviousStop(),
+                //        getStop(), s0.getPreviousTrip(), trip, boarding);
                 transferPenalty  = transferTable.determineTransferPenalty(transferTime, 
                                    options.nonpreferredTransferPenalty);
             }

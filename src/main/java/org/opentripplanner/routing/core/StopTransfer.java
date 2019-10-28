@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.Stop;
 
 /**
  * StopTransfer class used by TransferTable. Represents a transfer between two stops.
@@ -61,7 +62,7 @@ public class StopTransfer implements Serializable {
         checkNotNull(specificTransfer);
         return specificTransfers.add(specificTransfer);
     }
-    
+
     /**
      * Get the transfer time that should be used when transferring from a trip to another trip.
      * Note that this function does not check whether another specific transfer exists with the
@@ -74,6 +75,7 @@ public class StopTransfer implements Serializable {
     public int getTransferTime(Trip fromTrip, Trip toTrip) {
         // By default the transfer is unknown
         int transferTime = UNKNOWN_TRANSFER;
+        Stop requiredStop = null;
         
         // Pick the matching specific transfer with the highest specificity
         int maxFoundSpecificity = SpecificTransfer.MIN_SPECIFICITY - 1;
@@ -83,6 +85,7 @@ public class StopTransfer implements Serializable {
                 if (specificTransfer.matches(fromTrip, toTrip)) {
                     // Set the found transfer time
                     transferTime = specificTransfer.transferTime;
+                    requiredStop = specificTransfer.getRequiredStop();
                     maxFoundSpecificity = specificity;
                     
                     // Break when highest specificity is found
@@ -92,8 +95,6 @@ public class StopTransfer implements Serializable {
                 }
             }
         }
-        
-        // Return transfer time
         return transferTime;
     }
     

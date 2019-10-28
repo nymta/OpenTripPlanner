@@ -235,6 +235,14 @@ public class GraphPathFinder {
                     }
                 }
 
+                // Derek
+                // If this path violates required_stop_id rules ban it
+                for (Edge edge : path.edges) {
+                    if (edge instanceof TransitBoardAlight)
+                        //System.out.println(path.getRoutingContext().transferTable.getTransferTime((edge.getFromVertex().get))
+                        System.out.println("test");
+                }
+
                 // Keep Track of the shortest duration of all paths found so far.
                 if (bestDuration == -1.0) {
                     bestDuration = path.getDuration();

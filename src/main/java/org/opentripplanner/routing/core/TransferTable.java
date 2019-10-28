@@ -176,6 +176,7 @@ public class TransferTable implements Serializable {
         if (stopTransfer != null) {
             // Lookup correct transfer time between two stops and two trips
             transferTime = stopTransfer.getTransferTime(fromTrip, toTrip);
+
         }
         return transferTime;
     }

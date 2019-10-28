@@ -618,6 +618,7 @@ public class SimpleStreetSplitter {
                 nonTransitMode = TraverseMode.BICYCLE;
         }
 
+
         if(!link(closest, nonTransitMode, options)) {
             LOG.warn("Couldn't link {}", location);
         }
