@@ -58,7 +58,7 @@ public class UnknownTransferConsequencesStrategy extends SingleOptionStrategy<Bo
                     Trip toTrip = state.getBackTrip();
                     TransferTable transferTable = options.getRoutingContext().transferTable;
                     int transferTime = transferTable.getTransferTime(fromStop,
-                            toStop, fromTrip, toTrip, true);
+                            toStop, fromTrip, toTrip, true).getTransferTime();
                     if (transferTime == StopTransfer.UNKNOWN_TRANSFER) {
                         String fromFeed = fromStop.getId().getAgencyId();
                         String toFeed = toStop.getId().getAgencyId();

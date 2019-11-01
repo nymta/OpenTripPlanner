@@ -24,6 +24,7 @@ import org.opentripplanner.routing.core.ServiceDay;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TransferTable;
+import org.opentripplanner.routing.core.TransferDetail;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.trippattern.TripTimes;
@@ -61,6 +62,12 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
    
     /** True if this edge represents boarding a vehicle, false if it represents alighting. */
     public boolean boarding;
+
+    public Stop requiredStop;
+
+    public Stop getRequiredStop(){
+        return requiredStop;
+    }
 
     /** Boarding constructor (TransitStopDepart --> PatternStopVertex) */
     public TransitBoardAlight (TransitStopDepart fromStopVertex, PatternStopVertex toPatternVertex, 
@@ -309,9 +316,12 @@ public class TransitBoardAlight extends TablePatternEdge implements OnboardEdge 
             /* If this is not the first boarding, then we are transferring. */
             if (s0.isEverBoarded()) {
                 TransferTable transferTable = options.getRoutingContext().transferTable;
-                int transferTime = transferTable.getTransferTime(s0.getPreviousStop(), 
+                TransferDetail transferDetail = transferTable.getTransferTime(s0.getPreviousStop(),
                                    getStop(), s0.getPreviousTrip(), trip, boarding);
-                //int transferTime = transferTable.getTransferRequiredStop(s0.getPreviousStop(),
+                int transferTime = transferDetail.getTransferTime();
+                Stop requiredStop = transferDetail.getRequiredStop();
+                this.requiredStop = requiredStop;
+                //int transferTime = transferTable.getRequiredStop(s0.getPreviousStop(),
                 //        getStop(), s0.getPreviousTrip(), trip, boarding);
                 transferPenalty  = transferTable.determineTransferPenalty(transferTime, 
                                    options.nonpreferredTransferPenalty);

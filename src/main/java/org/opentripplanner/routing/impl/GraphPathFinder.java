@@ -15,6 +15,7 @@ package org.opentripplanner.routing.impl;
 
 import com.google.common.collect.Lists;
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.api.resource.DebugOutput;
 import org.opentripplanner.common.model.GenericLocation;
 import org.opentripplanner.routing.alertpatch.Alert;
@@ -35,6 +36,8 @@ import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.consequences.ConsequencesStrategy;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.routing.vertextype.PatternArriveVertex;
+import org.opentripplanner.routing.vertextype.TransitVertex;
 import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,12 +238,28 @@ public class GraphPathFinder {
                     }
                 }
 
-                // Derek
                 // If this path violates required_stop_id rules ban it
+                List<String> previousStops = new ArrayList<String>();
+                Boolean valid = true;
                 for (Edge edge : path.edges) {
-                    if (edge instanceof TransitBoardAlight)
-                        //System.out.println(path.getRoutingContext().transferTable.getTransferTime((edge.getFromVertex().get))
-                        System.out.println("test");
+                    if (edge instanceof TransitBoardAlight) {
+
+                        // Save this stop, we will check later to see if this stop satisfies the required stop
+                        String newStop = ((TransitVertex) edge.getFromVertex()).getStopId().getId();
+                        previousStops.add(newStop);
+
+                        // If this edge has a required stop, then check to see if we got on at that stop.
+                        if (((TransitBoardAlight) edge).getRequiredStop() != null) {
+                            String requiredStop = ((TransitBoardAlight) edge).getRequiredStop().getId().getId();
+                            if(!previousStops.contains(requiredStop)) {
+                                valid = false;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                if(!valid) {
+                    continue;
                 }
 
                 // Keep Track of the shortest duration of all paths found so far.

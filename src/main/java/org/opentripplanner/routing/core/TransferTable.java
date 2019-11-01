@@ -27,6 +27,7 @@ import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.Trip;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.routing.core.TransferDetail;
 
 /**
  * This class represents all transfer information in the graph. Transfers are grouped
@@ -73,7 +74,7 @@ public class TransferTable implements Serializable {
      *   can be found in the StopTransfer.*_TRANSFER constants. If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    public int getTransferTime(Stop fromStop, Stop toStop, Trip fromTrip, Trip toTrip, boolean forwardInTime) {
+    public TransferDetail getTransferTime(Stop fromStop, Stop toStop, Trip fromTrip, Trip toTrip, boolean forwardInTime) {
         checkNotNull(fromStop);
         checkNotNull(toStop);
         
@@ -88,8 +89,12 @@ public class TransferTable implements Serializable {
         }
         
         // Get transfer time between the two stops
-        int transferTime = getTransferTime(fromStop.getId(), toStop.getId(), fromTrip, toTrip);
-        
+        TransferDetail transferDetail = getTransferTime(fromStop.getId(), toStop.getId(), fromTrip, toTrip);
+        int transferTime = -999;
+        if(transferDetail != null){
+            transferTime = transferDetail.getTransferTime();
+        }
+
         // Check parents of stops if no transfer was found
         if (transferTime == StopTransfer.UNKNOWN_TRANSFER) {
             // Find parent ids
@@ -108,24 +113,24 @@ public class TransferTable implements Serializable {
             
             // Check parent of from stop if no transfer was found
             if (fromStopParentId != null) {
-                transferTime = getTransferTime(fromStopParentId, toStop.getId(), fromTrip, toTrip);
+                transferDetail = getTransferTime(fromStopParentId, toStop.getId(), fromTrip, toTrip);
             }
 
             // Check parent of to stop if still no transfer was found
             if (transferTime == StopTransfer.UNKNOWN_TRANSFER
                     && toStopParentId != null) {
-                transferTime = getTransferTime(fromStop.getId(), toStopParentId, fromTrip, toTrip);
+                transferDetail = getTransferTime(fromStop.getId(), toStopParentId, fromTrip, toTrip);
             }
 
             // Check parents of both stops if still no transfer was found
             if (transferTime == StopTransfer.UNKNOWN_TRANSFER
                     && fromStopParentId != null
                     && toStopParentId != null) {
-                transferTime = getTransferTime(fromStopParentId, toStopParentId, fromTrip, toTrip);
+                transferDetail = getTransferTime(fromStopParentId, toStopParentId, fromTrip, toTrip);
             }
         }
         
-        return transferTime;
+        return transferDetail;
     }
 
     /**
@@ -152,7 +157,7 @@ public class TransferTable implements Serializable {
         StopTransfer stopTransfer = table.get(new P2<AgencyAndId>(fromStop.getId(), toStop.getId()));
         return stopTransfer != null && stopTransfer.hasTripSpecificity();
     }
-    
+
     /**
      * Get the transfer time that should be used when transferring from a trip to another trip.
      * Note that this function does not check whether another specific transfer exists with the
@@ -165,20 +170,20 @@ public class TransferTable implements Serializable {
      *   can be found in the StopTransfer.*_TRANSFER constants. If no transfer is found,
      *   StopTransfer.UNKNOWN_TRANSFER is returned.
      */
-    private int getTransferTime(AgencyAndId fromStopId, AgencyAndId toStopId, Trip fromTrip, Trip toTrip) {
+    private TransferDetail getTransferTime(AgencyAndId fromStopId, AgencyAndId toStopId, Trip fromTrip, Trip toTrip) {
         checkNotNull(fromStopId);
         checkNotNull(toStopId);
         
         // Define transfer time to return
-        int transferTime = StopTransfer.UNKNOWN_TRANSFER; 
+        int transferTime = StopTransfer.UNKNOWN_TRANSFER;
+        TransferDetail transferDetail = new TransferDetail();
         // Lookup transfer between two stops
         StopTransfer stopTransfer = table.get(new P2<AgencyAndId>(fromStopId, toStopId));
         if (stopTransfer != null) {
             // Lookup correct transfer time between two stops and two trips
-            transferTime = stopTransfer.getTransferTime(fromTrip, toTrip);
-
+            transferDetail = stopTransfer.getTransferTime(fromTrip, toTrip);
         }
-        return transferTime;
+        return transferDetail;
     }
     
     /**

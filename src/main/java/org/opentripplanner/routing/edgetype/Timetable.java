@@ -253,7 +253,7 @@ public class Timetable implements Serializable {
             return t0;
         }
         TransferTable transferTable = state.getOptions().getRoutingContext().transferTable;
-        int transferTime = transferTable.getTransferTime(state.getPreviousStop(), currentStop, state.getPreviousTrip(), trip, boarding);
+        int transferTime = transferTable.getTransferTime(state.getPreviousStop(), currentStop, state.getPreviousTrip(), trip, boarding).getTransferTime();
         // Check whether back edge is TimedTransferEdge
         if (state.getBackEdge() instanceof TimedTransferEdge) {
             // Transfer must be of type TIMED_TRANSFER
