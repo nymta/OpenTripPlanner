@@ -77,7 +77,7 @@ import java.util.concurrent.Executors;
 public class GraphIndex {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphIndex.class);
-    private static final int CLUSTER_RADIUS = 400; // meters
+    private static final int CLUSTER_RADIUS = 500; // meters
 
     /** maximum distance to walk after leaving transit in Analyst */
     public static final int MAX_WALK_METERS = 3500;
@@ -409,7 +409,7 @@ public class GraphIndex {
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
                                                      RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction,
-                headsign, null, null, bannedAgencies, bannedRouteTypes, null, false, false);
+                headsign, null, null, bannedAgencies, bannedRouteTypes, null, false, false, false);
     }
 
     /**
@@ -429,10 +429,17 @@ public class GraphIndex {
      */
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
                                                      RouteMatcher routeMatcher, Integer direction, String headsign, String tripHeadsign, Stop requiredStop, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes,
-                                                     Collection<String> trackIds, boolean showCancelledTrips, boolean includeStopsForTrip) {
+                                                     Collection<String> trackIds, boolean showCancelledTrips, boolean includeStopsForTrip, boolean signMode) {
         if (startTime == 0) {
             startTime = System.currentTimeMillis() / 1000;
         }
+
+        boolean filterRealtimeData = false;
+        if (signMode) {
+            filterRealtimeData = true;
+        }
+
+
         List<StopTimesInPattern> ret = new ArrayList<>();
         TimetableSnapshot snapshot = getTimetableSnapshot();
         Date date = new Date(startTime * 1000);
@@ -498,6 +505,9 @@ public class GraphIndex {
                             if (headsign != null && !headsign.equals(t.getHeadsign(sidx))) continue;
                             if (trackIds != null && t.getTrack(sidx) != null && !trackIds.contains(t.getTrack(sidx)))
                                 continue;
+                            if (filterRealtimeData && t.isScheduled()) {
+                                continue;
+                            }
                             if (shouldShowDeparture(t.getDepartureTime(sidx), secondsSinceMidnight)
                                     || (showCancelledTrips && shouldShowDeparture(t.getScheduledDepartureTime(sidx), secondsSinceMidnight))) {
                                 pq.insertWithOverflow(new TripTimeShort(pattern, t, sidx, stop, sd, graph.getTimeZone(), includeStopsForTrip));

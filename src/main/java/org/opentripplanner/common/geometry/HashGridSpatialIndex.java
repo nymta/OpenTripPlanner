@@ -13,6 +13,7 @@
 
 package org.opentripplanner.common.geometry;
 
+import com.vividsolutions.jts.geom.Point;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.procedure.TLongProcedure;
 import gnu.trove.set.TLongSet;
@@ -113,31 +114,35 @@ public class HashGridSpatialIndex<T> implements SpatialIndex, Serializable {
     }
 
     public final void insert(LineString geom, final Object item) {
-        Coordinate[] coord = geom.getCoordinates();
-        final TLongSet keys = new TLongHashSet(coord.length * 8);
-        for (int i = 0; i < coord.length - 1; i++) {
-            // TODO Cut the segment if longer than bin size
-            // to reduce the number of wrong bins
-            Envelope env = new Envelope(coord[i], coord[i + 1]);
-            visit(env, true, new BinVisitor<T>() {
+        Point startPoint = geom.getStartPoint();
+        Point endPoint = geom.getEndPoint();
+            Coordinate[] coord = geom.getCoordinates();
+            final TLongSet keys = new TLongHashSet(coord.length * 8);
+            for (int i = 0; i < coord.length - 1; i++) {
+                // TODO Cut the segment if longer than bin size
+                // to reduce the number of wrong bins
+                Coordinate clampedCoordinateFirst = clamp(coord[i]);
+                Coordinate clampedCoordinateNext = clamp(coord[i+1]);
+                Envelope env = new Envelope(clampedCoordinateFirst, clampedCoordinateNext);
+                visit(env, true, new BinVisitor<T>() {
+                    @Override
+                    public boolean visit(List<T> bin, long mapKey) {
+                        keys.add(mapKey);
+                        return false;
+                    }
+                });
+            }
+            keys.forEach(new TLongProcedure() {
+                @SuppressWarnings("unchecked")
                 @Override
-                public boolean visit(List<T> bin, long mapKey) {
-                    keys.add(mapKey);
-                    return false;
+                public boolean execute(long key) {
+                    // Note: bins have been initialized in the previous visit
+                    bins.get(key).add((T) item);
+                    nEntries++;
+                    return true;
                 }
             });
-        }
-        keys.forEach(new TLongProcedure() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public boolean execute(long key) {
-                // Note: bins have been initialized in the previous visit
-                bins.get(key).add((T) item);
-                nEntries++;
-                return true;
-            }
-        });
-        nObjects++;
+            nObjects++;
     }
 
     @Override

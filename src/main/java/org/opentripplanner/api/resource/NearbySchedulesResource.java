@@ -221,6 +221,13 @@ public class NearbySchedulesResource {
     @QueryParam("tracks")
     private String trackIds = null;
 
+    /**
+     * Sets API to a mode for digital signage features. This removes results that are not in realtime.
+     */
+    @QueryParam("signMode")
+    @DefaultValue("false")
+    private boolean signMode;
+
     private GraphIndex index;
 
     private Router router;
@@ -296,7 +303,7 @@ public class NearbySchedulesResource {
 
                 List<StopTimesInPattern> stopTimesPerPattern = index.stopTimesForStop(
                         stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction, null, tripHeadsign, requiredStop,
-                        bannedAgencies, bannedRouteTypes, getTrackIds(), showCancelledTrips, includeStopsForTrip);
+                    bannedAgencies, bannedRouteTypes, getTrackIds(), showCancelledTrips, includeStopsForTrip, signMode);
 
                 StopTimesByStop stopTimes = stopIdAndStopTimesMap.get(key);
 

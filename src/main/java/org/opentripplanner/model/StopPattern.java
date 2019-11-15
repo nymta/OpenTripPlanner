@@ -82,7 +82,7 @@ public class StopPattern implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("StopPattern: ");
         for (int i = 0, j = stops.length; i < j; ++i) {
-            sb.append(String.format("%s_%d%d ", stops[i].getCode(), pickups[i], dropoffs[i], notes[i]));
+            sb.append(String.format("%s_%d%d_%s ", stops[i].getCode(), pickups[i], dropoffs[i], notes[i]));
         }
         return sb.toString();
     }
@@ -106,7 +106,7 @@ public class StopPattern implements Serializable {
             // pick/drop messages could be stored in individual trips
             pickups[i] = stopTime.getPickupType();
             dropoffs[i] = stopTime.getDropOffType();
-            if (stopTime.getNote() != null && stopTime.getNote().getDesc() != null )
+            if (stopTime != null && stopTime.getNote() != null && stopTime.getNote().getDesc() != null )
             {
                 notes[i] = stopTime.getNote().getDesc();
             } else {

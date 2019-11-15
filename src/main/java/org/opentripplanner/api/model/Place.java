@@ -79,6 +79,7 @@ public class Place {
      */
     public String departureFmt = null;
 
+
     /**
      * For transit stops, the zone of the stop, if given in GTFS.
      */
@@ -117,6 +118,12 @@ public class Place {
      */
     @JsonSerialize
     public String track;
+
+    /**
+     * If we have an alert data
+     */
+    @JsonSerialize
+    public String note;
 
     /**
      * Returns the geometry in GeoJSON format

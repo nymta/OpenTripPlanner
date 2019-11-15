@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This service manage street edge notes. An edge note is an free-format alert (text) attached to an
  * edge, which is returned in the itinerary when this edge is used, and which *does not have any
- * impact on routing*. The last restriction is necessary as the edge do not know which notes it is
+ * impact on routing*. The last restriction is necessary as the edge does not know which notes it is
  * attached to (this to prevent having to store note lists in the edge, which is memory consuming as
  * only few edges will have notes).
  * 

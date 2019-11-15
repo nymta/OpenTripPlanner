@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PathwayEdge extends Edge {
 
-    public enum Mode { NONE, WALKWAY, STAIRS, ELEVATOR }
+    public enum Mode { NONE, WALKWAY, STAIRS, ELEVATOR, ESCALATOR }
 
     private int traversalTime;
 
@@ -143,7 +143,14 @@ public class PathwayEdge extends Edge {
 
     @Override
     public boolean isWheelchairAccessible() {
-        return wheelchairTraversalTime >= 0;
+        //TODO determine what else could indicate wheelchair accessible
+        if (wheelchairTraversalTime >= 0) {
+            return wheelchairTraversalTime >= 0;
+        }else if (!Mode.STAIRS.equals(pathwayMode) ) {
+            return true;
+        }
+
+        return false;
     }
 
     public State traverse(State s0) {
@@ -159,7 +166,12 @@ public class PathwayEdge extends Edge {
 
                 return null;
             }
-            time = wheelchairTraversalTime;
+
+            if (wheelchairTraversalTime == -1) {
+                time = 1;
+            }else {
+                time = wheelchairTraversalTime;
+            }
         }
         StateEditor s1 = s0.edit(this);
         // Allow transfers to the street if the PathwayEdge is proceeded by a TransferEdge

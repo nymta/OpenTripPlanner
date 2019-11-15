@@ -74,11 +74,6 @@ public class DirectTransferGenerator implements GraphBuilderModule {
 
         /* The linker will use streets if they are available, or straight-line distance otherwise. */
         NearbyStopFinder nearbyStopFinder = new NearbyStopFinder(graph, radiusMeters);
-        if (nearbyStopFinder.useStreets) {
-            LOG.info("Creating direct transfer edges between stops using the street network from OSM...");
-        } else {
-            LOG.info("Creating direct transfer edges between stops using straight line distance (not streets)...");
-        }
 
         int nTransfersTotal = 0;
         int nLinkableStops = 0;

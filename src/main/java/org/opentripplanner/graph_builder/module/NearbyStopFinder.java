@@ -75,7 +75,6 @@ public class NearbyStopFinder {
             // Don't find transfers that use other transfers
             streetSearch.setSkipEdgeStrategy((o, t, c, edge, s, opt) -> edge instanceof TransferEdge || edge instanceof PathwayEdge);
         } else {
-            // FIXME use the vertex index already in the graph if it exists.
             streetIndex = new StreetVertexIndexServiceImpl(graph);
         }
     }
