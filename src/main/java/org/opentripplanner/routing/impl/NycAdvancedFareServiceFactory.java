@@ -21,8 +21,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class NycAdvancedFareServiceFactory implements FareServiceFactory {
 
+    private String fareDirectory = null;
+
+    public NycAdvancedFareServiceFactory(String fareDirectory) {
+        this.fareDirectory = fareDirectory;
+    }
+
     public FareService makeFareService() {
-        return new NycAdvancedFareServiceImpl();
+        return new NycAdvancedFareServiceImpl(fareDirectory);
     }
 
     @Override

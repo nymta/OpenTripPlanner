@@ -32,10 +32,8 @@ import org.opentripplanner.routing.spt.GraphPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.Charset;
-import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -224,12 +222,16 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
     HashMap<String, NycTransferRule> transferRules = new HashMap<String, NycTransferRule>();
     HashMap<String, NycAgencyPeakHour> agencyPeakHours = new HashMap<String, NycAgencyPeakHour>();
 
-    public NycAdvancedFareServiceImpl() {
+    private String fareDirectory = null;
+
+    public NycAdvancedFareServiceImpl(String fareDir) {
+
+        this.fareDirectory = fareDir;
 
         ////////////////////////////////////////////////////////
         // Create Agencies
         ///////////////////////////////////////////////////////
-        loadAgencies("org/opentripplanner/routing/impl/agencies.csv");
+        loadAgencies(fareDirectory + "/agencies-fares.csv");
 
         ////////////////////////////////////////////////////////
         // Create Agency Fares and Peak Hours
@@ -238,10 +240,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 .stream()
                 .collect(Collectors.toSet());
 
+        loadFares(fareDirectory+"/fares.csv");
+
         for ( String a : agencyKeys ) {
             NycServiceId tempServiceId = agencies.get(a);
-            loadFares("org/opentripplanner/routing/impl/"+ a +".csv", tempServiceId);
-
             NycAgencyPeakHour peakHours = new NycAgencyPeakHour(tempServiceId, null, null, true);
             agencyPeakHours.put(peakHours.getKey(), peakHours);
         }
@@ -249,12 +251,17 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
         ////////////////////////////////////////////////////////
         // TRANSFER RULES
         ///////////////////////////////////////////////////////
-        loadTransferRules("org/opentripplanner/routing/impl/transfer_rules.csv");
+        loadTransferRules(fareDirectory+"/transfer_rules-fares.csv");
 
     }
 
     private void loadAgencies(String csvFileName) {
-        InputStream is = NycAdvancedFareServiceImpl.class.getClassLoader().getResourceAsStream(csvFileName);
+        InputStream is = null;
+        try {
+            is = new FileInputStream(csvFileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         CsvReader reader = new CsvReader(is, ',', Charset.forName("UTF-8"));
         try {
             reader.readHeaders();
@@ -269,12 +276,17 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 agencies.put(serviceIdStr, serviceId);
             }
         } catch (IOException ex) {
-            LOG.error("Exception while loading fare table CSV.");
+            LOG.error("Exception while loading agencies for fares CSV.");
         }
     }
 
     private void loadTransferRules(String csvFileName) {
-        InputStream is = NycAdvancedFareServiceImpl.class.getClassLoader().getResourceAsStream(csvFileName);
+        InputStream is = null;
+        try {
+            is = new FileInputStream(csvFileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         CsvReader reader = new CsvReader(is, ',', Charset.forName("UTF-8"));
         try {
             reader.readHeaders();
@@ -301,17 +313,24 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 transferRules.put(rule.getKey(), rule);
             }
         } catch (IOException ex) {
-            LOG.error("Exception while loading fare table CSV.");
+            LOG.error("Exception while loading fare transfer rules CSV.");
         }
 
     }
 
-    private void loadFares(String csvFileName, NycServiceId fareServiceId) {
-        InputStream is = NycAdvancedFareServiceImpl.class.getClassLoader().getResourceAsStream(csvFileName);
+    private void loadFares(String csvFileName) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(csvFileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         CsvReader reader = new CsvReader(is, ',', Charset.forName("UTF-8"));
         try {
             reader.readHeaders();
             while (reader.readRecord()) {
+
+                NycServiceId fareServiceId = agencies.get(reader.get("service_id"));
 
                 FareType fareType;
                 NycFareConditionType fareConditionType;

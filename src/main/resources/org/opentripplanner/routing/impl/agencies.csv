@@ -1,9 +1,0 @@
-service_id,agency_id,route_type
-nyctSubway,MTASBWY,1
-nyctLocalBus,MTA NYCT,3
-nyctExpressBus,MTA NYCT,702
-mtabcLocalBus,MTABC,3
-mtabcExpressBus,MTABC,702
-lirr,LI,2
-mnr,MNR,2
-njt,NJT,2

@@ -179,7 +179,7 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
             retval = new NycFareServiceFactory();
             break;
         case "new-york-advanced":
-            retval = new NycAdvancedFareServiceFactory();
+            retval = new NycAdvancedFareServiceFactory(config.path("fareDirectory").asText());
             break;
         case "seattle":
             retval = new SeattleFareServiceFactory();
