@@ -138,7 +138,7 @@ public class GraphPathFinder {
         /* In RoutingRequest, maxTransfers defaults to 2. Over long distances, we may see
          * itineraries with far more transfers. We do not expect transfer limiting to improve
          * search times on the LongDistancePathService, so we set it to the maximum we ever expect
-         * to see. Because people may use either the traditional path services or the 
+         * to see. Because people may use either the traditional path services or the
          * LongDistancePathService, we do not change the global default but override it here. */
         options.maxTransfers = 4;
         // Now we always use what used to be called longDistance mode. Non-longDistance mode is no longer supported.
@@ -251,12 +251,16 @@ public class GraphPathFinder {
                 // add consequences
                 path.addPlanAlerts(realtimeConsequences);
 
-                double duration = options.useRequestedDateTimeInMaxHours
-                        ? (options.arriveBy ? options.dateTime - path.getStartTime() : path.getEndTime() - options.dateTime)
-                        : path.getDuration();
+                //for Arrive by trip plan, path start time should not be earlier then current time. Per requirement in INC0069568.
+                boolean checkStartTime = options.arriveBy ? (path.getStartTime()*1000 > System.currentTimeMillis()-5000) : true;
+                if (checkStartTime) {
+                    double duration = options.useRequestedDateTimeInMaxHours
+                            ? (options.arriveBy ? options.dateTime - path.getStartTime() : path.getEndTime() - options.dateTime)
+                            : path.getDuration();
 
-                if (duration < options.maxHours * 60 * 60) {
-                    paths.add(path);
+                    if (duration < options.maxHours * 60 * 60) {
+                        paths.add(path);
+                    }
                 }
 
                 if (options.smartKissAndRide && path.pathIncludesMode(TraverseMode.CAR)) {
