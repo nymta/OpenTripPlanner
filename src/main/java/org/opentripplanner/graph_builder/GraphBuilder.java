@@ -208,7 +208,11 @@ public class GraphBuilder implements Runnable {
             switch (InputFileType.forFile(file)) {
                 case GTFS:
                     LOG.info("Found GTFS file {}", file);
-                    gtfsFiles.add(file);
+                    if (file.getName().startsWith("google_transit")) {
+                        gtfsFiles.add(0, file);
+                    } else {
+                        gtfsFiles.add(file);
+                    }
                     break;
                 case OSM:
                     LOG.info("Found OSM file {}", file);
