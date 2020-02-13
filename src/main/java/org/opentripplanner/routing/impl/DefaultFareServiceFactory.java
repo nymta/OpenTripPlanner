@@ -25,9 +25,12 @@ import org.opentripplanner.routing.core.FareRuleSet;
 import org.opentripplanner.routing.fares.MultipleFareServiceFactory;
 import org.opentripplanner.routing.services.FareService;
 import org.opentripplanner.routing.services.FareServiceFactory;
+import org.opentripplanner.standalone.CommandLineParameters;
+import org.opentripplanner.standalone.OTPServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Context;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,11 +46,24 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultFareServiceFactory.class);
 
+    @Context
+    OTPServer otpServer;
+
     protected Map<AgencyAndId, FareRuleSet> regularFareRules = new HashMap<AgencyAndId, FareRuleSet>();
+
+    protected String graphDirectory = null;
 
     public FareService makeFareService() {
         DefaultFareServiceImpl fareService = new DefaultFareServiceImpl();
         fareService.addFareRules(FareType.regular, regularFareRules.values());
+
+        if (otpServer != null) {
+            CommandLineParameters params = otpServer.params.clone();
+            this.graphDirectory = params.graphDirectory.toString();
+        } else {
+            LOG.error("params not configured, defaulting....");
+            this.graphDirectory = "/var/";
+        }
         return fareService;
     }
 
