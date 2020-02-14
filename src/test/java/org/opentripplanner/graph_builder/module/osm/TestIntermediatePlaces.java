@@ -22,6 +22,9 @@ import org.opentripplanner.standalone.OTPServer;
 import org.opentripplanner.standalone.Router;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -141,7 +144,12 @@ public class TestIntermediatePlaces {
         for (GenericLocation intermediateLocation : via) {
             request.addIntermediatePlace(intermediateLocation);
         }
-        List<GraphPath> pathList = graphPathFinder.graphPathFinderEntryPoint(request);
+
+        String myDate = "2016/04/19 11:00:00";
+        LocalDateTime localDateTime = LocalDateTime.parse(myDate, DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss") );
+        long localDateTimeInMillis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+        List<GraphPath> pathList = graphPathFinder.graphPathFinderEntryPoint(request, localDateTimeInMillis);
 
         assertNotNull(pathList);
         assertFalse(pathList.isEmpty());

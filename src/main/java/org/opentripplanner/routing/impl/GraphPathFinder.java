@@ -74,6 +74,8 @@ public class GraphPathFinder {
     private static final double DEFAULT_MAX_WALK = 2000;
     private static final double CLAMP_MAX_WALK = 15000;
 
+    private static final long DEFAULT_CURRENT_TIME = -9999999;
+
     Router router;
 
     public GraphPathFinder(Router router) {
@@ -89,6 +91,11 @@ public class GraphPathFinder {
      * bidirectional heuristic, which improves over time).
      */
     public List<GraphPath> getPaths(RoutingRequest options) {
+        return getPaths(options, DEFAULT_CURRENT_TIME);
+    }
+
+    //Added this function so we can still use existing unit tests by providing the time to the method.
+    public List<GraphPath> getPaths(RoutingRequest options, long timeInMillis) {
         //TODO there was a conflict here but only over white space
         RoutingRequest originalReq = options.clone();
 
@@ -252,7 +259,11 @@ public class GraphPathFinder {
                 path.addPlanAlerts(realtimeConsequences);
 
                 //for Arrive by trip plan, path start time should not be earlier then current time. Per requirement in INC0069568.
-                boolean checkStartTime = options.arriveBy ? (path.getStartTime()*1000 > System.currentTimeMillis()-5000) : true;
+                if(timeInMillis == DEFAULT_CURRENT_TIME){
+                    timeInMillis = System.currentTimeMillis()-5000;
+                }
+
+                boolean checkStartTime = options.arriveBy ? (path.getStartTime()*1000 > timeInMillis) : true;
                 if (checkStartTime) {
                     double duration = options.useRequestedDateTimeInMaxHours
                             ? (options.arriveBy ? options.dateTime - path.getStartTime() : path.getEndTime() - options.dateTime)
@@ -410,6 +421,10 @@ public class GraphPathFinder {
 
     /* Try to find N paths through the Graph */
     public List<GraphPath> graphPathFinderEntryPoint(RoutingRequest request) {
+        return graphPathFinderEntryPoint(request, DEFAULT_CURRENT_TIME);
+    }
+
+    public List<GraphPath> graphPathFinderEntryPoint(RoutingRequest request, long serverDateTimeInMillis) {
 
         // We used to perform a protective clone of the RoutingRequest here.
         // There is no reason to do this if we don't modify the request.
@@ -417,14 +432,14 @@ public class GraphPathFinder {
 
         List<GraphPath> paths = null;
         try {
-            paths = getGraphPathsConsideringIntermediates(request);
+            paths = getGraphPathsConsideringIntermediates(request, serverDateTimeInMillis);
             if (paths == null && request.wheelchairAccessible) {
                 // There are no paths that meet the user's slope restrictions.
                 // Try again without slope restrictions, and warn the user in the response.
                 RoutingRequest relaxedRequest = request.clone();
                 relaxedRequest.maxSlope = Double.MAX_VALUE;
                 request.rctx.slopeRestrictionRemoved = true;
-                paths = getGraphPathsConsideringIntermediates(relaxedRequest);
+                paths = getGraphPathsConsideringIntermediates(relaxedRequest, serverDateTimeInMillis);
             }
             request.rctx.debugOutput.finishedCalculating();
         } catch (VertexNotFoundException e) {
@@ -474,6 +489,10 @@ public class GraphPathFinder {
      * reversed at the end.
      */
     private List<GraphPath> getGraphPathsConsideringIntermediates(RoutingRequest request) {
+        return getGraphPathsConsideringIntermediates(request, DEFAULT_CURRENT_TIME);
+    }
+
+    private List<GraphPath> getGraphPathsConsideringIntermediates(RoutingRequest request, long serverTimeInMillis) {
         if (request.hasIntermediatePlaces()) {
             List<GenericLocation> places = Lists.newArrayList(request.from);
             places.addAll(request.intermediatePlaces);
@@ -499,7 +518,7 @@ public class GraphPathFinder {
                     debugOutput = intermediateRequest.rctx.debugOutput;
                 }
 
-                List<GraphPath> partialPaths = getPaths(intermediateRequest);
+                List<GraphPath> partialPaths = getPaths(intermediateRequest, serverTimeInMillis);
                 if (partialPaths.size() == 0) {
                     return partialPaths;
                 }
@@ -516,7 +535,7 @@ public class GraphPathFinder {
             }
             return Collections.singletonList(joinPaths(paths));
         } else {
-            return getPaths(request);
+            return getPaths(request, serverTimeInMillis);
         }
     }
 
