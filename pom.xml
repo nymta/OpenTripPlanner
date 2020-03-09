@@ -453,6 +453,7 @@
             <name>Nexus Snapshots Repo</name>
             <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
         </repository>
+        <!-- Needed  for graphql-java-->
         <repository>
             <id>releases-nexus-repo</id>
             <name>Nexus Snapshots Repo</name>
@@ -743,6 +744,13 @@
             <artifactId>commons-compress</artifactId>
             <version>1.0</version>
         </dependency>
+        
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.9</version>
+		</dependency>
+        
         <dependency>
             <groupId>commons-discovery</groupId>
             <artifactId>commons-discovery</artifactId>
