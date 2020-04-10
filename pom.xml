@@ -453,6 +453,7 @@
             <name>Nexus Snapshots Repo</name>
             <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
         </repository>
+        <!-- Needed  for graphql-java-->
         <repository>
             <id>releases-nexus-repo</id>
             <name>Nexus Snapshots Repo</name>
@@ -487,11 +488,17 @@
             <artifactId>aws-java-sdk-autoscaling</artifactId>
             <version>${aws.version}</version>
         </dependency>
-        <!-- Fast drop-in serialization including compound value types (structs) for Java -->
+        <!-- Kryo serialization, used to save graphs to disk. -->
         <dependency>
-            <groupId>de.ruedigermoeller</groupId>
-            <artifactId>fst</artifactId>
-            <version>2.34</version>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <!-- Extra serializers for Kryo -->
+        <dependency>
+            <groupId>de.javakaffee</groupId>
+            <artifactId>kryo-serializers</artifactId>
+            <version>0.42</version>
         </dependency>
         <!-- Logging library, implements slf4j logging API -->
         <dependency>
@@ -743,6 +750,13 @@
             <artifactId>commons-compress</artifactId>
             <version>1.0</version>
         </dependency>
+        
+		<dependency>
+		    <groupId>commons-codec</groupId>
+		    <artifactId>commons-codec</artifactId>
+		    <version>1.9</version>
+		</dependency>
+        
         <dependency>
             <groupId>commons-discovery</groupId>
             <artifactId>commons-discovery</artifactId>
@@ -850,7 +864,7 @@
         <dependency>
             <groupId>com.conveyal</groupId>
             <artifactId>r5</artifactId>
-            <version>0.1</version>
+            <version>4.4.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-simple</artifactId>

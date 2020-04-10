@@ -126,7 +126,7 @@ public class Graph implements Serializable {
 
     private transient SampleFactory sampleFactory;
 
-    public final Deduplicator deduplicator = new Deduplicator();
+    public final transient Deduplicator deduplicator = new Deduplicator();
 
     /**
      * Map from GTFS ServiceIds to integers close to 0. Allows using BitSets instead of Set<Object>.
@@ -733,7 +733,7 @@ public class Graph implements Serializable {
      * serialization. 
      * TODO: do we really need a factory for different street vertex indexes?
      */
-    public void index(StreetVertexIndexFactory indexFactory) {
+    public void index (StreetVertexIndexFactory indexFactory) {
         streetIndex = indexFactory.newIndex(this);
         LOG.debug("street index built.");
         LOG.debug("Rebuilding edge and vertex indices.");
@@ -775,8 +775,19 @@ public class Graph implements Serializable {
             graph.vertices = new HashMap<String, Vertex>();
             
             for (Edge e : edges) {
-                graph.vertices.put(e.getFromVertex().getLabel(), e.getFromVertex());
-                graph.vertices.put(e.getToVertex().getLabel(), e.getToVertex());
+
+                Vertex fromVertex = e.getFromVertex();
+                Vertex toVertex = e.getToVertex();
+                graph.vertices.put(fromVertex.getLabel(), fromVertex);
+                graph.vertices.put(toVertex.getLabel(), toVertex);
+                // Compensating for the fact that we're not using the standard Java de/serialization methods.
+                fromVertex.initEdgeListsIfNeeded();
+                toVertex.initEdgeListsIfNeeded();
+                fromVertex.addOutgoing(e);
+                toVertex.addIncoming(e);
+
+//                graph.vertices.put(e.getFromVertex().getLabel(), e.getFromVertex());
+//                graph.vertices.put(e.getToVertex().getLabel(), e.getToVertex());
             }
 
             LOG.info("Main graph read. |V|={} |E|={}", graph.countVertices(), graph.countEdges());

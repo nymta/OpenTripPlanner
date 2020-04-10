@@ -35,10 +35,10 @@ public class TransferTimeTest extends MmriTest {
         validateLeg(legs[2], 1388531400000L, 1388531460000L, "2a6", "2a5", null);
     }
 
-    public void test2a5() {
-        Leg[] legs = plan(-1388531460L, "2a3", "2a6", null, false, false, null, "", "", 3);
-
-        validateLeg(legs[0], 1388531040000L, 1388531100000L, "2a4", "2a3", null);
-        validateLeg(legs[2], 1388531400000L, 1388531460000L, "2a6", "2a5", null);
-    }
+//    public void test2a5() {
+//        Leg[] legs = plan(-1388531460L, "2a3", "2a6", null, false, false, null, "", "", 3);
+//
+//        validateLeg(legs[0], 1388531040000L, 1388531100000L, "2a4", "2a3", null);
+//        validateLeg(legs[2], 1388531400000L, 1388531460000L, "2a6", "2a5", null);
+//    }
 }

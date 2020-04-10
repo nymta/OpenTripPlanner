@@ -933,8 +933,9 @@ public class GTFSPatternHopFactory {
                 LOG.trace(graph.addBuilderAnnotation(new HopZeroTime((float) hopDistance, 
                           st1.getTrip(), st1.getStopSequence())));
                 // clear stoptimes that are obviously wrong, causing them to later be interpolated
-                st1.clearArrivalTime();
-                st1.clearDepartureTime();
+                //negative running time for trip1_112827466. Special case.
+//                st1.clearArrivalTime();
+//                st1.clearDepartureTime();
                 st1bogus = true;
             } else if (hopSpeed > 45) {
                 // 45 m/sec ~= 100 miles/hr

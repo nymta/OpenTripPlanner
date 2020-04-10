@@ -203,7 +203,7 @@ public class Routers {
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     public Response postGraphOverWire (
             @PathParam("routerId") String routerId, 
-            @QueryParam("preEvict") @DefaultValue("true") boolean preEvict, 
+            @QueryParam("preEvict") @DefaultValue("true") boolean preEvict,
             @QueryParam("loadLevel") @DefaultValue("FULL") LoadLevel level,
             InputStream is) {
         if (preEvict) {
