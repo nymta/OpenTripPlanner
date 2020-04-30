@@ -1,6 +1,7 @@
 package org.opentripplanner.geocoder.bano;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.geocoder.GeocoderResult;
 import org.opentripplanner.geocoder.GeocoderResults;
@@ -28,6 +29,7 @@ public class BanoGeocoderTest {
         boolean found = false;
         for (GeocoderResult result : results.getResults()) {
             if ("Rue du Faubourg Saint-honoré 75008 Paris".equals(result.getDescription())) {
+//            if (result.getDescription().contains("55 Rue du Faubourg")) {
                 double dist = SphericalDistanceLibrary.distance(result.getLat(),
                         result.getLng(), 48.868394, 2.32292);
                 assert (dist < 100);
