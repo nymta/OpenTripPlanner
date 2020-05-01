@@ -8,10 +8,7 @@ import org.opentripplanner.common.geometry.DirectionUtils;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.PackedCoordinateSequence;
 import org.opentripplanner.common.model.P2;
-import org.opentripplanner.model.Agency;
-import org.opentripplanner.model.Route;
-import org.opentripplanner.model.Stop;
-import org.opentripplanner.model.Trip;
+import org.opentripplanner.model.*;
 import org.opentripplanner.model.translation.TranslationService;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
@@ -850,6 +847,22 @@ public abstract class GraphPathToTripPlanConverter {
                 // the floor name is the AlightEdge name
                 // reset to avoid confusion with 'Elevator on floor 1 to floor 1'
                 step.streetName = ((ElevatorAlightEdge) edge).getName(requestedLocale);
+
+                step.setRelativeDirection(RelativeDirection.ELEVATOR, requestedLocale);
+
+                steps.add(step);
+                continue;
+            }
+
+            if (edge instanceof PathwayEdge) {
+                step = createWalkStep(graph, forwardState, requestedLocale);
+                createdNewStep = true;
+                disableZagRemovalForThisStep = true;
+
+                PathwayEdge pathEdge = (PathwayEdge) edge;
+
+                step.streetName = pathEdge.getName(requestedLocale);
+//                step.pathwayId = new FeedScopedId(pathEdge pathEdge.getId())
 
                 step.setRelativeDirection(RelativeDirection.ELEVATOR, requestedLocale);
 

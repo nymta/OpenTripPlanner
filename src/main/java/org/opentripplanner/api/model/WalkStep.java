@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.opentripplanner.api.model.alertpatch.LocalizedAlert;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.profile.BikeRentalStationInfo;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.graph.Edge;
@@ -121,6 +122,8 @@ public class WalkStep {
      * Used only in generating the streetEdges array in StreetSegment; not serialized. 
      */
     public transient List<Edge> edges = Lists.newArrayList();
+
+    public FeedScopedId pathwayId;
 
     /**
      * The bike rental on/off station info.
