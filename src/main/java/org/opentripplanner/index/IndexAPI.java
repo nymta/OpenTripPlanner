@@ -57,12 +57,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 // TODO move to org.opentripplanner.api.resource, this is a Jersey resource class
 
@@ -183,15 +179,18 @@ public class IndexAPI {
            @QueryParam("debug")  Boolean debug,
            @DefaultValue("0") @QueryParam("locationType") List<Integer> locationTypes) {
 
-       /* When no parameters are supplied, return all stops. */
-       if (uriInfo.getQueryParameters().isEmpty()) {
-           Collection<Stop> stops = index.stopForId.values();
-           return Response.status(Status.OK).entity(StopShort.list(stops)).build();
-       }
+       List<StopShort> stops;
+
        /* If any of the circle parameters are specified, expect a circle not a box. */
-       List<StopShort> stops = Lists.newArrayList();
        boolean expectCircle = (lat != null || lon != null || radius != null);
-       if (expectCircle) {
+
+       /* When no parameters are supplied, return all stops. */
+       if (Stream.of(minLat, minLon, maxLat, maxLon, lat, lon, radius).allMatch(Objects::isNull)) {
+           Collection<Stop> in = index.stopForId.values();
+           stops = StopShort.list(in);
+       }
+       else if (expectCircle) {
+           stops = Lists.newArrayList();
            if (lat == null || lon == null || radius == null || radius < 0) {
                return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
            }
@@ -215,6 +214,7 @@ public class IndexAPI {
            if (maxLat <= minLat || maxLon <= minLon) {
                return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
            }
+           stops = Lists.newArrayList();
            Envelope envelope = new Envelope(new Coordinate(minLon, minLat), new Coordinate(maxLon, maxLat));
            for (TransitStop stopVertex : streetIndex.getTransitStopForEnvelope(envelope)) {
                stops.add(new StopShort(stopVertex.getStop()));
@@ -229,13 +229,7 @@ public class IndexAPI {
                }
            }
        }
-       if (locationTypes.contains(LOCATION_TYPE_STATION)) {
-           List<StopShort> parentStations = new ArrayList<>();
-           for (StopShort stopShort : stops) {
-               Stop stop = index.stopForId.get(stopShort.id);
-           }
-           stops.addAll(parentStations);
-       }
+
 
        stops.removeIf(s -> !locationTypes.contains(s.locationType));
        return Response.status(Status.OK).entity(stops).build();
