@@ -2,21 +2,24 @@ package org.opentripplanner.ext.translinkwindow.api.WindowPlanResource;
 
 import org.opentripplanner.routing.graph.Graph;
 import org.locationtech.jts.geom.Geometry;
+import org.opentripplanner.standalone.OTPServer;
 
 /**
  * A Translink developed class which exposes OTP routing intended to help determine crowding on trains and platforms.
  */
-@Path("routers/{routerId}/windowPlan")
-public class WindowPlan {
+@Path("routers/{routerId}/windowPlanzzz")
+public class WindowPlanzzz {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProfileResource.class);
     private Graph graph;
-    private SurfaceCache surfaceCache;
 
+    @Context
+    OTPServer otpServer;
+
+    @GET
     public WindowPlan(@Context OTPServer otpServer, @PathParam("routerId") String routerId) {
         Router router = otpServer.getRouter(routerId);
         graph = router.graph;
-        surfaceCache = otpServer.surfaceCache;
     }
 
 //    @GET

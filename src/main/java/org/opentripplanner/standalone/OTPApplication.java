@@ -13,6 +13,7 @@ import org.opentripplanner.api.common.OTPExceptionMapper;
 import org.opentripplanner.api.flex.FlexServiceResource;
 import org.opentripplanner.api.model.JSONObjectMapperProvider;
 import org.opentripplanner.api.resource.*;
+//import org.opentripplanner.ext.translinkwindow.api.WindowPlan;
 import org.opentripplanner.index.GeocoderResource;
 import org.opentripplanner.index.IndexAPI;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -98,8 +99,12 @@ public class OTPApplication extends Application {
             /* Features and Filters: extend Jersey, manipulate requests and responses. */
             CorsFilter.class,
             MultiPartFeature.class,
-            FlexServiceResource.class
+            FlexServiceResource.class,
+            WindowsPlanner.class
+
         ));
+
+
         
         if (this.secure) {
             // A filter that converts HTTP Basic authentication headers into a Jersey SecurityContext
