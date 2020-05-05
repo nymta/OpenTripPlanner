@@ -76,6 +76,8 @@ public class IndexAPI {
     private static final String MSG_404 = "FOUR ZERO FOUR";
     private static final String MSG_400 = "FOUR HUNDRED";
 
+    private static final int LOCATION_TYPE_STATION = 1;
+
     /** Choose short or long form of results. */
     @QueryParam("detail") private boolean detail = false;
 
@@ -177,7 +179,9 @@ public class IndexAPI {
            @QueryParam("maxLon") Double maxLon,
            @QueryParam("lat")    Double lat,
            @QueryParam("lon")    Double lon,
-           @QueryParam("radius") Double radius) {
+           @QueryParam("radius") Double radius,
+           @QueryParam("debug")  Boolean debug,
+           @DefaultValue("0") @QueryParam("locationType") List<Integer> locationTypes) {
 
        /* When no parameters are supplied, return all stops. */
        if (uriInfo.getQueryParameters().isEmpty()) {
@@ -185,6 +189,7 @@ public class IndexAPI {
            return Response.status(Status.OK).entity(StopShort.list(stops)).build();
        }
        /* If any of the circle parameters are specified, expect a circle not a box. */
+       List<StopShort> stops = Lists.newArrayList();
        boolean expectCircle = (lat != null || lon != null || radius != null);
        if (expectCircle) {
            if (lat == null || lon == null || radius == null || radius < 0) {
@@ -193,7 +198,6 @@ public class IndexAPI {
            if (radius > MAX_STOP_SEARCH_RADIUS){
                radius = MAX_STOP_SEARCH_RADIUS;
            }
-           List<StopShort> stops = Lists.newArrayList(); 
            Coordinate coord = new Coordinate(lon, lat);
            for (TransitStop stopVertex : streetIndex.getNearbyTransitStops(
                     new Coordinate(lon, lat), radius)) {
@@ -211,13 +215,30 @@ public class IndexAPI {
            if (maxLat <= minLat || maxLon <= minLon) {
                return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
            }
-           List<StopShort> stops = Lists.newArrayList();
            Envelope envelope = new Envelope(new Coordinate(minLon, minLat), new Coordinate(maxLon, maxLat));
            for (TransitStop stopVertex : streetIndex.getTransitStopForEnvelope(envelope)) {
                stops.add(new StopShort(stopVertex.getStop()));
            }
-           return Response.status(Status.OK).entity(stops).build();           
        }
+       if (debug != null && debug) {
+           for (StopShort stop : stops) {
+               TransitStop tstop = index.stopVertexForStop.get(index.stopForId.get(stop.id));
+               if (tstop.shouldLinkToStreet()) {
+                   stop.distance = tstop.getDistance();
+                   stop.wayId = tstop.getOsmWay();
+               }
+           }
+       }
+       if (locationTypes.contains(LOCATION_TYPE_STATION)) {
+           List<StopShort> parentStations = new ArrayList<>();
+           for (StopShort stopShort : stops) {
+               Stop stop = index.stopForId.get(stopShort.id);
+           }
+           stops.addAll(parentStations);
+       }
+
+       stops.removeIf(s -> !locationTypes.contains(s.locationType));
+       return Response.status(Status.OK).entity(stops).build();
    }
 
    @GET

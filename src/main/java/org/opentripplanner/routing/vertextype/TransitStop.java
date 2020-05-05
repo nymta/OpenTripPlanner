@@ -26,6 +26,10 @@ public class TransitStop extends TransitStationStop {
 
     private boolean isEntrance;
 
+    //Checks to see if the location type is > 2.
+    //Offical GTFS only lists 0,1,2 as supported location types.
+    private boolean isExtendedLocationType;
+
     /**
      * For stops that are deep underground, there is a time cost to entering and exiting the stop;
      * all stops are assumed to be at street level unless we have configuration to the contrary
@@ -93,6 +97,32 @@ public class TransitStop extends TransitStationStop {
     
     public boolean isStreetLinkable() {
         return isEntrance() || !hasEntrances();
+    }
+
+    @Override
+    public boolean shouldLinkToStreet() {
+        return isStreetLinkable();
+    }
+
+    // for reporting, keep track of closest osmWay and the distance to it.
+
+    private double distance = Double.MAX_VALUE;
+
+    private long osmWay;
+
+    public void setClosestWay(double distance, long osmWay) {
+        if (distance < this.distance) {
+            this.distance = distance;
+            this.osmWay = osmWay;
+        }
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public long getOsmWay() {
+        return osmWay;
     }
 
     // We want to avoid a situation where results look like

@@ -294,4 +294,12 @@ public abstract class Vertex implements Serializable, Cloneable {
         }
         return result;
     }
+
+
+    /**
+     * Return true if this vertex should be linked to street network by SimpleStreetSplitter
+     */
+    public boolean shouldLinkToStreet() {
+        return false;
+    }
 }
