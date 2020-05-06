@@ -230,7 +230,6 @@ public class IndexAPI {
            }
        }
 
-
        stops.removeIf(s -> !locationTypes.contains(s.locationType));
        return Response.status(Status.OK).entity(stops).build();
    }
