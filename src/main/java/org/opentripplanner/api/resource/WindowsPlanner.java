@@ -110,7 +110,7 @@ public class WindowsPlanner extends RoutingResource {
             TimeWindowSearch timeWindowSearch = new TimeWindowSearch(options);
 
             /* Find some good GraphPaths through the OTP Graph. */
-            ShortestPathTree shortestPathTree = timeWindowSearch.findShortestPathTree(requestState, options);
+            ShortestPathTree shortestPathTree = timeWindowSearch.findShortestPathTree(requestState);
 
 
             TripPlan plan = GraphPathToTripPlanConverter.generatePlan(shortestPathTree.getPaths(), options);
