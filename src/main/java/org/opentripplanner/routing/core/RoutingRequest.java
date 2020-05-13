@@ -22,6 +22,8 @@ import org.opentripplanner.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.QueryParam;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,6 +139,11 @@ public class RoutingRequest implements Cloneable, Serializable {
     public double bikeSpeed;
 
     public double carSpeed;
+
+    public boolean excludeStreetEdges = false;
+    public boolean firstTraversalIntoFareEntry = false;
+    public boolean fareExitOnlyToDestination = false;
+    public boolean lastTraversalFromFareExit = false;
 
     public Locale locale = new Locale("en", "US");
 

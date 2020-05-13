@@ -123,7 +123,7 @@ public class WalkStep {
      */
     public transient List<Edge> edges = Lists.newArrayList();
 
-    public FeedScopedId pathwayId;
+    public int pathwayId;
 
     /**
      * The bike rental on/off station info.

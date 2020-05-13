@@ -56,7 +56,7 @@ public class GenericDijkstra {
         if (options.rctx != null) {
             target = initialState.getOptions().rctx.target;
         }
-        ShortestPathTree spt = new DominanceFunction.MinimumWeight().getNewShortestPathTree(options);
+        ShortestPathTree spt = getShortestPathTreeFromDominanceFunction();
         BinHeap<State> queue = new BinHeap<State>(1000);
 
         spt.add(initialState);
@@ -112,6 +112,11 @@ public class GenericDijkstra {
             }
         }
         return spt;
+    }
+
+//    Extracted into a method so the DominanceFunction can be overwritten in chile implementations of GenericDijktra
+    public ShortestPathTree getShortestPathTreeFromDominanceFunction() {
+        return new DominanceFunction.MinimumWeight().getNewShortestPathTree(options);
     }
 
     public void setHeuristic(RemainingWeightHeuristic heuristic) {

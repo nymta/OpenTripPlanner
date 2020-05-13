@@ -70,4 +70,9 @@ public class BikeRentalStationVertex extends Vertex {
          return isCarStation ? TraverseMode.CAR : TraverseMode.BICYCLE;
     }
 
+    @Override
+    public boolean shouldLinkToStreet() {
+        return true;
+    }
+
 }

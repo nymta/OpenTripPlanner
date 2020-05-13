@@ -862,7 +862,7 @@ public abstract class GraphPathToTripPlanConverter {
                 PathwayEdge pathEdge = (PathwayEdge) edge;
 
                 step.streetName = pathEdge.getName(requestedLocale);
-//                step.pathwayId = new FeedScopedId(pathEdge pathEdge.getId())
+                step.pathwayId = pathEdge.getId();
 
                 step.setRelativeDirection(RelativeDirection.ELEVATOR, requestedLocale);
 

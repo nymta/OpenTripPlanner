@@ -95,6 +95,11 @@ public class TransitStop extends TransitStationStop {
         return isEntrance() || !hasEntrances();
     }
 
+    @Override
+    public boolean shouldLinkToStreet() {
+        return isStreetLinkable();
+    }
+
     // We want to avoid a situation where results look like
     // 1) call-and-ride from A to B
     // 2) call-and-ride from A to real transit stop right next to B, walk to B
@@ -114,4 +119,6 @@ public class TransitStop extends TransitStationStop {
         RoutingContext rctx = s0.getOptions().rctx;
         return this == rctx.fromVertex || this == rctx.toVertex;
     }
+
+
 }
