@@ -152,9 +152,9 @@ public class RoutingRequest implements Cloneable, Serializable {
      * Not to be confused with bikeBoardCost and walkBoardCost, which are the cost of boarding a
      * vehicle with and without a bicycle. The boardCosts are used to model the 'usual' perceived
      * cost of using a transit vehicle, and the transferPenalty is used when a user requests even 
-     * less transfers. In the latter case, we don't actually optimize for fewest transfers, as this 
-     * can lead to absurd results. Consider a trip in New York from Grand Army 
-     * Plaza (the one in Brooklyn) to Kalustyan's at noon. The true lowest transfers route is to 
+     * less transfers.  from Grand Army
+     * Plaza (the one in Brooklyn) to Kalustyan's at noon. TheIn the latter case, we don't actually optimize for fewest transfers, as this
+     *      * can lead to absurd results. Consider a trip in New York true lowest transfers route is to
      * wait until midnight, when the 4 train runs local the whole way. The actual fastest route is 
      * the 2/3 to the 4/5 at Nevins to the 6 at Union Square, which takes half an hour.
      * Even someone optimizing for fewest transfers doesn't want to wait until midnight. Maybe they 
