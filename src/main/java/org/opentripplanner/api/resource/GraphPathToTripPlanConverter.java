@@ -93,9 +93,8 @@ public abstract class GraphPathToTripPlanConverter {
 
 //          When there is very infrequent service a trip that takes 20 minutes could also have an option that takes 3 hours and returns as a viable result.  This is not an acceptable user experience it is better to not show the user options that to do this.
             if(itineraries.size() < 1 || itinerary.transitTime == 0  || (itinerary.transitTime > 0 &&
-                    (bestDuration < tripDurationInSecondsToFilterOn ) ||
                     (bestDuration >= tripDurationInSecondsToFilterOn && itinerary.duration < bestDuration*durationMultiplier) ||
-                    (bestDuration < tripDurationInSecondsToFilterOn && itinerary.duration > maxShotTripDurationInSecondsToFilterOn)) )
+                    (bestDuration < tripDurationInSecondsToFilterOn && itinerary.duration < maxShotTripDurationInSecondsToFilterOn)) )
             {
                 itineraries.add(itinerary);
             }
