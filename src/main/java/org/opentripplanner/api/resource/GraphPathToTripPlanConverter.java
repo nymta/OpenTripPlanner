@@ -44,6 +44,9 @@ public abstract class GraphPathToTripPlanConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(GraphPathToTripPlanConverter.class);
     private static final double MAX_ZAG_DISTANCE = 30; // TODO add documentation, what is a "zag"?
+    private static int tripDurationInSecondsToFilterOn = 60 * 45;
+    private static int maxShotTripDurationInSecondsToFilterOn = 60 * 90;
+    private static int durationMultiplier = 3;
 
     /**
      * Generates a TripPlan from a set of paths
@@ -75,6 +78,7 @@ public abstract class GraphPathToTripPlanConverter {
 
         // Convert GraphPaths to Itineraries, keeping track of the best non-transit (e.g. walk/bike-only) option time
         long bestNonTransitTime = Long.MAX_VALUE;
+        long bestDuration = Long.MAX_VALUE;
         List<Itinerary> itineraries = new LinkedList<>();
         for (GraphPath path : paths) {
             Itinerary itinerary = generateItinerary(path, request.showIntermediateStops, request.disableAlertFiltering, requestedLocale);
@@ -82,7 +86,19 @@ public abstract class GraphPathToTripPlanConverter {
             if(itinerary.transitTime == 0 && itinerary.walkTime < bestNonTransitTime) {
                 bestNonTransitTime = itinerary.walkTime;
             }
-            itineraries.add(itinerary);
+            if(itinerary.duration < bestDuration && itinerary.transitTime > 0)
+            {
+                bestDuration = itinerary.duration;
+            }
+
+//          When there is very infrequent service a trip that takes 20 minutes could also have an option that takes 3 hours and returns as a viable result.  This is not an acceptable user experience it is better to not show the user options that to do this.
+            if(itineraries.size() < 1 || itinerary.transitTime == 0  || (itinerary.transitTime > 0 &&
+                    (bestDuration < tripDurationInSecondsToFilterOn ) ||
+                    (bestDuration >= tripDurationInSecondsToFilterOn && itinerary.duration < bestDuration*durationMultiplier) ||
+                    (bestDuration < tripDurationInSecondsToFilterOn && itinerary.duration > maxShotTripDurationInSecondsToFilterOn)) )
+            {
+                itineraries.add(itinerary);
+            }
         }
 
         // Filter and add itineraries to plan
