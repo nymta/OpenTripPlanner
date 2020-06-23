@@ -1,5 +1,6 @@
 package org.opentripplanner.gtfs.mapping;
 
+import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.StopTime;
 import org.opentripplanner.util.MapUtils;
 
@@ -33,7 +34,14 @@ class StopTimeMapper {
         StopTime lhs = new StopTime();
 
         lhs.setTrip(tripMapper.map(rhs.getTrip()));
-        lhs.setStop(stopMapper.map(rhs.getStop()));
+        if(rhs.getStop() == null){
+            Stop stop = lhs.generatePlaceholderStop();
+            stop.setId(lhs.getTrip().getId());
+            lhs.setStop(stop);
+        }else{
+            lhs.setStop(stopMapper.map(rhs.getStop()));
+        }
+
         lhs.setArrivalTime(rhs.getArrivalTime());
         lhs.setDepartureTime(rhs.getDepartureTime());
         lhs.setTimepoint(rhs.getTimepoint());

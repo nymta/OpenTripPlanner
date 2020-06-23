@@ -184,6 +184,11 @@ public class TripPattern implements Cloneable, Serializable {
         perStopFlags = new int[stopPattern.size];
         int i = 0;
         for (Stop stop : stopPattern.stops) {
+
+            if(stop == null) {
+             int f = 100;
+            }
+
             // Assume that stops can be boarded with wheelchairs by default (defer to per-trip data)
             if (stop.getWheelchairBoarding() != 2) {
                 perStopFlags[i] |= FLAG_WHEELCHAIR_ACCESSIBLE;
@@ -524,20 +529,35 @@ public class TripPattern implements Cloneable, Serializable {
             }
 
             /* Get the arrive and depart vertices for the current stop (not pattern stop). */
-            TransitStopDepart stopDepart = ((TransitStop) transitStops.get(s0)).departVertex;
-            TransitStopArrive stopArrive = ((TransitStop) transitStops.get(s1)).arriveVertex;
 
-            /* Record the transit stop vertices visited on this pattern. */
-            stopVertices[stop] = stopDepart.getStopVertex();
-            stopVertices[stop + 1] = stopArrive.getStopVertex(); // this will only have an effect on the last stop
+            if(transitStops.get(s0) != null && transitStops.get(s1) != null) {
+                //TODO Debugging remove
+                if(((TransitStop) transitStops.get(s0)) == null || ((TransitStop) transitStops.get(s0)).departVertex == null) {
+                    int g = 0;
+                }
+                if(((TransitStop) transitStops.get(s1)) == null || ((TransitStop) transitStops.get(s1)).arriveVertex == null) {
+                    int g = 0;
+                }
 
-            /* Create board/alight edges, but only if pickup/dropoff is enabled in GTFS. */
-            if (this.canBoard(stop)) {
-                boardEdges[stop] = new TransitBoardAlight(stopDepart, pdv0, stop, mode);
+                TransitStopDepart stopDepart = ((TransitStop) transitStops.get(s0)).departVertex;
+                TransitStopArrive stopArrive = ((TransitStop) transitStops.get(s1)).arriveVertex;
+
+                /* Record the transit stop vertices visited on this pattern. */
+                stopVertices[stop] = stopDepart.getStopVertex();
+                stopVertices[stop + 1] = stopArrive.getStopVertex(); // this will only have an effect on the last stop
+
+                /* Create board/alight edges, but only if pickup/dropoff is enabled in GTFS. */
+                if (this.canBoard(stop)) {
+                    boardEdges[stop] = new TransitBoardAlight(stopDepart, pdv0, stop, mode);
+                }
+                if (this.canAlight(stop + 1)) {
+                    alightEdges[stop + 1] = new TransitBoardAlight(pav1, stopArrive, stop + 1, mode);
+                }
+            } else {
+                stopVertices[stop] = new TransitStop(null, s0);
+                stopVertices[stop + 1] = new TransitStop(null, s0);
             }
-            if (this.canAlight(stop + 1)) {
-                alightEdges[stop + 1] = new TransitBoardAlight(pav1, stopArrive, stop + 1, mode);
-            }
+
         }
     }
 

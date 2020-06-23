@@ -61,7 +61,16 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         this.pickupType = st.pickupType;
         this.routeShortName = st.routeShortName;
         this.shapeDistTraveled = st.shapeDistTraveled;
-        this.stop = st.stop;
+
+        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
+        if(st.stop == null)
+        {
+            this.stop = generatePlaceholderStop();
+        }else {
+            this.stop = st.stop;
+        }
+
+
         this.stopHeadsign = st.stopHeadsign;
         this.stopSequence = st.stopSequence;
         this.timepoint = st.timepoint;
@@ -90,12 +99,19 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         this.stopSequence = stopSequence;
     }
 
+    //Stops can be null as per the GTFS Flex spect. But only if there is an area for the start or end of the stop and it is a flex type.
     public Stop getStop() {
         return stop;
     }
 
     public void setStop(Stop stop) {
-        this.stop = stop;
+
+        if(stop == null)
+        {
+            this.stop = generatePlaceholderStop();
+        }else {
+            this.stop = stop;
+        }
     }
 
     public boolean isArrivalTimeSet() {
@@ -282,8 +298,24 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
 
     @Override
     public String toString() {
-        return "StopTime(seq=" + getStopSequence() + " stop=" + getStop().getId() + " trip="
+
+
+        //Stops can be null as per the GTFS Flex spect. But only if there is an area for the start or end of the stop and it is a flex type.
+        return "StopTime(seq=" + getStopSequence() + " stop=" + (getStop()==null?"NuLl":getStop().getId()) + " trip="
                 + getTrip().getId() + " times=" + TimeToStringConverter.toHH_MM_SS(getArrivalTime())
                 + "-" + TimeToStringConverter.toHH_MM_SS(getDepartureTime()) + ")";
+    }
+
+    public Stop generatePlaceholderStop() {
+        Stop stop = new Stop();
+        stop.setId(new FeedScopedId());
+        stop.setLat(-999999);
+        stop.setLon(-999999);
+        stop.setName("FlexStop");
+        stop.setCode("FlexStopCode");
+        stop.setDesc("FlexStopDescription");
+        stop.setWheelchairBoarding(1);
+
+        return stop;
     }
 }
