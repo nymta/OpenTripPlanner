@@ -169,9 +169,19 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
 
             if (st.getStartServiceArea() != null) {
                 area = st.getStartServiceArea().getAreaId();
+                serviceArea[s] = area;
             }
-            serviceArea[s] = area;
+
+
             if (st.getEndServiceArea() != null) {
+                if (area == null) {
+                    StopTime previous = stopTimes.get(st.getStopSequence()-2);
+                    if (previous.getStartServiceArea() != null) {
+                        area = previous.getStartServiceArea().getAreaId();
+                    }
+                    serviceArea[s] = area;
+                }
+
                 if (!st.getEndServiceArea().getAreaId().equals(area)) {
                     String message = String.format("Trip %s: start service area %s does not match end area %s",
                             st.getTrip().getId(), area, st.getEndServiceArea());
