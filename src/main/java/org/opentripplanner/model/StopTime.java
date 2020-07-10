@@ -65,15 +65,13 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         this.stopSequence = st.stopSequence;
         this.timepoint = st.timepoint;
         this.trip = st.trip;
+        this.stop = st.stop;
         this.continuousPickup = st.continuousPickup;
         this.continuousDropOff = st.continuousDropOff;
         this.startServiceArea = st.startServiceArea;
         this.endServiceArea = st.endServiceArea;
         this.startServiceAreaRadius = st.startServiceAreaRadius;
         this.endServiceAreaRadius = st.endServiceAreaRadius;
-
-        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
-        compensateForNullStop(st.stop);
     }
 
     public Trip getTrip() {
@@ -98,8 +96,7 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
     }
 
     public void setStop(Stop stop) {
-        compensateForNullStop(stop);
-
+        this.stop = stop;
     }
 
     public boolean isArrivalTimeSet() {
@@ -318,16 +315,4 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         return stop;
     }
 
-    private void compensateForNullStop(Stop stop) {
-        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
-        if (stop == null) {
-            if (startServiceArea != null) {
-                this.stop = generatePlaceholderStop(startServiceArea);
-            } else {
-                this.stop = generatePlaceholderStop(endServiceArea);
-            }
-        } else {
-            this.stop = stop;
-        }
-    }
 }

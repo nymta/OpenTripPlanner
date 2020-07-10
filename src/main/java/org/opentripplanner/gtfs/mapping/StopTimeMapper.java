@@ -52,18 +52,18 @@ class StopTimeMapper {
         lhs.setStartServiceAreaRadius(rhs.getStartServiceAreaRadius());
         lhs.setEndServiceAreaRadius(rhs.getEndServiceAreaRadius());
         if(rhs.getStop() == null){
-            Stop stop = new Stop();
 
             if (rhs.getStartServiceArea() != null) {
-                stop = lhs.generatePlaceholderStop(rhs.getStartServiceArea());
+                Stop stop = lhs.generatePlaceholderStop(rhs.getStartServiceArea());
+                stop.setId(lhs.getTrip().getId());
+                lhs.setStop(stop);
             } else if(rhs.getEndServiceArea() != null){
-                stop = lhs.generatePlaceholderStop(rhs.getEndServiceArea());
+                Stop stop = lhs.generatePlaceholderStop(rhs.getEndServiceArea());
+                stop.setId(lhs.getTrip().getId());
+                lhs.setStop(stop);
             } else {
-                System.out.println("rhs = "+rhs.getId());
+                lhs.setStop(null);
             }
-
-            stop.setId(lhs.getTrip().getId());
-            lhs.setStop(stop);
         }else{
             lhs.setStop(stopMapper.map(rhs.getStop()));
         }
