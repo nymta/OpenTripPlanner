@@ -47,8 +47,8 @@ public class WindowsPlanner extends RoutingResource {
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML + Q, MediaType.TEXT_XML + Q })
     public Response profileRoute (@Context UriInfo uriInfo,
                                   @PathParam("routerId")                        String routerId,
-                                  @QueryParam("fromPlace")                      LatLon from,
-                                  @QueryParam("toPlace")                        LatLon to,
+                                  @QueryParam("startStopId")                    LatLon from,
+                                  @QueryParam("endStopId")                      LatLon to,
                                   @QueryParam("fromDateTime")                   String fromDateTimeString,
                                   @QueryParam("toDateTime")                     String toDateTimeString,
                                   @QueryParam("mode")                           QualifiedModeSet modeList,
@@ -69,6 +69,11 @@ public class WindowsPlanner extends RoutingResource {
          *       or vertex ids to planner (or error back to user)
          * TODO: org.opentripplanner.routing.module.PathServiceImpl has COOORD parsing. Abstract that
          *       out so it's used here too...
+         *
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=49.25469726310145%2C-123.15184593200684&endStopId=49.21849411435681%2C-123.10214996337889&fromDateTime=2020-04-15%2010%3A21%3A44%20EST&toDateTime=2020-04-15%2011%3A21%3A44%20EST%20z&mode=TRANSIT%2CWALK
+         *
+         *
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=49.25469726310145%2C-123.15184593200684&endStopId=49.21849411435681%2C-123.10214996337889&fromDateTime=2020-04-15%2010%3A21%3A44%20z&toDateTime=2020-04-15%2011%3A21am%20z&mode=TRANSIT%2CWALK
          */
 
         RoutingRequest options = new RoutingRequest(modeList);
