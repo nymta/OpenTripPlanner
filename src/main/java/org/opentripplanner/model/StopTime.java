@@ -61,16 +61,6 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         this.pickupType = st.pickupType;
         this.routeShortName = st.routeShortName;
         this.shapeDistTraveled = st.shapeDistTraveled;
-
-        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
-        if(st.stop == null)
-        {
-            this.stop = generatePlaceholderStop();
-        }else {
-            this.stop = st.stop;
-        }
-
-
         this.stopHeadsign = st.stopHeadsign;
         this.stopSequence = st.stopSequence;
         this.timepoint = st.timepoint;
@@ -81,6 +71,9 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
         this.endServiceArea = st.endServiceArea;
         this.startServiceAreaRadius = st.startServiceAreaRadius;
         this.endServiceAreaRadius = st.endServiceAreaRadius;
+
+        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
+        compensateForNullStop(st.stop);
     }
 
     public Trip getTrip() {
@@ -105,13 +98,8 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
     }
 
     public void setStop(Stop stop) {
+        compensateForNullStop(stop);
 
-        if(stop == null)
-        {
-            this.stop = generatePlaceholderStop();
-        }else {
-            this.stop = stop;
-        }
     }
 
     public boolean isArrivalTimeSet() {
@@ -306,16 +294,40 @@ public final class StopTime implements Serializable, Comparable<StopTime> {
                 + "-" + TimeToStringConverter.toHH_MM_SS(getDepartureTime()) + ")";
     }
 
-    public Stop generatePlaceholderStop() {
+    public Stop generatePlaceholderStop(Area serviceArea) {
+        int endOfServiceAreaEntry = serviceArea.getWkt().indexOf(',');
+        int startOfServiceAreaEntry = serviceArea.getWkt().indexOf('(')+2;
+        String serviceAreaFirstEntryLatLonString = serviceArea.getWkt().substring(startOfServiceAreaEntry, endOfServiceAreaEntry);
+        int latLongSeparator = serviceAreaFirstEntryLatLonString.indexOf(' ');
+        String serviceAreaFirstEntryLatString = serviceAreaFirstEntryLatLonString.substring(0, latLongSeparator);
+        String serviceAreaFirstEntryLonString = serviceAreaFirstEntryLatLonString.substring(latLongSeparator, serviceAreaFirstEntryLatLonString.length()-1);
+
+        double lon = Double.parseDouble(serviceAreaFirstEntryLatString);
+        double lat = Double.parseDouble(serviceAreaFirstEntryLonString);
+
+
         Stop stop = new Stop();
         stop.setId(new FeedScopedId());
-        stop.setLat(-999999);
-        stop.setLon(-999999);
+        stop.setLat(lat);
+        stop.setLon(lon);
         stop.setName("FlexStop");
         stop.setCode("FlexStopCode");
         stop.setDesc("FlexStopDescription");
         stop.setWheelchairBoarding(1);
 
         return stop;
+    }
+
+    private void compensateForNullStop(Stop stop) {
+        //GTFS Flex introduced the ability to create a stopTime without a stop if there is a start or end serviceArea defined
+        if (stop == null) {
+            if (startServiceArea != null) {
+                this.stop = generatePlaceholderStop(startServiceArea);
+            } else {
+                this.stop = generatePlaceholderStop(endServiceArea);
+            }
+        } else {
+            this.stop = stop;
+        }
     }
 }

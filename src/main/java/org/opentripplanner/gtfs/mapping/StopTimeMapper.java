@@ -3,6 +3,7 @@ package org.opentripplanner.gtfs.mapping;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.StopTime;
 import org.opentripplanner.util.MapUtils;
+import sun.rmi.runtime.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,14 +35,6 @@ class StopTimeMapper {
         StopTime lhs = new StopTime();
 
         lhs.setTrip(tripMapper.map(rhs.getTrip()));
-        if(rhs.getStop() == null){
-            Stop stop = lhs.generatePlaceholderStop();
-            stop.setId(lhs.getTrip().getId());
-            lhs.setStop(stop);
-        }else{
-            lhs.setStop(stopMapper.map(rhs.getStop()));
-        }
-
         lhs.setArrivalTime(rhs.getArrivalTime());
         lhs.setDepartureTime(rhs.getDepartureTime());
         lhs.setTimepoint(rhs.getTimepoint());
@@ -58,7 +51,22 @@ class StopTimeMapper {
         lhs.setEndServiceArea(rhs.getEndServiceArea());
         lhs.setStartServiceAreaRadius(rhs.getStartServiceAreaRadius());
         lhs.setEndServiceAreaRadius(rhs.getEndServiceAreaRadius());
+        if(rhs.getStop() == null){
+            Stop stop = new Stop();
 
+            if (rhs.getStartServiceArea() != null) {
+                stop = lhs.generatePlaceholderStop(rhs.getStartServiceArea());
+            } else if(rhs.getEndServiceArea() != null){
+                stop = lhs.generatePlaceholderStop(rhs.getEndServiceArea());
+            } else {
+                System.out.println("rhs = "+rhs.getId());
+            }
+
+            stop.setId(lhs.getTrip().getId());
+            lhs.setStop(stop);
+        }else{
+            lhs.setStop(stopMapper.map(rhs.getStop()));
+        }
         // Skip mapping of proxy
         // private transient StopTimeProxy proxy;
         if (rhs.getProxy() != null) {
