@@ -1316,7 +1316,16 @@ public class PatternHopFactory {
                 serviceAreaWkt = st.getStartServiceArea().getWkt();
             }
             if (prev != null) {
-                if (prev.getStop().equals(st.getStop()) && serviceAreaRadius == 0.0d && serviceAreaWkt == null) {
+
+                if(prev.getStop() == null || st.getStop() == null)
+                {
+                    int h = 100;
+
+                }
+
+                if ( (  (prev.getStop() != null && st.getStop() != null && prev.getStop().equals(st.getStop())) ||
+                        (prev.getStop() == null && st.getStop() == null) )
+                        && serviceAreaRadius == 0.0d && serviceAreaWkt == null) {
                     // OBA gives us unmodifiable lists, but we have copied them.
 
                     // Merge the two stop times, making sure we're not throwing out a stop time with times in favor of an
