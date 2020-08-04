@@ -38,7 +38,7 @@ public class FareEntryRestrictionsSkipEdgeStrategy implements SkipEdgeStrategy {
             }
         }
         else {
-            return true;
+            return false;
         }
 
         return false;
