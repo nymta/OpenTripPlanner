@@ -116,6 +116,14 @@ public class RoutingRequest implements Cloneable, Serializable {
     /** The epoch date/time that the trip should depart (or arrive, for requests where arriveBy is true) */
     public long dateTime = new Date().getTime() / 1000;
 
+    /** The date/time that the original travel time requested by customer */
+    public long origTravelDateTime = Long.MIN_VALUE;
+
+    /** The run board name in current GTFS file. This name will be used in the warning message if the user given travel date is beyond the current runboard. */
+    public String runboard = null;
+
+    public Long runboardEndDate = null;
+
     /** Whether the trip should depart at dateTime (false, the default), or arrive at dateTime. */
     public boolean arriveBy = false;
 
@@ -617,6 +625,9 @@ public class RoutingRequest implements Cloneable, Serializable {
      */
     public long clockTimeSec;
 
+    /** Whether to use feature where dates are extended when past transit service */
+    public boolean useTransitServiceExtension = false;
+
     /* CONSTRUCTORS */
 
     /** Constructor for options; modes defaults to walk and transit */
@@ -904,6 +915,34 @@ public class RoutingRequest implements Cloneable, Serializable {
         }
     }
 
+    public Date getOrigTravelDateTime() {
+        if (origTravelDateTime == Long.MIN_VALUE) {
+            return null;
+        } else {
+            return new Date(origTravelDateTime*1000);
+        }
+    }
+
+    public void setOrigTravelDateTime(Date origTravelDateTime) {
+        this.origTravelDateTime = origTravelDateTime.getTime() / 1000;
+    }
+
+    public String getRunboard() {
+        return runboard;
+    }
+
+    public void setRunboard(String runboard) {
+        this.runboard = runboard;
+    }
+
+    public Long getRunboardEndDate() {
+        return runboardEndDate;
+    }
+
+    public void setRunboardEndDate(long date) {
+        this.runboardEndDate = date;
+    }
+
     public Date getDateTime() {
         return new Date(dateTime * 1000);
     }
@@ -1178,7 +1217,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && flexIgnoreDrtAdvanceBookMin == other.flexIgnoreDrtAdvanceBookMin
                 && flexMinPartialHopLength == other.flexMinPartialHopLength
                 && clockTimeSec == other.clockTimeSec
-                && serviceDayLookout == other.serviceDayLookout;
+                && serviceDayLookout == other.serviceDayLookout
+                && useTransitServiceExtension == other.useTransitServiceExtension;
     }
 
     /**
@@ -1223,7 +1263,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + Long.hashCode(clockTimeSec) * 833389
                 + new Boolean(disableRemainingWeightHeuristic).hashCode() * 193939
                 + new Boolean(useTraffic).hashCode() * 10169
-                + Integer.hashCode(serviceDayLookout) * 31558519;
+                + Integer.hashCode(serviceDayLookout) * 31558519
+                + Boolean.hashCode(useTransitServiceExtension) * 1300931;
 
         if (batch) {
             hashCode *= -1;

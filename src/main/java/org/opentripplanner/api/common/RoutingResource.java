@@ -447,9 +447,45 @@ public abstract class RoutingResource {
                 }
             } else {
                 request.setDateTime(date, time, tz);
+                request.setRunboardEndDate(router.graph.getTransitServiceEnds() * 1000);
+
+                //check if date is exceed end time of GTFS.
+                if (request.getDateTime().getTime() > router.graph.getTransitServiceEnds()*1000 && request.useTransitServiceExtension) {
+                    LOG.warn("********* request time beyond the range");
+                    //back up original travel time
+                    request.setOrigTravelDateTime(request.getDateTime());
+                    request.setRunboard(router.graph.getFeedInfo());
+
+                    //set transit time as the one within the GTFS calendar
+                    LOG.warn("********* user given date: " + request.getDateTime());
+                    //get the day of the week
+                    Calendar c = Calendar.getInstance();
+                    c.setTimeInMillis(router.graph.getTransitServiceEnds()*1000);
+                    int serviceEndWeek = c.get(Calendar.WEEK_OF_YEAR);
+
+                    c.setTimeInMillis(request.getDateTime().getTime());
+                    int userGivendayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+                    int userGivenHour = c.get(Calendar.HOUR_OF_DAY);
+                    int userGivenMin = c.get(Calendar.MINUTE);
+                    int userGivenSec = c.get(Calendar.SECOND);
+                    int userGivenYear = c.get(Calendar.YEAR);
+                    //int userGivenWeek = c.get(Calendar.WEEK_OF_YEAR);
+
+                    c.clear();
+                    c.set(Calendar.WEEK_OF_YEAR, serviceEndWeek-1);
+                    c.set(Calendar.YEAR, userGivenYear);
+                    c.set(Calendar.DAY_OF_WEEK, userGivendayOfWeek);
+                    c.set(Calendar.HOUR_OF_DAY, userGivenHour);
+                    c.set(Calendar.MINUTE, userGivenMin);
+                    c.set(Calendar.SECOND, userGivenSec);
+
+                    LOG.warn("********* user given date (new): " + c.getTime());
+
+                    request.setDateTime(c.getTime());
+
+                }
             }
 
-            request.resetClockTime();
         }
 
         if (wheelchair != null)
