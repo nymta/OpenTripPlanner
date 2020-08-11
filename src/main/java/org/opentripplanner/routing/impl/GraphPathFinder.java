@@ -19,6 +19,7 @@ import org.opentripplanner.routing.flex.DeviatedRouteGraphModifier;
 import org.opentripplanner.routing.flex.FlagStopGraphModifier;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.Router;
@@ -124,6 +125,8 @@ public class GraphPathFinder {
         // OTP now always uses what used to be called longDistance mode. Non-longDistance mode is no longer supported.
         options.longDistance = true;
 
+        PathIgnoreStrategy pathIgnoreStrategy = options.getPathIgnoreStrategy();
+
         /* maxWalk has a different meaning than it used to. It's the radius around the origin or destination within
          * which you can walk on the streets. An unlimited value would cause the bidi heuristic to do unbounded street
          * searches and consider the whole graph walkable.
@@ -207,6 +210,11 @@ public class GraphPathFinder {
                         options.flexMaxCallAndRideSeconds = Math.min(constantLimit, ratioLimit);
                     }
                 }
+
+                if (pathIgnoreStrategy.shouldIgnorePath(path)) {
+                    continue;
+                }
+
             }
 
             paths.addAll(newPaths.stream()

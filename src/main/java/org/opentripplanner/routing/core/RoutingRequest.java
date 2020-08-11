@@ -12,8 +12,12 @@ import org.opentripplanner.routing.error.TrivialPathException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.ignore.DefaultPathIgnoreStrategy;
+import org.opentripplanner.routing.ignore.PathIgnoreStrategy;
+import org.opentripplanner.routing.impl.MTAPathIgnoreStrategy;
 import org.opentripplanner.routing.impl.DurationComparator;
 import org.opentripplanner.routing.impl.PathComparator;
+import org.opentripplanner.routing.impl.RTDPathIgnoreStrategy;
 import org.opentripplanner.routing.request.BannedStopSet;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.spt.GraphPath;
@@ -591,6 +595,9 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Which path comparator to use */
     public String pathComparator = null;
+
+    /** Which PathIgnoreStrategy to use */
+    private String pathIgnoreStrategy = null;
 
     /**
      * This parameter is used in GTFS-Flex routing. Preliminary searches before the main search
@@ -1224,6 +1231,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && flexMinPartialHopLength == other.flexMinPartialHopLength
                 && clockTimeSec == other.clockTimeSec
                 && serviceDayLookout == other.serviceDayLookout
+                && pathIgnoreStrategy.equals(pathIgnoreStrategy)
                 && useTransitServiceExtension == other.useTransitServiceExtension;
     }
 
@@ -1270,6 +1278,7 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + new Boolean(disableRemainingWeightHeuristic).hashCode() * 193939
                 + new Boolean(useTraffic).hashCode() * 10169
                 + Integer.hashCode(serviceDayLookout) * 31558519
+                + pathIgnoreStrategy.hashCode() * 1301081
                 + Boolean.hashCode(useTransitServiceExtension) * 1300931;
 
         if (batch) {
@@ -1549,6 +1558,15 @@ public class RoutingRequest implements Cloneable, Serializable {
             return new DurationComparator();
         }
         return new PathComparator(compareStartTimes);
+    }
+
+    public PathIgnoreStrategy getPathIgnoreStrategy() {
+        if ("mta".equals(pathIgnoreStrategy)) {
+            return new MTAPathIgnoreStrategy();
+        } else if ("rtd".equals(pathIgnoreStrategy)) {
+            return new RTDPathIgnoreStrategy();
+        }
+        return new DefaultPathIgnoreStrategy();
     }
 
 }
