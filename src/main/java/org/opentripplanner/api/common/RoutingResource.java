@@ -10,6 +10,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.webcohesion.enunciate.metadata.Ignore;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.routing.core.OptimizeType;
@@ -96,6 +97,11 @@ public abstract class RoutingResource {
      */
     @QueryParam("walkReluctance")
     protected Double walkReluctance;
+
+    /* Multiplier for how bad driving is, compared to being in transit for equal lengths of time. */
+    @Ignore
+    @QueryParam("carReluctance")
+    protected Double carReluctance;
 
     /**
      * How much worse is waiting for a transit vehicle than being on a transit vehicle, as a
@@ -504,6 +510,9 @@ public abstract class RoutingResource {
 
         if (walkReluctance != null)
             request.setWalkReluctance(walkReluctance);
+
+        if (carReluctance != null)
+            request.setCarReluctance(carReluctance);
 
         if (waitReluctance != null)
             request.setWaitReluctance(waitReluctance);
