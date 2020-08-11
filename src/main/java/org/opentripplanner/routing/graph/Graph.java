@@ -94,6 +94,8 @@ public class Graph implements Serializable {
 
     private long transitServiceEnds = 0;
 
+    private String feedInfo = null;
+
     private Map<Class<?>, Object> _services = new HashMap<Class<?>, Object>();
 
     private TransferTable transferTable = new TransferTable();
@@ -1097,6 +1099,14 @@ public class Graph implements Serializable {
 
     public long getTransitServiceEnds() {
         return transitServiceEnds;
+    }
+
+    public String getFeedInfo() {
+        return feedInfo;
+    }
+
+    public void setFeedInfo(String feedInfo) {
+        this.feedInfo = feedInfo;
     }
 
     public void setUseFlexService(boolean useFlexService) {
