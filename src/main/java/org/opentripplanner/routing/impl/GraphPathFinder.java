@@ -11,6 +11,7 @@ import org.opentripplanner.routing.algorithm.strategies.RemainingWeightHeuristic
 import org.opentripplanner.routing.algorithm.strategies.TrivialRemainingWeightHeuristic;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.LegSwitchingEdge;
 import org.opentripplanner.routing.edgetype.TransitBoardAlight;
 import org.opentripplanner.routing.error.PathNotFoundException;
@@ -215,6 +216,11 @@ public class GraphPathFinder {
                     continue;
                 }
 
+                if (options.smartKissAndRide && path.pathIncludesMode(TraverseMode.CAR)) {
+                    options.preTransitKissAndRide = false;
+                    options.postTransitKissAndRide = false;
+                    options.smartKissAndRide = false;
+                }
             }
 
             paths.addAll(newPaths.stream()

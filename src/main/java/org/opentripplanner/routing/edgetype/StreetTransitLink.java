@@ -110,10 +110,26 @@ public class StreetTransitLink extends Edge {
         if (s0.getNonTransitMode() == TraverseMode.CAR && !req.enterStationsWithCar) {
             if (req.kissAndRide && !s0.isCarParked()) {
                 s1.setCarParked(true);
-            } else {
+            } else if (!req.preTransitKissAndRide && !req.postTransitKissAndRide) {
                 return null;
             }
         }
+        if (req.preTransitKissAndRide && !leavingTransit) {
+            if (!req.kissAndRideWhitelist.contains(getTransitStop().getStopId())) {
+                return null;
+            } else {
+                s1.setCarParked(true);
+            }
+        }
+        if (req.postTransitKissAndRide && leavingTransit) {
+            if (!req.kissAndRideWhitelist.contains(getTransitStop().getStopId())) {
+                return null;
+            }
+            else {
+                s1.setCarParked(false);
+            }
+        }
+
         s1.incrementTimeInSeconds(transitStop.getStreetToStopTime() + STL_TRAVERSE_COST);
         s1.incrementWeight(STL_TRAVERSE_COST + transitStop.getStreetToStopTime());
         s1.setBackMode(TraverseMode.LEG_SWITCH);

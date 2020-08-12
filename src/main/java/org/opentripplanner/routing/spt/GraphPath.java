@@ -12,6 +12,7 @@ import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Trip;
 import org.opentripplanner.routing.core.RoutingContext;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.flex.TemporaryDirectPatternHop;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
@@ -246,5 +247,14 @@ public class GraphPath {
             }
         }
         return trips;
+    }
+
+    public boolean pathIncludesMode(TraverseMode mode) {
+        for (State s : states) {
+            if (mode.equals(s.getBackMode())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

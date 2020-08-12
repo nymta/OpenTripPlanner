@@ -487,9 +487,15 @@ public abstract class GraphPathToTripPlanConverter {
                     break;
 
                 case WALK:
-                case BICYCLE:
-                case CAR:
                     itinerary.walkTime += state.getTimeDeltaSeconds();
+                    break;
+
+                case BICYCLE:
+                    itinerary.bikeTime += state.getTimeDeltaSeconds();
+                    break;
+
+                case CAR:
+                    itinerary.driveTime += state.getTimeDeltaSeconds();
             }
         }
     }
@@ -801,7 +807,10 @@ public abstract class GraphPathToTripPlanConverter {
             List<Edge> transferEdges = transferEdge.getEdges();
             if (transferEdges != null) {
                 // Create a new initial state. Some parameters may have change along the way, copy them from the first state
-                StateEditor se = new StateEditor(states[0].getOptions(), transferEdges.get(0).getFromVertex());
+                RoutingRequest options = states[i].getOptions().clone();
+                options.preTransitKissAndRide = false;
+                options.postTransitKissAndRide = false;
+                StateEditor se = new StateEditor(options, transferEdges.get(0).getFromVertex());
                 se.setNonTransitOptionsFromState(states[0]);
                 State s = se.makeState();
                 ArrayList<State> transferStates = new ArrayList<>();

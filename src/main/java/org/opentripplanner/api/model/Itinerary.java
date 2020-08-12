@@ -45,6 +45,16 @@ public class Itinerary {
     public long waitingTime = 0;
 
     /**
+     * How much time is spent biking, in seconds.
+     */
+    public long bikeTime = 0;
+
+    /**
+     * How much time is spent driving, in seconds.
+     */
+    public long driveTime = 0;
+
+    /**
      * How far the user has to walk, in meters.
      */
     public Double walkDistance = 0.0;

@@ -82,6 +82,10 @@ public abstract class RoutingResource {
     @QueryParam("maxWalkDistance")
     protected Double maxWalkDistance;
 
+    /** Maximum walk distance for heuristic */
+    @QueryParam("maxWalkDistanceHeuristic")
+    protected Double maxWalkDistanceHeuristic;
+
     /**
      * The maximum time (in seconds) of pre-transit travel when using drive-to-transit (park and
      * ride or kiss and ride). Defaults to unlimited.
@@ -397,6 +401,10 @@ public abstract class RoutingResource {
     @QueryParam("geoidElevation")
     private Boolean geoidElevation;
 
+    /** Whether to turn on "smart kiss-an-ride" */
+    @QueryParam("smartKissAndRide")
+    private Boolean smartKissAndRide;
+
     /**
      * Set the method of sorting itineraries in the response. Right now, the only supported value is "duration";
      * otherwise it uses default sorting. More sorting methods may be added in the future.
@@ -503,7 +511,13 @@ public abstract class RoutingResource {
         if (maxWalkDistance != null) {
             request.setMaxWalkDistance(maxWalkDistance);
             request.maxTransferWalkDistance = maxWalkDistance;
+            if (request.maxWalkDistanceHeuristic == Double.MAX_VALUE) {
+                request.maxWalkDistanceHeuristic = maxWalkDistance;
+            }
         }
+
+        if (maxWalkDistanceHeuristic != null)
+            request.maxWalkDistanceHeuristic = maxWalkDistanceHeuristic;
 
         if (maxPreTransitTime != null)
             request.setMaxPreTransitTime(maxPreTransitTime);
@@ -695,6 +709,9 @@ public abstract class RoutingResource {
 
         if (geoidElevation != null)
             request.geoidElevation = geoidElevation;
+
+        if (smartKissAndRide != null)
+            request.smartKissAndRide = smartKissAndRide;
 
         if (pathComparator != null)
             request.pathComparator = pathComparator;

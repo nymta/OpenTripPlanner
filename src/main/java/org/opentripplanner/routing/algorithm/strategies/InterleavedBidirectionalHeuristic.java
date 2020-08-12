@@ -2,6 +2,7 @@ package org.opentripplanner.routing.algorithm.strategies;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
@@ -57,6 +58,8 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     // For each step in the main search, how many steps should the reverse search proceed?
     private static final int HEURISTIC_STEPS_PER_MAIN_STEP = 8; // TODO determine a good value empirically
 
+    private static final int OVERRIDE_THRESHOLD = 1608; // one mile
+
     /** The vertex at which the main search begins. */
     Vertex origin;
 
@@ -87,6 +90,11 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
     // True when the entire transit network has been explored by the reverse search.
     boolean finished = false;
 
+    // Keep track of "pre-transit" transit stops so we can check for kiss-and-ride access
+    BinHeap<TransitStop> preTransitStopsByDistance;
+
+    BinHeap<TransitStop> postTransitStopByDistance;
+
     /**
      * Before the main search begins, the heuristic must search on the streets around the origin and destination.
      * This also sets up the initial states for the reverse search through the transit network, which progressively
@@ -104,9 +112,9 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         long start = System.currentTimeMillis();
         this.target = target;
         this.routingRequest = request;
-        request.softWalkLimiting = false;
-        request.softPreTransitLimiting = false;
         transitQueue = new BinHeap<>();
+        preTransitStopsByDistance = new BinHeap<>();
+        postTransitStopByDistance = new BinHeap<>();
         // Forward street search first, mark street vertices around the origin so H evaluates to 0
         TObjectDoubleMap<Vertex> forwardStreetSearchResults = streetSearch(request, false, abortTime);
         if (forwardStreetSearchResults == null) {
@@ -122,9 +130,10 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         // once street searches are done, raise the limits to max
         // because hard walk limiting is incorrect and is observed to cause problems 
         // for trips near the cutoff
-        request.setMaxWalkDistance(Double.POSITIVE_INFINITY);
-        request.setMaxPreTransitTime(Integer.MAX_VALUE);
         LOG.debug("initialized SSSP");
+        if (request.smartKissAndRide) {
+            modifyForSmartKissAndRide(request);
+        }
         request.rctx.debugOutput.finishedPrecalculating();
     }
 
@@ -265,6 +274,11 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         Vertex initVertex = fromTarget ? rr.rctx.target : rr.rctx.origin;
         State initState = new State(initVertex, rr);
         pq.insert(initState, 0);
+
+
+        // override is irrelevant if not defined in request
+        boolean foundOverrideStop = routingRequest.kissAndRideOverrides.isEmpty();
+
         while ( ! pq.empty()) {
             if (abortTime < Long.MAX_VALUE  && System.currentTimeMillis() > abortTime) {
                 return null;
@@ -276,13 +290,19 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             if (v instanceof TransitStop) {
                 // We don't want to continue into the transit network yet, but when searching around the target
                 // place vertices on the transit queue so we can explore the transit network backward later.
+                TransitStop tstop = (TransitStop) v;
                 if (fromTarget) {
                     double weight = s.getWeight();
                     transitQueue.insert(v, weight);
                     if (weight > maxWeightSeen) {
                         maxWeightSeen = weight;
                     }
+                    postTransitStopByDistance.insert(tstop, s.getWalkDistance());
+                } else {
+                    preTransitStopsByDistance.insert(tstop, s.getWalkDistance());
                 }
+                String feedId = tstop.getStopId().getAgencyId();
+                foundOverrideStop |= routingRequest.kissAndRideOverrides.contains(feedId);
                 continue;
             }
             // We don't test whether we're on an instanceof StreetVertex here because some other vertex types
@@ -295,7 +315,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
                 // arriveBy has been set to match actual directional behavior in this subsearch.
                 // Walk cutoff will happen in the street edge traversal method.
                 State s1 = e.traverse(s);
-                if (s1 == null) {
+                if (s1 == null || (foundOverrideStop && s1.getWalkDistance() > routingRequest.maxWalkDistanceHeuristic)) {
                     continue;
                 }
                 if (spt.add(s1)) {
@@ -307,5 +327,31 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         LOG.debug("Heuristric street search hit {} transit stops.", transitQueue.size());
         return vertices;
     }
- 
+
+    private void modifyForSmartKissAndRide(RoutingRequest request) {
+        if (shouldUseKissAndRide(preTransitStopsByDistance, request.kissAndRideWhitelist, request.kissAndRideOverrides)) {
+            request.preTransitKissAndRide = true;
+        }
+        if (shouldUseKissAndRide(postTransitStopByDistance, request.kissAndRideWhitelist, request.kissAndRideOverrides)) {
+            request.postTransitKissAndRide = true;
+        }
+    }
+
+    private boolean shouldUseKissAndRide(BinHeap<TransitStop> heap, Set<AgencyAndId> stops, Set<String> feedOverrides) {
+        boolean exceedThreshold = false;
+        boolean foundWhitelistedStop = false;
+        while (!heap.empty()) {
+            double distance = heap.peek_min_key();
+            TransitStop stop = heap.extract_min();
+            exceedThreshold = distance > OVERRIDE_THRESHOLD;
+            if (!exceedThreshold && feedOverrides.contains(stop.getStopId().getAgencyId())) {
+                return false;
+            }
+            foundWhitelistedStop |= stops.contains(stop.getStopId());
+            if (exceedThreshold && foundWhitelistedStop) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

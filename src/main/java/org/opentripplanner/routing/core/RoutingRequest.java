@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.core;
 
 import com.google.common.base.Objects;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.model.Route;
 import org.opentripplanner.api.parameter.QualifiedModeSet;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 /**
@@ -80,6 +82,11 @@ public class RoutingRequest implements Cloneable, Serializable {
      * Defaults to unlimited.
      */
     public double maxWalkDistance = Double.MAX_VALUE;
+
+    /**
+     * Maximum walking distance for heuristic.
+     */
+    public double maxWalkDistanceHeuristic = Double.MAX_VALUE;
 
     /**
      * The maximum distance (in meters) the user is willing to walk for transfer legs.
@@ -575,6 +582,13 @@ public class RoutingRequest implements Cloneable, Serializable {
     public boolean parkAndRide  = false;
     public boolean kissAndRide  = false;
 
+    // smart kiss and ride - if this option is turned on, intelligently use pre-transit and post-transit kiss-and-ride
+    public boolean smartKissAndRide = false;
+    public boolean preTransitKissAndRide = false;
+    public boolean postTransitKissAndRide = false;
+    public Set<AgencyAndId> kissAndRideWhitelist = Collections.emptySet();
+    public Set<String> kissAndRideOverrides = Collections.emptySet();
+
     /* Whether we are in "long-distance mode". This is currently a server-wide setting, but it could be made per-request. */
     // TODO remove
     public boolean longDistance = false;
@@ -652,6 +666,8 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** Whether to use feature where dates are extended when past transit service */
     public boolean useTransitServiceExtension = false;
+
+    public boolean farEndpointsException = false;
 
     /* CONSTRUCTORS */
 
@@ -1101,6 +1117,8 @@ public class RoutingRequest implements Cloneable, Serializable {
         ret.setArriveBy(!ret.arriveBy);
         ret.reverseOptimizing = !ret.reverseOptimizing; // this is not strictly correct
         ret.useBikeRentalAvailabilityInformation = false;
+        ret.preTransitKissAndRide = this.postTransitKissAndRide;
+        ret.postTransitKissAndRide = this.preTransitKissAndRide;
         return ret;
     }
 
@@ -1240,6 +1258,10 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && Objects.equal(startingTransitTripId, other.startingTransitTripId)
                 && disableAlertFiltering == other.disableAlertFiltering
                 && geoidElevation == other.geoidElevation
+                && smartKissAndRide == other.smartKissAndRide
+                && kissAndRideWhitelist.equals(other.kissAndRideWhitelist)
+                && kissAndRideOverrides.equals(other.kissAndRideOverrides)
+                && maxWalkDistanceHeuristic == other.maxWalkDistanceHeuristic
                 && flexFlagStopExtraPenalty == other.flexFlagStopExtraPenalty
                 && flexDeviatedRouteExtraPenalty == other.flexDeviatedRouteExtraPenalty
                 && flexCallAndRideReluctance == other.flexCallAndRideReluctance
@@ -1253,7 +1275,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && clockTimeSec == other.clockTimeSec
                 && serviceDayLookout == other.serviceDayLookout
                 && pathIgnoreStrategy.equals(pathIgnoreStrategy)
-                && useTransitServiceExtension == other.useTransitServiceExtension;
+                && useTransitServiceExtension == other.useTransitServiceExtension
+                && farEndpointsException == other.farEndpointsException;
     }
 
     /**
@@ -1298,12 +1321,17 @@ public class RoutingRequest implements Cloneable, Serializable {
                 + Long.hashCode(clockTimeSec) * 833389
                 + new Boolean(disableRemainingWeightHeuristic).hashCode() * 193939
                 + new Boolean(useTraffic).hashCode() * 10169
+                + Boolean.hashCode(smartKissAndRide) * 10169
+                + kissAndRideWhitelist.hashCode() * 63061489
+                + kissAndRideOverrides.hashCode() * 731980
+                + Double.hashCode(maxWalkDistanceHeuristic) * 731980
                 + Integer.hashCode(serviceDayLookout) * 31558519
                 + new Double(maxTransferTime).hashCode() * 790052909
                 + new Double(minTransferTimeHard).hashCode() * 31
                 + new Double(tripShownRangeTime).hashCode() * 790052909
                 + pathIgnoreStrategy.hashCode() * 1301081
-                + Boolean.hashCode(useTransitServiceExtension) * 1300931;
+                + Boolean.hashCode(useTransitServiceExtension) * 1300931
+                + Boolean.hashCode(farEndpointsException) * 538799;
 
         if (batch) {
             hashCode *= -1;
