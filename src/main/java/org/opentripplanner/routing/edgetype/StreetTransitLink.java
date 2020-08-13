@@ -10,6 +10,7 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
+import org.opentripplanner.routing.vertextype.TransitVertex;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -105,6 +106,23 @@ public class StreetTransitLink extends Edge {
         // This allows searching for nearby transit stops using walk-only options.
         StateEditor s1 = s0.edit(this);
 
+        // Require that if we enter the transit network, we use transit before leaving.
+        // This forbids shortcuts through the transit network, in the context of pathways -
+        // conceptually it's similar to (s0.backEdge instanceof StreetTransitLink) but with
+        // intervening pathways.
+        boolean leavingTransit = isLeavingTransitNetwork(req);
+
+        boolean firstLink = s0.getPreTransitNumBoardings() == 0 && s0.getOptions().rctx.origin instanceof TransitVertex;
+        if (s0.getPreTransitNumBoardings() >= 0 && leavingTransit && !firstLink) {
+            if (s0.getNumBoardings() == s0.getPreTransitNumBoardings()) {
+                return null;
+            }
+        } else if (!leavingTransit) {
+            s1.setPreTransitNumBoardings();
+        }
+
+
+
         /* Only enter stations in CAR mode if parking is not required (kiss and ride) */
         /* Note that in arriveBy searches this is double-traversing link edges to fork the state into both WALK and CAR mode. This is an insane hack. */
         if (s0.getNonTransitMode() == TraverseMode.CAR && !req.enterStationsWithCar) {
@@ -168,6 +186,19 @@ public class StreetTransitLink extends Edge {
 
     public String toString() {
         return "StreetTransitLink(" + fromv + " -> " + tov + ")";
+    }
+
+    public TransitStop getTransitStop() {
+        return transitStop;
+    }
+
+    private boolean isLeavingTransitNetwork(RoutingRequest options) {
+        if (options.arriveBy && tov == transitStop) {
+            return true;
+        } else if (!options.arriveBy && fromv == transitStop) {
+            return true;
+        }
+        return false;
     }
 
 }
