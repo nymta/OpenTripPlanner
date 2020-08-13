@@ -70,7 +70,15 @@ public class DeviatedRouteGraphModifier extends GtfsFlexGraphModifier {
             StreetVertex toVertex = findFirstStreetVertex(opt.rctx, true);
             TemporaryTransitStop toTempStop = getTemporaryStop(toVertex, null, opt.rctx, opt);
             TransitStop fromStop = graph.index.stopVertexForStop.get(hop.getBeginStop());
-            createDirectHop(opt, hop, fromStop, toTempStop, path);
+            if(fromStop == null) {
+                StreetVertex fromVertex = findFirstStreetVertex(opt.rctx, false);
+                TemporaryTransitStop fromTempStop = getTemporaryStop(fromVertex, null, opt.rctx, opt);
+
+                createDirectHop(opt, hop, fromTempStop, toTempStop, path);
+
+            }else {
+                createDirectHop(opt, hop, fromStop, toTempStop, path);
+            }
             return null;
         }
         return new TemporaryPartialPatternHop(hop, (PatternStopVertex) hop.getFromVertex(), to, hop.getBeginStop(), toStop,

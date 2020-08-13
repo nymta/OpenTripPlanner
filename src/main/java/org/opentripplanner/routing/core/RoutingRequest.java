@@ -77,6 +77,7 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /**
      * The maximum distance (in meters) the user is willing to walk for access/egress legs.
+     * The maximum distance (in meters) the user is willing to walk for access/egress legs.
      * Defaults to unlimited.
      */
     public double maxWalkDistance = Double.MAX_VALUE;
@@ -117,6 +118,9 @@ public class RoutingRequest implements Cloneable, Serializable {
 
     /** The epoch date/time that the trip should depart (or arrive, for requests where arriveBy is true) */
     public long dateTime = new Date().getTime() / 1000;
+
+    /** The epoch date/time that the trip should arrive (or depart, for requests where arriveBy is true) */
+    public long secondDateTime = new Date().getTime() / 1000;
 
     /** Whether the trip should depart at dateTime (false, the default), or arrive at dateTime. */
     public boolean arriveBy = false;
@@ -924,6 +928,23 @@ public class RoutingRequest implements Cloneable, Serializable {
         setDateTime(dateObject);
     }
 
+    public void setSecondDateTime(Date secondDateTime) {
+        this.secondDateTime = secondDateTime.getTime() / 1000;
+    }
+
+    public Date getSecondDateTime() {
+        return new Date(dateTime * 1000);
+    }
+
+    public void setSecondDateTime(String date, String time, TimeZone tz) {
+        Date dateObject = DateUtils.toDate(date, time, tz);
+        setSecondDateTime(dateObject);
+    }
+
+    public long getSecondsSinceEpochSecondsDateTime() {
+        return secondDateTime;
+    }
+
     public int getNumItineraries() {
         if (modes.isTransit()) {
             return numItineraries;
@@ -1185,7 +1206,8 @@ public class RoutingRequest implements Cloneable, Serializable {
                 && flexIgnoreDrtAdvanceBookMin == other.flexIgnoreDrtAdvanceBookMin
                 && flexMinPartialHopLength == other.flexMinPartialHopLength
                 && clockTimeSec == other.clockTimeSec
-                && serviceDayLookout == other.serviceDayLookout;
+                && serviceDayLookout == other.serviceDayLookout
+                && secondDateTime == other.secondDateTime;
     }
 
     /**

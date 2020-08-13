@@ -6,8 +6,13 @@ import org.opentripplanner.api.model.error.PlannerError;
 import org.opentripplanner.api.param.LatLon;
 import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.ext.transitlink_window.search.TimeWindowSearch;
+import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.Stop;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
+import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.graph.GraphIndex;
+import org.opentripplanner.routing.services.GraphService;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.standalone.OTPServer;
@@ -43,12 +48,13 @@ public class WindowsPlanner extends RoutingResource {
     @Context
     OTPServer otpServer;
 
+
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML + Q, MediaType.TEXT_XML + Q })
     public Response profileRoute (@Context UriInfo uriInfo,
                                   @PathParam("routerId")                        String routerId,
-                                  @QueryParam("startStopId")                    LatLon from,
-                                  @QueryParam("endStopId")                      LatLon to,
+                                  @QueryParam("startStopId")                    String from,
+                                  @QueryParam("endStopId")                      String to,
                                   @QueryParam("fromDateTime")                   String fromDateTimeString,
                                   @QueryParam("toDateTime")                     String toDateTimeString,
                                   @QueryParam("mode")                           QualifiedModeSet modeList,
@@ -70,16 +76,25 @@ public class WindowsPlanner extends RoutingResource {
          * TODO: org.opentripplanner.routing.module.PathServiceImpl has COOORD parsing. Abstract that
          *       out so it's used here too...
          *
-         * http://localhost:8080/otp/routers/default/window_planner?startStopId=49.25469726310145%2C-123.15184593200684&endStopId=49.21849411435681%2C-123.10214996337889&fromDateTime=2020-04-15%2010%3A21%3A44%20EST&toDateTime=2020-04-15%2011%3A21%3A44%20EST%20z&mode=TRANSIT%2CWALK
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=1_1572&endStopId=1_8040&fromDateTime=2020-04-15%2010%3A21%3A44%20EST&toDateTime=2020-04-15%2011%3A21%3A44%20EST%20z&mode=TRANSIT%2CWALK
          *
          *
          * http://localhost:8080/otp/routers/default/window_planner?startStopId=49.25469726310145%2C-123.15184593200684&endStopId=49.21849411435681%2C-123.10214996337889&fromDateTime=2020-04-15%2010%3A21%3A44%20z&toDateTime=2020-04-15%2011%3A21am%20z&mode=TRANSIT%2CWALK
          */
 
+        GraphIndex index;
+        Router router = otpServer.getRouter(routerId);
+        index = router.graph.index;
+
         RoutingRequest options = new RoutingRequest(modeList);
 
-        options.setFromString(from.toString());
-        options.setToString(to.toString());
+        FeedScopedId fromFeedScopeId = FeedScopedId.convertFromString(from);
+        FeedScopedId toFeedScopeId = FeedScopedId.convertFromString(to);
+        Stop fromStop = index.stopForId.get(fromFeedScopeId);
+        Stop toStop = index.stopForId.get(toFeedScopeId);;
+
+        options.setFromString(fromStop.getLat()+","+fromStop.getLon());
+        options.setToString(toStop.getLat()+","+toStop.getLon());
         options.walkSpeed = walkSpeed;
         options.showIntermediateStops = showIntermediateStops;
 
@@ -105,9 +120,9 @@ public class WindowsPlanner extends RoutingResource {
 //
 //        // Create response object, containing a copy of all request parameters. Maybe they should be in the debug section of the response.
         Response response = new Response(uriInfo);
+        options.setRoutingContext(index.graph);
         State requestState = new State(options);
 
-        Router router = null;
         List<GraphPath> paths = null;
         try {
 
@@ -151,13 +166,13 @@ public class WindowsPlanner extends RoutingResource {
             sb.append(' ');
             sb.append(options.modes.getAsStr());
             sb.append(' ');
-            sb.append(options.from.lat);
+            sb.append(fromStop.getLat());
             sb.append(' ');
-            sb.append(options.from.lng);
+            sb.append(fromStop.getLon());
             sb.append(' ');
-            sb.append(options.to.lat);
+            sb.append(toStop.getLat());
             sb.append(' ');
-            sb.append(options.to.lng);
+            sb.append(toStop.getLon());
             sb.append(' ');
             if (paths != null) {
                 for (GraphPath path : paths) {
