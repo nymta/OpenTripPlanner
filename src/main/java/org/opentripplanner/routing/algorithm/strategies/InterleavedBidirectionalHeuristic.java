@@ -7,6 +7,9 @@ import org.opentripplanner.common.pqueue.BinHeap;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.StreetTransitLink;
+import org.opentripplanner.routing.error.BothEndpointsTooFarException;
+import org.opentripplanner.routing.error.DestinationTooFarException;
+import org.opentripplanner.routing.error.OriginTooFarException;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -135,6 +138,7 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
             modifyForSmartKissAndRide(request);
         }
         request.rctx.debugOutput.finishedPrecalculating();
+        checkEndpoints();
     }
 
     /**
@@ -354,4 +358,16 @@ public class InterleavedBidirectionalHeuristic implements RemainingWeightHeurist
         }
         return false;
     }
+
+    private void checkEndpoints() {
+        boolean preTransitEmpty = preTransitStopsByDistance.empty();
+        boolean postTransitEmpty = postTransitStopByDistance.empty();
+        if (preTransitEmpty && postTransitEmpty)
+            throw new BothEndpointsTooFarException();
+        else if (preTransitEmpty)
+            throw new OriginTooFarException();
+        else if (postTransitEmpty)
+            throw new DestinationTooFarException();
+    }
+
 }

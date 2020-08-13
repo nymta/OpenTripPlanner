@@ -7,7 +7,10 @@ import java.util.Map;
 
 import org.opentripplanner.api.common.Message;
 import org.opentripplanner.api.common.LocationNotAccessible;
+import org.opentripplanner.routing.error.BothEndpointsTooFarException;
+import org.opentripplanner.routing.error.DestinationTooFarException;
 import org.opentripplanner.routing.error.GraphNotFoundException;
+import org.opentripplanner.routing.error.OriginTooFarException;
 import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.error.TransitTimesException;
 import org.opentripplanner.routing.error.TrivialPathException;
@@ -29,6 +32,9 @@ public class PlannerError {
         messages.put(TrivialPathException.class,     Message.TOO_CLOSE);
         messages.put(GraphNotFoundException.class,   Message.GRAPH_UNAVAILABLE);
         messages.put(IllegalArgumentException.class, Message.BOGUS_PARAMETER);
+        messages.put(OriginTooFarException.class,        Message.ORIGIN_TOO_FAR);
+        messages.put(DestinationTooFarException.class,   Message.DESTINATION_TOO_FAR);
+        messages.put(BothEndpointsTooFarException.class, Message.BOTH_ENDPOINTS_TOO_FAR);
     }
     
     public int    id;
