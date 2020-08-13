@@ -76,6 +76,10 @@ public abstract class DominanceFunction implements Serializable {
             return false;
         }
 
+        if (a.isUsingCar() != b.isUsingCar()) {
+            return false;
+        }
+
         // Does one state represent riding a bike and the other represent walking after the bike was parked?
         if (a.isBikeParked() != b.isBikeParked()) {
             return false;

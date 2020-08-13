@@ -256,6 +256,14 @@ public class State implements Cloneable {
         return stateData.carParked;
     }
 
+    public boolean isCarUnused() {
+        return stateData.carState.equals(StateData.CarState.UNUSED);
+    }
+
+    public boolean isUsingCar() {
+        return stateData.carState.equals(StateData.CarState.USING);
+    }
+
     public boolean isBikeParked() {
         return stateData.bikeParked;
     }

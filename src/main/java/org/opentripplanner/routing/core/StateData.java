@@ -89,16 +89,11 @@ public class StateData implements Cloneable {
     /* This boolean is set to true upon transition from a normal street to a no-through-traffic street. */
     protected boolean enteredNoThroughTrafficArea;
 
+    /* This is like carParked, but for smartKissAndRide */
+    protected CarState carState = CarState.UNUSED;
+
     public StateData(RoutingRequest options) {
-        TraverseModeSet modes = options.modes;
-        if (modes.getCar())
-            nonTransitMode = TraverseMode.CAR;
-        else if (modes.getWalk())
-            nonTransitMode = TraverseMode.WALK;
-        else if (modes.getBicycle())
-            nonTransitMode = TraverseMode.BICYCLE;
-        else
-            nonTransitMode = null;
+        calculateNonTransitMode(options);
     }
 
     protected StateData clone() {
@@ -113,4 +108,17 @@ public class StateData implements Cloneable {
         return numBoardings;
     }
 
+    protected enum CarState { UNUSED, USING, USED }
+
+    public void calculateNonTransitMode(RoutingRequest options) {
+        TraverseModeSet modes = options.modes;
+        if (modes.getCar())
+            nonTransitMode = TraverseMode.CAR;
+        else if (modes.getWalk())
+            nonTransitMode = TraverseMode.WALK;
+        else if (modes.getBicycle())
+            nonTransitMode = TraverseMode.BICYCLE;
+        else
+            nonTransitMode = null;
+    }
 }

@@ -132,20 +132,17 @@ public class StreetTransitLink extends Edge {
                 return null;
             }
         }
-        if (req.preTransitKissAndRide && !leavingTransit) {
+        if (req.preTransitKissAndRide && !leavingTransit && !s0.isCarUnused()) {
             if (!req.kissAndRideWhitelist.contains(getTransitStop().getStopId())) {
                 return null;
             } else {
-                s1.setCarParked(true);
+                s1.setUsedCar();
+                s1.setNonTransitMode(getNonTransitMode(s0));
             }
         }
-        if (req.postTransitKissAndRide && leavingTransit) {
-            if (!req.kissAndRideWhitelist.contains(getTransitStop().getStopId())) {
-                return null;
-            }
-            else {
-                s1.setCarParked(false);
-            }
+        if (leavingTransit) {
+            s1.setUnusedCar();
+            s1.setNonTransitMode(getNonTransitMode(s0));
         }
 
         s1.incrementTimeInSeconds(transitStop.getStreetToStopTime() + STL_TRAVERSE_COST);
@@ -201,4 +198,14 @@ public class StreetTransitLink extends Edge {
         return false;
     }
 
+    private TraverseMode getNonTransitMode(State state) {
+        RoutingRequest options = state.getOptions();
+        if (options.modes.getBicycle()) {
+            return TraverseMode.BICYCLE;
+        } else if (options.modes.getWalk()) {
+            return TraverseMode.WALK;
+        } else {
+            return null;
+        }
+    }
 }

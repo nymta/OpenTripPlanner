@@ -254,22 +254,23 @@ public class StreetEdge extends Edge implements Cloneable {
                     return forkState;
             }
         }
-        if (options.postTransitKissAndRide && !s0.isCarParked() && s0.isEverBoarded() && lastStopOk(s0)) {
+        if (options.postTransitKissAndRide && s0.isCarUnused() && s0.isEverBoarded() && lastStopOk(s0)) {
             State forkState = forkToCarMode(s0, state);
             if (forkState != null)
                 return forkState;
         }
         // Also branch to CAR at the beginning of smart-kiss-and-ride
-        if (options.preTransitKissAndRide && (s0.getBackMode() == null) && !s0.isEverBoarded()) {
+        if (options.preTransitKissAndRide && !TraverseMode.CAR.equals(s0.getBackMode()) && !s0.isEverBoarded() && s0.isCarUnused()) {
             State forkState = forkToCarMode(s0, state);
             if (forkState != null)
                 return forkState;
         }
-        if ((options.kissAndRide && !options.arriveBy) || (options.preTransitKissAndRide || options.postTransitKissAndRide)) {
+        if ((options.kissAndRide && !options.arriveBy) ||
+            ((options.preTransitKissAndRide || options.postTransitKissAndRide) && s0.isUsingCar())) {
             // Irrevocable transition from driving to walking, if we *can't* walk anymore. "Parking" means being dropped off in this case.
             // Final CAR check needed to prevent infinite recursion.
 
-            State s1 = forkToWalkMode(s0);
+            State s1 = forkToWalkMode(s0, options.kissAndRide);
             if (s1 != null)
                 return s1;
         }
@@ -284,6 +285,7 @@ public class StreetEdge extends Edge implements Cloneable {
         StateEditor editor = doTraverse(s0, s0.getOptions(), TraverseMode.CAR);
         if (editor != null) {
             editor.setCarParked(false); // Also has the effect of switching to CAR
+            editor.setUsingCar();
             State forkState = editor.makeState();
             if (forkState != null) {
                 forkState.addToExistingResultChain(s1);
@@ -293,11 +295,12 @@ public class StreetEdge extends Edge implements Cloneable {
         return null;
     }
 
-    private State forkToWalkMode(State s0) {
-        if ( ! s0.isCarParked() && ! getPermission().allows(TraverseMode.CAR) && s0.getNonTransitMode() == TraverseMode.CAR) {
+    private State forkToWalkMode(State s0, boolean kissAndRide) {
+        if ( (!s0.isCarParked() || !kissAndRide) && ! getPermission().allows(TraverseMode.CAR) && s0.getNonTransitMode() == TraverseMode.CAR) {
             StateEditor editor = doTraverse(s0, s0.getOptions(), TraverseMode.WALK);
             if (editor != null) {
                 editor.setCarParked(true); // has the effect of switching to WALK and preventing further car use
+                editor.setUsedCar();
                 return editor.makeState(); // return only the "parked" walking state
             }
         }
@@ -500,8 +503,8 @@ public class StreetEdge extends Edge implements Cloneable {
         }
 
         /* On the pre-kiss/pre-park leg, limit both walking and driving, either soft or hard. */
-        if (options.kissAndRide || options.parkAndRide || options.preTransitKissAndRide) {
-            if (options.arriveBy || options.preTransitKissAndRide) {
+        if (options.kissAndRide || options.parkAndRide) {
+            if (options.arriveBy) {
                 if (!s0.isCarParked()) s1.incrementPreTransitTime(roundedTime);
             } else {
                 if (!s0.isEverBoarded()) s1.incrementPreTransitTime(roundedTime);
