@@ -224,7 +224,9 @@ public class OTPMain {
             mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
             mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
             JsonNode config = mapper.readTree(jsonStream);
-            if(file.getPath().contains("build-config.json") && config.with("fares").get("type").textValue().equals("new-york-advanced")) {
+            if(file.getPath().contains("build-config.json")
+                    && config.has("fares")
+                    && config.with("fares").get("type").textValue().equals("new-york-advanced")) {
                 String filePath = Paths.get(file.getPath()).getParent().toString();
                 String configStr = mapper.writeValueAsString(config);
                 configStr = configStr.replace("fareDirectory-null", filePath);

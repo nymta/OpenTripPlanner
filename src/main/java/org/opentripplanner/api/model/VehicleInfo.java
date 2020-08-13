@@ -12,9 +12,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.api.model;
 
+import java.util.List;
+
 public class VehicleInfo {
 
     public enum StopStatus { INCOMING_AT, STOPPED_AT, IN_TRANSIT_TO };
+    public enum OccupancyStatus {EMPTY, MANY_SEATS_AVAILABLE, FEW_SEATS_AVAILABLE,
+        STANDING_ROOM_ONLY, CRUSHED_STANDING_ROOM_ONLY, FULL, NOT_ACCEPTING_PASSENGERS};
 
     private String vehicleId;
 
@@ -31,6 +35,10 @@ public class VehicleInfo {
     private StopStatus currentStopStatus;
 
     private Double bearing;
+
+    private OccupancyStatus occupancyStatus;
+
+    private List<CarriageInfo> carriages;
 
     public String getVehicleId() {
         return vehicleId;
@@ -96,6 +104,20 @@ public class VehicleInfo {
         this.bearing = bearing;
     }
 
+    public OccupancyStatus getOccupancyStatus() { return occupancyStatus; }
+
+    public void setOccupancyStatus(OccupancyStatus occupancyStatus) {
+        this.occupancyStatus = occupancyStatus;
+    }
+
+    public List<CarriageInfo> getCarriages() {
+        return carriages;
+    }
+
+    public void setCarriages(List<CarriageInfo> carriages) {
+        this.carriages = carriages;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -111,6 +133,7 @@ public class VehicleInfo {
         if (currentStopSequence != null ? !currentStopSequence.equals(that.currentStopSequence) : that.currentStopSequence != null)
             return false;
         if (currentStopStatus != that.currentStopStatus) return false;
+        if (occupancyStatus != null ? !occupancyStatus.equals(that.occupancyStatus) : that.occupancyStatus != null) return false;
         return bearing != null ? bearing.equals(that.bearing) : that.bearing == null;
     }
 
@@ -124,6 +147,7 @@ public class VehicleInfo {
         result = 31 * result + (currentStopSequence != null ? currentStopSequence.hashCode() : 0);
         result = 31 * result + (currentStopStatus != null ? currentStopStatus.hashCode() : 0);
         result = 31 * result + (bearing != null ? bearing.hashCode() : 0);
+        result = 31 * result + (occupancyStatus != null ? occupancyStatus.hashCode() : 0);
         return result;
     }
 }
