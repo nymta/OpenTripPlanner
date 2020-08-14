@@ -19,6 +19,8 @@ public class CarriageInfo {
     private String id;
     private String label;
     private VehicleInfo.OccupancyStatus occupancyStatus;
+    private Integer bicyclesAllowed;
+    private String carriageClass;
 
     public String getId() {
         return id;
@@ -42,5 +44,20 @@ public class CarriageInfo {
 
     public void setOccupancyStatus(VehicleInfo.OccupancyStatus occupancyStatus) {
         this.occupancyStatus = occupancyStatus;
+    }
+
+    public Integer getBicyclesAllowed() {
+        return bicyclesAllowed;
+    }
+
+    public void setBicyclesAllowed(int bicyclesAllowed) {
+        this.bicyclesAllowed = bicyclesAllowed;
+    }
+
+    public String getCarriageClass() {
+        return carriageClass;
+    }
+    public void setCarriageClass(String carriageClass) {
+        this.carriageClass = carriageClass;
     }
 }

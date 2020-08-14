@@ -117,6 +117,8 @@ public class VehiclePositionsUpdateHandler extends AbstractUpdateHandler {
                         carriageInfo.setId(carriage.getId());
                         carriageInfo.setLabel(carriage.getLabel());
                         carriageInfo.setOccupancyStatus(convertOccupancyStatus(carriage.getOccupancyStatus()));
+                        carriageInfo.setBicyclesAllowed(carriage.getBicyclesAllowed());
+                        carriageInfo.setCarriageClass(carriage.getCarriageClass());
                         if (vehicleInfo.getCarriages() == null) {
                             vehicleInfo.setCarriages(new ArrayList<>());
                         }
