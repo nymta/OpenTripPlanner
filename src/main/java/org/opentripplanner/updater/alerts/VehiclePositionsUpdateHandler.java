@@ -123,7 +123,6 @@ public class VehiclePositionsUpdateHandler extends AbstractUpdateHandler {
                             vehicleInfo.setCarriages(new ArrayList<>());
                         }
                         vehicleInfo.getCarriages().add(carriageInfo);
-                        break;
                     }
                 }
             }
