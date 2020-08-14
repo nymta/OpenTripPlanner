@@ -17,11 +17,24 @@ public class TimeWindowDominanceFunction extends DominanceFunction {
     public boolean betterOrEqualAndComparable(State a, State b) {
 
 //      First check  if the lists of trips which have been boarded are identical, or if transit has not been used in either state
-        if(a.getBackState().equals(b.getBackState())) {
-            return super.betterOrEqualAndComparable(a, b);
+        boolean betterOrEqualAndComparable = super.betterOrEqualAndComparable(a, b);
+//        if( betterOrEqualAndComparable ) {
+//            return comparableStates(a.getBackState(), b.getBackState());
+//        }
+        return betterOrEqualAndComparable;
+    }
+
+    private boolean comparableStates(State backStateA, State backStateB) {
+        if (backStateA == null && backStateB == null){
+            return true;
+        }
+
+        if(!backStateA.getVertex().getName().equals(backStateB.getVertex().getName())){
+            return true;
         }
 
         return false;
+
     }
 }
 
