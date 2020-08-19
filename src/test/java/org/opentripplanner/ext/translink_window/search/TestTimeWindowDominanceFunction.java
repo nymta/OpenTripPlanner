@@ -40,7 +40,7 @@ public class TestTimeWindowDominanceFunction extends TestCase {
         stateC.weight = 1;
         stateD.weight = 2;
 
-        Assert.assertFalse(timeWindowDominanceFunction.betterOrEqualAndComparable(stateC, stateD));
+        Assert.assertTrue(timeWindowDominanceFunction.betterOrEqualAndComparable(stateC, stateD));
 
         // Test same back edges
         State stateE = new State(fromVertex, null, 0, request);
@@ -48,7 +48,7 @@ public class TestTimeWindowDominanceFunction extends TestCase {
         stateE.weight = 1;
         stateF.weight = 2;
 
-        Assert.assertFalse(timeWindowDominanceFunction.betterOrEqualAndComparable(stateE, stateF));
+        Assert.assertTrue(timeWindowDominanceFunction.betterOrEqualAndComparable(stateE, stateF));
 
     }
 
