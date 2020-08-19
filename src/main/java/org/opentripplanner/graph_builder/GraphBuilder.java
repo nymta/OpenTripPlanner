@@ -41,13 +41,13 @@ import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 import org.opentripplanner.reflect.ReflectionLibrary;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
-import org.opentripplanner.routing.impl.DefaultFareServiceFactory;
+
 import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.GraphBuilderParameters;
 import org.opentripplanner.standalone.OTPMain;
 import org.opentripplanner.standalone.Router;
 import org.opentripplanner.standalone.S3BucketConfig;
-import org.opentripplanner.routing.impl.NycAdvancedFareServiceFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
