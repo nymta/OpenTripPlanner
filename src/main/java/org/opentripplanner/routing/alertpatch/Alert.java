@@ -17,11 +17,14 @@ import org.opentripplanner.util.I18NString;
 import org.opentripplanner.util.NonLocalizedString;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 
 public class Alert implements Serializable {
     private static final long serialVersionUID = 8305126586053909836L;
+
+    public String id;
 
     public I18NString alertHeaderText;
 
@@ -34,6 +37,29 @@ public class Alert implements Serializable {
 
     //null means unknown
     public Date effectiveEndDate;
+
+    //null means unknown
+    public Date createdDate;
+
+    //null means unknown
+    public Date updatedAt;
+
+    //null means unknown
+    public Date displayBeforeActive;
+
+    public I18NString alertType;
+
+    public I18NString additionalInfo;
+
+    // friendly description of complex periods
+    public I18NString humanReadableActivePeriod;
+
+    public ArrayList<String> generalOrderNumberList;
+
+    public ArrayList<String> servicePlanNumberList;
+
+    public ArrayList<AlertAlternateStation> stationAlternatives;
+
 
     public static HashSet<Alert> newSimpleAlertSet(String text) {
         Alert note = createSimpleAlerts(text);
@@ -60,6 +86,24 @@ public class Alert implements Serializable {
             return false;
         }
         Alert ao = (Alert) o;
+        if (id == null) {
+            if (ao.id != null) {
+                return false;
+            }
+        } else {
+            if (!id.equals(ao.id)) {
+                return false;
+            }
+        }
+        if (updatedAt == null) {
+            if (ao.updatedAt != null) {
+                return false;
+            }
+        } else {
+            if (!updatedAt.equals(ao.updatedAt)) {
+                return false;
+            }
+        }
         if (alertDescriptionText == null) {
             if (ao.alertDescriptionText != null) {
                 return false;
@@ -86,7 +130,9 @@ public class Alert implements Serializable {
     }
 
     public int hashCode() {
-        return (alertDescriptionText == null ? 0 : alertDescriptionText.hashCode())
+        return (id == null ? 0 : id.hashCode())
+                + (updatedAt == null ? 0 : updatedAt.hashCode())
+                + (alertDescriptionText == null ? 0 : alertDescriptionText.hashCode())
                 + (alertHeaderText == null ? 0 : alertHeaderText.hashCode())
                 + (alertUrl == null ? 0 : alertUrl.hashCode());
     }

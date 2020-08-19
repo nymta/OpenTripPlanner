@@ -16,8 +16,10 @@ package org.opentripplanner.updater.alerts;
 import java.util.*;
 
 import com.google.transit.realtime.GtfsRealtimeOneBusAway;
+import com.google.transit.realtime.GtfsRealtimeServiceStatus;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.alertpatch.Alert;
+import org.opentripplanner.routing.alertpatch.AlertAlternateStation;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.alertpatch.TimePeriod;
 import org.opentripplanner.util.I18NString;
@@ -40,6 +42,8 @@ import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 public class AlertsUpdateHandler extends AbstractUpdateHandler {
     private static final Logger log = LoggerFactory.getLogger(AlertsUpdateHandler.class);
 
+    private static String DEFAULT_MERCURY_LANG = "en";
+
     @Override
     public void update(FeedMessage message) {
         alertPatchService.expire(patchIds);
@@ -57,9 +61,12 @@ public class AlertsUpdateHandler extends AbstractUpdateHandler {
 
     private void handleAlert(String id, GtfsRealtime.Alert alert) {
         Alert alertText = new Alert();
+        alertText.id = id;
         alertText.alertDescriptionText = deBuffer(alert.getDescriptionText());
         alertText.alertHeaderText = deBuffer(alert.getHeaderText());
         alertText.alertUrl = deBuffer(alert.getUrl());
+
+
         ArrayList<TimePeriod> periods = new ArrayList<TimePeriod>();
         if(alert.getActivePeriodCount() > 0) {
             long bestStartTime = Long.MAX_VALUE;
@@ -86,6 +93,74 @@ public class AlertsUpdateHandler extends AbstractUpdateHandler {
             // Per the GTFS-rt spec, if an alert has no TimeRanges, than it should always be shown.
             periods.add(new TimePeriod(0, Long.MAX_VALUE));
         }
+
+        // now look for extensions
+        if (alert.hasExtension(GtfsRealtimeServiceStatus.mercuryAlert)) {
+            GtfsRealtimeServiceStatus.MercuryAlert mercuryAlert =
+                    alert.getExtension(GtfsRealtimeServiceStatus.mercuryAlert);
+            if (mercuryAlert.hasCreatedAt())
+                alertText.createdDate = toDate(mercuryAlert.getCreatedAt());
+            if (mercuryAlert.hasAlertType()) {
+                alertText.alertType = toTL(mercuryAlert.getAlertType());
+            }
+            if (mercuryAlert.hasAdditionalInformation()) {
+                alertText.additionalInfo = deBuffer(mercuryAlert.getAdditionalInformation());
+            }
+            if (mercuryAlert.hasDisplayBeforeActive()) {
+                alertText.displayBeforeActive = toDate(mercuryAlert.getDisplayBeforeActive());
+            }
+            if (mercuryAlert.hasHumanReadableActivePeriod()) {
+                alertText.humanReadableActivePeriod = deBuffer(mercuryAlert.getHumanReadableActivePeriod());
+            }
+            if (mercuryAlert.hasUpdatedAt()) {
+                alertText.updatedAt = toDate(mercuryAlert.getUpdatedAt());
+            }
+            if (mercuryAlert.getGeneralOrderNumberCount() > 0) {
+                for (String order : mercuryAlert.getGeneralOrderNumberList()) {
+                    if (alertText.generalOrderNumberList == null) {
+                        alertText.generalOrderNumberList = new ArrayList<>();
+                    }
+                    alertText.generalOrderNumberList.add(order);
+                }
+            }
+
+            if (mercuryAlert.getServicePlanNumberCount() > 0) {
+                for (String plan : mercuryAlert.getServicePlanNumberList()) {
+                    if (alertText.servicePlanNumberList == null) {
+                        alertText.servicePlanNumberList = new ArrayList<>();
+                    }
+                    alertText.servicePlanNumberList.add(plan);
+                }
+            }
+
+            if (mercuryAlert.getStationAlternativeCount() > 0) {
+                for (GtfsRealtimeServiceStatus.MercuryStationAlternative stationAlternative : mercuryAlert.getStationAlternativeList()) {
+                    if (alertText.stationAlternatives == null) {
+                        alertText.stationAlternatives = new ArrayList<>();
+                    }
+                    AlertAlternateStation aas = new AlertAlternateStation();
+                    aas.setNotes(deBuffer(stationAlternative.getNotes()));
+                    EntitySelector entity = stationAlternative.getAffectedEntity();
+                    if (entity.hasStopId()) {
+                        aas.setStopId(entity.getStopId());
+                    }
+                    if (entity.hasRouteId()) {
+                        log.error("found unsupported routeId in stationAlternate " + stationAlternative);
+                    }
+                    if (entity.hasRouteType()) {
+                        log.error("found unsupported routeType in stationAlternate " + stationAlternative);
+                    }
+                    if (entity.hasTrip()) {
+                        log.error("found unsupported trip in stationAlternate " + stationAlternative);
+                    }
+                    if (entity.hasAgencyId()) {
+                        aas.setAgencyId(entity.getAgencyId());
+                    }
+                    alertText.stationAlternatives.add(aas);
+                }
+            }
+        }
+
         for (EntitySelector informed : alert.getInformedEntityList()) {
             if (fuzzyTripMatcher != null && informed.hasTrip()) {
                 TripDescriptor trip = fuzzyTripMatcher.match(feedId, informed.getTrip());
@@ -154,13 +229,13 @@ public class AlertsUpdateHandler extends AbstractUpdateHandler {
             }
             patch.setTimePeriods(periods);
             patch.setAlert(alertText);
-
             patch.setId(patchId);
             patchIds.add(patchId);
 
             alertPatchService.apply(patch);
         }
     }
+
 
     private String createId(String id, EntitySelector informed) {
         return id + " "
@@ -189,6 +264,16 @@ public class AlertsUpdateHandler extends AbstractUpdateHandler {
             translations.put(language, string);
         }
         return translations.isEmpty() ? null : TranslatedString.getI18NString(translations);
+    }
+
+    private I18NString toTL(String text) {
+        Map<String, String> translations = new HashMap<>();
+        translations.put(DEFAULT_MERCURY_LANG, text);
+        return TranslatedString.getI18NString(translations);
+    }
+
+    private Date toDate(long time) {
+        return new Date(time * 1000);
     }
 
 }

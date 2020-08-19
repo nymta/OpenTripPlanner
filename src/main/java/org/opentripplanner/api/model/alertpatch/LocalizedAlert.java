@@ -3,7 +3,9 @@ package org.opentripplanner.api.model.alertpatch;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.opentripplanner.routing.alertpatch.Alert;
+import org.opentripplanner.routing.alertpatch.AlertAlternateStation;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -21,6 +23,11 @@ public class LocalizedAlert {
     }
 
     public LocalizedAlert(){
+    }
+
+    @JsonSerialize
+    public String getId() {
+        return alert.id;
     }
 
     @JsonSerialize
@@ -56,5 +63,66 @@ public class LocalizedAlert {
     @JsonSerialize
     public Date getEffectiveEndDate() {
         return alert.effectiveEndDate;
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public Date getCreatedAtDate() { return alert.createdDate; }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public Date getUpdatedAtDate() { return alert.updatedAt; }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public Date getDisplayBeforeActiveMillis() { return alert.displayBeforeActive; }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public String getAdditionalInfo() {
+        if (alert.additionalInfo == null)
+            return null;
+        return alert.additionalInfo.toString(locale);
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public String getAlertType() {
+        if (alert.alertType == null)
+            return null;
+        return alert.alertType.toString(locale);
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public String getHumanReadableActivePeriod() {
+        if (alert.humanReadableActivePeriod == null)
+            return null;
+        return alert.humanReadableActivePeriod.toString(locale);
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public ArrayList<LocalizedAlertAlternateStation> getStationAlternates() {
+        if (alert.stationAlternatives == null)
+            return null;
+        ArrayList<LocalizedAlertAlternateStation> alternates = new ArrayList<>();
+        for (AlertAlternateStation aas : alert.stationAlternatives) {
+            LocalizedAlertAlternateStation laas = new LocalizedAlertAlternateStation(aas, locale);
+            alternates.add(laas);
+        }
+        return alternates;
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public ArrayList<String> getServicePlanNumbers() {
+        return alert.servicePlanNumberList;
+    }
+
+    @JsonSerialize
+    /** non-standard mercury extension **/
+    public ArrayList<String> getGeneralOrderNumbers() {
+        return alert.generalOrderNumberList;
     }
 }
