@@ -76,7 +76,15 @@ public class WindowsPlanner extends RoutingResource {
          * TODO: org.opentripplanner.routing.module.PathServiceImpl has COOORD parsing. Abstract that
          *       out so it's used here too...
          *
-         * http://localhost:8080/otp/routers/default/window_planner?startStopId=1_1572&endStopId=1_8040&fromDateTime=2020-04-15%2010%3A21%3A44%20EST&toDateTime=2020-04-15%2011%3A21%3A44%20EST%20z&mode=TRANSIT%2CWALK
+         * OTP planned trip
+         * http://localhost:8080/otp/routers/default/plan?fromPlace=49.260817231241475%2C-123.03262710571289&toPlace=49.23832927292922%2C-123.03199410438538&time=9%3A58am&date=08-27-2020&mode=TRAM%2CRAIL%2CSUBWAY%2CFUNICULAR%2CGONDOLA%2CWALK&maxWalkDistance=402.335&arriveBy=false&wheelchair=false&locale=en
+         *
+         * Joyce-Collingworth to Rupert first two should be the same
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=1_100008&endStopId=1_99997&fromDateTime=2020-08-15%2010%3A21%3A44%20EST&toDateTime=2020-08-15%2011%3A21%3A44%20EST%20z&mode=TRAM%2CRAIL%2CSUBWAY%2CFUNICULAR%2CGONDOLA&excludeStreetEdges=true
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=1_100008&endStopId=1_99997&fromDateTime=2020-08-15%2010%3A21%3A44%20EST&toDateTime=2020-08-15%2011%3A21%3A44%20EST%20z&mode=TRAM%2CRAIL%2CSUBWAY%2CFUNICULAR%2CGONDOLA%2CWALK&excludeStreetEdges=true
+         *
+         * Should include street walking directions
+         * http://localhost:8080/otp/routers/default/window_planner?startStopId=1_100008&endStopId=1_99997&fromDateTime=2020-08-15%2010%3A21%3A44%20EST&toDateTime=2020-08-15%2011%3A21%3A44%20EST%20z&mode=TRAM%2CRAIL%2CSUBWAY%2CFUNICULAR%2CGONDOLA%2CWALK&
          *
          *
          * http://localhost:8080/otp/routers/default/window_planner?startStopId=49.25469726310145%2C-123.15184593200684&endStopId=49.21849411435681%2C-123.10214996337889&fromDateTime=2020-04-15%2010%3A21%3A44%20z&toDateTime=2020-04-15%2011%3A21am%20z&mode=TRANSIT%2CWALK
