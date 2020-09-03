@@ -10,6 +10,8 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class TimeWindowSkipTraverseResultStrategy implements SkipTraverseResultStrategy {
@@ -24,16 +26,31 @@ public class TimeWindowSkipTraverseResultStrategy implements SkipTraverseResultS
         }
 
         //It will not enqueue a state if the state represents a boarding TripPattern with the same stopping pattern up to the destination as a TripPattern that has been boarded previously, in the same graph path.
-        //TODO I really don't think this is the right step.
-//        if(current.getLastPattern() != null && parent.getLastPattern() != null && current.getLastPattern().equals(parent.getLastPattern())) {
-//            return true;
-//        }
+        ArrayList<State> allCurrentBackStates = getAllBackStates(current, new ArrayList<State>());
+        ArrayList<State> allParentBackStates = getAllBackStates(parent, new ArrayList<State>());
 
-        //if the state represents a station that has been visited previously in the same graph path, this is to prevent backtracking through the system.
-//        if( (current.isEverBoarded() && current.b) && (parent.isEverBoarded() && ) ) {
-//            return true;
-//        }
+        boolean shouldSkipTraversalResult = false;
 
-        return false;
+        if(allCurrentBackStates.size() == allParentBackStates.size() && allParentBackStates.size() > 0) {
+            for(int i =0; i < allCurrentBackStates.size(); i++){
+                //It will not enqueue a state if the state represents a boarding TripPattern with the same stopping pattern up to the destination as a TripPattern that has been boarded previously, in the same graph path.
+                if(allCurrentBackStates.get(i).equals(allParentBackStates.get(i))) {
+                    shouldSkipTraversalResult = true;
+                }
+
+            }
+        }
+
+        return shouldSkipTraversalResult;
+    }
+
+    private ArrayList<State> getAllBackStates(State state, ArrayList<State> statesList){
+        State backState = state.getBackState();
+        if (backState != null) {
+            statesList.add(backState);
+            return getAllBackStates(state, statesList);
+        }
+
+        return statesList;
     }
 }

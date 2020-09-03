@@ -18,7 +18,7 @@ public class TimeWindowSearch extends GenericDijkstra {
 
     public ShortestPathTree findShortestPathTree(State requestState) {
         super.setSkipEdgeStrategy(new FareEntryRestrictionsSkipEdgeStrategy());
-        super.setSkipTraverseResultStrategy(new TimeWindowSkipTraverseResultStrategy());
+//        super.setSkipTraverseResultStrategy(new TimeWindowSkipTraverseResultStrategy());
 
 
         return super.getShortestPathTree(requestState);
