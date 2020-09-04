@@ -27,7 +27,12 @@ public class FareEntryRestrictionsSkipEdgeStrategy implements SkipEdgeStrategy {
             return InstanceOfStreetVertex(edge);
         }
 
-        return InstanceOfStreetVertex(edge);
+        if(traverseOptions.excludeStreetEdges){
+            return InstanceOfStreetVertex(edge);
+        }else {
+            return false;
+        }
+
 
 
     }
