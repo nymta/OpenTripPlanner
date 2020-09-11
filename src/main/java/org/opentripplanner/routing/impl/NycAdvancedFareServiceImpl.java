@@ -343,25 +343,25 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 String fareTypeStr = reader.get("fare_type");
                 String fareConditionTypeStr = reader.get("fare_condition_type");
 
-                if (fareTypeStr == "regular") {
+                if ("regular".equals(fareTypeStr)) {
                     fareType = FareType.regular;
-                } else if (fareTypeStr == "student") {
+                } else if ("student".equals(fareTypeStr)) {
                     fareType = FareType.student;
-                } else if (fareTypeStr == "senior") {
+                } else if ("senior".equals(fareTypeStr)) {
                     fareType = FareType.senior;
-                } else if (fareTypeStr == "tram") {
+                } else if ("tram".equals(fareTypeStr)) {
                     fareType = FareType.tram;
-                } else if (fareTypeStr == "special") {
+                } else if ("special".equals(fareTypeStr)) {
                     fareType = FareType.special;
-                } else if (fareTypeStr == "youth") {
+                } else if ("youth".equals(fareTypeStr)) {
                     fareType = FareType.youth;
                 } else {
                     fareType = FareType.regular;
                 }
 
-                if (fareConditionTypeStr == "peak") {
+                if ("peak".equals(fareConditionTypeStr)) {
                     fareConditionType = NycFareConditionType.peak_hour_only;
-                } else if (fareConditionTypeStr == "nonpeak") {
+                } else if ("nonpeak".equals(fareConditionTypeStr)) {
                     fareConditionType = NycFareConditionType.non_peak_hour_only;
                 } else {
                     fareConditionType = null;
