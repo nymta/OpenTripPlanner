@@ -2,6 +2,7 @@
   "otpFeatures" : {
     "GoogleCloudStorage" : true,
     "ActuatorAPI": true,
-    "SandboxAPITransmodelApi": true
+    "SandboxAPITransmodelApi": true,
+    "SandboxWindowPlannerApi": true
   }
 }

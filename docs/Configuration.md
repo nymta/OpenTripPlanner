@@ -126,6 +126,7 @@ config key | description | value type | value default | notes
 `transitServiceEnd` | Limit the import of transit services to the given *end* date. *Inclusive*. Use an absolute date or a period relative to the day the graph is build. | Date or Period (ISO 8601) | `P3Y` | `2022-12-31`, `P1Y6M10D`, `P12W`
 `useTransfersTxt` | Create direct transfer edges from transfers.txt in GTFS, instead of based on distance | boolean | false |
 `writeCachedElevations` | If true, writes the calculated elevation data. | boolean | false | see [Elevation Data Calculation Optimizations](#elevation-data-calculation-optimizations)
+'SandboxWindowPlannerApi' | If true, enables the sandbox extension for the WindowPlanner API
 
 This list of parameters in defined in the [BuildConfig.java](https://github.com/opentripplanner/OpenTripPlanner/blob/dev-2.x/src/main/java/org/opentripplanner/standalone/config/BuildConfig.java).
 
