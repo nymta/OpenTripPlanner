@@ -30,6 +30,8 @@ import org.opentripplanner.util.PolylineEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.onebusaway.gtfs.model.Pathway;
+
 import java.util.*;
 
 /**
@@ -86,7 +88,7 @@ public abstract class GraphPathToTripPlanConverter {
         for (Itinerary itinerary : itineraries) {
             // If this is a transit option whose walk/bike time is greater than that of the walk/bike-only option,
             // do not include in plan
-            if(itinerary.transitTime > 0 && itinerary.walkTime > bestNonTransitTime) continue;
+            //if(itinerary.transitTime > 0 && itinerary.walkTime > bestNonTransitTime) continue;
 
             plan.addItinerary(itinerary);
         }
@@ -856,15 +858,28 @@ public abstract class GraphPathToTripPlanConverter {
 
             if (edge instanceof PathwayEdge) {
                 step = createWalkStep(graph, forwardState, requestedLocale);
-                createdNewStep = true;
-                disableZagRemovalForThisStep = true;
 
                 PathwayEdge pathEdge = (PathwayEdge) edge;
+                org.opentripplanner.model.Pathway path = pathEdge.getPathway();
 
-                step.streetName = pathEdge.getName(requestedLocale);
-                step.pathwayId = pathEdge.getId();
+                String name = "";
+                switch (path.getPathwayType()) {
+                    case Pathway.MODE_LINK :
+                        name = "Mode Link";
+                    case Pathway.MODE_WALKWAY:
+                        name = "Walkway";
+                    case Pathway.MODE_STAIRS:
+                        name = "Stairs";
+                    case Pathway.MODE_MOVING_SIDEWALK:
+                        name = "Sidewalk";
+                    case Pathway.MODE_ESCALATOR:
+                        name = "Escalator";
+                    case Pathway.MODE_ELEVATOR:
+                        name = "Elevator";
+                }
 
-                step.setRelativeDirection(RelativeDirection.ELEVATOR, requestedLocale);
+                step.streetName = name;
+                step.pathwayId = Integer.parseInt(path.getId().getId());
 
                 steps.add(step);
                 continue;
