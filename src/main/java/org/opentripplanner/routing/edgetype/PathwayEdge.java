@@ -1,6 +1,8 @@
 package org.opentripplanner.routing.edgetype;
 
 import org.opentripplanner.common.geometry.GeometryUtils;
+import org.opentripplanner.model.FeedScopedId;
+import org.opentripplanner.model.Pathway;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.graph.Edge;
@@ -20,15 +22,21 @@ public class PathwayEdge extends Edge {
 
     private int wheelchairTraversalTime = -1;
 
-    public PathwayEdge(Vertex fromv, Vertex tov, int traversalTime, int wheelchairTraversalTime) {
+    private FeedScopedId feedScopedId;
+
+    private Pathway pathway;
+
+    public PathwayEdge(Vertex fromv, Vertex tov, int traversalTime, int wheelchairTraversalTime, Pathway pathway) {
         super(fromv, tov);
         this.traversalTime = traversalTime;
         this.wheelchairTraversalTime = wheelchairTraversalTime;
+        this.pathway = pathway;
     }
 
-    public PathwayEdge(Vertex fromv, Vertex tov, int traversalTime) {
+    public PathwayEdge(Vertex fromv, Vertex tov, int traversalTime, Pathway pathway) {
         super(fromv, tov);
         this.traversalTime = traversalTime;
+        this.pathway = pathway;
     }
 
     private static final long serialVersionUID = -3311099256178798981L;
@@ -60,6 +68,8 @@ public class PathwayEdge extends Edge {
         //TODO: localize
         return this.getName();
     }
+
+    public Pathway getPathway() {return pathway; }
 
     public State traverse(State s0) {
         int time = traversalTime;
