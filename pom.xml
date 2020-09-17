@@ -8,7 +8,7 @@
 
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.3.0.53</version>
+    <version>1.3.0.53.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -90,17 +90,17 @@
     </properties>
 
     <distributionManagement>
-      <repository>
-        <id>nexus.onebusaway.org-releases</id>
-        <name>Nexus Release Repo</name>
-        <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
-      </repository>
-      <snapshotRepository>
-        <id>nexus.onebusaway.org-snapshots</id>
-        <name>Nexus Snapshot Repo</name>
-        <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
-      </snapshotRepository>
-      <site>
+        <repository>
+            <id>releases-camsys-public-repo</id>
+            <name>Camsys Public Release Repo</name>
+            <url>s3://repo.camsys-apps.com/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots-camsys-public-repo</id>
+            <name>Camsys Public Snapshot Repo</name>
+            <url>s3://repo.camsys-apps.com/snapshots/</url>
+        </snapshotRepository>
+        <site>
         <id>${site_id}</id>
         <url>${site_url}</url>
       </site>
@@ -394,6 +394,11 @@
                 <artifactId>wagon-ssh</artifactId>
                 <version>3.0.0</version>
             </extension>
+            <extension>
+                <groupId>com.github.platform-team</groupId>
+                <artifactId>aws-maven</artifactId>
+                <version>6.0.0</version>
+            </extension>
         </extensions>
     </build>
 
@@ -463,14 +468,28 @@
             <url>https://people.apache.org/repo/m1-ibiblio-rsync-repository/org.apache.axis2/</url>
         </repository>
         <repository>
-            <id>snapshots-nexus-repo</id>
-            <name>Nexus Snapshots Repo</name>
-            <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
+            <id>repo.camsys-apps.com</id>
+            <url>https://repo.camsys-apps.com/third-party/</url>
         </repository>
         <repository>
-            <id>releases-nexus-repo</id>
-            <name>Nexus Snapshots Repo</name>
-            <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+            <id>releases-camsys-public-repo</id>
+            <url>https://repo.camsys-apps.com/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots-camsys-public-repo</id>
+            <url>https://repo.camsys-apps.com/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 
