@@ -1209,6 +1209,8 @@ public abstract class GraphPathToTripPlanConverter {
             }
 
             State exitState = backState;
+            if (exitState == null)
+                continue;
             Edge exitEdge = exitState.getBackEdge();
             while (exitEdge instanceof FreeEdge) {
                 exitState = exitState.getBackState();
