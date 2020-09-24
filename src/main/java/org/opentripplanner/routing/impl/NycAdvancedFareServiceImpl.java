@@ -302,9 +302,9 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                 String serviceIdStr = reader.get("service_id");
                 String otherServiceIdStr = reader.get("other_service_id");
 
-                if (transferTypeStr == "merge") {
+                if ("merge".equals(transferTypeStr)) {
                     transferType = NycTransferType.merge;
-                } else if (transferTypeStr == "free_step_up") {
+                } else if ("free_step_up".equals(transferTypeStr)) {
                     transferType = NycTransferType.free_step_up;
                 } else {
                     transferType = NycTransferType.free;
