@@ -1030,6 +1030,8 @@ public abstract class GraphPathToTripPlanConverter {
         for (int i = 0; i < states.length - 1; i++) {
             State backState = states[i];
             State forwardState = states[i + 1];
+            if (forwardState == null)
+                continue;
             Edge edge = forwardState.getBackEdge();
 
             if(edge instanceof RentABikeOnEdge) onBikeRentalState = forwardState;
@@ -1207,6 +1209,8 @@ public abstract class GraphPathToTripPlanConverter {
             }
 
             State exitState = backState;
+            if (exitState == null)
+                continue;
             Edge exitEdge = exitState.getBackEdge();
             while (exitEdge instanceof FreeEdge) {
                 exitState = exitState.getBackState();
