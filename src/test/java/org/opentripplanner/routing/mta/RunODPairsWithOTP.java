@@ -1,0 +1,151 @@
+/* This program is free software: you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public License
+ as published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+package org.opentripplanner.routing.mta;
+
+import flexjson.JSONDeserializer;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.junit.Test;
+import java.text.SimpleDateFormat;  
+import java.util.*;
+import java.io.*;
+import java.net.URISyntaxException;
+
+public class RunODPairsWithOTP {
+	
+    private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
+
+    private static final String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
+    
+    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/plan";
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Test
+    public void run() throws IOException, InterruptedException, URISyntaxException {
+
+    	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);
+ 
+    	File odPairs = new File(PAIRS_TXT);
+    	Scanner reader = new Scanner(odPairs);
+            	
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        
+    	while (reader.hasNextLine()) {
+    		
+    		// get test params from OD pairs file
+    		String line = reader.nextLine();
+    	
+    		boolean accessible = line.split(" ")[0].trim().equals("Y");
+    		long epoch = Long.parseLong(line.split(" ")[1].trim());
+
+    		String stop1 = line.split(" ")[2].trim();
+    		String stop2 = line.split(" ")[3].trim();
+    		
+    		String originLat = stop1.split(",")[0].trim();
+    		String originLon = stop1.split(",")[1].trim();
+    	
+    		String destLat = stop2.split(",")[0].trim();
+    		String destLon = stop2.split(",")[1].trim();
+    		    		
+    		// Make request of OTP
+    		URIBuilder builder = new URIBuilder(OTP_URL);
+    		builder.setParameter("fromPlace", originLat + "," + originLon);
+    		builder.setParameter("toPlace", destLat + "," + destLon);
+    		builder.setParameter("wheelchair", accessible + "");
+    		builder.setParameter("date", new SimpleDateFormat("MM-dd-YYYY").format(epoch));
+    		builder.setParameter("time", new SimpleDateFormat("hh:mm aa").format(epoch));
+    		builder.setParameter("mode", "TRANSIT,WALK");
+    		builder.setParameter("maxWalkDistance", "500");
+
+    		
+            HttpGet get = new HttpGet(builder.build());
+
+
+            // Read response from OTP
+            CloseableHttpResponse response = httpClient.execute(get);
+            String responseString = EntityUtils.toString(response.getEntity());
+
+            HashMap<String, Map> planResponse = (HashMap<String, Map>)new JSONDeserializer().deserialize(responseString);             
+            HashMap<String, Object> root = (HashMap<String, Object>)planResponse.get("plan");
+            
+            // write the OD input line back to the results so we can compare
+            otpResults.write(line + "\n\n");
+
+            if(root == null) {
+            	otpResults.write("***** FAILED *****\n");
+            	otpResults.write("***** FAILED *****\n");
+            	otpResults.write("***** FAILED *****\n");
+            	otpResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+
+            	continue;
+            }
+            
+            ArrayList<Map> itineraries = (ArrayList<Map>) root.get("itineraries");
+            
+            for(int itin_i = 0; itin_i < itineraries.size(); itin_i++) {
+                HashMap<String, Object> itinerary = (HashMap<String, Object>) itineraries.get(itin_i);
+                ArrayList<Map>  legs = (ArrayList<Map>) itinerary.get("legs");
+
+                for(int leg_i = 0; leg_i < legs.size(); leg_i++) {
+                	 HashMap<String, Object> leg = (HashMap<String, Object>) legs.get(leg_i);
+                	 HashMap<String, Object> onStop = (HashMap<String, Object>) leg.get("from");
+                	 HashMap<String, Object> offStop = (HashMap<String, Object>) leg.get("to");
+                	 String mode = (String) leg.get("mode");
+
+                	 System.out.print(".");
+
+                	 if(mode.equals("WALK"))
+                		 continue;                	 
+                	 
+                     otpResults.write(
+                    		 (itin_i + 1) + " " + onStop.get("stopId") + "[" + ((String)onStop.get("name")).replace("[", "(").replace("]", ")") + "] -> " + 
+                    		 leg.get("routeId") + "[" + leg.get("tripHeadsign") + "] -> " + 
+                    		 offStop.get("stopId")  + "[" + ((String)offStop.get("name")).replace("[", "(").replace("]", ")") + "]\n");
+                }
+                
+                otpResults.write("\n");
+            }            
+           
+            System.out.print("\n");
+            otpResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+       	}
+    	
+    	reader.close();
+    	otpResults.close();
+
+
+    	
+    	
+    	
+    	
+    	       
+        
+        
+        
+        
+        
+        
+
+    	
+    	    	
+    
+    	    
+    	
+    	
+    }
+
+}

@@ -39,9 +39,9 @@ public class StationToStationRoutingTest extends MTAGraphTest {
         RoutingRequest options = new RoutingRequest();
         options.wheelchairAccessible = true;
         GraphPath path = search(tmpVertex, graph.getVertex("MTASBWY:M16-ent-acs"), "2018-03-15", "4:00pm", options);
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertFalse(rides.isEmpty());
-        Ride firstRide = rides.get(0);
+        TestRide firstRide = rides.get(0);
         assertFalse(firstRide.getRoute().getId().equals("J"));
     }
 

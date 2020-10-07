@@ -262,7 +262,11 @@ public class StreetEdge extends Edge implements Cloneable {
     public State traverse(State s0) {
         final RoutingRequest options = s0.getOptions();
         StateEditor editor = doTraverse(s0, options, s0.getNonTransitMode());
+        if(editor == null)
+        	return null;
         State state = (editor == null) ? null : editor.makeState();
+        if(state == null)
+        	return null;
         /* Kiss and ride support. Mode transitions occur without the explicit loop edges used in park-and-ride. */
         if ((options.kissAndRide && options.arriveBy)) {
             // Branch search to "unparked" CAR mode ASAP after transit has been used.

@@ -55,7 +55,6 @@ public abstract class ConnectivityTemplate <T> {
         queue.push(tstop);
         seen.add(tstop);
         List<Alert> alerts = new ArrayList<>();
-        String parentStation = tstop.getStop().getParentStation();
 
         while (!queue.isEmpty()) {
             Vertex v = queue.pop();

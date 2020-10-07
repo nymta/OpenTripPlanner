@@ -28,6 +28,7 @@ import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FeedInfo;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
@@ -154,7 +155,7 @@ public class GraphIndex {
             if (edge instanceof PathwayEdge) {
                 PathwayEdge pathwayEdge = (PathwayEdge) edge;
                 if (pathwayEdge.isElevator()) {
-                    pathwayForElevator.put(pathwayEdge.getPathwayCode(), pathwayEdge);
+                    pathwayForElevator.put(pathwayEdge.getPathwayId().getAgencyId(), pathwayEdge);
                 }
             }
         }
@@ -171,6 +172,10 @@ public class GraphIndex {
         }
         for (TransitStop stopVertex : stopVertexForStop.values()) {
             Envelope envelope = new Envelope(stopVertex.getCoordinate());
+            
+            if(stopVertex.getLat() == StopTime.MISSING_VALUE && stopVertex.getLon() == StopTime.MISSING_VALUE)
+            	continue;
+            
             stopSpatialIndex.insert(envelope, stopVertex);
         }
         for (TripPattern pattern : patternForId.values()) {
@@ -676,7 +681,8 @@ public class GraphIndex {
         LOG.info("Clustering stops by geographic proximity and name...");
         // Each stop without a cluster will greedily claim other stops without clusters.
         for (Stop s0 : stopForId.values()) {
-            if (stopClusterForStop.containsKey(s0)) continue; // skip stops that have already been claimed by a cluster
+            if (stopClusterForStop.containsKey(s0) 
+            		|| s0.getLat() == StopTime.MISSING_VALUE || s0.getLon() == StopTime.MISSING_VALUE) continue; // skip stops that have already been claimed by a cluster
             String s0normalizedName = StopNameNormalizer.normalize(s0.getName());
             StopCluster cluster = new StopCluster(String.format("C%03d", psIdx++), s0normalizedName);
             // LOG.info("stop {}", s0normalizedName);

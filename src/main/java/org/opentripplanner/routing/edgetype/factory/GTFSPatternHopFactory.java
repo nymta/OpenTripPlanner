@@ -970,12 +970,15 @@ public class GTFSPatternHopFactory {
         for (Pathway pathway : _dao.getAllPathways()) {
             Vertex fromVertex = context.stationStopNodes.get(pathway.getFromStop());
             Vertex toVertex = context.stationStopNodes.get(pathway.getToStop());
-            PathwayEdge edge;
-            if (pathway.isWheelchairTraversalTimeSet()) {
-                edge = new PathwayEdge(fromVertex, toVertex, pathway.getPathwayMode(), pathway.getPathwayCode(), pathway.getTraversalTime(), pathway.getWheelchairTraversalTime());
-            } else {
-                edge = new PathwayEdge(fromVertex, toVertex, pathway.getPathwayMode(), pathway.getPathwayCode(), pathway.getTraversalTime());
-            }
+            
+            PathwayEdge edge = new PathwayEdge(pathway.getId(), fromVertex, toVertex, 
+            		(pathway.isLengthSet() ? pathway.getLength() : 0), 
+            		pathway.getPathwayMode(), 
+            		(pathway.isTraversalTimeSet() ? pathway.getTraversalTime() : 0), 
+            		(pathway.isMinWidthSet() ? pathway.getMinWidth() : 0), 
+            		(pathway.isMaxSlopeSet() ? pathway.getMaxSlope() : 0),
+            		(pathway.isStairCountSet() ? pathway.getStairCount() : 0),
+            		(pathway.isIsAccessibleSet() ? pathway.getIsAccessible() : 0)); // 0 = no info on accessibility
         }
     }
 

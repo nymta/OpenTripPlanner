@@ -72,7 +72,7 @@ public class StationConnectivityResult {
             boolean isActive = e.getElevatorIsOutOfServiceAlerts(graph, state).isEmpty();
 
             links.add(new StationLink(e.getId(), e.getFromVertex().getIndex(), e.getToVertex().getIndex(),
-                    e.getPathwayMode(), e.getPathwayCode(), isActive));
+                    e.getPathwayMode(), isActive));
         }
     }
 

@@ -187,10 +187,11 @@ public class StreetTransitLink extends Edge {
             s1.setUnusedCar();
             s1.setNonTransitMode(TraverseMode.WALK);
         }
-
+        
         s1.incrementTimeInSeconds(transitStop.getStreetToStopTime() + STL_TRAVERSE_COST);
         s1.incrementWeight(STL_TRAVERSE_COST + transitStop.getStreetToStopTime());
-        s1.setBackMode(TraverseMode.LEG_SWITCH);
+        if(!transitStop.isEntrance())
+        	s1.setBackMode(TraverseMode.LEG_SWITCH);
         s1.setTransferNotPermissible();
         return s1.makeState();
     }

@@ -13,6 +13,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 
 package org.opentripplanner.routing.edgetype;
 
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Pathway;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
@@ -41,45 +42,48 @@ import org.slf4j.LoggerFactory;
  */
 public class PathwayEdge extends Edge {
 
-    public enum Mode { NONE, WALKWAY, STAIRS, ELEVATOR, ESCALATOR }
+    public enum Mode { NONE, WALKWAY, STAIRS, MOVING_SIDEWALK, ESCALATOR, ELEVATOR, FARE_GATE, EXIT_GATE }
 
+    private AgencyAndId id = null;
+    
     private int traversalTime;
 
-    private int wheelchairTraversalTime = -1;
-
+    private double maxSlope;
+    
+    private int stairCount;
+    
+    private double minWidth;
+    
     private Mode pathwayMode = Mode.NONE;
 
-    private String pathwayCode;
-
-    private double distance;
+    private double length;
 
     private boolean verbose = false;
+    
+    private int mtaIsAccessible;
+    
     private static final Logger LOG = LoggerFactory.getLogger(PathwayEdge.class);
 
-    public PathwayEdge(Vertex fromv, Vertex tov, int pathwayMode, String pathwayCode, int traversalTime, int wheelchairTraversalTime) {
+    public PathwayEdge(AgencyAndId id, Vertex fromv, Vertex tov, double length, int pathwayMode, int traversalTime, 
+    		double minWidth, double maxSlope, int stairCount, int isAccessible) {
         super(fromv, tov);
+        this.id = id;
+        this.pathwayMode = Mode.values()[pathwayMode];
+        this.minWidth = minWidth;
+        this.maxSlope = maxSlope;
+        this.stairCount = stairCount;
         this.traversalTime = traversalTime;
-        this.wheelchairTraversalTime = wheelchairTraversalTime;
-        switch (pathwayMode) {
-            case Pathway.MODE_LINK:
-                this.pathwayMode = Mode.NONE;
-                break;
-            case Pathway.MODE_WALKWAY:
-                this.pathwayMode = Mode.WALKWAY;
-                break;
-            case Pathway.MODE_ELEVATOR:
-                this.pathwayMode = Mode.ELEVATOR;
-                break;
-            case Pathway.MODE_STAIRS:
-                this.pathwayMode = Mode.STAIRS;
-                break;
-        }
-        this.pathwayCode = pathwayCode;
-        this.distance = SphericalDistanceLibrary.distance(fromv.getCoordinate(), tov.getCoordinate());
-    }
+        this.length = length;
+        this.mtaIsAccessible = isAccessible;
 
-    public PathwayEdge(Vertex fromv, Vertex tov, int pathwayMode, String pathwayCode, int traversalTime) {
-        this(fromv, tov, pathwayMode, pathwayCode, traversalTime, -1);
+        // set some defaults
+        if(this.stairCount > 0 && this.traversalTime == 0) {
+        	this.traversalTime = this.stairCount * 5; // 5s per stair
+        }
+        
+        if(this.length > 0 && this.traversalTime == 0) {
+        	this.traversalTime = (int)(this.length * 1.4); // average walk speed: 1.4 m/s
+        }
     }
 
     private static final long serialVersionUID = -3311099256178798981L;
@@ -89,7 +93,11 @@ public class PathwayEdge extends Edge {
     }
 
     public double getDistance() {
-        return distance;
+        return length;
+    }
+    
+    public AgencyAndId getPathwayId() {
+    	return this.id;
     }
     
     public TraverseMode getMode() {
@@ -112,14 +120,21 @@ public class PathwayEdge extends Edge {
 
     public String getName() {
         switch(pathwayMode) {
+        	case MOVING_SIDEWALK:
+        	case ESCALATOR:
+        		return "escalator (" + this.getPathwayId() + ")";
             case ELEVATOR:
-                return "elevator";
+                return "elevator (" + this.getPathwayId() + ")";
             case STAIRS:
-                return "stairs";
+                return "stairs (" + this.getPathwayId() + ")";
             case WALKWAY:
-                return "walkway";
+                return "walkway (" + this.getPathwayId() + ")";
+            case FARE_GATE:
+            	return "fare gate (" + this.getPathwayId() + ")";
+            case EXIT_GATE:
+            	return "exit gate (" + this.getPathwayId() + ")";
             default:
-                return "pathway";
+                return "pathway (" + this.getPathwayId() + ")";
         }
     }
 
@@ -128,11 +143,7 @@ public class PathwayEdge extends Edge {
         //TODO: localize
         return this.getName();
     }
-
-    public String getPathwayCode() {
-        return pathwayCode;
-    }
-
+    
     public boolean isElevator() {
         return Mode.ELEVATOR.equals(pathwayMode);
     }
@@ -143,19 +154,29 @@ public class PathwayEdge extends Edge {
 
     @Override
     public boolean isWheelchairAccessible() {
-        //TODO determine what else could indicate wheelchair accessible
-        if (wheelchairTraversalTime >= 0) {
-            return wheelchairTraversalTime >= 0;
-        }else if (!Mode.STAIRS.equals(pathwayMode) ) {
-            return true;
-        }
+    	if(this.mtaIsAccessible == 1) // MTA asserts path is accessible
+    		return true;
+    	else { // go by heuristic:
+    		if(this.pathwayMode == Mode.STAIRS || this.pathwayMode == Mode.ESCALATOR || this.pathwayMode == Mode.MOVING_SIDEWALK 
+    				|| this.pathwayMode == Mode.MOVING_SIDEWALK)
+    			return false;
 
-        return false;
+    		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
+    		if(this.maxSlope > .083) 
+    			return false;
+
+    		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
+    		if(this.minWidth < 1) 
+    			return false;
+
+    		return true;
+    	}
     }
 
     public State traverse(State s0) {
         verbose = false;
-        int time = traversalTime;
+        int time = this.traversalTime;
+        
         if (s0.getOptions().wheelchairAccessible) {
             if (!isWheelchairAccessible() ||
                     (!s0.getOptions().ignoreRealtimeUpdates && pathwayMode.equals(Mode.ELEVATOR) && elevatorIsOutOfService(s0))) {
@@ -166,18 +187,14 @@ public class PathwayEdge extends Edge {
 
                 return null;
             }
-
-            if (wheelchairTraversalTime == -1) {
-                time = 1;
-            }else {
-                time = wheelchairTraversalTime;
-            }
         }
+        
         StateEditor s1 = s0.edit(this);
         // Allow transfers to the street if the PathwayEdge is proceeded by a TransferEdge
         if (s0.backEdge instanceof TransferEdge) {
             s1.setTransferPermissible();
         }
+        
         s1.incrementTimeInSeconds(time);
         s1.incrementWeight(time);
         s1.setBackMode(getMode());
@@ -192,7 +209,7 @@ public class PathwayEdge extends Edge {
     public List<Alert> getElevatorIsOutOfServiceAlerts(Graph graph, State s0) {
         List<Alert> alerts = new ArrayList<>();
         for (AlertPatch alert : graph.getAlertPatches(this)) {
-            if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayCode.equals(alert.getElevatorId())) {
+            if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayMode == Mode.ELEVATOR) {
                 alerts.add(alert.getAlert());
             }
         }

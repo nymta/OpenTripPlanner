@@ -60,8 +60,10 @@ public class TransitStop extends TransitStationStop {
         this.wheelchairEntrance = stop.getWheelchairBoarding() != 2;
         isEntrance = stop.getLocationType() == 2;
         isExtendedLocationType = stop.getLocationType() > 2;
+        
         //Adds this vertex into graph envelope so that we don't need to loop over all vertices
-        graph.expandToInclude(stop.getLon(), stop.getLat());
+        if(stop.isLonSet() && stop.isLatSet())
+        	graph.expandToInclude(stop.getLon(), stop.getLat());
     }
 
     public boolean hasWheelchairEntrance() {

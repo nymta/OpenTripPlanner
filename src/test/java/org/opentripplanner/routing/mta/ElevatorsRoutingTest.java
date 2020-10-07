@@ -34,7 +34,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     @Test
     public void testCanRouteToAccessibleStops() {
         GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("120S", rides.get(0).getFirstStopId());
         assertEquals("137S", rides.get(0).getLastStopId());
@@ -48,7 +48,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
         // ok if we can't find anything
         if (path != null) {
-            List<Ride> rides = Ride.createRides(path);
+            List<TestRide> rides = TestRide.createRides(path);
             assertFalse(rides.get(0).getFirstStopId().equals("120S"));
         }
         expireAlerts();
@@ -59,7 +59,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         GtfsRealtime.FeedMessage message = elevatorFeedMessage("120", "EL146");
         alertsUpdateHandler.update(message);
         GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("120S", rides.get(0).getFirstStopId());
         assertEquals("137S", rides.get(0).getLastStopId());
@@ -74,7 +74,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         opt.wheelchairAccessible = true;
         opt.preferredStartRoutes = RouteMatcher.parse("MTASBWY__C");
         GraphPath path = search("A45-ent-acs", "H11-ent-acs", "2018-03-15", "04:00pm", opt);
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
         // test code actually prefers Euclid. But that's valid.
         assertEquals("A45S", rides.get(0).getFirstStopId());
@@ -91,7 +91,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     @Test
     public void testBothStopsAccessibleTransfer() {
         GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm");
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
         assertEquals("123S", rides.get(0).getFirstStopId());
         assertEquals("125S", rides.get(0).getLastStopId());
@@ -109,7 +109,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
 
         GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm");
         if (path != null) {
-            List<Ride> rides = Ride.createRides(path);
+            List<TestRide> rides = TestRide.createRides(path);
             // we should never use 125S/A24S transfer
             for (int i = 0; i < rides.size() - 1; i++) {
                 String stop0 = rides.get(i).getLastStopId();
@@ -127,7 +127,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         GtfsRealtime.FeedMessage message = elevatorFeedMessage("125N", "EL278", "125N", "EL279", "125N", "EL276X");
         alertsUpdateHandler.update(message);
         GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm");
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
         assertEquals("123S", rides.get(0).getFirstStopId());
         assertEquals("125S", rides.get(0).getLastStopId());

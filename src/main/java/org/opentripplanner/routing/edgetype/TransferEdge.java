@@ -126,7 +126,6 @@ public class TransferEdge extends Edge {
                     options.softWalkOverageRate);
         }
         if (s0.getOptions().wheelchairAccessible && !wheelchairAccessible) {
-            System.out.println("   not wheelchairAccessible");
             if (verbose) {
                 LOG.info("   debug disallow, not wheelchairAccessible");
             }

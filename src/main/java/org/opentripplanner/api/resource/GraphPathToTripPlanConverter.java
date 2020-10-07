@@ -452,25 +452,49 @@ public abstract class GraphPathToTripPlanConverter {
 
     private static String generateWalkStepInstruction(WalkStep step, boolean start, State nextState) {
         for (Edge e : step.edges) {
+        	// station into transit
+        	if (e instanceof StreetTransitLink) {
+                StreetTransitLink stl = (StreetTransitLink) e;
+                String relDir = relativeDirStr(step.relativeDirection);
+                String transition = null;
+                String extraInstr = null;
+
+                if (e.getToVertex() instanceof TransitStop && ((TransitStop) e.getToVertex()).isEntrance()) {
+                    transition = "Enter station at " + e.getToVertex().getName();
+                    extraInstr = ", follow signs for " + getHeadsignInstruction(nextState);
+                } else if (((TransitStop) e.getFromVertex()).isEntrance()) {
+                    transition = "Exit " + e.getFromVertex().getName();
+                }
+                
+                if (transition != null) {        
+                	String instr = transition;
+
+                    if (relDir != null)
+                        instr += " " + relDir;
+                    if (extraInstr != null) {
+                        instr += extraInstr;
+                    }
+                    return instr;
+                }
+        	}
+
             if (e instanceof PathwayEdge) {
                 PathwayEdge p = (PathwayEdge) e;
                 String relDir = relativeDirStr(step.relativeDirection);
                 String transition = null;
                 String extraInstr = null;
-                if (((TransitStop) p.getToVertex()).isEntrance()) {
-                    transition = "Exit";
-                } else if (((TransitStop) p.getFromVertex()).isEntrance()) {
-                    transition = "Enter";
-                    extraInstr = getHeadsignInstruction(nextState);
-                }
-                if (transition != null) {
-                    String instr = transition + " station";
-                    if (p.hasDefinedMode())
-                        instr += " using " + p.getName();
+
+                transition = "Continue";
+                extraInstr = " via the " + p.getName() + " to " + p.getFromVertex().getName();  
+                
+                if (transition != null) {        
+                	String instr = transition;
+                    //if (p.hasDefinedMode())
+                    //    instr += " using " + p.getName();
                     if (relDir != null)
-                        instr += ", " + relDir;
+                        instr += " " + relDir;
                     if (extraInstr != null) {
-                        instr += " [" + extraInstr + "]";
+                        instr += extraInstr;
                     }
                     return instr;
                 }
@@ -1071,7 +1095,7 @@ public abstract class GraphPathToTripPlanConverter {
                 steps.add(step);
                 continue;
             }
-
+            
             String streetName = edge.getName(requestedLocale);
             int idx = streetName.indexOf('(');
             String streetNameNoParens;
