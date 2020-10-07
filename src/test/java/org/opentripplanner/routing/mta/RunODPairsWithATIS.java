@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.util.AbstractMap;
 import java.text.SimpleDateFormat;  
@@ -103,7 +104,8 @@ public class RunODPairsWithATIS {
     }
     
     @SuppressWarnings("unchecked")
-	@Test
+    @Ignore
+    @Test
     public void run() throws IOException, InterruptedException {
 
     	FileWriter atisResults = new FileWriter(ATIS_RESULTS_TXT);

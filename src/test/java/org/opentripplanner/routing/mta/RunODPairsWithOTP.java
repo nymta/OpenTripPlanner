@@ -19,6 +19,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import java.text.SimpleDateFormat;  
 import java.util.*;
@@ -35,6 +36,7 @@ public class RunODPairsWithOTP {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
+    @Ignore
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);

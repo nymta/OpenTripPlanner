@@ -14,6 +14,7 @@ package org.opentripplanner.routing.mta;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -39,6 +40,7 @@ public class GenerateTestODPairs {
         graph = ConstantsForTests.buildGraph(NYCT_SUBWAYS_GTFS);
      }
 
+    @Ignore
     @Test
     public void run() throws IOException {
     	
