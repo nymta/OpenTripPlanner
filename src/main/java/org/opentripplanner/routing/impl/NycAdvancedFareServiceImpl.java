@@ -224,9 +224,9 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
 
     private String fareDirectory = null;
 
-    public NycAdvancedFareServiceImpl(String fareDir) {
+    public NycAdvancedFareServiceImpl(String fareDirectory) {
 
-        this.fareDirectory = fareDir;
+        this.fareDirectory = fareDirectory;
 
         ////////////////////////////////////////////////////////
         // Create Agencies

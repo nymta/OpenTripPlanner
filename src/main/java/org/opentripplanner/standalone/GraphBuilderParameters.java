@@ -1,5 +1,7 @@
 package org.opentripplanner.standalone;
 
+import java.nio.file.Path;
+
 import org.opentripplanner.graph_builder.module.osm.WayPropertySetSource;
 import org.opentripplanner.graph_builder.services.osm.CustomNamer;
 import org.opentripplanner.routing.impl.DefaultFareServiceFactory;
@@ -168,7 +170,7 @@ public class GraphBuilderParameters {
      * This could be done automatically with the "reflective query scraper" but it's less type safe and less clear.
      * Until that class is more type safe, it seems simpler to just list out the parameters by name here.
      */
-    public GraphBuilderParameters(JsonNode config) {
+    public GraphBuilderParameters(JsonNode config, Path graphRoot) {
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
         transit = config.path("transit").asBoolean(true);
         useTransfersTxt = config.path("useTransfersTxt").asBoolean(false);
@@ -182,7 +184,7 @@ public class GraphBuilderParameters {
         matchBusRoutesToStreets = config.path("matchBusRoutesToStreets").asBoolean(false);
         fetchElevationUS = config.path("fetchElevationUS").asBoolean(false);
         elevationBucket = S3BucketConfig.fromConfig(config.path("elevationBucket"));
-        fareServiceFactory = DefaultFareServiceFactory.fromConfig(config.path("fares"));
+        fareServiceFactory = DefaultFareServiceFactory.fromConfig(config.path("fares"), graphRoot);
         customNamer = CustomNamer.CustomNamerFactory.fromConfig(config.path("osmNaming"));
         wayPropertySet = WayPropertySetSource.fromConfig(config.path("osmWayPropertySet").asText("default"));
         staticBikeRental = config.path("staticBikeRental").asBoolean(false);
