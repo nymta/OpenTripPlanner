@@ -20,15 +20,15 @@ import org.opentripplanner.routing.services.FareServiceFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class NycAdvancedFareServiceFactory implements FareServiceFactory {
-
-    private String fareDirectory = null;
-
-    public NycAdvancedFareServiceFactory(String fareDirectory) {
-        this.fareDirectory = fareDirectory;
+	
+	private String fareRoot = null;
+	
+    public NycAdvancedFareServiceFactory(String fareRoot) {
+    	this.fareRoot = fareRoot;
     }
 
     public FareService makeFareService() {
-        return new NycAdvancedFareServiceImpl(fareDirectory);
+        return new NycAdvancedFareServiceImpl(this.fareRoot);
     }
 
     @Override
@@ -38,4 +38,5 @@ public class NycAdvancedFareServiceFactory implements FareServiceFactory {
     @Override
     public void configure(JsonNode config) {
     }
+
 }

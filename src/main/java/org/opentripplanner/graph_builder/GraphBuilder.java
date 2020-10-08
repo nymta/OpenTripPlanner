@@ -204,7 +204,7 @@ public class GraphBuilder implements Runnable {
         graphBuilder.setPath(dir);
         // Find and parse config files first to reveal syntax errors early without waiting for graph build.
         builderConfig = OTPMain.loadJson(new File(dir, BUILDER_CONFIG_FILENAME));
-        GraphBuilderParameters builderParams = new GraphBuilderParameters(builderConfig);
+        GraphBuilderParameters builderParams = new GraphBuilderParameters(builderConfig, dir.toPath());
         // Load the router config JSON to fail fast, but we will only apply it later when a router starts up
         routerConfig = OTPMain.loadJson(new File(dir, Router.ROUTER_CONFIG_FILENAME));
         LOG.info(ReflectionLibrary.dumpFields(builderParams));
@@ -240,6 +240,7 @@ public class GraphBuilder implements Runnable {
                     break;
                 case FARES:
                     LOG.info("Found fares file {}", file);
+                    break;
                 case OTHER:
                     LOG.warn("Skipping unrecognized file '{}'", file);
             }

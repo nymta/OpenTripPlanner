@@ -28,6 +28,7 @@ import org.opentripplanner.routing.services.FareServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -134,6 +135,10 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
      * </pre>
      */
     public static FareServiceFactory fromConfig(JsonNode config) {
+    	return DefaultFareServiceFactory.fromConfig(config, null);
+    }
+    
+    public static FareServiceFactory fromConfig(JsonNode config, Path graphRoot) {
         String type = null;
         if (config == null) {
             /* Empty block, fallback to default */
@@ -179,7 +184,11 @@ public class DefaultFareServiceFactory implements FareServiceFactory {
             retval = new NycFareServiceFactory();
             break;
         case "new-york-advanced":
-            retval = new NycAdvancedFareServiceFactory(config.path("fareDirectory").asText());
+        	String fareRoot = config.path("fareDirectory").asText();
+        	if(fareRoot == null || fareRoot.isEmpty()) {
+        		fareRoot = graphRoot.toAbsolutePath().toString();
+        	}
+            retval = new NycAdvancedFareServiceFactory(fareRoot);
             break;
         case "seattle":
             retval = new SeattleFareServiceFactory();
