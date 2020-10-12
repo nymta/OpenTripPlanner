@@ -15,6 +15,7 @@ package org.opentripplanner.routing.edgetype;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Pathway;
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.routing.alertpatch.Alert;
@@ -24,6 +25,7 @@ import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
+import org.opentripplanner.routing.vertextype.TransitStop;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
@@ -46,35 +48,44 @@ public class PathwayEdge extends Edge {
 
     private AgencyAndId id = null;
     
-    private int traversalTime;
+    private int traversalTime = -1;
 
-    private double maxSlope;
+    private int wheelchairTraversalTime = -1;
+
+    private double maxSlope = Double.NaN;
     
-    private int stairCount;
+    private int stairCount = -1;
     
-    private double minWidth;
+    private double minWidth = Double.NaN;
     
     private Mode pathwayMode = Mode.NONE;
 
-    private double length;
+    private double length = Double.NaN;
 
     private boolean verbose = false;
     
-    private int mtaIsAccessible;
+    private int mtaIsAccessible = 0; // 0 = no accessibility info available (i.e. unknown)
     
     private static final Logger LOG = LoggerFactory.getLogger(PathwayEdge.class);
 
-    public PathwayEdge(AgencyAndId id, Vertex fromv, Vertex tov, double length, int pathwayMode, int traversalTime, 
+    public PathwayEdge(AgencyAndId id, Vertex fromv, Vertex tov, double length, int pathwayMode, int traversalTime, int wheelchairTraversalTime,
     		double minWidth, double maxSlope, int stairCount, int isAccessible) {
         super(fromv, tov);
         this.id = id;
         this.pathwayMode = Mode.values()[pathwayMode];
-        this.minWidth = minWidth;
-        this.maxSlope = maxSlope;
-        this.stairCount = stairCount;
-        this.traversalTime = traversalTime;
+        if(minWidth != Double.NaN)
+        	this.minWidth = minWidth;
+        if(maxSlope != Double.NaN)
+        	this.maxSlope = maxSlope;
+        if(stairCount >= 0)
+        	this.stairCount = stairCount;
+        if(traversalTime >= 0)
+        	this.traversalTime = traversalTime;
+        if(wheelchairTraversalTime >= 0)
+        	this.wheelchairTraversalTime = wheelchairTraversalTime;
         this.length = length;
-        this.mtaIsAccessible = isAccessible;
+        if(isAccessible >= 0)
+        	this.mtaIsAccessible = isAccessible;
 
         // set some defaults
         if(this.stairCount > 0 && this.traversalTime == 0) {
@@ -152,9 +163,19 @@ public class PathwayEdge extends Edge {
         return !pathwayMode.equals(Mode.NONE);
     }
 
+    // currently there are two ways a TA can assert a pathway is accessible--setting isAccessible as so:
+    //
+    // 0 or empty - Station entrance will inherit its wheelchair_boarding behavior from the parent station, if specified for the parent.
+    // 1 - Station entrance is wheelchair accessible.
+    // 2 - No accessible path from station entrance to stops/platforms.
+    //
+    // or, setting wheelchairTraversalTime. 
+    //
     @Override
     public boolean isWheelchairAccessible() {
     	if(this.mtaIsAccessible == 1) // MTA asserts path is accessible
+    		return true;
+    	else if(this.wheelchairTraversalTime >= 0) // MTA asserts path is accessible
     		return true;
     	else { // go by heuristic:
     		if(this.pathwayMode == Mode.STAIRS || this.pathwayMode == Mode.ESCALATOR || this.pathwayMode == Mode.MOVING_SIDEWALK 
@@ -162,11 +183,7 @@ public class PathwayEdge extends Edge {
     			return false;
 
     		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
-    		if(this.maxSlope > .083) 
-    			return false;
-
-    		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
-    		if(this.minWidth < 1) 
+    		if(this.maxSlope > .083 && this.minWidth < 1) 
     			return false;
 
     		return true;
@@ -201,6 +218,21 @@ public class PathwayEdge extends Edge {
         return s1.makeState();
     }
 
+    // for GTFS-RT/pathway linking 
+    // assumes MTA format 120S-S2P_EL145_S-IN (STOP ID-TYPE OF PATHWAY_ELEVATOR ID_PLATFORM DIRECTION-TRAVERSE_DIRECTION
+    public String getElevatorId() {
+    	if(this.getPathwayMode() != Mode.ELEVATOR)
+    		return null;
+    	
+    	String pathwayIdNoAgency = this.getPathwayId().getId();
+    	String[] elevatorIdParts = pathwayIdNoAgency.split("_");
+
+    	if(elevatorIdParts.length > 2)
+    		return elevatorIdParts[1];
+    	else
+    		return null;
+    }
+    
     private boolean elevatorIsOutOfService(State s0) {
         List<Alert> alerts = getElevatorIsOutOfServiceAlerts(s0.getOptions().rctx.graph, s0);
         return !alerts.isEmpty();
@@ -208,6 +240,24 @@ public class PathwayEdge extends Edge {
 
     public List<Alert> getElevatorIsOutOfServiceAlerts(Graph graph, State s0) {
         List<Alert> alerts = new ArrayList<>();
+        
+        /*
+        if(this.getPathwayMode() == Mode.ELEVATOR) {
+        	Stop ent = ((TransitStop)s0.getVertex()).getStop();
+        	graph.get
+        	  for (AlertPatch alert : graph.getAlertPatches(ent)) {
+                  if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayMode == Mode.ELEVATOR) {
+                      alerts.add(alert.getAlert());
+                  }
+              }
+        	
+        	for(TransitStop v = (TransitStop)s0.getVertex(); v.getStop().getParentStation() != null; v = getStop().getParentStation()) {
+        		
+        	}
+        	
+		}
+		*/
+        	        
         for (AlertPatch alert : graph.getAlertPatches(this)) {
             if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayMode == Mode.ELEVATOR) {
                 alerts.add(alert.getAlert());

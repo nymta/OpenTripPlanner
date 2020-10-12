@@ -972,13 +972,14 @@ public class GTFSPatternHopFactory {
             Vertex toVertex = context.stationStopNodes.get(pathway.getToStop());
             
             PathwayEdge edge = new PathwayEdge(pathway.getId(), fromVertex, toVertex, 
-            		(pathway.isLengthSet() ? pathway.getLength() : 0), 
+            		(pathway.isLengthSet() ? pathway.getLength() : Double.NaN), 
             		pathway.getPathwayMode(), 
-            		(pathway.isTraversalTimeSet() ? pathway.getTraversalTime() : 0), 
-            		(pathway.isMinWidthSet() ? pathway.getMinWidth() : 0), 
-            		(pathway.isMaxSlopeSet() ? pathway.getMaxSlope() : 0),
-            		(pathway.isStairCountSet() ? pathway.getStairCount() : 0),
-            		(pathway.isIsAccessibleSet() ? pathway.getIsAccessible() : 0)); // 0 = no info on accessibility
+            		(pathway.isTraversalTimeSet() ? pathway.getTraversalTime() : -1), 
+            		(pathway.isWheelchairTraversalTimeSet() ? pathway.getWheelchairTraversalTime() : -1), 
+            		(pathway.isMinWidthSet() ? pathway.getMinWidth() : Double.NaN), 
+            		(pathway.isMaxSlopeSet() ? pathway.getMaxSlope() : Double.NaN),
+            		(pathway.isStairCountSet() ? pathway.getStairCount() : -1),
+            		(pathway.isIsAccessibleSet() ? pathway.getIsAccessible() : -1)); 
         }
     }
 

@@ -154,8 +154,9 @@ public class GraphIndex {
             }
             if (edge instanceof PathwayEdge) {
                 PathwayEdge pathwayEdge = (PathwayEdge) edge;
+
                 if (pathwayEdge.isElevator()) {
-                    pathwayForElevator.put(pathwayEdge.getPathwayId().getAgencyId(), pathwayEdge);
+                	pathwayForElevator.put(pathwayEdge.getElevatorId(), pathwayEdge);
                 }
             }
         }

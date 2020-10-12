@@ -35,14 +35,9 @@ public class GenerateTestODPairs {
 
     protected static Graph graph;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        graph = ConstantsForTests.buildGraph(NYCT_SUBWAYS_GTFS);
-     }
-
-    @Ignore
     @Test
     public void run() throws IOException {
+        graph = ConstantsForTests.buildGraph(NYCT_SUBWAYS_GTFS);
     	
     	ArrayList<TransitStop> stops = new ArrayList<TransitStop>();
     	
@@ -66,6 +61,8 @@ public class GenerateTestODPairs {
     		
     		// A = accessible, N = not accessible
     		testOdPairs.write(((Math.random() < .5) ? "Y " : "N ") + new Date().getTime() + " " + s1.getLat() + "," + s1.getLon() + " " + s2.getLat() + "," + s2.getLon() + "\n");
+
+    		System.out.print(".");
     	}
     
     	testOdPairs.close();

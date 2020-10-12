@@ -33,7 +33,9 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     // 96th St (120S) and Chambers St (137S) are accessible
     @Test
     public void testCanRouteToAccessibleStops() {
-        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
+        RoutingRequest opt = new RoutingRequest();
+        opt.wheelchairAccessible = true;
+        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm", opt);
         List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("120S", rides.get(0).getFirstStopId());
@@ -43,9 +45,11 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     // EL145 is downtown elevator, EL146 is uptown elevator
     @Test
     public void testStopBecomesNotAccessible() {
+        RoutingRequest opt = new RoutingRequest();
+        opt.wheelchairAccessible = true;
         GtfsRealtime.FeedMessage message = elevatorFeedMessage("120", "EL145");
         alertsUpdateHandler.update(message);
-        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
+        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm", opt);
         // ok if we can't find anything
         if (path != null) {
             List<TestRide> rides = TestRide.createRides(path);
@@ -56,9 +60,11 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
 
     @Test
     public void testUptownNotAccessibleDowntownOK() {
+        RoutingRequest opt = new RoutingRequest();
+        opt.wheelchairAccessible = true;
         GtfsRealtime.FeedMessage message = elevatorFeedMessage("120", "EL146");
         alertsUpdateHandler.update(message);
-        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm");
+        GraphPath path = search("120-ent-acs", "137-ent-acs", "2018-03-15", "04:00pm", opt);
         List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("120S", rides.get(0).getFirstStopId());
@@ -73,6 +79,7 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         RoutingRequest opt = new RoutingRequest();
         opt.wheelchairAccessible = true;
         opt.preferredStartRoutes = RouteMatcher.parse("MTASBWY__C");
+
         GraphPath path = search("A45-ent-acs", "H11-ent-acs", "2018-03-15", "04:00pm", opt);
         List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
@@ -90,7 +97,9 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     // Accessible: 72St [123] 123S, 59St [1, D] 125S / A24S, Bay Pkwy [D] B21S
     @Test
     public void testBothStopsAccessibleTransfer() {
-        GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm");
+        RoutingRequest opt = new RoutingRequest();
+        opt.wheelchairAccessible = true;
+        GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm", opt);
         List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
         assertEquals("123S", rides.get(0).getFirstStopId());
@@ -104,10 +113,12 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
     // Check if 59St (1) becomes not accessible, the transfer is not accessible
     @Test
     public void testStopInTransferLosesAccessibility() {
+        RoutingRequest opt = new RoutingRequest();
+        opt.wheelchairAccessible = true;
         GtfsRealtime.FeedMessage message = elevatorFeedMessage("125S", "EL277", "125S", "EL276X");
         alertsUpdateHandler.update(message);
 
-        GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm");
+        GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm", opt);
         if (path != null) {
             List<TestRide> rides = TestRide.createRides(path);
             // we should never use 125S/A24S transfer

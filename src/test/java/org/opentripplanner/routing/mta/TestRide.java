@@ -98,6 +98,8 @@ public class TestRide {
         TestRide ride = null;
         for (State state : path.states) {
             Edge edge = state.getBackEdge();
+            if(edge != null)
+            	System.out.println(edge.getFromVertex() + " => " + edge.getToVertex());
             if ( ! (edge instanceof HopEdge))
                 continue;
             HopEdge hEdge = (HopEdge) edge;
@@ -118,6 +120,8 @@ public class TestRide {
             ride.endTime  = state.getTimeSeconds();
             // in default fare service, classify rides by mode
         }
+        
+        System.out.println("========");
         return rides;
     }
 }
