@@ -16,6 +16,7 @@ package org.opentripplanner.routing.edgetype;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Pathway;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.StopTime;
 import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.routing.alertpatch.Alert;
@@ -83,16 +84,17 @@ public class PathwayEdge extends Edge {
         	this.traversalTime = traversalTime;
         if(wheelchairTraversalTime >= 0)
         	this.wheelchairTraversalTime = wheelchairTraversalTime;
-        this.length = length;
+        if(length != Double.NaN)
+        	this.length = length;
         if(isAccessible >= 0)
         	this.mtaIsAccessible = isAccessible;
 
         // set some defaults
-        if(this.stairCount > 0 && this.traversalTime == 0) {
+        if(this.stairCount >= 0 && this.traversalTime == -1) {
         	this.traversalTime = this.stairCount * 5; // 5s per stair
         }
         
-        if(this.length > 0 && this.traversalTime == 0) {
+        if(this.length >= 0 && this.traversalTime == -1) {
         	this.traversalTime = (int)(this.length * 1.4); // average walk speed: 1.4 m/s
         }
     }
@@ -104,6 +106,10 @@ public class PathwayEdge extends Edge {
     }
 
     public double getDistance() {
+    	if(length == Double.NaN) {
+//    		LOG.warn("Returning 0 for pathway length. Length should be set to something in your data. Please check.");
+    		return 0;
+    	}  	
         return length;
     }
     
@@ -119,9 +125,16 @@ public class PathwayEdge extends Edge {
 
     @Override
     public LineString getGeometry() {
-        Coordinate[] coordinates = new Coordinate[] { getFromVertex().getCoordinate(),
-                getToVertex().getCoordinate() };
-        return GeometryUtils.getGeometryFactory().createLineString(coordinates);
+       TransitStop s = (TransitStop) getFromVertex();
+       
+       if(s.isEntrance()) {
+           Coordinate[] coordinates = new Coordinate[] { s.getCoordinate(), s.getCoordinate() };
+           return GeometryUtils.getGeometryFactory().createLineString(coordinates);
+       } else {
+    	   // FIXME: this will be broken
+    	   Coordinate[] coordinates = new Coordinate[] { s.getCoordinate(), s.getCoordinate() };
+           return GeometryUtils.getGeometryFactory().createLineString(coordinates);
+       }
     }
 
     @Override
@@ -151,7 +164,6 @@ public class PathwayEdge extends Edge {
 
     @Override
     public String getName(Locale locale) {
-        //TODO: localize
         return this.getName();
     }
     
@@ -192,10 +204,12 @@ public class PathwayEdge extends Edge {
 
     public State traverse(State s0) {
         verbose = false;
-        int time = this.traversalTime;
         
+        int time = this.traversalTime;
         if (s0.getOptions().wheelchairAccessible) {
-            if (!isWheelchairAccessible() ||
+            time = this.wheelchairTraversalTime;
+
+        	if (!isWheelchairAccessible() ||
                     (!s0.getOptions().ignoreRealtimeUpdates && pathwayMode.equals(Mode.ELEVATOR) && elevatorIsOutOfService(s0))) {
                 if (verbose) {
                     System.out.println("   wheelchairAccessible == true AND elevatorIsOutOfService == true");
@@ -211,9 +225,16 @@ public class PathwayEdge extends Edge {
         if (s0.backEdge instanceof TransferEdge) {
             s1.setTransferPermissible();
         }
+
+        if(time == -1) {
+        	LOG.warn("Traversal time is negative; bumping to 0 to avoid routing problems. "
+        			+ "Check your pathways data: one of traversal time, length or stair count should be set.");
+        	time = 0;
+        }
         
         s1.incrementTimeInSeconds(time);
         s1.incrementWeight(time);
+        
         s1.setBackMode(getMode());
         return s1.makeState();
     }
@@ -240,24 +261,6 @@ public class PathwayEdge extends Edge {
 
     public List<Alert> getElevatorIsOutOfServiceAlerts(Graph graph, State s0) {
         List<Alert> alerts = new ArrayList<>();
-        
-        /*
-        if(this.getPathwayMode() == Mode.ELEVATOR) {
-        	Stop ent = ((TransitStop)s0.getVertex()).getStop();
-        	graph.get
-        	  for (AlertPatch alert : graph.getAlertPatches(ent)) {
-                  if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayMode == Mode.ELEVATOR) {
-                      alerts.add(alert.getAlert());
-                  }
-              }
-        	
-        	for(TransitStop v = (TransitStop)s0.getVertex(); v.getStop().getParentStation() != null; v = getStop().getParentStation()) {
-        		
-        	}
-        	
-		}
-		*/
-        	        
         for (AlertPatch alert : graph.getAlertPatches(this)) {
             if (alert.displayDuring(s0) && alert.getElevatorId() != null && pathwayMode == Mode.ELEVATOR) {
                 alerts.add(alert.getAlert());
