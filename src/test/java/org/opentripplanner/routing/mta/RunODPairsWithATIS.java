@@ -104,7 +104,6 @@ public class RunODPairsWithATIS {
     }
     
     @SuppressWarnings("unchecked")
-    @Ignore
     @Test
     public void run() throws IOException, InterruptedException {
 
@@ -120,12 +119,12 @@ public class RunODPairsWithATIS {
     		// get test params from OD pairs file
     		String line = reader.nextLine();
     	
-    		boolean accessible = line.split(" ")[0].trim().equals("Y");
+    		boolean accessible = line.split(" ")[1].trim().equals("Y");
     		
-    		long epoch = Long.parseLong(line.split(" ")[1].trim());
-
-    		String stop1 = line.split(" ")[2].trim();
-    		String stop2 = line.split(" ")[3].trim();
+    		long epoch = Long.parseLong(line.split(" ")[2].trim());
+    	
+    		String stop1 = line.split(" ")[3].trim();
+    		String stop2 = line.split(" ")[4].trim();
     		
     		String originLat = stop1.split(",")[0].trim();
     		String originLon = stop1.split(",")[1].trim();
@@ -146,7 +145,7 @@ public class RunODPairsWithATIS {
             planTrip.put("Maxanswers", "3"); // labelled max answers, but actually is the number you want back
             planTrip.put("Date", new SimpleDateFormat("MM/dd/YY").format(epoch));
             planTrip.put("Time", new SimpleDateFormat("HHmm").format(epoch));
-            planTrip.put("Walkdist", ".62"); // = 1 KM
+            planTrip.put("Walkdist", ".31"); // in miles, = .5 KM
 
             
             // Trapeze doesn't give you WSDL to do this programmatically like it should, so hacking this a bit here (FIXME)
@@ -181,13 +180,14 @@ public class RunODPairsWithATIS {
             HashMap<String, Object> tripResponse = (HashMap<String, Object>) root.get("PlantripResponse");
             
             // write the OD input line back to the results so we can compare
-            atisResults.write(line + "\n\n");
+            atisResults.write(line + "\n");
 
             if(tripResponse == null) {
+            	atisResults.write("\n***** FAILED *****\n");
             	atisResults.write("***** FAILED *****\n");
-            	atisResults.write("***** FAILED *****\n");
-            	atisResults.write("***** FAILED *****\n");
-                atisResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+            	atisResults.write("***** FAILED *****\n\n");
+
+            	atisResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
 
             	continue;
             }
@@ -201,7 +201,15 @@ public class RunODPairsWithATIS {
 
                 HashMap<String, Object> itinerary = (HashMap<String, Object>) tripResponse.get(k);
                 HashMap<String, Object> legs = (HashMap<String, Object>) itinerary.get("Legs");
-
+                
+                atisResults.write(
+                  		 (itin_i) + " WALK DISTANCE=" + String.format("%.2f",Double.parseDouble((String)itinerary.get("Totalwalk")) * 1.609) + " km "
+                  		 		+ "TRANSIT TIME=" + Integer.parseInt((String)itinerary.get("Transittime")) + " min \n");
+                
+                atisResults.write(
+                     		 (itin_i) + " ---------------------------\n");
+              	 
+                String summaryString = new String();
                 for(String k2 : legs.keySet()) {
                 	 HashMap<String, Object> leg = (HashMap<String, Object>) legs.get(k2);
                 	 HashMap<String, Object> onStop = (HashMap<String, Object>) leg.get("Onstopdata");
@@ -210,21 +218,28 @@ public class RunODPairsWithATIS {
 
                 	 System.out.print(".");
                 	 
+                	 if(summaryString.length() > 0)
+                		 summaryString += ">";                	 
+                	 summaryString += service.get("Route");
+                	 
                      atisResults.write(
-                    		 itin_i + " " + onStop.get("Stopid") + "[" + ((String)onStop.get("Description")).replace("[", "(").replace("]", ")") + "] -> " + 
-                    		 service.get("Route") + "[" + service.get("Sign") + "] -> " + 
-                    		 offStop.get("Stopid")  + "[" + ((String)offStop.get("Description")).replace("[", "(").replace("]", ")") + "]\n");
+                    		 itin_i + " " + ((String)onStop.get("Description")).replace("[", "(").replace("]", ")") + " -> " + 
+                    		 service.get("Route") + " to " + service.get("Sign") + " -> " + 
+                    		 ((String)offStop.get("Description")).replace("[", "(").replace("]", ")") + "\n");
                 }
-               
+
+                atisResults.write(
+                		 "S " + (itin_i) + " " + String.format("%.2f",Double.parseDouble((String)itinerary.get("Totalwalk")) * 1.609) 
+                		 		+ " " + itinerary.get("Transittime") + " " + summaryString + "\n");
+
+                
                 atisResults.write("\n");
                 itin_i++;
             }
            
-            atisResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+//            atisResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
 
-            System.out.print("\n");
-
-            Thread.sleep(10 * 1000);
+            Thread.sleep(3 * 1000);
     	}
 
     	httpClient.close();

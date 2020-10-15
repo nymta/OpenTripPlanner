@@ -12,7 +12,6 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.mta;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.opentripplanner.ConstantsForTests;
@@ -59,8 +58,7 @@ public class GenerateTestODPairs {
     		TransitStop s1 = stops.get(p1);
     		TransitStop s2 = stops.get(p2);
     		
-    		// A = accessible, N = not accessible
-    		testOdPairs.write(((Math.random() < .5) ? "Y " : "N ") + new Date().getTime() + " " + s1.getLat() + "," + s1.getLon() + " " + s2.getLat() + "," + s2.getLon() + "\n");
+    		testOdPairs.write("Q " + ((Math.random() < .5) ? "Y " : "N ") + new Date().getTime() + " " + s1.getLat() + "," + s1.getLon() + " " + s2.getLat() + "," + s2.getLon() + "\n");
 
     		System.out.print(".");
     	}

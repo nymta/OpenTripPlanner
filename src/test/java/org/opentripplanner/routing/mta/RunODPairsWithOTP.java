@@ -21,6 +21,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.onebusaway.gtfs.model.AgencyAndId;
+
 import java.text.SimpleDateFormat;  
 import java.util.*;
 import java.io.*;
@@ -36,7 +38,6 @@ public class RunODPairsWithOTP {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Test
-	@Ignore
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);
@@ -51,11 +52,11 @@ public class RunODPairsWithOTP {
     		// get test params from OD pairs file
     		String line = reader.nextLine();
     	
-    		boolean accessible = line.split(" ")[0].trim().equals("Y");
-    		long epoch = Long.parseLong(line.split(" ")[1].trim());
+    		boolean accessible = line.split(" ")[1].trim().equals("Y");
+    		long epoch = Long.parseLong(line.split(" ")[2].trim());
 
-    		String stop1 = line.split(" ")[2].trim();
-    		String stop2 = line.split(" ")[3].trim();
+    		String stop1 = line.split(" ")[3].trim();
+    		String stop2 = line.split(" ")[4].trim();
     		
     		String originLat = stop1.split(",")[0].trim();
     		String originLon = stop1.split(",")[1].trim();
@@ -85,13 +86,14 @@ public class RunODPairsWithOTP {
             HashMap<String, Object> root = (HashMap<String, Object>)planResponse.get("plan");
             
             // write the OD input line back to the results so we can compare
-            otpResults.write(line + "\n\n");
+            otpResults.write(line + "\n");
 
             if(root == null) {
+            	otpResults.write("\n***** FAILED *****\n");
             	otpResults.write("***** FAILED *****\n");
-            	otpResults.write("***** FAILED *****\n");
-            	otpResults.write("***** FAILED *****\n");
-            	otpResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+            	otpResults.write("***** FAILED *****\n\n");
+            	
+            	otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
 
             	continue;
             }
@@ -99,9 +101,19 @@ public class RunODPairsWithOTP {
             ArrayList<Map> itineraries = (ArrayList<Map>) root.get("itineraries");
             
             for(int itin_i = 0; itin_i < itineraries.size(); itin_i++) {
+            	System.out.print(".");
+
                 HashMap<String, Object> itinerary = (HashMap<String, Object>) itineraries.get(itin_i);
                 ArrayList<Map>  legs = (ArrayList<Map>) itinerary.get("legs");
 
+                otpResults.write(
+               		 (itin_i + 1) + " WALK DISTANCE=" + String.format("%.2f",(Double)itinerary.get("walkDistance")/1000) + " km "
+               		 		+ "TRANIST TIME=" + ((Integer)itinerary.get("transitTime")/60) + " min \n");
+
+                otpResults.write(
+                  		 (itin_i + 1) + " ---------------------------\n");
+           	 
+                String summaryString = new String();
                 for(int leg_i = 0; leg_i < legs.size(); leg_i++) {
                 	 HashMap<String, Object> leg = (HashMap<String, Object>) legs.get(leg_i);
                 	 HashMap<String, Object> onStop = (HashMap<String, Object>) leg.get("from");
@@ -113,17 +125,24 @@ public class RunODPairsWithOTP {
                 	 if(mode.equals("WALK"))
                 		 continue;                	 
                 	 
+                	 if(summaryString.length() > 0)
+                		 summaryString += ">";                	 
+                	 summaryString += ((String) leg.get("routeId")).split(":")[1];
+                	 
                      otpResults.write(
-                    		 (itin_i + 1) + " " + onStop.get("stopId") + "[" + ((String)onStop.get("name")).replace("[", "(").replace("]", ")") + "] -> " + 
-                    		 leg.get("routeId") + "[" + leg.get("tripHeadsign") + "] -> " + 
-                    		 offStop.get("stopId")  + "[" + ((String)offStop.get("name")).replace("[", "(").replace("]", ")") + "]\n");
+                    		 (itin_i + 1) + " " + ((String)onStop.get("name")).replace("[", "(").replace("]", ")") + " -> " + 
+                    		 ((String) leg.get("routeId")).split(":")[1] + " to " + leg.get("tripHeadsign") + " -> " + 
+                    		 ((String)offStop.get("name")).replace("[", "(").replace("]", ")") + "\n");
                 }
                 
+                otpResults.write(
+                 		 "S " + (itin_i + 1) + " " + String.format("%.2f",(Double)itinerary.get("walkDistance")/1000)
+                 		 		+ " " + ((Integer)itinerary.get("transitTime")/60) + " " + summaryString + "\n");
+
                 otpResults.write("\n");
             }            
            
-            System.out.print("\n");
-            otpResults.write("D: " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+//            otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
        	}
     	
     	reader.close();
