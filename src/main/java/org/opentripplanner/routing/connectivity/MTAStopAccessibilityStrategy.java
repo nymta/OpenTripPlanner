@@ -12,6 +12,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.connectivity;
 
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
@@ -49,6 +50,11 @@ public class MTAStopAccessibilityStrategy extends DefaultStopAccessibilityStrate
     @Override
     protected boolean canUsePathway(State state, PathwayEdge pathway, List<Alert> alerts) {
  		return state.getBackEdge().traverse(state) != null;
+    }
+
+    @Override
+    public boolean transitStopEvaluateGTFSAccessibilityFlag(Stop s) {
+		return s.getWheelchairBoarding() == 2;
     }
 
 }

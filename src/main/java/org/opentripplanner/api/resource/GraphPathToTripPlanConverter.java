@@ -1360,8 +1360,8 @@ public abstract class GraphPathToTripPlanConverter {
         WalkStep step;
         step = new WalkStep();
         step.streetName = en.getName(wantedLocale);
-        step.lon = ((LineString)en.getGeometry()).getEndPoint().getX();
-        step.lat = ((LineString)en.getGeometry()).getEndPoint().getY();
+        step.lon = ((LineString)en.getGeometry()).getStartPoint().getX();
+        step.lat = ((LineString)en.getGeometry()).getStartPoint().getY();
         step.elevation = encodeElevationProfile(s.getBackEdge(), 0,
                 s.getOptions().geoidElevation ? -graph.ellipsoidToGeoidDifference : 0);
         step.bogusName = en.hasBogusName();

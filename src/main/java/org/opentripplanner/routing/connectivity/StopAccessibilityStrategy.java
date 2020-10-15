@@ -12,9 +12,12 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.connectivity;
 
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.vertextype.TransitStop;
 
 public interface StopAccessibilityStrategy {
     AccessibilityResult stopIsAccessible(State state, TransitStop stop);
+    
+	public boolean transitStopEvaluateGTFSAccessibilityFlag(Stop s);
 }

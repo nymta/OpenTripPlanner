@@ -1035,9 +1035,11 @@ public class GTFSPatternHopFactory {
 
             if(context.stationStopNodes.get(stop) instanceof TransitStop) {
             	TransitStop transitStop = (TransitStop)context.stationStopNodes.get(stop);
-        		transitStop.setWheelchairEntrance(stop.getWheelchairBoarding() == 1);
+        		transitStop.setWheelchairEntrance(
+        				graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(stop));
         		if(parent != null && stop.getWheelchairBoarding() == 0) {
-        			transitStop.setWheelchairEntrance(parent.getWheelchairBoarding() == 1);
+        			transitStop.setWheelchairEntrance(
+        					graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(parent));
         		}
         	}
         }

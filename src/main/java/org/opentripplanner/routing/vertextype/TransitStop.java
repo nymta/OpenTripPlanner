@@ -58,6 +58,8 @@ public class TransitStop extends TransitStationStop {
 
     public TransitStop(Graph graph, Stop stop) {
         super(graph, stop);
+        this.wheelchairEntrance = 
+        		graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(stop);
         isEntrance = stop.getLocationType() == 2;
         isExtendedLocationType = stop.getLocationType() > 2;
         
