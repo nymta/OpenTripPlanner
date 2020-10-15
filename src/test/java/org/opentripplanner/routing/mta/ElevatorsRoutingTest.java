@@ -121,12 +121,11 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         GraphPath path = search("123-ent-acs", "B21-ent-acs", "2018-03-15", "4:00pm", opt);
         if (path != null) {
             List<TestRide> rides = TestRide.createRides(path);
-            // we should never use 125S/A24S transfer
-            for (int i = 0; i < rides.size() - 1; i++) {
-                String stop0 = rides.get(i).getLastStopId();
-                String stop1 = rides.get(i + 1).getFirstStopId();
-                assertFalse(stop0.equals("125S") && stop1.equals("A24S"));
-            }
+            
+            // can't get from the street to the platform via 125S
+            // the TP may get clever and route you to 72nd to get to 125S via
+            // a train
+            assertFalse(rides.get(0).getFirstStopId().equals("125S"));
         }
 
         expireAlerts();

@@ -29,16 +29,15 @@ public class StationToStationRoutingTest extends MTAGraphTest {
 
     // TODO add tests for other cases - wheelchair accessible/not accessible
 
-    // Check Canal St [6] (639) to Marcy Av [J] (M16) is not accessible
-    // Simulate station-to-station routing
+    // 1st Av to Bedford
     @Test
-    public void testCanal6ToMarcyJ() {
-        TransitStop canal = (TransitStop) graph.getVertex("MTASBWY:639N");
+    public void testFirstAveToBedford() {
+        TransitStop canal = (TransitStop) graph.getVertex("MTASBWY:L06S");
         TemporaryStreetLocation tmpVertex = new TemporaryStreetLocation("tmp", canal.getCoordinate(), new NonLocalizedString("tmp"), false);
         new TemporaryFreeEdge(tmpVertex, canal);
         RoutingRequest options = new RoutingRequest();
         options.wheelchairAccessible = true;
-        GraphPath path = search(tmpVertex, graph.getVertex("MTASBWY:M16-ent-acs"), "2018-03-15", "4:00pm", options);
+        GraphPath path = search(tmpVertex, graph.getVertex("MTASBWY:L08S"), "2018-03-15", "4:00pm", options);
         List<TestRide> rides = TestRide.createRides(path);
         assertFalse(rides.isEmpty());
         TestRide firstRide = rides.get(0);
