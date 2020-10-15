@@ -20,6 +20,7 @@ import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.TurnRestrictionType;
 import org.opentripplanner.common.geometry.*;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.routing.connectivity.AccessibilityResult;
 import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -203,8 +204,9 @@ public class StreetEdge extends Edge implements Cloneable {
      * @return
      */
     private boolean canTraverse(RoutingRequest options, TraverseMode mode) {
-        if (options.wheelchairAccessible) {
+    	if (options.wheelchairAccessible) {
             if (!isWheelchairAccessible()) {
+            	LOG.info("OSM way is marked non-accessible; accessible street route will differ from non-accessible");
                 return false;
             }
             if (getMaxSlope() > options.maxSlope) {

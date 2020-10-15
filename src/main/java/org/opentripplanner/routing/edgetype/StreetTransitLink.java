@@ -18,10 +18,12 @@ import org.opentripplanner.common.geometry.GeometryUtils;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.connectivity.AccessibilityResult;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.StreetVertex;
+import org.opentripplanner.routing.vertextype.TransitStationStop;
 import org.opentripplanner.routing.vertextype.TransitStop;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -42,11 +44,10 @@ public class StreetTransitLink extends Edge {
     private static final long serialVersionUID = -3311099256178798981L;
     static final int STL_TRAVERSE_COST = 1;
 
-    private boolean wheelchairAccessible;
-
     private TransitStop transitStop;
 
     private boolean verbose = false;
+
     private static final Logger LOG = LoggerFactory.getLogger(StreetTransitLink.class);
 
     // osm way ID this was linked from
@@ -55,13 +56,11 @@ public class StreetTransitLink extends Edge {
     public StreetTransitLink(StreetVertex fromv, TransitStop tov, boolean wheelchairAccessible) {
     	super(fromv, tov);
     	transitStop = tov;
-        this.wheelchairAccessible = wheelchairAccessible;
     }
 
     public StreetTransitLink(TransitStop fromv, StreetVertex tov, boolean wheelchairAccessible) {
         super(fromv, tov);
         transitStop = fromv;
-        this.wheelchairAccessible = wheelchairAccessible;
     }
 
     public String getDirection() {
@@ -92,38 +91,49 @@ public class StreetTransitLink extends Edge {
     }
 
     public State traverse(State s0) {
-        verbose = false;
         // Forbid taking shortcuts composed of two street-transit links in a row. Also avoids spurious leg transitions.
         if (s0.backEdge instanceof StreetTransitLink) {
-            if (verbose) {
-                System.out.println("   backEdge isintanceof StreetTransitLink ");
-                LOG.info("   debug disallow, backEdge instance of StreetTransitLink == true");
-            }
+        	if(verbose)
+        		LOG.debug("   debug disallow, backEdge instance of StreetTransitLink == true");
 
-            return null;
+        	return null;
         }
 
         // Do not re-enter the street network following a transfer.
         if (s0.backEdge instanceof TransferEdge) {
-            if (verbose) {
-                System.out.println("   backEdge isinstanceof TransferEdge ");
-                LOG.info("   debug disallow, backEdge instance of TransferEdge is true");
-            }
+            if(verbose)
+        		LOG.debug("   debug disallow, backEdge instance of TransferEdge is true");
+
             return null;
         }
 
         RoutingRequest req = s0.getOptions();
-        if (s0.getOptions().wheelchairAccessible && !wheelchairAccessible) {
-            if (verbose) {
-                System.out.println("   wheelchairAccessible == false ");
-                LOG.info("   debug disallow, wheelchairAccessible == false");
+
+        if (s0.getOptions().wheelchairAccessible) {
+            if(s0.getOptions().getRoutingContext().graph.stopAccessibilityStrategy != null) {
+            	TransitStop stop = null;
+            	if(tov instanceof TransitStop) {
+            		stop = (TransitStop) tov;
+            	} else if(fromv instanceof TransitStop) {
+            		stop = (TransitStop) fromv;
+            	}
+            	
+                if (s0.getOptions().getRoutingContext().graph.stopAccessibilityStrategy.stopIsAccessible(
+                        s0, stop) == AccessibilityResult.NEVER_ACCESSIBLE) {
+        	
+                	if(verbose)
+                		LOG.info("   debug disallow, wheelchairAccessible == false");
+            
+                	return null;
+                }
             }
-            return null;
         }
+
         if (s0.getOptions().bikeParkAndRide && !s0.isBikeParked()) {
             // Forbid taking your own bike in the station if bike P+R activated.
             return null;
         }
+        
         if (s0.isBikeRenting()) {
             // Forbid taking a rented bike on any transit.
             // TODO Check this condition, does this always make sense?
@@ -201,6 +211,11 @@ public class StreetTransitLink extends Edge {
         s1.incrementWeight(STL_TRAVERSE_COST);
         s1.setBackMode(TraverseMode.LEG_SWITCH);
         return s1.makeState();
+    }
+    
+    @Override
+    public boolean isWheelchairAccessible() {
+    	return transitStop.hasWheelchairEntrance();
     }
     
     // anecdotally, the lower bound search is about 2x faster when you don't reach stops

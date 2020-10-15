@@ -13,6 +13,7 @@
 */
 package org.opentripplanner.routing.vertextype;
 
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.core.TraverseModeSet;
@@ -37,7 +38,7 @@ public class TransitStop extends TransitStationStop {
     private boolean isEntrance;
 
     //Checks to see if the location type is > 2.
-    //Offical GTFS only lists 0,1,2 as supported location types.
+    //Official GTFS only lists 0,1,2 as supported location types.
     private boolean isExtendedLocationType;
 
     /**
@@ -57,13 +58,16 @@ public class TransitStop extends TransitStationStop {
 
     public TransitStop(Graph graph, Stop stop) {
         super(graph, stop);
-        this.wheelchairEntrance = stop.getWheelchairBoarding() != 2;
         isEntrance = stop.getLocationType() == 2;
         isExtendedLocationType = stop.getLocationType() > 2;
         
         //Adds this vertex into graph envelope so that we don't need to loop over all vertices
         if(stop.isLonSet() && stop.isLatSet())
         	graph.expandToInclude(stop.getLon(), stop.getLat());
+    }
+
+    public void setWheelchairEntrance(boolean v) {
+        this.wheelchairEntrance = v;
     }
 
     public boolean hasWheelchairEntrance() {

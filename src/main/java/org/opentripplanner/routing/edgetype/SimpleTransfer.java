@@ -34,9 +34,6 @@ public class SimpleTransfer extends TransferEdge {
         super(from, to, distance);
         setGeometry(geometry);
         this.edges = edges;
-        if (edges != null) {
-            setWheelchairAccessible(edges.stream().allMatch(Edge::isWheelchairAccessible));
-        }
     }
 
     public SimpleTransfer(TransitStop from, TransitStop to, double distance, LineString geometry) {

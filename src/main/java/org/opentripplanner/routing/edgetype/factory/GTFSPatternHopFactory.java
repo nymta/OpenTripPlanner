@@ -14,6 +14,7 @@
 package org.opentripplanner.routing.edgetype.factory;
 
 import com.beust.jcommander.internal.Maps;
+import org.opentripplanner.routing.graph.Edge;
 import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -62,6 +63,8 @@ import org.opentripplanner.graph_builder.module.GtfsFeedId;
 import org.opentripplanner.gtfs.GtfsContext;
 import org.opentripplanner.gtfs.GtfsLibrary;
 import org.opentripplanner.model.StopPattern;
+import org.opentripplanner.routing.algorithm.AStar;
+import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.core.TraverseMode;
 import org.opentripplanner.routing.edgetype.FreeEdge;
 import org.opentripplanner.routing.edgetype.PathwayEdge;
@@ -78,6 +81,7 @@ import org.opentripplanner.routing.impl.OnBoardDepartServiceImpl;
 import org.opentripplanner.routing.services.FareService;
 import org.opentripplanner.routing.services.FareServiceFactory;
 import org.opentripplanner.routing.services.OnBoardDepartService;
+import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.routing.trippattern.FrequencyEntry;
 import org.opentripplanner.routing.trippattern.TripTimes;
 import org.opentripplanner.routing.vertextype.TransitStation;
@@ -94,10 +98,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 // Filtering out (removing) stoptimes from a trip forces us to either have two copies of that list,
 // or do all the steps within one loop over trips. It would be clearer if there were multiple loops over the trips.
@@ -361,6 +367,7 @@ public class GTFSPatternHopFactory {
         loadPathways(graph);
         loadFeedInfo(graph);
         loadAgencies(graph);
+        
         // TODO: Why is there cached "data", and why are we clearing it? Due to a general lack of comments, I have no idea.
         // Perhaps it is to allow name collisions with previously loaded feeds.
         clearCachedData(); 
@@ -965,13 +972,13 @@ public class GTFSPatternHopFactory {
             graph.addFeedInfo(_feedId.getId(), info);
         }
     }
-
-    private void loadPathways(Graph graph) {
+    
+    private void loadPathways(Graph graph) {    	
         for (Pathway pathway : _dao.getAllPathways()) {
             Vertex fromVertex = context.stationStopNodes.get(pathway.getFromStop());
             Vertex toVertex = context.stationStopNodes.get(pathway.getToStop());
-            
-            PathwayEdge edge = new PathwayEdge(pathway.getId(), fromVertex, toVertex, 
+ 
+            new PathwayEdge(pathway.getId(), fromVertex, toVertex, 
             		(pathway.isLengthSet() ? pathway.getLength() : Double.NaN), 
             		pathway.getPathwayMode(), 
             		(pathway.isTraversalTimeSet() ? pathway.getTraversalTime() : -1), 
@@ -980,7 +987,8 @@ public class GTFSPatternHopFactory {
             		(pathway.isMaxSlopeSet() ? pathway.getMaxSlope() : Double.NaN),
             		(pathway.isStairCountSet() ? pathway.getStairCount() : -1),
             		(pathway.isIsAccessibleSet() ? pathway.getIsAccessible() : -1)); 
-        }
+
+        }        
     }
 
     private void loadStops(Graph graph) {
@@ -1019,15 +1027,19 @@ public class GTFSPatternHopFactory {
                 }
             }
         }
+        
         // Resolve wheelchair_acessibility
-        for (Stop stop : context.stationStopNodes.keySet()) {
-            if (stop.getWheelchairBoarding() == 0 && stop.getParentStation() != null) {
-                AgencyAndId id = new AgencyAndId(stop.getId().getAgencyId(), stop.getParentStation());
-                Stop parent = context.stops.get(id);
-                if (parent != null) {
-                    stop.setWheelchairBoarding(parent.getWheelchairBoarding());
-                }
-            }
+        for (Stop stop : context.stationStopNodes.keySet()) {          	
+            AgencyAndId id = new AgencyAndId(stop.getId().getAgencyId(), stop.getParentStation());
+            Stop parent = context.stops.get(id);
+
+            if(context.stationStopNodes.get(stop) instanceof TransitStop) {
+            	TransitStop transitStop = (TransitStop)context.stationStopNodes.get(stop);
+        		transitStop.setWheelchairEntrance(stop.getWheelchairBoarding() == 1);
+        		if(parent != null && stop.getWheelchairBoarding() == 0) {
+        			transitStop.setWheelchairEntrance(parent.getWheelchairBoarding() == 1);
+        		}
+        	}
         }
     }
 

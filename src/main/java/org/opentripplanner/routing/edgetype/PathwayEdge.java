@@ -14,11 +14,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.edgetype;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.Pathway;
-import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.StopTime;
 import org.opentripplanner.common.geometry.GeometryUtils;
-import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.State;
@@ -26,18 +22,13 @@ import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
-import org.opentripplanner.routing.vertextype.TransitStop;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 import org.opentripplanner.routing.core.TraverseMode;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 /**
@@ -67,13 +58,16 @@ public class PathwayEdge extends Edge {
     
     private int mtaIsAccessible = 0; // 0 = no accessibility info available (i.e. unknown)
     
+    private LineString geometry = null;
+    
     private static final Logger LOG = LoggerFactory.getLogger(PathwayEdge.class);
-
+    
     public PathwayEdge(AgencyAndId id, Vertex fromv, Vertex tov, double length, int pathwayMode, int traversalTime, int wheelchairTraversalTime,
     		double minWidth, double maxSlope, int stairCount, int isAccessible) {
         super(fromv, tov);
         this.id = id;
         this.pathwayMode = Mode.values()[pathwayMode];
+        
         if(minWidth != Double.NaN)
         	this.minWidth = minWidth;
         if(maxSlope != Double.NaN)
@@ -88,7 +82,7 @@ public class PathwayEdge extends Edge {
         	this.length = length;
         if(isAccessible >= 0)
         	this.mtaIsAccessible = isAccessible;
-
+        
         // set some defaults
         if(this.stairCount >= 0 && this.traversalTime == -1) {
         	this.traversalTime = this.stairCount * 5; // 5s per stair
@@ -106,11 +100,20 @@ public class PathwayEdge extends Edge {
     }
 
     public double getDistance() {
-    	if(length == Double.NaN) {
-//    		LOG.warn("Returning 0 for pathway length. Length should be set to something in your data. Please check.");
+    	if(length == Double.NaN)
     		return 0;
-    	}  	
-        return length;
+    	
+    	return length;
+    }
+
+    public void setGeometry(Coordinate start, Coordinate end) {
+    	Coordinate[] coordinates = new Coordinate[] { start, end };
+    	this.geometry = GeometryUtils.getGeometryFactory().createLineString(coordinates);
+    }
+    
+    @Override
+    public LineString getGeometry() {
+    	return this.geometry;
     }
     
     public AgencyAndId getPathwayId() {
@@ -121,25 +124,8 @@ public class PathwayEdge extends Edge {
        return TraverseMode.WALK;
     }
 
-    public Mode getPathwayMode() { return this.pathwayMode; }
-
-    @Override
-    public LineString getGeometry() {
-       TransitStop s = (TransitStop) getFromVertex();
-       
-       if(s.isEntrance()) {
-           Coordinate[] coordinates = new Coordinate[] { s.getCoordinate(), s.getCoordinate() };
-           return GeometryUtils.getGeometryFactory().createLineString(coordinates);
-       } else {
-    	   // FIXME: this will be broken
-    	   Coordinate[] coordinates = new Coordinate[] { s.getCoordinate(), s.getCoordinate() };
-           return GeometryUtils.getGeometryFactory().createLineString(coordinates);
-       }
-    }
-
-    @Override
-    public boolean isApproximateGeometry() {
-        return true;
+    public Mode getPathwayMode() { 
+    	return this.pathwayMode; 
     }
 
     public String getName() {

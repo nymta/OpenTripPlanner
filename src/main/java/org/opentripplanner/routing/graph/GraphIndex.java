@@ -26,6 +26,7 @@ import org.joda.time.LocalDate;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FeedInfo;
+import org.onebusaway.gtfs.model.Pathway;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
@@ -141,6 +142,7 @@ public class GraphIndex {
         }
 
         Collection<Edge> edges = graph.getEdges();
+
         /* We will keep a separate set of all vertices in case some have the same label. 
          * Maybe we should just guarantee unique labels. */
         Set<Vertex> vertices = Sets.newHashSet();
@@ -154,7 +156,6 @@ public class GraphIndex {
             }
             if (edge instanceof PathwayEdge) {
                 PathwayEdge pathwayEdge = (PathwayEdge) edge;
-
                 if (pathwayEdge.isElevator()) {
                 	pathwayForElevator.put(pathwayEdge.getElevatorId(), pathwayEdge);
                 }
@@ -171,6 +172,7 @@ public class GraphIndex {
                 stopsForParentStation.put(parent, stop);
             }
         }
+        
         for (TransitStop stopVertex : stopVertexForStop.values()) {
             Envelope envelope = new Envelope(stopVertex.getCoordinate());
             
@@ -205,8 +207,64 @@ public class GraphIndex {
                         new ThreadFactoryBuilder().setNameFormat("GraphQLExecutor-" + graph.routerId + "-%d").build()
                 )));
         LOG.info("Done indexing graph.");
+        
+
+        // go through all vertices and for each entrance, walk all the outgoing edges--
+        // if there's at least one accessible path to a platform (defined by a location type that isn't 
+        // connected via a pathway), mark this entrance "accessible". 
+        LOG.info("Computing pathway/station accessibility...");
+
+        Set<Integer> visitedList = new HashSet<Integer>();
+        for (Vertex v : vertices) {
+        	if(!(v instanceof TransitStop))
+        		continue;
+
+        	// only start walking from entrances--everything should connect to at least one via some
+        	// pathway(s)
+        	TransitStop ts = (TransitStop)v;
+        	if(!ts.isEntrance())
+        		continue;
+
+        	ts.setWheelchairEntrance(
+        			walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph));
+        }
     }
 
+    private boolean walkEdges(Collection<Edge> edges, Coordinate fromLocation, Set<Integer>visitedList, Graph graph) {
+    	boolean r = true;
+    	
+    	for(Edge e : edges) {
+    		// if we've ventured out of pathways network, skip
+    		if(!(e instanceof PathwayEdge))
+    			continue;
+    		
+    		if(visitedList.contains(e.getId()))
+    			continue;
+    		visitedList.add(e.getId());
+
+    		// "generic nodes" in GTFS don't have lat/longs, so use the station's coordinate
+    		// to display the node on a map. 
+    		Coordinate toLocation = e.getToVertex().getCoordinate();
+    		if(toLocation.x == StopTime.MISSING_VALUE || toLocation.y == StopTime.MISSING_VALUE)
+    			toLocation = fromLocation;
+    		
+    		((PathwayEdge)graph.getEdgeById(
+    				e.getId())).setGeometry(fromLocation, toLocation);
+
+    		// (since we use this loop to update geoms, we need to keep going even though we know the result
+    		// on accessibililty will be false)
+    		if(!e.isWheelchairAccessible())
+    			r = false;
+    		
+    		if(! walkEdges(e.getToVertex().getOutgoing(), 
+    				toLocation, visitedList, graph))
+    			r = false;
+    	}
+    	
+    	return r;
+    }
+
+    
     /**
      * Stop clustering is slow to perform and only used in profile routing for the moment.
      * Therefore it is not done automatically, and any method requiring stop clusters should call this method

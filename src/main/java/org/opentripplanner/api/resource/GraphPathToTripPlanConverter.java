@@ -1070,7 +1070,7 @@ public abstract class GraphPathToTripPlanConverter {
             }
             Geometry geom = edge.getGeometry();
             if (geom == null) {
-                continue;
+            	continue;
             }
 
             // generate a step for getting off an elevator (all
@@ -1360,13 +1360,14 @@ public abstract class GraphPathToTripPlanConverter {
         WalkStep step;
         step = new WalkStep();
         step.streetName = en.getName(wantedLocale);
-        step.lon = en.getFromVertex().getX();
-        step.lat = en.getFromVertex().getY();
+        step.lon = ((LineString)en.getGeometry()).getEndPoint().getX();
+        step.lat = ((LineString)en.getGeometry()).getEndPoint().getY();
         step.elevation = encodeElevationProfile(s.getBackEdge(), 0,
                 s.getOptions().geoidElevation ? -graph.ellipsoidToGeoidDifference : 0);
         step.bogusName = en.hasBogusName();
         step.addAlerts(graph.streetNotesService.getNotes(s), wantedLocale);
         step.angle = DirectionUtils.getFirstAngle(s.getBackEdge().getGeometry());
+        
         if (s.getBackEdge() instanceof AreaEdge) {
             step.area = true;
         }

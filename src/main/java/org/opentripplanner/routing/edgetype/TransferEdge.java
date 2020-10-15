@@ -37,8 +37,8 @@ public class TransferEdge extends Edge {
 
     private LineString geometry = null;
 
-    private boolean wheelchairAccessible = true;
     private boolean verbose = false;
+
     private static final Logger LOG = LoggerFactory.getLogger(TransferEdge.class);
 
     /**
@@ -125,12 +125,6 @@ public class TransferEdge extends Edge {
                     options.getMaxWalkDistance(), options.softWalkPenalty,
                     options.softWalkOverageRate);
         }
-        if (s0.getOptions().wheelchairAccessible && !wheelchairAccessible) {
-            if (verbose) {
-                LOG.info("   debug disallow, not wheelchairAccessible");
-            }
-            return null;
-        }
 
         if (s0.getOptions().getRoutingContext() != null && s0.getOptions().getRoutingContext().graph.transferPermissionStrategy != null) {
             if (!s0.getOptions().getRoutingContext().graph.transferPermissionStrategy.isTransferAllowed(
@@ -160,14 +154,6 @@ public class TransferEdge extends Edge {
 
     public void setGeometry(LineString geometry) {
         this.geometry = geometry;
-    }
-
-    public void setWheelchairAccessible(boolean wheelchairAccessible) {
-        this.wheelchairAccessible = wheelchairAccessible;
-    }
-
-    public boolean isWheelchairAccessible() {
-        return wheelchairAccessible;
     }
 
     /*

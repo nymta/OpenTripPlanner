@@ -39,42 +39,16 @@ public class MTAStopAccessibilityStrategy extends DefaultStopAccessibilityStrate
     }
 
     @Override
-    public AccessibilityResult stopIsAccessible(State state, TransitStop stop) {
-        if (stop.getStopId().getAgencyId().equals("MTASBWY"))
-            return stopIsAccessibleFromStreet(state, stop);
-        return super.stopIsAccessible(state, stop);
-    }
-
-    private AccessibilityResult stopIsAccessibleFromStreet(State state, TransitStop tstop) {
-        // only by traversing pathways, can we get to the street?
-        return computeConnectivityResult(state, tstop);
-    }
-
-    @Override
-    protected boolean testForEarlyReturn(Vertex v) {
-        return (v instanceof TransitStop && ((TransitStop) v).isEntrance() && ((TransitStop) v).hasWheelchairEntrance());
-    }
-
-    @Override
-    protected AccessibilityResult buildResult(TransitStop tstop, Set<Vertex> vertices, Set<Vertex> accessibles,
-                                              List<Alert> alerts, State state, Set<PathwayEdge> links, boolean earlyReturn) {
-        if (earlyReturn) {
-            return AccessibilityResult.ALWAYS_ACCESSIBLE;
-        } else {
-            return AccessibilityResult.notAccessibleForReason(alerts);
-        }
+    public AccessibilityResult stopIsAccessible(State state, TransitStop stop) {    	
+    	// all MTA buses are accessible
+    	if(stop.getStopId().getAgencyId().equals("MTA NYCT") || stop.getStopId().getAgencyId().equals("MTABC"))
+    		return AccessibilityResult.ALWAYS_ACCESSIBLE;
+    	return stop.hasWheelchairEntrance() ? AccessibilityResult.ALWAYS_ACCESSIBLE : AccessibilityResult.NEVER_ACCESSIBLE;
     }
 
     @Override
     protected boolean canUsePathway(State state, PathwayEdge pathway, List<Alert> alerts) {
-        if (!pathway.isWheelchairAccessible())
-            return false;
-        if (!pathway.isElevator())
-            return true;
-        if (state.getOptions().ignoreRealtimeUpdates)
-            return true;
-        List<Alert> newAlerts = pathway.getElevatorIsOutOfServiceAlerts(graph, state);
-        alerts.addAll(newAlerts);
-        return newAlerts.isEmpty();
+ 		return state.getBackEdge().traverse(state) != null;
     }
+
 }
