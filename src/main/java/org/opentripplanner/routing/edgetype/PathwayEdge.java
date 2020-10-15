@@ -99,10 +99,8 @@ public class PathwayEdge extends Edge {
         return null;
     }
 
+    @Override
     public double getDistance() {
-    	if(length == Double.NaN)
-    		return 0;
-    	
     	return length;
     }
 
