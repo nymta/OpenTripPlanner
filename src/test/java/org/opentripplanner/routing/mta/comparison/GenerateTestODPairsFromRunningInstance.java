@@ -37,13 +37,13 @@ public class GenerateTestODPairsFromRunningInstance {
 	
     private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
 
-    private static final String OTP_STOPS_URL = "http://localhost:8080/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+//    private static final String OTP_STOPS_URL = "http://localhost:8080/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
  
-    private static final String OTP_GRAPH_INFO_URL = "http://localhost:8080/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+//    private static final String OTP_GRAPH_INFO_URL = "http://localhost:8080/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
-//    private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+    private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
-//    private static final String OTP_GRAPH_INFO_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+    private static final String OTP_GRAPH_INFO_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
     private static final int PAIRS_TO_GENERATE = 100;
 

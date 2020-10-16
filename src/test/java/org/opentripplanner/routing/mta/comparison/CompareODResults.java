@@ -275,7 +275,7 @@ public class CompareODResults {
     	}
     
 
-    	System.out.println("TOTAL RUNS: " + otpResults.size());
+    	System.out.println("\n\nTOTAL RUNS: " + otpResults.size());
   
     	for(int o = 0; o < optimizationDim.values().length; o++) {
     		String header = "\nOPTIMIZATION: " + String.format("%-30s", optimizationDimLabels[o]) + "                     OTP               BRAND X";
