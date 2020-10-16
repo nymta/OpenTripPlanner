@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta;
+package org.opentripplanner.routing.mta.comparison;
 
 import flexjson.JSONDeserializer;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -33,11 +33,13 @@ public class RunODPairsWithOTP {
     private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
 
     private static final String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
-    
-    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/plan";
+
+    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+
+//    private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
+//	@Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);
@@ -58,6 +60,8 @@ public class RunODPairsWithOTP {
     		String stop1 = line.split(" ")[3].trim();
     		String stop2 = line.split(" ")[4].trim();
     		
+    		String optimizeFlag = line.split(" ")[5].trim();
+
     		String originLat = stop1.split(",")[0].trim();
     		String originLon = stop1.split(",")[1].trim();
     	
@@ -73,10 +77,17 @@ public class RunODPairsWithOTP {
     		builder.setParameter("time", new SimpleDateFormat("hh:mm aa").format(epoch));
     		builder.setParameter("mode", "TRANSIT,WALK");
     		builder.setParameter("maxWalkDistance", "500");
-
+    		switch(optimizeFlag) {
+    			case "W":
+    				builder.setParameter("optimize",  "WALKING");
+    			case "X":
+    				builder.setParameter("optimize",  "TRANSFERS");
+    			case "T":
+    				builder.setParameter("optimize",  "QUICK");
+    		}
     		
-            HttpGet get = new HttpGet(builder.build());
 
+    		HttpGet get = new HttpGet(builder.build());
 
             // Read response from OTP
             CloseableHttpResponse response = httpClient.execute(get);
@@ -142,7 +153,7 @@ public class RunODPairsWithOTP {
                 otpResults.write("\n");
             }            
            
-//            otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+            otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
        	}
     	
     	reader.close();

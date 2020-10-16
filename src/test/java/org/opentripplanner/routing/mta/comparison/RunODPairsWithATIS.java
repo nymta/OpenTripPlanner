@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta;
+package org.opentripplanner.routing.mta.comparison;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -104,7 +104,7 @@ public class RunODPairsWithATIS {
     }
     
     @SuppressWarnings("unchecked")
-    @Test
+//    @Test
     public void run() throws IOException, InterruptedException {
 
     	FileWriter atisResults = new FileWriter(ATIS_RESULTS_TXT);
@@ -126,13 +126,14 @@ public class RunODPairsWithATIS {
     		String stop1 = line.split(" ")[3].trim();
     		String stop2 = line.split(" ")[4].trim();
     		
+    		String optimizeFlag = line.split(" ")[5].trim();
+
     		String originLat = stop1.split(",")[0].trim();
     		String originLon = stop1.split(",")[1].trim();
     	
     		String destLat = stop2.split(",")[0].trim();
     		String destLon = stop2.split(",")[1].trim();
     		    		
-    		
     		// Make request of ATIS
             Map<String,String> planTrip = new HashMap<String,String>();
 
@@ -146,8 +147,9 @@ public class RunODPairsWithATIS {
             planTrip.put("Date", new SimpleDateFormat("MM/dd/YY").format(epoch));
             planTrip.put("Time", new SimpleDateFormat("HHmm").format(epoch));
             planTrip.put("Walkdist", ".31"); // in miles, = .5 KM
+            planTrip.put("Minimize", optimizeFlag); // T = Time, X = Transfers, W = Walking. The most important factor when ranking the trips returned.
 
-            
+         
             // Trapeze doesn't give you WSDL to do this programmatically like it should, so hacking this a bit here (FIXME)
     		XStream magicApi = new XStream();
             XStream.setupDefaultSecurity(magicApi);
