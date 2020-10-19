@@ -29,33 +29,37 @@ public class CompareODResults {
     
 	private enum optimizationDim { W, X, T };
 	
-    private final String[] metricsDimLabels = new String[] { "NO RESULTS", "OTP RESULT IS IN BRAND X", "WALKING", "TRANSFERS", "TIME" };
+    private final String[] metricsDimLabels = new String[] { "WALKING", "TRANSFERS", "TIME", "PRODUCED A RESULT", "OTP RESULT IS IN BRAND X" };
 
-    private enum metricsDim { noResults, match, W, X, T };
+    private enum metricsDim { W, X, T, hasResults, match };
 
 	private enum platformDim { OTP, BRANDX };
 		
+	private int[] totalByOptimization = new int[3];
+	
 	private int[][][] resultSummary = new int[3][5][2];
 	
 //    @Test
     public void run() throws IOException, Exception {
 
-    	File BrandXResultsFile = new File(BRANDX_RESULTS_TXT);
+    	File brandXResultsFile = new File(BRANDX_RESULTS_TXT);
     	File otpResultsFile = new File(OTP_RESULTS_TXT);
 
-    	Scanner BrandXResultsReader = new Scanner(BrandXResultsFile);
+    	Scanner brandXResultsReader = new Scanner(brandXResultsFile);
     	Scanner otpResultsReader = new Scanner(otpResultsFile);
 
 		Query q = null;
 		Result r = null;
 		
-    	List<Result> BrandXResults = new ArrayList<Result>();
-    	while (BrandXResultsReader.hasNextLine()) {
-    		String line = BrandXResultsReader.nextLine();
+    	// ==========================LOAD RESULTS=====================================
+
+    	List<Result> brandXResults = new ArrayList<Result>();
+    	while (brandXResultsReader.hasNextLine()) {
+    		String line = brandXResultsReader.nextLine();
 
     		if(line.startsWith("Q")) {
     	    	if(r != null) {
-    				BrandXResults.add(r);
+    				brandXResults.add(r);
     	    		r = null;
     	    	}
     			
@@ -66,11 +70,12 @@ public class CompareODResults {
 
     		if(line.startsWith("S")) {
     			ItinerarySummary s = new ItinerarySummary(line);
+    			s.platform = platformDim.BRANDX;
     			r.itineraries.add(s);
     		}
     	}
     	if(r != null) {
-			BrandXResults.add(r);
+			brandXResults.add(r);
     		r = null;
     	}
     	
@@ -91,6 +96,7 @@ public class CompareODResults {
 
     		if(line.startsWith("S")) {
     			ItinerarySummary s = new ItinerarySummary(line);
+    			s.platform = platformDim.OTP;
     			r.itineraries.add(s);
     		}
     	}
@@ -99,110 +105,149 @@ public class CompareODResults {
     		r = null;
     	}
 
-    	// ===============================================================
+    	// ==========================COMPARE RESULTS=====================================
     	
     	for(int i = 0; i < otpResults.size(); i++) {
-    		Result BrandXResult = BrandXResults.get(i);
+    		Result brandXResult = brandXResults.get(i);
     		Result otpResult = otpResults.get(i);
+
     		Query query = otpResult.query;
     		
-    		int bestOTPTransitTime = Integer.MAX_VALUE;
-    		double bestOTPWalkDistance = Double.MAX_VALUE;
-    		int bestOTPTransfers = Integer.MAX_VALUE;
-    		ItinerarySummary usFirst = null;
+    		// add all system's results to an array to sort based on metric and score
+    		List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
+    		sortedResults.addAll(otpResult.itineraries);
+    		sortedResults.addAll(brandXResult.itineraries);
 
-    		if(otpResult.itineraries.isEmpty()) {
-    			this.resultSummary
-    				[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-    				[metricsDim.noResults.ordinal()]
-    				[platformDim.OTP.ordinal()]++;
-    		}
+    		// both systems produced nothing; skip
+    		if(sortedResults.isEmpty())
+    			continue;
     		
-    		for(ItinerarySummary us : otpResult.itineraries) {
-    			if(usFirst == null)
-    				usFirst = us;
-
-    			if(us.routes.split(">").length < bestOTPTransfers)
-    				bestOTPTransfers = us.routes.split(">").length;
-
-    			if(us.transitTime < bestOTPTransitTime)
-    				bestOTPTransitTime = us.transitTime;
-
-    			if(us.walkDistance < bestOTPWalkDistance)
-    				bestOTPWalkDistance = us.walkDistance;
-    		}
-    		
-    		
-    		int bestBrandXTransitTime = Integer.MAX_VALUE;
-    		double bestBrandXWalkDistance = Double.MAX_VALUE;
-    		int bestBrandXTransfers = Integer.MAX_VALUE;
-    		ItinerarySummary themFirst = null;
-    		
-    		if(BrandXResult.itineraries.isEmpty()) {
-    			this.resultSummary
-    				[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-    				[metricsDim.noResults.ordinal()]
-    				[platformDim.BRANDX.ordinal()]++;
-    		}
-    		
-    		for(ItinerarySummary them : BrandXResult.itineraries) {
-    			if(themFirst == null)
-    				themFirst = them;
+    		// go through each metric for each result and see who won
+    		for(int o = 0; o < optimizationDim.values().length; o++) {
+    			// ignore queries not made with this optimization
+    			if(optimizationDim.valueOf(query.optimizeFlag).ordinal() != o)
+    				continue;
     			
-    			if(them.routes.split(">").length < bestBrandXTransfers)
-    				bestBrandXTransfers = them.routes.split(">").length;
+    			totalByOptimization[o]++;
+    			
+    			for(int m = 0; m < metricsDim.values().length; m++) {
+    				switch(metricsDim.values()[m]) {
+	    				case T:
+	    					sortedResults.sort(new Comparator<ItinerarySummary>() {
+	    						@Override
+	    						public int compare(ItinerarySummary o1, ItinerarySummary o2) {
+	    							if(o1.transitTime == o2.transitTime) {
+	    								return 0;
+	    							} else if(o1.transitTime > o2.transitTime) {
+	    								return 1;
+	    							} else {
+	    								return -1;
+	    							}
+	    						}
+	    					});
+	
+	    					platformDim winningPlatform = sortedResults.get(0).platform;
+	    					this.resultSummary
+	    						[o]
+	    						[m]
+	    						[winningPlatform.ordinal()]++;
+	
+	    					break;
+	    				case W:
+	    					sortedResults.sort(new Comparator<ItinerarySummary>() {
+	    						@Override
+	    						public int compare(ItinerarySummary o1, ItinerarySummary o2) {
+	    							if(o1.walkDistance == o2.walkDistance) {
+	    								return 0;
+	    							} else if(o1.walkDistance > o2.walkDistance) {
+	    								return 1;
+	    							} else {
+	    								return -1;
+	    							}
+	    						}
+	    					});
+	
+	    					platformDim winningPlatform2 = sortedResults.get(0).platform;
+	    					this.resultSummary
+	    						[o]
+	    						[m]
+	    						[winningPlatform2.ordinal()]++;
+	
+	    					break;
+	    				case X:
+	    					sortedResults.sort(new Comparator<ItinerarySummary>() {
+	    						@Override
+	    						public int compare(ItinerarySummary o1, ItinerarySummary o2) {
+	    							int o1x = o1.routes.split(">").length;
+	    							int o2x = o1.routes.split(">").length;
+	
+	    							if(o1x == o2x) {
+	    								return 0;
+	    							} else if(o1x > o2x) {
+	    								return 1;
+	    							} else {
+	    								return -1;
+	    							}
+	    						}
+	    					});
+	
+	    					platformDim winningPlatform3 = sortedResults.get(0).platform;
+	    					this.resultSummary
+	    						[o]
+	    						[m]
+	    						[winningPlatform3.ordinal()]++;
+	
+	    					break;
+	    				case match:
+	    					ItinerarySummary ourTopResult = otpResult.itineraries.get(0);
+	    					for(int z = 0; i < brandXResult.itineraries.size(); z++) {
+	    						ItinerarySummary theirResult = brandXResult.itineraries.get(z);
+	    						
+	    						// give this to both since it's a comparison between the two
+	    						if(ourTopResult.routes.equals(theirResult.routes)) {
+	    	    					this.resultSummary
+	    	    						[o]
+	    	    						[m]
+	    	    						[platformDim.OTP.ordinal()]++;
+	    						}
+	    						
+	    						if(ourTopResult.routes.equals(theirResult.routes)) {
+	    	    					this.resultSummary
+	    	    						[o]
+	    	    						[m]
+	    	    						[platformDim.BRANDX.ordinal()]++;
+	    						}
 
-    			if(them.transitTime < bestBrandXTransitTime)
-    				bestBrandXTransitTime = them.transitTime;
-
-    			if(them.walkDistance < bestBrandXWalkDistance)
-    				bestBrandXWalkDistance = them.walkDistance;
-
-    			// is our first result in the BrandX results? If so, that's a "match"
-				if(usFirst.routes.equals(them.routes)) {
-	    			this.resultSummary
-						[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-						[metricsDim.match.ordinal()]
-						[platformDim.OTP.ordinal()]++;
-					break;
-				}
-			}
-
-        	if(bestOTPTransfers < bestBrandXTransfers) 
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.X.ordinal()]
-					[platformDim.OTP.ordinal()]++;
-        	else
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.X.ordinal()]
-					[platformDim.BRANDX.ordinal()]++;
-
-        	if(bestOTPTransitTime < bestBrandXTransitTime) 
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.T.ordinal()]
-					[platformDim.OTP.ordinal()]++;
-        	else
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.T.ordinal()]
-					[platformDim.BRANDX.ordinal()]++;
-
-        	if(bestOTPWalkDistance < bestBrandXWalkDistance)
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.W.ordinal()]
-					[platformDim.OTP.ordinal()]++;
-        	else
-    			this.resultSummary
-					[optimizationDim.valueOf(query.optimizeFlag).ordinal()]
-					[metricsDim.W.ordinal()]
-					[platformDim.BRANDX.ordinal()]++;
+	    						break;
+	    					}
+	    					
+	    					break;
+	    					
+	    				case hasResults:
+	    					if(!otpResult.itineraries.isEmpty()) {
+	    						this.resultSummary
+	    						[o]
+	    						[m]
+	    						[platformDim.OTP.ordinal()]++;
+	    					}
+	
+	    					if(!brandXResult.itineraries.isEmpty()) {
+	    						this.resultSummary
+	    						[o]
+	    						[m]
+	    						[platformDim.BRANDX.ordinal()]++;
+	    					}
+	    					break;
+	
+	    					// will never get here
+	    				default:
+	    					break;    				
+	    				}
+	    			}
+    			}
     	}
 
-    	// ===============================================================
+    	// ==========================PRINT RESULTS=====================================
 
     	boolean overallResult = true;
     	
@@ -213,15 +258,7 @@ public class CompareODResults {
         	System.out.println(header);
 
         	for(int m = 0; m < metricsDim.values().length; m++) {
-        		int total = 
-        				this.resultSummary
-        				[o]
-        				[m]
-        				[platformDim.OTP.ordinal()] + 
-        				this.resultSummary
-        				[o]
-        				[m]
-        				[platformDim.BRANDX.ordinal()];
+        		int total = totalByOptimization[o];
         		
             	System.out.print(String.format("%-30s", metricsDimLabels[m]) + 
             		"                                   " + 
@@ -246,9 +283,13 @@ public class CompareODResults {
         				[platformDim.BRANDX.ordinal()]/total)*100)
             	);
 
-            	// if this is the metric for the optmization--e.g. it's the WALKING results for the optimization WALKING
+            	// if this is the metric for the optimization--e.g. it's the WALKING results for the optimization WALKING, make 
+            	// it one of the things that makes the whole test pass/fail
             	if(optimizationDimLabels[o].equals(metricsDimLabels[m])) {
-            		float ourPercentage = (float)(this.resultSummary[o][m][platformDim.OTP.ordinal()] / (float)total) * 100;
+            		float ourPercentage = 
+            				(float)(this.resultSummary[o][m][platformDim.OTP.ordinal()] 
+            				/ (float)totalByOptimization[o]) * 100;
+
             		if(ourPercentage < 80) {
             			overallResult = false;
                 		System.out.println(" [FAIL]");
@@ -261,7 +302,7 @@ public class CompareODResults {
         	}    
        	}
 
-    	BrandXResultsReader.close();
+    	brandXResultsReader.close();
     	otpResultsReader.close();
     	
     	assertTrue(overallResult);
@@ -323,6 +364,8 @@ public class CompareODResults {
     	public Integer transitTime;
     	
     	public String routes = "";
+    	
+    	public platformDim platform;
 
     	public ItinerarySummary(String line) throws Exception {
     		String parts[] = line.split(" ");
