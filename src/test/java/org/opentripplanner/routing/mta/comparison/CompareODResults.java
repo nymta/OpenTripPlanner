@@ -138,14 +138,17 @@ public class CompareODResults {
 	    						public int compare(ItinerarySummary o1, ItinerarySummary o2) {
 	    							if(o1.transitTime == o2.transitTime) {
 	    								return 0;
-	    							} else if(o1.transitTime > o2.transitTime) {
-	    								return 1;
-	    							} else {
+	    							} else if(o1.transitTime < o2.transitTime) {
 	    								return -1;
+	    							} else {
+	    								return 1;
 	    							}
 	    						}
 	    					});
-	
+	    					
+	    					//System.out.println("TIME");	
+	    					//System.out.println(sortedResults);
+	    					
 	    					platformDim winningPlatform = sortedResults.get(0).platform;
 	    					this.resultSummary
 	    						[o]
@@ -159,14 +162,18 @@ public class CompareODResults {
 	    						public int compare(ItinerarySummary o1, ItinerarySummary o2) {
 	    							if(o1.walkDistance == o2.walkDistance) {
 	    								return 0;
-	    							} else if(o1.walkDistance > o2.walkDistance) {
-	    								return 1;
-	    							} else {
+	   								// walk distance is less and transit time is within 25% of the other one
+	    							} else if(o1.walkDistance < o2.walkDistance && o1.transitTime < 1.25 * o2.transitTime) {
 	    								return -1;
+	    							} else {
+	    								return 1;
 	    							}
 	    						}
 	    					});
-	
+
+	    					//System.out.println("WALKING");	
+	    					//System.out.println(sortedResults);
+
 	    					platformDim winningPlatform2 = sortedResults.get(0).platform;
 	    					this.resultSummary
 	    						[o]
@@ -183,14 +190,17 @@ public class CompareODResults {
 	
 	    							if(o1x == o2x) {
 	    								return 0;
-	    							} else if(o1x > o2x) {
-	    								return 1;
-	    							} else {
+	    							} else if(o1x < o2x) {
 	    								return -1;
+	    							} else {
+	    								return 1;
 	    							}
 	    						}
 	    					});
 	
+	    					//System.out.println("XFERS");	
+	    					//System.out.println(sortedResults);
+
 	    					platformDim winningPlatform3 = sortedResults.get(0).platform;
 	    					this.resultSummary
 	    						[o]
@@ -290,7 +300,7 @@ public class CompareODResults {
             				(float)(this.resultSummary[o][m][platformDim.OTP.ordinal()] 
             				/ (float)totalByOptimization[o]) * 100;
 
-            		if(ourPercentage < 80) {
+            		if(ourPercentage < 95) {
             			overallResult = false;
                 		System.out.println(" [FAIL]");
             		} else {
@@ -367,6 +377,10 @@ public class CompareODResults {
     	
     	public platformDim platform;
 
+    	public String toString() {
+    		return platform.toString() + "" + itineraryNumber + ": Walk=" + walkDistance + ", transit=" + transitTime + ", Routes = " + routes;
+    	}
+    	
     	public ItinerarySummary(String line) throws Exception {
     		String parts[] = line.split(" ");
     		
