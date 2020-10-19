@@ -39,11 +39,7 @@ public class GenerateTestODPairsFromRunningInstance {
 
 //    private static final String OTP_STOPS_URL = "http://localhost:8080/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
  
-//    private static final String OTP_GRAPH_INFO_URL = "http://localhost:8080/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
-
     private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
-
-    private static final String OTP_GRAPH_INFO_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
     private static final int PAIRS_TO_GENERATE = 100;
 
@@ -55,8 +51,7 @@ public class GenerateTestODPairsFromRunningInstance {
     @SuppressWarnings("unchecked")
     public void run() throws IOException, URISyntaxException {
 
-    	CloseableHttpClient httpClient = HttpClients.createDefault();
-    	
+    	CloseableHttpClient httpClient = HttpClients.createDefault();    	
     	URIBuilder builder = new URIBuilder(OTP_STOPS_URL);
     	HttpGet get = new HttpGet(builder.build());
     	
@@ -65,17 +60,15 @@ public class GenerateTestODPairsFromRunningInstance {
 
     	ArrayList<Map> stops = (ArrayList<Map>) new JSONDeserializer().deserialize(responseString);             
 
-    	builder = new URIBuilder(OTP_GRAPH_INFO_URL);
-    	get = new HttpGet(builder.build());
+    	if(stops == null) {
+    		System.out.println("Invalid server response when requesting all stops: " + responseString);
+    		return;
+    	}
     	
-    	CloseableHttpResponse response2 = httpClient.execute(get);
-    	String responseString2 = EntityUtils.toString(response2.getEntity());
-
-    	HashMap<String, Object> graphInfo =  (HashMap<String, Object>) new JSONDeserializer().deserialize(responseString2);             
-
-//    	DateTime startTime = new DateTime((Integer)graphInfo.get("transitServiceStarts") * 1000L);    	
+    	System.out.print("Generating stop pairs ...");
+    	
     	DateTime startTime = new DateTime();
-    	DateTime endTime = new DateTime((Integer)graphInfo.get("transitServiceEnds") * 1000L);
+		Long searchPeriod = (long) (2 * 30 * 24 * 60 * 60 * 1000); // 3 months     		
     	
     	FileWriter testOdPairs = new FileWriter(PAIRS_TXT);
 
@@ -87,9 +80,6 @@ public class GenerateTestODPairsFromRunningInstance {
     		Map s1 = stops.get(p1);
     		Map s2 = stops.get(p2);
     		
-//    		Long searchPeriod = endTime.getMillis() - startTime.getMillis();     		
-    		Long searchPeriod = (long) (2 * 30 * 24 * 60 * 60 * 1000); // 3 months     		
-
     		DateTime randomTime = new DateTime(startTime.getMillis() + (long)(searchPeriod * Math.random()));
     		
     		testOdPairs.write("Q " + ((Math.random() < .5) ? "Y " : "N ") + 
@@ -101,7 +91,9 @@ public class GenerateTestODPairsFromRunningInstance {
 
     		System.out.print(".");
     	}
-    
+
+    	System.out.println("done.");
+
     	testOdPairs.close();
     }
 }

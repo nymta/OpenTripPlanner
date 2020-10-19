@@ -114,6 +114,8 @@ public class RunODPairsWithATIS {
             	
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
+    	System.out.print("Running pairs through ATIS ...");
+
     	while (reader.hasNextLine()) {
 
     		// get test params from OD pairs file
@@ -243,6 +245,8 @@ public class RunODPairsWithATIS {
 
             Thread.sleep(3 * 1000);
     	}
+
+    	System.out.println("done.");
 
     	httpClient.close();
 

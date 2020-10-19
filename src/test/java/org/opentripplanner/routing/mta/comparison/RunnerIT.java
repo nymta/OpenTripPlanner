@@ -62,6 +62,7 @@ public class RunnerIT {
     
     	CompareODResults t = new CompareODResults();
     	t.run();
+    	
     }
     
 }

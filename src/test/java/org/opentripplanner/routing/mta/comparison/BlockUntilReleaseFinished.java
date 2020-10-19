@@ -35,22 +35,29 @@ public class BlockUntilReleaseFinished {
 
     private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/version?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
     
-    private static final int TIMEOUT_S = 60 * 30;
+    private static final int TIMEOUT_S = 60 * 30; // 30m
+
+    private static final int POLL_INTERVAL_S = 60; // 1m
+    
+    private static final String TEMPLATE_TEXT = "${git.commit.id}";
 
 //	@Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-
 		MavenVersion targetVersion = MavenVersion.VERSION;
-
 		DateTime timeStart = new DateTime();
     	
         System.out.println("Waiting for " + TIMEOUT_S + " seconds or until commit " + targetVersion.commit + 
-        		" is used to build the bundle at test server (" + OTP_URL + ")...");        	
+        		" was used to build the bundle at test server (" + OTP_URL + ")...");        	
+        
+        // code wasn't compiled with mvn, so just skip ahead!
+        if(targetVersion.commit.equals(TEMPLATE_TEXT)) {
+        	return;
+        }
         
         while(new DateTime().getMillis() - timeStart.getMillis() <= TIMEOUT_S * 1000) {        	
-        	Thread.sleep(10 * 1000);        	
+        	Thread.sleep(POLL_INTERVAL_S * 1000);        	
 
         	URIBuilder builder = new URIBuilder(OTP_URL);   
             HttpGet get = new HttpGet(builder.build());
@@ -58,7 +65,8 @@ public class BlockUntilReleaseFinished {
             CloseableHttpResponse response = httpClient.execute(get);
 
             if(response.getStatusLine().getStatusCode() != 200) {
-                System.out.println("Server responded with HTTP status code " + response.getStatusLine().getStatusCode());        	
+                System.out.println("Server responded with HTTP status code " + 
+                		response.getStatusLine().getStatusCode() + ", response: " + response.toString());        	
             	continue;
             }
             
@@ -69,17 +77,17 @@ public class BlockUntilReleaseFinished {
             
             HashMap<String, Object> builderVersion = (HashMap<String, Object>) versionResponse.get("builderVersion");
             if(builderVersion == null) {
-                System.out.print("A version was not included in response, continuing since there's nothing to compare.");        	
+                System.out.print("A version was not included in response; continuing since there's nothing to compare!");        	
                 break;
             }
             
         	String commitIdDeployed = (String) builderVersion.get("commit");
        
         	if(commitIdDeployed.equals(targetVersion.commit)) {
-                System.out.println("Found it! Continuing.");        	
+                System.out.println("Found it. Continuing...");        	
                 break;
         	} else {
-                System.out.println("Not yet (version deployed = " + commitIdDeployed + "), waiting 10 seconds...");        	        		
+                System.out.println("Not there yet (version deployed = " + commitIdDeployed + "), waiting " + POLL_INTERVAL_S + " seconds...");        	        		
         	}
         }    	
     }

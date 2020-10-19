@@ -43,12 +43,14 @@ public class RunODPairsWithOTP {
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);
- 
+
     	File odPairs = new File(PAIRS_TXT);
     	Scanner reader = new Scanner(odPairs);
             	
         CloseableHttpClient httpClient = HttpClients.createDefault();
         
+    	System.out.print("Running pairs through OTP ...");
+
     	while (reader.hasNextLine()) {
     		
     		// get test params from OD pairs file
@@ -156,28 +158,9 @@ public class RunODPairsWithOTP {
             otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
        	}
     	
+    	System.out.println("done.");
+
     	reader.close();
     	otpResults.close();
-
-
-    	
-    	
-    	
-    	
-    	       
-        
-        
-        
-        
-        
-        
-
-    	
-    	    	
-    
-    	    
-    	
-    	
     }
-
 }
