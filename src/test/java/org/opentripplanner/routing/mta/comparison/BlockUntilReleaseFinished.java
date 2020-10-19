@@ -46,37 +46,41 @@ public class BlockUntilReleaseFinished {
 
 		DateTime timeStart = new DateTime();
     	
-        System.out.println("Waiting for " + TIMEOUT_S + " seconds or until commit " + targetVersion.commit + " is launched at test server...");        	
+        System.out.println("Waiting for " + TIMEOUT_S + " seconds or until commit " + targetVersion.commit + 
+        		" is used to build the bundle at test server (" + OTP_URL + ")...");        	
         
         while(new DateTime().getMillis() - timeStart.getMillis() <= TIMEOUT_S * 1000) {        	
-            URIBuilder builder = new URIBuilder(OTP_URL);   
+        	Thread.sleep(10 * 1000);        	
+
+        	URIBuilder builder = new URIBuilder(OTP_URL);   
             HttpGet get = new HttpGet(builder.build());
 
             CloseableHttpResponse response = httpClient.execute(get);
-            String responseString = EntityUtils.toString(response.getEntity());            
 
+            if(response.getStatusLine().getStatusCode() != 200) {
+                System.out.println("Server responded with HTTP status code " + response.getStatusLine().getStatusCode());        	
+            	continue;
+            }
+            
+            String responseString = EntityUtils.toString(response.getEntity());            
             HashMap<String, Map> versionResponse = (HashMap<String, Map>)new JSONDeserializer().deserialize(responseString);             
-        	response.close();
+
+            response.close();
             
             HashMap<String, Object> builderVersion = (HashMap<String, Object>) versionResponse.get("builderVersion");
             if(builderVersion == null) {
                 System.out.print("A version was not included in response, continuing since there's nothing to compare.");        	
-            	return;
+                break;
             }
             
         	String commitIdDeployed = (String) builderVersion.get("commit");
-        
+       
         	if(commitIdDeployed.equals(targetVersion.commit)) {
-                System.out.print("Found it! Continuing.");        	
+                System.out.println("Found it! Continuing.");        	
                 break;
         	} else {
-                System.out.print("Not yet (version deployed = " + commitIdDeployed + "), waiting 10 seconds...");        	        		
+                System.out.println("Not yet (version deployed = " + commitIdDeployed + "), waiting 10 seconds...");        	        		
         	}
-        	        	
-        	Thread.sleep(10 * 1000);        	
         }    	
-        
-        
     }
-
 }

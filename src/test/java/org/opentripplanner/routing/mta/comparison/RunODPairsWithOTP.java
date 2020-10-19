@@ -36,7 +36,7 @@ public class RunODPairsWithOTP {
 
 //    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
-    private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+    private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 //	@Test
