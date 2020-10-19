@@ -15,6 +15,8 @@ package org.opentripplanner.graph_builder.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.opentripplanner.common.MavenVersion;
+
 /**
  * Model representing metdata data about the current graph.
  * By default it is just the date the graph was constructed at
@@ -25,6 +27,15 @@ public class GraphVersion implements Serializable {
 
     private Date createdDate;
     private String version;
+    private MavenVersion builderVersion;
+    
+    public MavenVersion getBuilderVersion() {
+    	return this.builderVersion;
+    }
+
+    public void setBuilderVersion(MavenVersion v) {
+    	builderVersion = v;
+    }
 
     public Date getCreatedDate() {
         return createdDate;

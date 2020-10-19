@@ -14,6 +14,7 @@ package org.opentripplanner.graph_builder.module;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.opentripplanner.common.MavenVersion;
 import org.opentripplanner.graph_builder.model.GraphVersion;
 import org.opentripplanner.graph_builder.services.GraphBuilderModule;
 import org.opentripplanner.model.json_serialization.GraphVersionDeserializer;
@@ -47,6 +48,7 @@ public class VersionModule implements GraphBuilderModule {
         GraphVersion graphVersion = null;
         try {
             graphVersion = mapper.readValue(versionFile, GraphVersion.class);
+            graphVersion.setBuilderVersion(MavenVersion.VERSION);
             LOG.info("graphVersion created=" + graphVersion);
         } catch (IOException ex) {
             LOG.info("Error reading version file: " + ex);

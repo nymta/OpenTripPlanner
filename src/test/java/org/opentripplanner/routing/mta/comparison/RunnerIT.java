@@ -27,9 +27,17 @@ public class RunnerIT {
 	 * and parent/child relationships for tests, but JUnit 4 doesn't, so we
 	 * hack something similar up here. 
 	 */
-	
+
     @Test
-    public void a_Setup() throws IOException, Exception {
+    public void a_Wait() throws IOException, Exception {
+
+    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
+    	t.run();
+    
+    }
+
+    @Test
+    public void b_Setup() throws IOException, Exception {
 
     	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
     	t.run();
@@ -38,8 +46,8 @@ public class RunnerIT {
 
 
     @Test
-    public void b_RunTests() throws IOException, Exception {
-
+    public void c_RunTests() throws IOException, Exception {    	
+    	
     	RunODPairsWithOTP t1 = new RunODPairsWithOTP();
     	t1.run();
     	
@@ -50,7 +58,7 @@ public class RunnerIT {
 
 
     @Test
-    public void c_Compare() throws IOException, Exception { 
+    public void d_Compare() throws IOException, Exception { 
     
     	CompareODResults t = new CompareODResults();
     	t.run();

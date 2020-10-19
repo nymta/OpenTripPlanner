@@ -196,7 +196,6 @@
 								<commandlineArgs>--router default --server --verbose</commandlineArgs>
 							</configuration>
 						</execution>
-		
 						<execution>
 							<id>bundle</id>
 							<goals>
@@ -204,7 +203,7 @@
 							</goals>
 							<configuration>
 								<mainClass>org.opentripplanner.standalone.OTPMain</mainClass>
-								<commandlineArgs>--build --verbose</commandlineArgs>
+								<commandlineArgs>--build /var/otp/graphs/default --verbose</commandlineArgs>
 							</configuration>
 						</execution>
 		

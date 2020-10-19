@@ -31,3 +31,6 @@ _site/
 /otp
 /otp-batch-analyst
 lucene/
+src/test/resources/mta/test_atis_results.txt
+src/test/resources/mta/test_od_pairs.txt
+src/test/resources/mta/test_otp_results.txt
