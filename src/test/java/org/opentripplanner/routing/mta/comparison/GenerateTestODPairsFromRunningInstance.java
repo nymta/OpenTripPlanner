@@ -42,7 +42,7 @@ public class GenerateTestODPairsFromRunningInstance {
     
     private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
-    private static final int PAIRS_TO_GENERATE = 50;
+    private static final int PAIRS_TO_GENERATE = 200;
 
     private static final String[] optimizations = new String[] { "W", "X", "T" };
     
