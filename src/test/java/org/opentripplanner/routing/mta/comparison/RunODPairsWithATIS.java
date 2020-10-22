@@ -38,13 +38,12 @@ public class RunODPairsWithATIS {
 	
     private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
 
-    private static final String ATIS_RESULTS_TXT = "src/test/resources/mta/test_atis_results.txt";
+    private String ATIS_RESULTS_TXT = "src/test/resources/mta/test_atis_results.txt";
 
     private static final String ATIS_URL = "https://dataservice.mta.info/cgi-bin-soap-2.10.1/soap.cgi";
 
     private static final String ATIS_KEY = "2kzq4JWEg1";
 
-    
     public class MapEntryConverter implements Converter{
     	
     	private HashMap<String, Integer> keyCounter = new HashMap<String, Integer>();
@@ -102,7 +101,11 @@ public class RunODPairsWithATIS {
             return r;        	
         }
     }
-    
+
+    public void setOutputFile(String f) {
+    	this.ATIS_RESULTS_TXT = f;
+    }
+
     @SuppressWarnings("unchecked")
 //    @Test
     public void run() throws IOException, InterruptedException {

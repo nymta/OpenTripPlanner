@@ -19,10 +19,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.onebusaway.gtfs.model.AgencyAndId;
-
 import java.text.SimpleDateFormat;  
 import java.util.*;
 import java.io.*;
@@ -32,12 +28,18 @@ public class RunODPairsWithOTP {
 	
     private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
 
-    private static final String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
+    private String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
 
-//    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+    private String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
-    private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
-
+    public void setOTPURL(String u) {
+    	this.OTP_URL = u;
+    }
+    
+    public void setOutputFile(String f) {
+    	this.OTP_RESULTS_TXT = f;
+    }
+    
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 //	@Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
@@ -155,7 +157,7 @@ public class RunODPairsWithOTP {
                 otpResults.write("\n");
             }            
            
-            otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+//            otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
        	}
     	
     	System.out.println("done.");

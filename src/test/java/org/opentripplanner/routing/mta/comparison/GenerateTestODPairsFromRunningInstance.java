@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.graph.Graph;
 
 import flexjson.JSONDeserializer;
@@ -35,18 +36,26 @@ import java.util.Map;
 
 public class GenerateTestODPairsFromRunningInstance {
 	
-    private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
-
-//    private static final String OTP_STOPS_URL = "http://localhost:8080/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
+    private String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
  
+    private boolean MTA_ONLY = false;
+    
     private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
-    private static final int PAIRS_TO_GENERATE = 100;
+    private static final int PAIRS_TO_GENERATE = 50;
 
     private static final String[] optimizations = new String[] { "W", "X", "T" };
     
     protected static Graph graph;
 
+    public void setOutputFile(String f) {
+    	this.PAIRS_TXT = f;
+    }
+    
+    public void setMTAOnly(boolean v) {
+    	this.MTA_ONLY = v;
+    }
+    
 //	@Test
     @SuppressWarnings("unchecked")
     public void run() throws IOException, URISyntaxException {
@@ -58,9 +67,10 @@ public class GenerateTestODPairsFromRunningInstance {
     	CloseableHttpResponse response = httpClient.execute(get);
     	String responseString = EntityUtils.toString(response.getEntity());
 
-    	ArrayList<Map> stops = (ArrayList<Map>) new JSONDeserializer().deserialize(responseString);             
-
-    	if(stops == null) {
+    	ArrayList<Map> stops = null;
+    	try {
+    		stops = (ArrayList<Map>) new JSONDeserializer().deserialize(responseString);             
+    	} catch (Exception e) {
     		System.out.println("Invalid server response when requesting all stops: " + responseString);
     		return;
     	}
@@ -73,14 +83,29 @@ public class GenerateTestODPairsFromRunningInstance {
     	FileWriter testOdPairs = new FileWriter(PAIRS_TXT);
 
     	int i = PAIRS_TO_GENERATE;
-    	while(i-- > 0) {
+    	while(true) {
         	int p1 = (int) (Math.random() * stops.size());
     		int p2 = (int) (Math.random() * stops.size());
         		
     		Map s1 = stops.get(p1);
     		Map s2 = stops.get(p2);
     		
+    		AgencyAndId stop1id = AgencyAndId.convertFromString((String)s1.get("id"), ':');
+       		AgencyAndId stop2id = AgencyAndId.convertFromString((String)s2.get("id"), ':');
+       	 
+       		if(MTA_ONLY) {
+	       		if(!stop1id.getAgencyId().equals("MTASBWY") && !stop1id.getAgencyId().equals("MTA") 
+	       				&& !stop1id.getAgencyId().equals("MNR") && !stop1id.getAgencyId().equals("LI"))
+	       			continue;
+	
+	       		if(!stop2id.getAgencyId().equals("MTASBWY") && !stop2id.getAgencyId().equals("MTA") 
+	       				&& !stop2id.getAgencyId().equals("MNR") && !stop2id.getAgencyId().equals("LI"))
+	       			continue;
+       		}
+		
     		DateTime randomTime = new DateTime(startTime.getMillis() + (long)(searchPeriod * Math.random()));
+    		
+    		//System.out.println("Adding " + stop1id + " -> " + stop2id);
     		
     		testOdPairs.write("Q " + ((Math.random() < .5) ? "Y " : "N ") + 
     				randomTime.getMillis() + " " + 
@@ -90,6 +115,9 @@ public class GenerateTestODPairsFromRunningInstance {
     				"\n");
 
     		System.out.print(".");
+
+        	if(i-- <= 0) 
+        		break;
     	}
 
     	System.out.println("done.");
