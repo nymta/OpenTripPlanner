@@ -287,6 +287,9 @@ public class CompareODResults {
     				break;
     				
     			case match:
+    				if(otpResult.itineraries.size() == 0)
+    					break;
+    				
 					ItinerarySummary ourTopResult = otpResult.itineraries.get(0);
 
     				for(int z = 0; z < brandXResult.itineraries.size(); z++) {
