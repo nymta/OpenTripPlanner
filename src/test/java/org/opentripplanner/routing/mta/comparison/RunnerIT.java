@@ -35,7 +35,7 @@ public class RunnerIT {
 
     }    
     
-    
+  /*  
     @Test
     public void Demo_QA() throws IOException, Exception {    	
 
@@ -58,6 +58,7 @@ public class RunnerIT {
     	t3.run();
 
     }
+   */
       
         
     @Test
