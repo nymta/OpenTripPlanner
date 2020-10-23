@@ -24,7 +24,7 @@ public class RunnerIT {
     	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
     	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
     	t.setMTAOnly(false);
-    	t.setPairsToGenerate(20);
+    	t.setPairsToGenerate(500);
     	t.run();
     	
     	
