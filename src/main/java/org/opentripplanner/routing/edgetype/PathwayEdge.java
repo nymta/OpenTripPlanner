@@ -82,15 +82,24 @@ public class PathwayEdge extends Edge {
         	this.length = length;
         if(isAccessible >= 0)
         	this.mtaIsAccessible = isAccessible;
-        
+                
         // set some defaults
-        if(this.stairCount >= 0 && this.traversalTime == -1) {
-        	this.traversalTime = this.stairCount * 5; // 5s per stair
+        if(this.traversalTime >= 0) {
+        	this.length = this.traversalTime * 1.4; // average walk speed: 1.4 m/s
+        } else {
+	        if(this.stairCount >= 0 && this.traversalTime == -1) {
+	        	this.traversalTime = this.stairCount * 5; // 5s per stair
+	        }
+	        
+	        if(this.length >= 0 && this.traversalTime == -1) {
+	        	this.traversalTime = (int)(this.length * 1.4); // average walk speed: 1.4 m/s
+	        }
         }
-        
-        if(this.length >= 0 && this.traversalTime == -1) {
-        	this.traversalTime = (int)(this.length * 1.4); // average walk speed: 1.4 m/s
+
+        if(this.wheelchairTraversalTime < 0) {
+        	this.wheelchairTraversalTime = this.traversalTime;
         }
+
     }
 
     private static final long serialVersionUID = -3311099256178798981L;
@@ -211,8 +220,8 @@ public class PathwayEdge extends Edge {
         }
 
         if(time == -1) {
-        	LOG.warn("Traversal time is negative; bumping to 0 to avoid routing problems. "
-        			+ "Check your pathways data: one of traversal time, length or stair count should be set.");
+        	LOG.warn("Traversal time on pathway {} is negative; bumping to 0 to avoid routing problems. "
+        			+ "Check your pathways data: one of traversal time, length or stair count should be set.", this.getPathwayId());
         	time = 0;
         }
         
