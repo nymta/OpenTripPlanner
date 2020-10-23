@@ -40,13 +40,21 @@ public class GenerateTestODPairsFromRunningInstance {
  
     private boolean MTA_ONLY = false;
     
-    private static final String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
+    private String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
 
-    private static final int PAIRS_TO_GENERATE = 200;
+    private int PAIRS_TO_GENERATE = 50;
 
     private static final String[] optimizations = new String[] { "W", "X", "T" };
     
     protected static Graph graph;
+
+    public void setOTPURL(String u) {
+    	this.OTP_STOPS_URL = u;
+    }
+
+    public void setPairsToGenerate(int v) {
+    	this.PAIRS_TO_GENERATE = v;
+    }
 
     public void setOutputFile(String f) {
     	this.PAIRS_TXT = f;

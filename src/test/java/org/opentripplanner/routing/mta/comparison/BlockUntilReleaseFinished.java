@@ -33,7 +33,7 @@ public class BlockUntilReleaseFinished {
 	
 //    private static final String OTP_URL = "http://localhost:8080/otp/routers/default/version?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnts";
 
-    private static final String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/version?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
+    private String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/version?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
     
     private static final int TIMEOUT_S = 60 * 30; // 30m
 
@@ -41,6 +41,10 @@ public class BlockUntilReleaseFinished {
     
     private static final String TEMPLATE_TEXT = "${git.commit.id}";
 
+    public void setOTPURL(String u) {
+    	this.OTP_URL = u;
+    }
+    
 //	@Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
 

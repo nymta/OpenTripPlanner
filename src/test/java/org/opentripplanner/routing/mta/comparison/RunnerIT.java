@@ -13,98 +13,75 @@
 package org.opentripplanner.routing.mta.comparison;
 
 import org.junit.Test;
-import org.junit.FixMethodOrder;
-import org.junit.Ignore;
-import org.junit.runners.MethodSorters;
-
+import org.junit.BeforeClass;
 import java.io.*;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunnerIT {
-	
-	/*
-	 * This class just runs the other tests. JUnit 5 supports ordering
-	 * and parent/child relationships for tests, but JUnit 4 doesn't, so we
-	 * hack something similar up here. 
-	 */
 
-    @Test
-    public void a_Wait() throws IOException, Exception {
-
-    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
-    	t.run();
-    
-    }
-
-    @Test
-    public void e_CompareToQA_ODGen() throws IOException, Exception {    	
+	@BeforeClass
+    public static void QA_ODGen() throws IOException, Exception {    	
 
     	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
+    	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
     	t.setMTAOnly(false);
+    	t.setPairsToGenerate(20);
     	t.run();
-    }
-
-    @Test
-    public void f_CompareToQA_OTP1() throws IOException, Exception {    	
-
-    	RunODPairsWithOTP t1 = new RunODPairsWithOTP();
-    	t1.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
-    	t1.setOutputFile("src/test/resources/mta/test1_otp_results.txt");
-    	t1.run();
-    }
-    
-    @Test
-    public void g_CompareToQA_OTP2() throws IOException, Exception {    	
-
+    	
+    	
     	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
     	t2.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/plan?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
-    	t2.setOutputFile("src/test/resources/mta/test1_otp2_results.txt");
+    	t2.setOutputFile("src/test/resources/mta/test_qa_baseline.txt");
     	t2.run();
-    }
+
+    }    
+    
     
     @Test
-    public void h_CompareToQA_Compare() throws IOException, Exception {    	
+    public void Demo_QA() throws IOException, Exception {    	
 
-    	CompareODResults t3 = new CompareODResults();
-    	t3.setOTPResultsFile("src/test/resources/mta/test1_otp_results.txt");
-    	t3.setBrandXResultsFile("src/test/resources/mta/test1_otp2_results.txt");
-    	t3.run();
-    }
-    
-
-    @Test
-    public void j_CompareToATIS_ODGen() throws IOException, Exception {    	
-  	
-    	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
-    	t.setMTAOnly(true);
+    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
+    	t.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/version?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
     	t.run();
 
-    }
-    
-    @Test
-    public void k_CompareToATIS_OTP() throws IOException, Exception {    	
-
-    	RunODPairsWithOTP t1 = new RunODPairsWithOTP();
-    	t1.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
-    	t1.setOutputFile("src/test/resources/mta/test2_otp_results.txt");
-    	t1.run();
-    }
-    
-    @Test
-    public void l_CompareToATIS_ATIS() throws IOException, Exception {    	
-
-    	RunODPairsWithATIS t2 = new RunODPairsWithATIS();
-    	t2.setOutputFile("src/test/resources/mta/test2_atis_results.txt");
+    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
+    	t2.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
+    	t2.setOutputFile("src/test/resources/mta/test_demo_otp.txt");
     	t2.run();
-    }
-    
-    @Test
-    public void m_CompareToATIS_Compare() throws IOException, Exception {    	
+
+    	System.out.println("*************************************");
+    	System.out.println("BASELINE = QA   DEV = DEMO");
+    	System.out.println("*************************************");
 
     	CompareODResults t3 = new CompareODResults();
-    	t3.setOTPResultsFile("src/test/resources/mta/test2_otp_results.txt");
-    	t3.setBrandXResultsFile("src/test/resources/mta/test2_atis_results.txt");
+    	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_baseline.txt");
+    	t3.setDevResultsFile("src/test/resources/mta/test_demo_otp.txt");
     	t3.run();
+
     }
-    
+      
+        
+    @Test
+    public void Dev_QA() throws IOException, Exception {    	
+
+    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
+    	t.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/version?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+    	t.run();
+
+    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
+    	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+    	t2.setOutputFile("src/test/resources/mta/test_dev_otp.txt");
+    	t2.run();
+
+    	System.out.println("*************************************");
+    	System.out.println("BASELINE = QA   DEV = DEV");
+    	System.out.println("*************************************");
+
+      	CompareODResults t3 = new CompareODResults();
+    	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_baseline.txt");
+    	t3.setDevResultsFile("src/test/resources/mta/test_dev_otp.txt");
+    	t3.run();
+
+    }
+      
+       
 }

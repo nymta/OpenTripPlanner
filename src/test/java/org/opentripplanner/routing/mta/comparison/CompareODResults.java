@@ -23,19 +23,19 @@ import java.io.*;
 
 public class CompareODResults {
 	
-    private String BRANDX_RESULTS_TXT = null; 
+    private String DEV_RESULTS_TXT = null; 
 
-    private String OTP_RESULTS_TXT = null;
+    private String BASELINE_RESULTS_TXT = null;
 
     private final String[] optimizationDimLabels = new String[] { "WALKING", "TRANSFERS", "TIME" };
     
 	private enum optimizationDim { W, X, T };
 	
-    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "OTP TOP IN BRAND X RESULTS**" };
+    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "BASELINE TOP IN DEV RESULTS**" };
 
     private enum metricsDim { W, X, T, hasResults, match };
 
-	private enum platformDim { OTP, BRANDX, TIE };
+	private enum platformDim { BASELINE, DEV, TIE };
 
 	// dimensions: optimization
 	private int[] totalByOptimization = new int[3];
@@ -46,15 +46,16 @@ public class CompareODResults {
 	// dimensions: optimization | metric | platform
 	private int[][][] resultSummary = new int[3][5][3];
 		
-	public void setOTPResultsFile(String f) {
-		this.OTP_RESULTS_TXT = f;
+	public void setBaselineResultsFile(String f) {
+		this.BASELINE_RESULTS_TXT = f;
 	}
 	
-	public void setBrandXResultsFile(String f) {
-		this.BRANDX_RESULTS_TXT = f;
+	public void setDevResultsFile(String f) {
+		this.DEV_RESULTS_TXT = f;
 	}
 	
-	private void scorePlatform(optimizationDim optimization, metricsDim metric, List<ItinerarySummary> sortedResults, Comparator<ItinerarySummary> ranker) {
+	private void scorePlatform(optimizationDim optimization, metricsDim metric, 
+			List<ItinerarySummary> sortedResults, Comparator<ItinerarySummary> ranker) {
 
 		sortedResults.sort(ranker);	    				
 		
@@ -179,11 +180,11 @@ public class CompareODResults {
 	
     //@Test
     public void run() throws IOException, Exception {    	
-    	File brandXResultsFile = new File(BRANDX_RESULTS_TXT);
-    	File otpResultsFile = new File(OTP_RESULTS_TXT);
+    	File devResultsFile = new File(DEV_RESULTS_TXT);
+    	File baselineResultsFile = new File(BASELINE_RESULTS_TXT);
 
-    	List<Result> brandXResults = loadResults(brandXResultsFile, platformDim.BRANDX);
-    	List<Result> otpResults = loadResults(otpResultsFile, platformDim.OTP);
+    	List<Result> devResults = loadResults(devResultsFile, platformDim.DEV);
+    	List<Result> baselineResults = loadResults(baselineResultsFile, platformDim.BASELINE);
 
     	// initialize stats storage array
     	for(int i = 0; i < resultWinMargin.length; i++) {
@@ -196,19 +197,19 @@ public class CompareODResults {
     	// ==========================COMPARE RESULTS=====================================
     	List<Query> noResultQueries = new ArrayList<Query>();
 
-    	for(int i = 0; i < Math.max(otpResults.size(), brandXResults.size()); i++) {
-    		Result brandXResult = brandXResults.get(i);
-    		Result otpResult = otpResults.get(i);
+    	for(int i = 0; i < Math.max(baselineResults.size(), devResults.size()); i++) {
+    		Result devResult = devResults.get(i);
+    		Result baselineResult = baselineResults.get(i);
 
-    		Query query = otpResult.query;
+    		Query query = baselineResult.query;
 
     		int o = optimizationDim.valueOf(query.optimizeFlag).ordinal();
     		totalByOptimization[o]++;
 
     		// add all system's itineraries to an array to sort based on metric and score
     		List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
-    		sortedResults.addAll(otpResult.itineraries);
-    		sortedResults.addAll(brandXResult.itineraries);
+    		sortedResults.addAll(baselineResult.itineraries);
+    		sortedResults.addAll(devResult.itineraries);
 
     		// both systems produced nothing; skip?
     		if(sortedResults.isEmpty()) {
@@ -218,7 +219,7 @@ public class CompareODResults {
 				[metricsDim.match.ordinal()]	
 				[platformDim.TIE.ordinal()]++;
 
-    			noResultQueries.add(otpResult.query);
+    			noResultQueries.add(baselineResult.query);
     			
     			continue;
     		}
@@ -287,13 +288,13 @@ public class CompareODResults {
     				break;
     				
     			case match:
-    				if(otpResult.itineraries.size() == 0)
+    				if(baselineResult.itineraries.size() == 0)
     					break;
     				
-					ItinerarySummary ourTopResult = otpResult.itineraries.get(0);
+					ItinerarySummary ourTopResult = baselineResult.itineraries.get(0);
 
-    				for(int z = 0; z < brandXResult.itineraries.size(); z++) {
-    					ItinerarySummary theirResult = brandXResult.itineraries.get(z);
+    				for(int z = 0; z < devResult.itineraries.size(); z++) {
+    					ItinerarySummary theirResult = devResult.itineraries.get(z);
 
     					if(ourTopResult.routes.equals(theirResult.routes)) { 
         					this.resultSummary
@@ -308,22 +309,22 @@ public class CompareODResults {
 
     			case hasResults:
 
-    				if(!otpResult.itineraries.isEmpty() && !brandXResult.itineraries.isEmpty()) {
+    				if(!baselineResult.itineraries.isEmpty() && !devResult.itineraries.isEmpty()) {
     					this.resultSummary
     					[o]
     					[m]
    						[platformDim.TIE.ordinal()]++;
     					
-    				} else if(!otpResult.itineraries.isEmpty()) {
+    				} else if(!baselineResult.itineraries.isEmpty()) {
     					this.resultSummary
     					[o]
     					[m]
-   						[platformDim.OTP.ordinal()]++;
-    				} else if(!brandXResult.itineraries.isEmpty()) {
+   						[platformDim.BASELINE.ordinal()]++;
+    				} else if(!devResult.itineraries.isEmpty()) {
     					this.resultSummary
     					[o]
     					[m]
-    					[platformDim.BRANDX.ordinal()]++;
+    					[platformDim.DEV.ordinal()]++;
     				}
 
     				break;
@@ -339,24 +340,25 @@ public class CompareODResults {
 
     	boolean overallResult = true;
     	    	
-    	System.out.println("\n\nTOTAL RESULTS: " + otpResults.size() + "\n\n");
+    	System.out.println("\n\nTOTAL RESULTS: " + baselineResults.size() + "\n\n");
   
     	for(int o = 0; o < optimizationDim.values().length; o++) {
-    		String header = "OPTIMIZATION: " + String.format("%-10s (n=%3d)", optimizationDimLabels[o], totalByOptimization[o]) + "         OTP           TIE           BRAND X       OTP SUCCESS MARGIN STATS*          BRANDX SUCCESS MARGIN STATS*";
+    		String header = "OPTIMIZATION: " + String.format("%-10s (n=%3d)", optimizationDimLabels[o], totalByOptimization[o]) + 
+    				"         BASELINE           TIE           DEV       BASELINE SUCCESS MARGIN STATS*          DEV SUCCESS MARGIN STATS*";
         	System.out.println(header);
         	System.out.println(header.replaceAll("[^\\s]", "-"));
         	
         	for(int m = 0; m < metricsDim.values().length; m++) {
         		int total = totalByOptimization[o];
         		
-        		double[] OTPValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.OTP.ordinal()].size()];
-        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.OTP.ordinal()].size(); ii++) {
-        			OTPValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.OTP.ordinal()].get(ii);   
+        		double[] baselineValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.BASELINE.ordinal()].size()];
+        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.BASELINE.ordinal()].size(); ii++) {
+        			baselineValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.BASELINE.ordinal()].get(ii);   
         		}
         		
-        		double[] BrandXValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.BRANDX.ordinal()].size()];
-        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.BRANDX.ordinal()].size(); ii++) {
-        			BrandXValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.BRANDX.ordinal()].get(ii);   
+        		double[] devValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size()];
+        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size(); ii++) {
+        			devValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.DEV.ordinal()].get(ii);   
         		}
 
         		Mean meanStat = new Mean();
@@ -369,11 +371,11 @@ public class CompareODResults {
             			this.resultSummary
         				[o]
         				[m]
-        				[platformDim.OTP.ordinal()], 
+        				[platformDim.BASELINE.ordinal()], 
         				((float)this.resultSummary
         				[o]
         				[m]
-        				[platformDim.OTP.ordinal()]/total)*100)
+        				[platformDim.BASELINE.ordinal()]/total)*100)
         			+ "    " + 
             		String.format("%-3d (%-3.0f%%)", 
                 			this.resultSummary
@@ -389,24 +391,24 @@ public class CompareODResults {
             			this.resultSummary
         				[o]
         				[m]
-        				[platformDim.BRANDX.ordinal()], 
+        				[platformDim.DEV.ordinal()], 
         				((float)this.resultSummary
         				[o]
         				[m]
-        				[platformDim.BRANDX.ordinal()]/total)*100)
+        				[platformDim.DEV.ordinal()]/total)*100)
             		+ "   " + 
         			(m != metricsDim.match.ordinal() && m != metricsDim.hasResults.ordinal() 
-        				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(OTPValuesAsPrimitive), 
-        						this.resultWinMargin[o][m][platformDim.OTP.ordinal()].size(),
-        						minStat.evaluate(OTPValuesAsPrimitive), 
-        						maxStat.evaluate(OTPValuesAsPrimitive)) + "    " 
+        				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(baselineValuesAsPrimitive), 
+        						this.resultWinMargin[o][m][platformDim.BASELINE.ordinal()].size(),
+        						minStat.evaluate(baselineValuesAsPrimitive), 
+        						maxStat.evaluate(baselineValuesAsPrimitive)) + "    " 
         						: "                                   ")
             		+ 
         			(m != metricsDim.match.ordinal() && m != metricsDim.hasResults.ordinal() 
-        				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(BrandXValuesAsPrimitive), 
-        						this.resultWinMargin[o][m][platformDim.BRANDX.ordinal()].size(),
-        						minStat.evaluate(BrandXValuesAsPrimitive), 
-        						maxStat.evaluate(BrandXValuesAsPrimitive)) + "    " 
+        				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(devValuesAsPrimitive), 
+        						this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size(),
+        						minStat.evaluate(devValuesAsPrimitive), 
+        						maxStat.evaluate(devValuesAsPrimitive)) + "    " 
         						: "                                   ")
 
             	);
@@ -415,7 +417,8 @@ public class CompareODResults {
             	// if this is the metric for the optimization--e.g. it's the WALKING results for the optimization WALKING, make 
             	// it one of the things that makes the whole test pass/fail
         		float ourPercentage = 
-        				((float)((this.resultSummary[o][m][platformDim.OTP.ordinal()] + this.resultSummary[o][m][platformDim.TIE.ordinal()])
+        				((float)((this.resultSummary[o][m][platformDim.BASELINE.ordinal()] + 
+        						this.resultSummary[o][m][platformDim.TIE.ordinal()])
         				/ (float)totalByOptimization[o])) * 100;
 
         		// for each optimization, require our result to be the winner 95% of the time
@@ -503,7 +506,7 @@ public class CompareODResults {
             		(accessible ? 3 : 0);
         }
         
-        public String toString() { // TODO: make into OTP URLs
+        public String toString() { // TODO: make into BASELINE URLs
         	return origin + " -> " + destination;
         }
     }

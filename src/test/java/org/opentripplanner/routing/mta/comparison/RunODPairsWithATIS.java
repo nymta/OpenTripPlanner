@@ -42,7 +42,7 @@ public class RunODPairsWithATIS {
 
     private static final String ATIS_URL = "https://dataservice.mta.info/cgi-bin-soap-2.10.1/soap.cgi";
 
-    private static final String ATIS_KEY = "2kzq4JWEg1";
+    private static final String ATIS_KEY = "<<YOUR KEY HERE>>";
 
     public class MapEntryConverter implements Converter{
     	
