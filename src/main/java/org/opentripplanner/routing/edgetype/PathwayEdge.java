@@ -68,9 +68,9 @@ public class PathwayEdge extends Edge {
         this.id = id;
         this.pathwayMode = Mode.values()[pathwayMode];
         
-        if(minWidth != Double.NaN)
+        if(!Double.isNaN(minWidth))
         	this.minWidth = minWidth;
-        if(maxSlope != Double.NaN)
+        if(!Double.isNaN(maxSlope))
         	this.maxSlope = maxSlope;
         if(stairCount >= 0)
         	this.stairCount = stairCount;
@@ -78,14 +78,15 @@ public class PathwayEdge extends Edge {
         	this.traversalTime = traversalTime;
         if(wheelchairTraversalTime >= 0)
         	this.wheelchairTraversalTime = wheelchairTraversalTime;
-        if(length != Double.NaN)
+        if(!Double.isNaN(length))
         	this.length = length;
         if(isAccessible >= 0)
         	this.mtaIsAccessible = isAccessible;
                 
         // set some defaults
         if(this.traversalTime >= 0) {
-        	this.length = this.traversalTime * 1.4; // average walk speed: 1.4 m/s
+        	if(Double.isNaN(this.length))
+        		this.length = this.traversalTime * 1.4; // average walk speed: 1.4 m/s
         } else {
 	        if(this.stairCount >= 0 && this.traversalTime == -1) {
 	        	this.traversalTime = this.stairCount * 5; // 5s per stair
