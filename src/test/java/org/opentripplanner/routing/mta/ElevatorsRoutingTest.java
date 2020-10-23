@@ -42,7 +42,8 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         assertEquals("137S", rides.get(0).getLastStopId());
     }
 
-    // EL145 is downtown elevator, EL146 is uptown elevator
+    // Trip: 96th 1/2/3 to Chambers 1/2/3
+    // EL145 is downtown elevator @ 96th, EL146 is uptown elevator
     @Test
     public void testStopBecomesNotAccessible() {
         RoutingRequest opt = new RoutingRequest();
@@ -103,9 +104,9 @@ public class ElevatorsRoutingTest extends MTAGraphTest {
         List<TestRide> rides = TestRide.createRides(path);
         assertEquals(2, rides.size());
         assertEquals("123S", rides.get(0).getFirstStopId());
-        assertEquals("125S", rides.get(0).getLastStopId());
-        assertEquals("1", rides.get(0).getRoute().getId());
-        assertEquals("A24S", rides.get(1).getFirstStopId());
+        assertTrue(rides.get(0).getLastStopId().equals("125S") || rides.get(0).getLastStopId().equals("235S")); // Columbus Cir or Barclays Ctr. 
+        assertTrue(rides.get(0).getRoute().getId().equals("1") || rides.get(0).getRoute().getId().equals("2")); // Only 2 to Barclays obviously
+        assertTrue(rides.get(1).getFirstStopId().equals("A24S") || rides.get(1).getFirstStopId().equals("R31S")); // Columbus Cir or Barclays Ctr. 
         assertEquals("B21S", rides.get(1).getLastStopId());
         assertEquals("D", rides.get(1).getRoute().getId());
     }

@@ -238,8 +238,13 @@ public class GraphIndex {
     		if(!(e instanceof PathwayEdge))
     			continue;
     		
-    		if(visitedList.contains(e.getId()))
+    		// don't label entrances we traverse to via other pathways as accessible
+    		if(e.getToVertex() instanceof TransitStop 
+    				&& ((TransitStop)e.getToVertex()).isEntrance())
     			continue;
+    		
+    		if(visitedList.contains(e.getId()))
+    			continue;    		
     		visitedList.add(e.getId());
 
     		// "generic nodes" in GTFS don't have lat/longs, so use the station's coordinate

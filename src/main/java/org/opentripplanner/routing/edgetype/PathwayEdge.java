@@ -97,10 +97,6 @@ public class PathwayEdge extends Edge {
 	        }
         }
 
-        if(this.wheelchairTraversalTime < 0) {
-        	this.wheelchairTraversalTime = this.traversalTime;
-        }
-
     }
 
     private static final long serialVersionUID = -3311099256178798981L;
@@ -136,6 +132,11 @@ public class PathwayEdge extends Edge {
     	return this.pathwayMode; 
     }
 
+    @Override
+    public String toString() {
+    	return getFromVertex().getName() + "-- acs: " + isWheelchairAccessible() + " -->" + getToVertex().getName();
+    }
+    
     public String getName() {
         switch(pathwayMode) {
         	case MOVING_SIDEWALK:
@@ -189,7 +190,7 @@ public class PathwayEdge extends Edge {
     			return false;
 
     		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
-    		if(this.maxSlope > .083 && this.minWidth < 1) 
+    		if(this.maxSlope > .083 || Double.isNaN(minWidth) || Double.isNaN(this.maxSlope)) 
     			return false;
 
     		return true;

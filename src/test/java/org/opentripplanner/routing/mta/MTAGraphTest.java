@@ -19,6 +19,7 @@ import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.graph_builder.module.CrossFeedTransferGenerator;
 import org.opentripplanner.routing.connectivity.MTAStopAccessibilityStrategy;
 import org.opentripplanner.routing.algorithm.AStar;
+import org.opentripplanner.routing.core.OptimizeType;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
@@ -79,6 +80,8 @@ public class MTAGraphTest {
         AStar aStar = new AStar();
         options.setDateTime(date, time, graph.getTimeZone());
         options.setRoutingContext(graph, FEED_ID+":" + from, FEED_ID + ":" + to);
+        options.optimize = OptimizeType.WALKING;
+        options.setMaxWalkDistance(.804672); // .5 mi
         ShortestPathTree spt = aStar.getShortestPathTree(options);
         return spt.getPath(graph.getVertex(FEED_ID+":" + to), true);
     }
@@ -87,6 +90,8 @@ public class MTAGraphTest {
         AStar aStar = new AStar();
         options.setDateTime(date, time, graph.getTimeZone());
         options.setRoutingContext(graph,  from, to);
+        options.optimize = OptimizeType.WALKING;
+        options.setMaxWalkDistance(.804672); // .5 mi
         ShortestPathTree spt = aStar.getShortestPathTree(options);
         return spt.getPath(to, true);
     }

@@ -49,9 +49,9 @@ public class MTAStopAccessibilityStrategy extends DefaultStopAccessibilityStrate
 
     @Override
     protected boolean canUsePathway(State state, PathwayEdge pathway, List<Alert> alerts) {
-    	return state.getBackEdge().traverse(state) != null;
+    	return pathway.isWheelchairAccessible();
     }
-
+    
     @Override
     public boolean transitStopEvaluateGTFSAccessibilityFlag(Stop s) {
 		return s.getWheelchairBoarding() == 2;
