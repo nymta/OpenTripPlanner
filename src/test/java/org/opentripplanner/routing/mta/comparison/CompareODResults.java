@@ -421,9 +421,9 @@ public class CompareODResults {
         						this.resultSummary[o][m][platformDim.TIE.ordinal()])
         				/ (float)totalByOptimization[o])) * 100;
 
-        		// for each optimization, require our result to be the winner 95% of the time
+        		// for each optimization, require our result to be the winner 80% of the time
         		if(metricsDimLabels[m].startsWith(optimizationDimLabels[o])) {
-            		if(ourPercentage < 80) {
+            		if(ourPercentage <= 80) {
             			overallResult = false;
                 		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 80%+]");
             		} else {
@@ -432,9 +432,9 @@ public class CompareODResults {
             	} else {
             		// for the other two metrics (has results and matches), require 100% and 80%+ respectively
             		if(m == metricsDim.hasResults.ordinal()) {
-                		if(ourPercentage < 95) {
+                		if(ourPercentage <= 80) {
                 			overallResult = false;
-                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 95%+]");
+                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 80%+]");
                 		} else {
                     		System.out.println(" [PASS with " + String.format("%.0f",  ourPercentage) + "%]");
                 		}
