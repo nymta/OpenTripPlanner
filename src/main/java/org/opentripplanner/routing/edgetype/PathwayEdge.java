@@ -190,7 +190,8 @@ public class PathwayEdge extends Edge {
     			return false;
 
     		// from https://developers.google.com/transit/gtfs/reference#pathwaystxt
-    		if(this.maxSlope > .083 || Double.isNaN(minWidth) || Double.isNaN(this.maxSlope)) 
+    		if((!Double.isNaN(maxSlope) && maxSlope > .83) || 
+    				(!Double.isNaN(minWidth) && minWidth < 1)) 
     			return false;
 
     		return true;
