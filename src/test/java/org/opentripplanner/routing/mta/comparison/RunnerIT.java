@@ -24,7 +24,7 @@ public class RunnerIT {
     	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
     	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
     	t.setMTAOnly(false);
-    	t.setPairsToGenerate(200);
+    	t.setPairsToGenerate(250);
     	t.run();
     	
     	
@@ -61,12 +61,12 @@ public class RunnerIT {
    */
       
         
-    @Test
+ //   @Test
     public void Dev_QA() throws IOException, Exception {    	
 
- //   	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
- //  	t.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/version?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
- //   	t.run();
+//    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
+//    	t.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/version?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+//    	t.run();
 
     	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
     	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
