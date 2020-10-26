@@ -101,6 +101,18 @@ public class GraphBuilderParameters {
     public final FareServiceFactory fareServiceFactory;
 
     /**
+     * A specific stop accessibility strategy to use.
+     */
+    
+    public final String stopAccessibilityStrategy;
+
+    /**
+     * A specific transfer permission strategy to use.
+     */
+    
+    public final String transferPermissionStrategy;
+
+    /**
      * A custom OSM namer to use.
      */
     public final CustomNamer customNamer;
@@ -173,6 +185,8 @@ public class GraphBuilderParameters {
     public GraphBuilderParameters(JsonNode config, Path graphRoot) {
         htmlAnnotations = config.path("htmlAnnotations").asBoolean(false);
         transit = config.path("transit").asBoolean(true);
+        stopAccessibilityStrategy = config.path("stopAccessibilityStrategy").asText("default");
+        transferPermissionStrategy = config.path("transferPermissionStrategy").asText("default");
         useTransfersTxt = config.path("useTransfersTxt").asBoolean(false);
         parentStopLinking = config.path("parentStopLinking").asBoolean(false);
         stationTransfers = config.path("stationTransfers").asBoolean(false);

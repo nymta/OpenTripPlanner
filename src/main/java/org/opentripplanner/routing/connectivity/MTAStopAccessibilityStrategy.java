@@ -54,6 +54,9 @@ public class MTAStopAccessibilityStrategy extends DefaultStopAccessibilityStrate
     
     @Override
     public boolean transitStopEvaluateGTFSAccessibilityFlag(Stop s) {
+    	if(s.getId().getAgencyId().equals("NYCT"))
+    		return true;
+    	
 		return s.getWheelchairBoarding() == 2;
     }
 
