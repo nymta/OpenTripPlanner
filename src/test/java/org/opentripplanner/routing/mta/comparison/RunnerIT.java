@@ -61,7 +61,7 @@ public class RunnerIT {
    */
       
         
- //   @Test
+    @Test
     public void Dev_QA() throws IOException, Exception {    	
 
 //    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
