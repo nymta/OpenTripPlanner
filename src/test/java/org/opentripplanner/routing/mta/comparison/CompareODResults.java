@@ -204,7 +204,6 @@ public class CompareODResults {
     		Query query = baselineResult.query;
 
     		int o = optimizationDim.valueOf(query.optimizeFlag).ordinal();
-    		totalByOptimization[o]++;
 
     		// add all system's itineraries to an array to sort based on metric and score
     		List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
@@ -223,6 +222,8 @@ public class CompareODResults {
     			
     			continue;
     		}
+
+    		totalByOptimization[o]++;
 
     		for(int m = 0; m < metricsDim.values().length; m++) {
     			switch(metricsDim.values()[m]) {
@@ -306,7 +307,7 @@ public class CompareODResults {
     				}
 
     				break;
-
+    				
     			case hasResults:
 
     				if(!baselineResult.itineraries.isEmpty() && !devResult.itineraries.isEmpty()) {
@@ -417,7 +418,7 @@ public class CompareODResults {
             	// if this is the metric for the optimization--e.g. it's the WALKING results for the optimization WALKING, make 
             	// it one of the things that makes the whole test pass/fail
         		float ourPercentage = 
-        				((float)((this.resultSummary[o][m][platformDim.BASELINE.ordinal()] + 
+        				((float)((this.resultSummary[o][m][platformDim.DEV.ordinal()] + 
         						this.resultSummary[o][m][platformDim.TIE.ordinal()])
         				/ (float)totalByOptimization[o])) * 100;
 
