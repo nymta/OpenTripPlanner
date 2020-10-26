@@ -55,9 +55,11 @@ public class MTAStopAccessibilityStrategy extends DefaultStopAccessibilityStrate
     @Override
     public boolean transitStopEvaluateGTFSAccessibilityFlag(Stop s) {
     	// all MTA buses are accessible
-    	if(s.getId().getAgencyId().equals("MTA NYCT") || s.getId().getAgencyId().equals("MTABC"))
+    	if(s.getId().getAgencyId().equals("MTA NYCT") || s.getId().getAgencyId().equals("MTABC") 
+    			|| s.getId().getAgencyId().equals("SUB"))
     		return true;
     	
+    	// otherwise, default to what the GTFS says positively
 		return s.getWheelchairBoarding() == 2;
     }
 
