@@ -138,23 +138,30 @@ public class PathwayEdge extends Edge {
     }
     
     public String getName() {
+    	String name = "";
+    	
         switch(pathwayMode) {
         	case MOVING_SIDEWALK:
         	case ESCALATOR:
-        		return "escalator (" + this.getPathwayId() + ")";
+        		name += "escalator";
             case ELEVATOR:
-                return "elevator (" + this.getPathwayId() + ")";
+            	name += "elevator";
             case STAIRS:
-                return "stairs (" + this.getPathwayId() + ")";
+            	name += "stairs";
             case WALKWAY:
-                return "walkway (" + this.getPathwayId() + ")";
+            	name += "walkway";
             case FARE_GATE:
-            	return "fare gate (" + this.getPathwayId() + ")";
+            	name += "fare gate";
             case EXIT_GATE:
-            	return "exit gate (" + this.getPathwayId() + ")";
+            	name += "exit gate";
             default:
-                return "pathway (" + this.getPathwayId() + ")";
+            	name += "pathway";
         }
+        
+        if(verbose) 
+        	name += " (" + this.getPathwayId() + ")";
+
+        return name;
     }
 
     @Override
