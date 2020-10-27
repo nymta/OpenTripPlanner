@@ -144,18 +144,25 @@ public class PathwayEdge extends Edge {
         	case MOVING_SIDEWALK:
         	case ESCALATOR:
         		name += "escalator";
+        		break;
             case ELEVATOR:
             	name += "elevator";
+        		break;
             case STAIRS:
             	name += "stairs";
+        		break;
             case WALKWAY:
             	name += "walkway";
+        		break;
             case FARE_GATE:
             	name += "fare gate";
+        		break;
             case EXIT_GATE:
             	name += "exit gate";
+        		break;
             default:
             	name += "pathway";
+        		break;
         }
         
         if(verbose) 
