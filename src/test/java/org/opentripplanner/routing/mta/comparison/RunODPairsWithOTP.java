@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 
 public class RunODPairsWithOTP {
 	
-    private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
+    private String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
 
     private String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
 
@@ -35,7 +35,11 @@ public class RunODPairsWithOTP {
     public void setOTPURL(String u) {
     	this.OTP_URL = u;
     }
-    
+
+    public void setInputFile(String f) {
+    	this.PAIRS_TXT = f;
+    }
+
     public void setOutputFile(String f) {
     	this.OTP_RESULTS_TXT = f;
     }
@@ -81,6 +85,7 @@ public class RunODPairsWithOTP {
     		builder.setParameter("time", new SimpleDateFormat("hh:mm aa").format(epoch));
     		builder.setParameter("mode", "TRANSIT,WALK");
     		builder.setParameter("maxWalkDistance", "500");
+    		builder.setParameter("ignoreRealtimeUpdates", "true");
     		switch(optimizeFlag) {
     			case "W":
     				builder.setParameter("optimize",  "WALKING");

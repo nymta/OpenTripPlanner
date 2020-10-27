@@ -38,6 +38,8 @@ public class GenerateTestODPairsFromRunningInstance {
 	
     private String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
  
+    private double ACCESSIBILITY_PCT = .5;
+    
     private boolean MTA_ONLY = false;
     
     private String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
@@ -50,6 +52,10 @@ public class GenerateTestODPairsFromRunningInstance {
 
     public void setOTPURL(String u) {
     	this.OTP_STOPS_URL = u;
+    }
+
+    public void setAccessibilityPercent(Double p) {
+    	this.ACCESSIBILITY_PCT = p;
     }
 
     public void setPairsToGenerate(int v) {
@@ -115,7 +121,7 @@ public class GenerateTestODPairsFromRunningInstance {
     		
     		//System.out.println("Adding " + stop1id + " -> " + stop2id);
     		
-    		testOdPairs.write("Q " + ((Math.random() < .5) ? "Y " : "N ") + 
+    		testOdPairs.write("Q " + ((Math.random() < ACCESSIBILITY_PCT) ? "Y " : "N ") + 
     				randomTime.getMillis() + " " + 
     				s1.get("lat") + "," + s1.get("lon") + " " + 
     				s2.get("lat") + "," + s2.get("lon") + " " +

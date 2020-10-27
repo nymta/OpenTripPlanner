@@ -427,16 +427,16 @@ public class CompareODResults {
             	} else {
             		// for the other two metrics (has results and matches), require 100% and 80%+ respectively
             		if(m == metricsDim.hasResults.ordinal()) {
-                		if(ourPercentage <= 80) {
+                		if(ourPercentage <= 95) {
                 			overallResult = false;
-                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 80%+]");
+                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 95%+]");
                 		} else {
                     		System.out.println(" [PASS with " + String.format("%.0f",  ourPercentage) + "%]");
                 		}
             		} else if(m == metricsDim.match.ordinal()) {
-                		if(ourPercentage < 51) {
+                		if(ourPercentage <= 65) {
                 			overallResult = false;
-                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 51%+]");
+                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 65%+]");
                 		} else {
                     		System.out.println(" [PASS with " + String.format("%.0f",  ourPercentage) + "%]");
                 		}
