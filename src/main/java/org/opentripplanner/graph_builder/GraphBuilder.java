@@ -39,9 +39,12 @@ import org.opentripplanner.graph_builder.services.ned.ElevationGridCoverageFacto
 import org.opentripplanner.openstreetmap.impl.AnyFileBasedOpenStreetMapProviderImpl;
 import org.opentripplanner.openstreetmap.services.OpenStreetMapProvider;
 import org.opentripplanner.reflect.ReflectionLibrary;
+import org.opentripplanner.routing.connectivity.DefaultStopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.MTAStopAccessibilityStrategy;
 import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.graph.Graph;
-
+import org.opentripplanner.routing.transfers.DefaultTransferPermissionStrategy;
+import org.opentripplanner.routing.transfers.MTATransferPermissionStrategy;
 import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.GraphBuilderParameters;
 import org.opentripplanner.standalone.OTPMain;
@@ -332,6 +335,31 @@ public class GraphBuilder implements Runnable {
             graphBuilder.addModule(elevationBuilder);
         }
         if ( hasGTFS ) {
+        	switch(builderParams.transferPermissionStrategy) {
+        	case "mta":
+        		graphBuilder.getGraph().transferPermissionStrategy = new MTATransferPermissionStrategy(graphBuilder.getGraph());
+        		break;
+        		
+        	default:
+        	case "default":
+        		graphBuilder.getGraph().transferPermissionStrategy = new DefaultTransferPermissionStrategy();
+        		break;
+        	}
+        	LOG.info("Transfer permission strategy = " + graphBuilder.getGraph().transferPermissionStrategy.getClass().getCanonicalName());
+        	
+        	switch(builderParams.stopAccessibilityStrategy) {
+        	case "mta":
+        		graphBuilder.getGraph().stopAccessibilityStrategy = new MTAStopAccessibilityStrategy(graphBuilder.getGraph());
+        		break;
+        		
+        	default:
+        	case "default":
+        		graphBuilder.getGraph().stopAccessibilityStrategy = new DefaultStopAccessibilityStrategy(graphBuilder.getGraph());
+        		break;
+        		
+        	}
+        	LOG.info("Stop accessibility strategy = " + graphBuilder.getGraph().stopAccessibilityStrategy.getClass().getCanonicalName());
+        	
             // Make transfer edges from feed_transfers.txt
             if (crossFeedTransfers != null)  {
                 CrossFeedTransferGenerator module = new CrossFeedTransferGenerator(crossFeedTransfers);

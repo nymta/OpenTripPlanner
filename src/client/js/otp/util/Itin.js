@@ -256,7 +256,8 @@ otp.util.Itin = {
     },
 
     getLegStepText : function(step, asHtml) {
-        asHtml = (typeof asHtml === "undefined") ? true : asHtml;
+ /*       
+ 		asHtml = (typeof asHtml === "undefined") ? true : asHtml;
         var text = '';
         if(step.relativeDirection == "CIRCLE_COUNTERCLOCKWISE" || step.relativeDirection == "CIRCLE_CLOCKWISE") {
             var sprintf_values = {
@@ -293,6 +294,9 @@ otp.util.Itin = {
                             step.streetName + (asHtml ? "</b>" : "");
             }
         }
+ */
+
+        text = step.instructionText;
         return text;
     },
 

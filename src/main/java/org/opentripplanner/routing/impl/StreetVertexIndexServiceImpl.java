@@ -19,6 +19,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
+
+import org.onebusaway.gtfs.model.StopTime;
 import org.opentripplanner.analyst.core.Sample;
 import org.opentripplanner.analyst.request.SampleFactory;
 import org.opentripplanner.common.geometry.GeometryUtils;
@@ -212,6 +214,10 @@ public class StreetVertexIndexServiceImpl implements StreetVertexIndexService {
     private void postSetup() {
         for (Vertex gv : graph.getVertices()) {
             Vertex v = gv;
+            
+            if(v.getLat() == StopTime.MISSING_VALUE && v.getLon() ==StopTime.MISSING_VALUE)
+            	continue;
+            
             /*
              * We add all edges with geometry, skipping transit, filtering them out after. We do not
              * index transit edges as we do not need them and some GTFS do not have shape data, so
@@ -222,7 +228,7 @@ public class StreetVertexIndexServiceImpl implements StreetVertexIndexService {
              * rasterizing splitting long segments.
              */
             for (Edge e : gv.getOutgoing()) {
-                if (e instanceof PatternEdge || e instanceof TransferEdge)
+                if (e instanceof PatternEdge || e instanceof TransferEdge || e instanceof PathwayEdge)
                     continue;
                 LineString geometry = e.getGeometry();
                 if (geometry == null) {

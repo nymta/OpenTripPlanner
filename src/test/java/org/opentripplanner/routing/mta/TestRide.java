@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Similar to DefaultFareServiceImpl.Ride - could be merged */
-public class Ride {
+public class TestRide {
 
     private String startZone;
 
@@ -93,16 +93,18 @@ public class Ride {
         return lastStop.getId().getId();
     }
 
-    public static List<Ride> createRides(GraphPath path) {
-        List<Ride> rides = new ArrayList<>();
-        Ride ride = null;
+    public static List<TestRide> createRides(GraphPath path) {
+        List<TestRide> rides = new ArrayList<>();
+        TestRide ride = null;
         for (State state : path.states) {
             Edge edge = state.getBackEdge();
+            if(edge != null)
+            	System.out.println(edge.getFromVertex() + " => " + edge.getToVertex());
             if ( ! (edge instanceof HopEdge))
                 continue;
             HopEdge hEdge = (HopEdge) edge;
             if (ride == null || ! state.getRoute().equals(ride.route)) {
-                ride = new Ride();
+                ride = new TestRide();
                 rides.add(ride);
                 ride.startZone = hEdge.getBeginStop().getZoneId();
                 ride.zones.add(ride.startZone);
@@ -118,6 +120,8 @@ public class Ride {
             ride.endTime  = state.getTimeSeconds();
             // in default fare service, classify rides by mode
         }
+        
+        System.out.println("========");
         return rides;
     }
 }

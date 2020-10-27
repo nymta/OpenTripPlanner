@@ -20,6 +20,7 @@ import org.opentripplanner.common.TurnRestriction;
 import org.opentripplanner.common.TurnRestrictionType;
 import org.opentripplanner.common.geometry.*;
 import org.opentripplanner.common.model.P2;
+import org.opentripplanner.routing.connectivity.AccessibilityResult;
 import org.opentripplanner.routing.core.*;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
@@ -203,8 +204,9 @@ public class StreetEdge extends Edge implements Cloneable {
      * @return
      */
     private boolean canTraverse(RoutingRequest options, TraverseMode mode) {
-        if (options.wheelchairAccessible) {
+    	if (options.wheelchairAccessible) {
             if (!isWheelchairAccessible()) {
+            	LOG.info("OSM way is marked non-accessible; accessible street route will differ from non-accessible");
                 return false;
             }
             if (getMaxSlope() > options.maxSlope) {
@@ -262,7 +264,11 @@ public class StreetEdge extends Edge implements Cloneable {
     public State traverse(State s0) {
         final RoutingRequest options = s0.getOptions();
         StateEditor editor = doTraverse(s0, options, s0.getNonTransitMode());
+        if(editor == null)
+        	return null;
         State state = (editor == null) ? null : editor.makeState();
+        if(state == null)
+        	return null;
         /* Kiss and ride support. Mode transitions occur without the explicit loop edges used in park-and-ride. */
         if ((options.kissAndRide && options.arriveBy)) {
             // Branch search to "unparked" CAR mode ASAP after transit has been used.

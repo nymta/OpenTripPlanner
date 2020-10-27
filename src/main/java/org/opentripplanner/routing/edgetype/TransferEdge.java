@@ -37,8 +37,10 @@ public class TransferEdge extends Edge {
 
     private LineString geometry = null;
 
-    private boolean wheelchairAccessible = true;
     private boolean verbose = false;
+
+    private boolean wheelchairAccessible = true;
+
     private static final Logger LOG = LoggerFactory.getLogger(TransferEdge.class);
 
     /**
@@ -111,6 +113,12 @@ public class TransferEdge extends Edge {
             }
             return null;
         }
+        if (s0.getOptions().wheelchairAccessible && !wheelchairAccessible) {
+            if (verbose) {
+                LOG.info("   debug disallow, not wheelchairAccessible");
+            }
+            return null;
+        }
         if (distance > s0.getOptions().maxTransferWalkDistance) {
             if (verbose) {
                 System.out.println("   distance > maxTransferWalkDistance");
@@ -124,13 +132,6 @@ public class TransferEdge extends Edge {
             weight += calculateOverageWeight(beforeStateWalk, afterStateWalk,
                     options.getMaxWalkDistance(), options.softWalkPenalty,
                     options.softWalkOverageRate);
-        }
-        if (s0.getOptions().wheelchairAccessible && !wheelchairAccessible) {
-            System.out.println("   not wheelchairAccessible");
-            if (verbose) {
-                LOG.info("   debug disallow, not wheelchairAccessible");
-            }
-            return null;
         }
 
         if (s0.getOptions().getRoutingContext() != null && s0.getOptions().getRoutingContext().graph.transferPermissionStrategy != null) {
@@ -170,7 +171,7 @@ public class TransferEdge extends Edge {
     public boolean isWheelchairAccessible() {
         return wheelchairAccessible;
     }
-
+    
     /*
      * Before merge with SimpleTransfer, this class had its own time parameter = min_transfer_time, or distance if min_tranfer_time unset.
      * min_transfer_time is handled in the TransferTable, so now time can be calculated from distance.

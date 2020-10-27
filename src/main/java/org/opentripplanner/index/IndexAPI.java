@@ -266,13 +266,14 @@ public class IndexAPI {
            index.clusterStopsAsNeeded();
            stops = Lists.newArrayList();
            for (Stop stop : index.stopForId.values()) {
-               if (agencyId != null && !(stop.getId().getAgencyId().equals(agencyId))) continue;
+               if (agencyId != null && !(stop.getId().getAgencyId().equals(agencyId)) || stop == null) continue;
                if (traverseMode != null &&
                        !(index.routesForStop(stop).stream().anyMatch(route ->
                                GtfsLibrary.getTraverseMode(route) == traverseMode))) continue;
 
-               String cluster = index.stopClusterForStop.get(stop).id;
-               stops.add(new StopDetail(stop, cluster));
+               StopCluster sc = index.stopClusterForStop.get(stop);
+               if(sc != null)
+            	   stops.add(new StopDetail(stop, sc.id));
            }
         }
        else if (expectCircle) {

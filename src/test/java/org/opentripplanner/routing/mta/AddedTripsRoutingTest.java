@@ -64,7 +64,7 @@ public class AddedTripsRoutingTest extends MTAGraphTest {
         LOG.info("found path: {} from {} to {}", hash, new Date(path.getStartTime() * 1000), new Date(path.getEndTime() * 1000));
 
         // Make sure we found a Z trip that arrives within 60min
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("104450_Z..S", rides.get(0).getTrip().getId());
 
@@ -84,7 +84,7 @@ public class AddedTripsRoutingTest extends MTAGraphTest {
         String hash = path.getRoutePatternHash();
         LOG.info("found path: {} from {} to {}", hash, new Date(path.getStartTime() * 1000), new Date(path.getEndTime() * 1000));
 
-        List<Ride> rides = Ride.createRides(path);
+        List<TestRide> rides = TestRide.createRides(path);
         assertEquals(1, rides.size());
         assertEquals("B20171105WKD_105450_J..N22R", rides.get(0).getTrip().getId());
     }

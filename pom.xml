@@ -8,7 +8,7 @@
 
     <groupId>org.opentripplanner</groupId>
     <artifactId>otp</artifactId>
-    <version>1.3.0.59-SNAPSHOT</version>
+    <version>1.3.0.60-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <licenses>
@@ -180,7 +180,35 @@
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>
+                </plugin>				
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.2.1</version>
+					<executions>
+						<execution>
+							<id>server</id>
+							<goals>
+								<goal>java</goal>
+							</goals>
+							<configuration>
+								<mainClass>org.opentripplanner.standalone.OTPMain</mainClass>
+								<commandlineArgs>--router default --server --verbose</commandlineArgs>
+							</configuration>
+						</execution>
+						<execution>
+							<id>bundle</id>
+							<goals>
+								<goal>java</goal>
+							</goals>
+							<configuration>
+								<mainClass>org.opentripplanner.standalone.OTPMain</mainClass>
+								<commandlineArgs>--build /var/otp/graphs/default --verbose</commandlineArgs>
+							</configuration>
+						</execution>
+		
+					</executions>
+				</plugin>
             </plugins>
         </pluginManagement>
 
@@ -266,12 +294,21 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.12</version>
-                <configuration>
-                    <argLine>-Xmx4G</argLine>
-                    <!-- Jenkins needs XML test reports to determine whether the build is stable. -->
-                    <disableXmlReport>false</disableXmlReport>
-                </configuration>
-            </plugin>
+       			<configuration>
+  	                	<argLine>-Xmx4G</argLine>
+      	            	<!-- Jenkins needs XML test reports to determine whether the build is stable. -->
+          	        	<disableXmlReport>false</disableXmlReport>			
+   				</configuration>		
+            </plugin>            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.12</version>
+       			<configuration>
+  	                	<argLine>-Xmx4G</argLine>
+   				</configuration>		
+            </plugin>   
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -522,6 +559,7 @@
             <artifactId>jcl-over-slf4j</artifactId>
             <version>1.7.6</version>
         </dependency>
+
         <!-- Guava provides improved collections, among other things. -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -583,7 +621,12 @@
             <artifactId>gt-epsg-hsql</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-math3</artifactId>
+		    <version>3.2</version>
+		</dependency>
         <!-- TODO: this should be replaced by Jackson serialization -->
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>
@@ -730,7 +773,7 @@
         <dependency>
             <groupId>org.onebusaway</groupId>
             <artifactId>onebusaway-gtfs</artifactId>
-            <version>1.3.87</version>
+            <version>1.3.90-SNAPSHOT</version>
         </dependency>
         <!-- GTFS-RT classes (with extensions) - from OBA -->
         <dependency>
@@ -805,6 +848,11 @@
             <artifactId>osmpbf</artifactId>
             <version>1.3.4</version>
         </dependency>
+		<dependency>
+    		<groupId>com.thoughtworks.xstream</groupId>
+    		<artifactId>xstream</artifactId>
+    		<version>1.4.12</version>
+		</dependency>
         <!-- Command line parameter parsing -->
         <dependency>
             <groupId>com.beust</groupId>

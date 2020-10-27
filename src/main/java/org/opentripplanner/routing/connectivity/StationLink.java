@@ -42,7 +42,7 @@ public class StationLink {
 
     public boolean isActive() { return this.isActive; }
 
-    public StationLink(int id, int sourceId, int destinationId, PathwayEdge.Mode mode, String pathwayCode, boolean isActive) {
+    public StationLink(int id, int sourceId, int destinationId, PathwayEdge.Mode mode, boolean isActive) {
         this.id = id;
         this.sourceId = sourceId;
         this.destinationId = destinationId;
@@ -55,8 +55,6 @@ public class StationLink {
                 break;
             default: this.type = Type.OTHER;
         }
-        this.type = type;
-        this.pathwayCode = pathwayCode;
         this.isActive = isActive;
     }
 }
