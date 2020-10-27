@@ -216,8 +216,7 @@ public class GraphIndex {
         // Also, only change falses to true--if a prior process (e.g. GTFS) has marked a stop accessible, don't
         // second guess that assessment
         //
-        LOG.info("Stop accessibility strategy = " + graph.stopAccessibilityStrategy.getClass().getCanonicalName());
-        LOG.info("Computing pathway/station accessibility...");
+        LOG.info("Computing pathway/station accessibility via pathways...");
 
         Set<Integer> visitedList = new HashSet<Integer>();
         for (Vertex v : vertices) {
@@ -237,8 +236,6 @@ public class GraphIndex {
         	boolean r = walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph);
         	ts.setWheelchairEntrance(r);
         }
-        
-        LOG.info("done");
     }
 
     private boolean walkEdges(Collection<Edge> edges, Coordinate fromLocation, Set<Integer>visitedList, Graph graph) {
