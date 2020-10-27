@@ -212,6 +212,10 @@ public class GraphIndex {
         // go through all vertices and for each entrance, walk all the outgoing edges--
         // if there's at least one accessible path to a platform (defined by a location type that isn't 
         // connected via a pathway), mark this entrance "accessible". 
+        //
+        // Also, only change falses to true--if a prior process (e.g. GTFS) has marked a stop accessible, don't
+        // second guess that assessment
+        //
         LOG.info("Stop accessibility strategy = " + graph.stopAccessibilityStrategy.getClass().getCanonicalName());
         LOG.info("Computing pathway/station accessibility...");
 
@@ -225,7 +229,9 @@ public class GraphIndex {
         	// only start walking from entrances--everything should connect to at least one via some
         	// pathway(s). For those stops that don't have entrances, just process anything that will be linked
         	// to the OSM street graph
-        	if((ts.hasEntrances() && !ts.isEntrance()) || (!ts.hasEntrances() && !ts.shouldLinkToStreet())) 
+        	if((ts.hasEntrances() && !ts.isEntrance()) 
+        			|| (!ts.hasEntrances() && !ts.shouldLinkToStreet()) 
+        			|| ts.hasWheelchairEntrance() == true) 
         		continue;
 
         	boolean r = walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph);
