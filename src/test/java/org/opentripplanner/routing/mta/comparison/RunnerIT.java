@@ -49,12 +49,12 @@ public class RunnerIT {
     	t2.run();
 
     	System.out.println("*************************************");
-    	System.out.println("BASELINE = QA   DEV = DEMO");
+    	System.out.println("BASELINE = QA   TEST = DEMO");
     	System.out.println("*************************************");
 
     	CompareODResults t3 = new CompareODResults();
     	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_baseline.txt");
-    	t3.setDevResultsFile("src/test/resources/mta/test_demo_otp.txt");
+    	t3.setTestResultsFile("src/test/resources/mta/test_demo_otp.txt");
     	t3.run();
 
     }
@@ -74,12 +74,12 @@ public class RunnerIT {
     	t2.run();
 
     	System.out.println("*************************************");
-    	System.out.println("BASELINE = QA   DEV = DEV");
+    	System.out.println("BASELINE = QA   TEST = DEV");
     	System.out.println("*************************************");
 
       	CompareODResults t3 = new CompareODResults();
     	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_baseline.txt");
-    	t3.setDevResultsFile("src/test/resources/mta/test_dev_otp.txt");
+    	t3.setTestResultsFile("src/test/resources/mta/test_dev_otp.txt");
     	t3.run();
 
     }

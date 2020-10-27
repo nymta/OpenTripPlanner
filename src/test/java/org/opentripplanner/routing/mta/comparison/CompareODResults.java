@@ -50,7 +50,7 @@ public class CompareODResults {
 		this.BASELINE_RESULTS_TXT = f;
 	}
 	
-	public void setDevResultsFile(String f) {
+	public void setTestResultsFile(String f) {
 		this.DEV_RESULTS_TXT = f;
 	}
 	
@@ -212,12 +212,6 @@ public class CompareODResults {
 
     		// both systems produced nothing; skip?
     		if(sortedResults.isEmpty()) {
-    			// call this a "match"
-    			this.resultSummary
-				[o]
-				[metricsDim.match.ordinal()]	
-				[platformDim.TIE.ordinal()]++;
-
     			noResultQueries.add(baselineResult.query);
     			
     			continue;
@@ -345,7 +339,7 @@ public class CompareODResults {
   
     	for(int o = 0; o < optimizationDim.values().length; o++) {
     		String header = "OPTIMIZATION: " + String.format("%-10s (n=%3d)", optimizationDimLabels[o], totalByOptimization[o]) + 
-    				"         BASELINE           TIE           DEV       BASELINE SUCCESS MARGIN STATS*          DEV SUCCESS MARGIN STATS*";
+    				"         BASELINE           TIE           TEST      BASELINE SUCCESS MARGIN STATS*          TEST SUCCESS MARGIN STATS*";
         	System.out.println(header);
         	System.out.println(header.replaceAll("[^\\s]", "-"));
         	
@@ -458,7 +452,7 @@ public class CompareODResults {
     	System.out.println("* success margin stats are computed against the opposing platform's top result, if it produces one. Ties are not included.\n"
     			+ "** 'no result' matches are included.\n");
     	
-    	System.out.println("NO RESULT QUERIES:");
+    	System.out.println("NO RESULT QUERIES (ACROSS BOTH SYSTEMS):");
     	for(Query q : noResultQueries) {
     		System.out.println(q);
     	}
