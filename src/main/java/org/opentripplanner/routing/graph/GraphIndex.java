@@ -212,6 +212,7 @@ public class GraphIndex {
         // go through all vertices and for each entrance, walk all the outgoing edges--
         // if there's at least one accessible path to a platform (defined by a location type that isn't 
         // connected via a pathway), mark this entrance "accessible". 
+        LOG.info("Stop accessibility strategy = " + graph.stopAccessibilityStrategy.getClass().getCanonicalName());
         LOG.info("Computing pathway/station accessibility...");
 
         Set<Integer> visitedList = new HashSet<Integer>();
@@ -230,11 +231,16 @@ public class GraphIndex {
         	boolean r = walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph);
         	ts.setWheelchairEntrance(r);
         }
+        
+        LOG.info("done");
     }
 
     private boolean walkEdges(Collection<Edge> edges, Coordinate fromLocation, Set<Integer>visitedList, Graph graph) {
-    	boolean r = true;
     	
+    	if(edges.isEmpty())
+    		return false;
+    	
+    	boolean r = false;
     	for(Edge e : edges) {
     		// if we've ventured out of pathways network, skip
     		if(!(e instanceof PathwayEdge))
@@ -260,12 +266,12 @@ public class GraphIndex {
 
     		// (since we use this loop to update geoms, we need to keep going even though we know the result
     		// on accessibililty will be false)
-    		if(!e.isWheelchairAccessible())
-    			r = false;
+    		if(e.isWheelchairAccessible())
+    			r = true;
     		
-    		if(! walkEdges(e.getToVertex().getOutgoing(), 
+    		if(walkEdges(e.getToVertex().getOutgoing(), 
     				toLocation, visitedList, graph))
-    			r = false;
+    			r = true;
     	}
     	
     	return r;
