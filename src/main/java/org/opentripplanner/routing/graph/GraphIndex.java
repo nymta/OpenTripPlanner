@@ -219,14 +219,16 @@ public class GraphIndex {
         	if(!(v instanceof TransitStop))
         		continue;
 
-        	// only start walking from entrances--everything should connect to at least one via some
-        	// pathway(s)
         	TransitStop ts = (TransitStop)v;
-        	if(!ts.isEntrance())
+
+        	// only start walking from entrances--everything should connect to at least one via some
+        	// pathway(s). For those stops that don't have entrances, just process anything that will be linked
+        	// to the OSM street graph
+        	if((ts.hasEntrances() && !ts.isEntrance()) || (!ts.hasEntrances() && !ts.shouldLinkToStreet())) 
         		continue;
 
-        	ts.setWheelchairEntrance(
-        			walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph));
+        	boolean r = walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph);
+        	ts.setWheelchairEntrance(r);
         }
     }
 
