@@ -25,11 +25,14 @@ import org.opentripplanner.routing.graph.Graph;
 
 import flexjson.JSONDeserializer;
 
+import java.awt.List;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +51,10 @@ public class GenerateTestODPairsFromRunningInstance {
 
     private static final String[] optimizations = new String[] { "W", "X", "T" };
     
+    private Map<String, Integer> agencyMax = new HashMap<String, Integer>();
+    private ArrayList<String> agenciesIndex;
+    private int pointsByAgency[];
+	
     protected static Graph graph;
 
     public void setOTPURL(String u) {
@@ -70,6 +77,11 @@ public class GenerateTestODPairsFromRunningInstance {
     	this.MTA_ONLY = v;
     }
     
+    public void setMax(String agency, int max) {
+    	agencyMax.put(agency,  max);
+    }
+
+    
 //	@Test
     @SuppressWarnings("unchecked")
     public void run() throws IOException, URISyntaxException {
@@ -89,6 +101,15 @@ public class GenerateTestODPairsFromRunningInstance {
     		return;
     	}
     	
+    	
+		if(!agencyMax.isEmpty()) {
+		    agenciesIndex = new ArrayList<String>();
+			agenciesIndex.addAll(agencyMax.keySet());
+
+			pointsByAgency = new int[agencyMax.keySet().size()];
+   		}    	
+    	
+    	
     	System.out.print("Generating stop pairs ...");
     	
     	DateTime startTime = new DateTime();
@@ -107,6 +128,7 @@ public class GenerateTestODPairsFromRunningInstance {
     		AgencyAndId stop1id = AgencyAndId.convertFromString((String)s1.get("id"), ':');
        		AgencyAndId stop2id = AgencyAndId.convertFromString((String)s2.get("id"), ':');
        	 
+
        		if(MTA_ONLY) {
 	       		if(!stop1id.getAgencyId().equals("MTASBWY") && !stop1id.getAgencyId().equals("MTA") 
 	       				&& !stop1id.getAgencyId().equals("MNR") && !stop1id.getAgencyId().equals("LI"))
@@ -116,7 +138,22 @@ public class GenerateTestODPairsFromRunningInstance {
 	       				&& !stop2id.getAgencyId().equals("MNR") && !stop2id.getAgencyId().equals("LI"))
 	       			continue;
        		}
-		
+ 
+       		
+       		// track how many points per agency we have, and if the count exceeds the target percentage 
+       		// then skip this plan. Just evaluate the starting point because if we eval both points, the 
+       		// probability of finding a trip that works goes /way/ down
+       		if(!agencyMax.isEmpty()) {
+       			String agency1 = stop1id.getAgencyId();
+       			
+       			if(pointsByAgency[agenciesIndex.indexOf(agency1)] > agencyMax.get(agency1)) {
+       				continue;
+       			} else {
+       				pointsByAgency[agenciesIndex.indexOf(agency1)]++;
+       			}
+       		}
+        		
+       		
     		DateTime randomTime = new DateTime(startTime.getMillis() + (long)(searchPeriod * Math.random()));
     		
     		//System.out.println("Adding " + stop1id + " -> " + stop2id);
