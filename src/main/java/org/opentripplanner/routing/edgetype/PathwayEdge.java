@@ -134,7 +134,7 @@ public class PathwayEdge extends Edge {
 
     @Override
     public String toString() {
-    	return getFromVertex().getName() + "-- acs: " + isWheelchairAccessible() + " -->" + getToVertex().getName();
+        return "Pathway from " + getFromVertex().getName() + " to " + getToVertex().getName() + ", id: " + this.getPathwayId() + " accessible: " + isWheelchairAccessible();
     }
     
     public String getName() {

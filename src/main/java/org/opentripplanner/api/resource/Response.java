@@ -32,7 +32,6 @@ public class Response {
     private PlannerError error = null;
 
     /** Debugging and profiling information */
-    @Ignore
     public DebugOutput debugOutput = null;
 
     /** This no-arg constructor exists to make JAX-RS happy. */ 

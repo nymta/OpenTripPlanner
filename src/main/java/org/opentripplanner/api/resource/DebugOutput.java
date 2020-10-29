@@ -19,6 +19,8 @@ import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opentripplanner.routing.graph.Edge;
+import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.util.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,8 @@ public class DebugOutput {
     public long renderingTime;
     public long totalTime;
     public boolean timedOut;
-
+    public String paths = null;
+    
     /**
      * Record the time when we first began calculating a path for this request
      * (before any heuristic pre-calculation). Note that timings will not

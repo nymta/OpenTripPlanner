@@ -72,7 +72,7 @@ public class GraphPathFinder {
     private static final double DEFAULT_MAX_WALK = 2000;
     private static final double CLAMP_MAX_WALK = 15000;
 
-    private boolean verbose = false;
+    private boolean verbose = true;
 
     Router router;
 
@@ -305,23 +305,31 @@ public class GraphPathFinder {
 
 
         if (verbose) {
-            int i = 0;
+        	int i = 0;
             for (GraphPath p : paths) {
                 int j = 0;
                 int k = 0;
                 LOG.info("New Path {}", i);
                 for (State s: p.states) {
-                    LOG.info("{} {}: ", j, s);
+                	LOG.info("{} {}: ", j, s);
                     j++;
                 }
                 for (Edge e: p.edges) {
-                    LOG.info("{} {}: ", k, e);
+	  				LOG.info("{} {}: {}", k, e, e.isWheelchairAccessible());
                     k++;
                 }
                 i++;
             }
         }
 
+    	String debug = "";        
+        for (GraphPath p : paths) {
+        	debug += "----- PATH ----\n";
+            for (Edge e: p.edges) {
+            	debug += e + "\n";
+            }
+        }
+        options.rctx.debugOutput.paths = debug;
 
         return paths;
     }
@@ -508,7 +516,7 @@ public class GraphPathFinder {
             request.rctx.debugOutput.finishedRendering(); // make sure we still report full search time
             throw new PathNotFoundException();
         }
-
+       
         return paths;
     }
 
