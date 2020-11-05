@@ -36,6 +36,7 @@ import org.opentripplanner.routing.edgetype.StreetTransitLink;
 import org.opentripplanner.routing.edgetype.TemporaryFreeEdge;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.graph.GraphIndex;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.location.TemporaryStreetLocation;
 import org.opentripplanner.routing.vertextype.BikeParkVertex;
@@ -163,7 +164,12 @@ public class SimpleStreetSplitter {
 
     /** Link this vertex into the graph */
     public boolean link(Vertex vertex, TraverseMode traverseMode, RoutingRequest options, boolean stopLinking) {
-        // find nearby street edges
+        /* Initialize graph index which is needed by the stop accessibility evaluation. */
+        if (graph.index == null) {
+            graph.index = new GraphIndex(graph);
+        }
+        
+    	// find nearby street edges
         // TODO: we used to use an expanding-envelope search, which is more efficient in
         // dense areas. but first let's see how inefficient this is. I suspect it's not too
         // bad and the gains in simplicity are considerable.
