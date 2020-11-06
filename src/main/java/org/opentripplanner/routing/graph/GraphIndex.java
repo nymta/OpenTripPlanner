@@ -264,8 +264,7 @@ public class GraphIndex {
     		if(toLocation.x == StopTime.MISSING_VALUE || toLocation.y == StopTime.MISSING_VALUE)
     			toLocation = fromLocation;
     		
-    		((PathwayEdge)graph.getEdgeById(
-    				e.getId())).setGeometry(fromLocation, toLocation);
+    		((PathwayEdge)e).setGeometry(fromLocation, toLocation);
 
     		// (since we use this loop to update geoms, we need to keep going even though we know the result
     		// on accessibililty will be false)
