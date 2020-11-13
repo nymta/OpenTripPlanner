@@ -1,8 +1,8 @@
 package org.opentripplanner.api.resource;
 
 import com.google.common.collect.Maps;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import com.webcohesion.enunciate.metadata.Ignore;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.referencing.GeodeticCalculator;
