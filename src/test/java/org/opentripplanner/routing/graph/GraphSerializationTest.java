@@ -15,7 +15,6 @@ import org.opentripplanner.routing.vertextype.TransitStation;
 import java.io.File;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
