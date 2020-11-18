@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
+import org.opentripplanner.routing.mta.comparison.GenerateTestODPairsFromRunningInstance;
 
 import java.io.*;
 
@@ -113,30 +114,11 @@ public class RunnerIT {
     	t2.setOutputFile("src/test/resources/mta/test_dev_100_accessible.txt");
     	t2.run();    	
     }
-
-    @Test
-    public void i_Test_Demo_NoAccessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_demo_0_accessible.txt");
-    	t2.run();    	
-    }
-    
-    @Test
-    public void j_Test_Demo_Accessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_demo_100_accessible.txt");
-    	t2.run();    	
-    }
-      
         
     @Test
-    public void k1_DevXProd_Results() throws IOException, Exception {    	
+    public void k1_QAXProd_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
-    	System.out.println("                                    PROD   vs   DEV");
+    	System.out.println("                                    PROD   vs   QA");
     	System.out.println("             ***************************************************************");
 
     	System.out.println("");
@@ -145,13 +127,13 @@ public class RunnerIT {
 
       	CompareODResults t3 = new CompareODResults();
     	t3.setBaselineResultsFile("src/test/resources/mta/test_prod_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_dev_0_accessible.txt");
+    	t3.setTestResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
     	t3.run();
 
     }
     
     @Test
-    public void k2_DevXProd_Results() throws IOException, Exception {    	
+    public void k2_QAXProd_Results() throws IOException, Exception {    	
 
     	System.out.println("");
     	System.out.println("ACCESSIBLE QUERIES");
@@ -159,7 +141,7 @@ public class RunnerIT {
 
       	CompareODResults t4 = new CompareODResults();
     	t4.setBaselineResultsFile("src/test/resources/mta/test_prod_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_dev_100_accessible.txt");
+    	t4.setTestResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
     	t4.run();
     }    	
     	
@@ -192,99 +174,7 @@ public class RunnerIT {
     	t4.setBaselineResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
     	t4.setTestResultsFile("src/test/resources/mta/test_dev_100_accessible.txt");
     	t4.run();
-    }    	
-
-    
-    @Test
-    public void m1_DemoXProd_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    PROD   vs   DEMO");
-    	System.out.println("             ***************************************************************");
-
-    	System.out.println("");
-    	System.out.println("NO ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-      	CompareODResults t3 = new CompareODResults();
-    	t3.setBaselineResultsFile("src/test/resources/mta/test_prod_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_demo_0_accessible.txt");
-    	t3.run();
-    }
-    
-    @Test
-    public void m2_DemoXProd_Results() throws IOException, Exception {    	
-    	
-    	System.out.println("");
-    	System.out.println("ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-      	CompareODResults t4 = new CompareODResults();
-    	t4.setBaselineResultsFile("src/test/resources/mta/test_prod_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_demo_100_accessible.txt");
-    	t4.run();
-    }    	
-
-    
-    @Test
-    public void n1_DemoXQA_Results() throws IOException, Exception {   
-    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    QA   vs   DEMO");
-    	System.out.println("             ***************************************************************");
-
-    	System.out.println("");
-    	System.out.println("NO ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-      	CompareODResults t3 = new CompareODResults();
-    	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_demo_0_accessible.txt");
-    	t3.run();
-
-    }
-    @Test
-    public void n2_DemoXQA_Results() throws IOException, Exception {   
-
-    	System.out.println("");
-    	System.out.println("ACCESSIBLE QUERIES");
-    	System.out.println("");
-    	
-      	CompareODResults t4 = new CompareODResults();
-    	t4.setBaselineResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_demo_100_accessible.txt");
-    	t4.run();
-    }    	
-      
-    
-    @Test
-    public void o1_DemoXDev_Results() throws IOException, Exception {   
-    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    DEV   vs   DEMO");
-    	System.out.println("             ***************************************************************");
-
-    	System.out.println("");
-    	System.out.println("NO ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-      	CompareODResults t3 = new CompareODResults();
-    	t3.setBaselineResultsFile("src/test/resources/mta/test_dev_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_demo_0_accessible.txt");
-    	t3.run();
-
-    }
-    @Test
-    public void o2_DemoXDev_Results() throws IOException, Exception {   
-
-    	System.out.println("");
-    	System.out.println("ACCESSIBLE QUERIES");
-    	System.out.println("");
-    	
-      	CompareODResults t4 = new CompareODResults();
-    	t4.setBaselineResultsFile("src/test/resources/mta/test_dev_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_demo_100_accessible.txt");
-    	t4.run();
-    }    	
+    }    		
        
 }
 

@@ -15,6 +15,10 @@ package org.opentripplanner.routing.mta.comparison;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.rank.Max;
 import org.apache.commons.math3.stat.descriptive.rank.Min;
+import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
+import org.opentripplanner.routing.mta.comparison.test_file_format.Query;
+import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
+
 import java.util.*;
 
 import static org.junit.Assert.assertTrue;
@@ -35,7 +39,7 @@ public class CompareODResults {
 
     private enum metricsDim { W, X, T, hasResults, match };
 
-	private enum platformDim { BASELINE, DEV, TIE };
+	public enum platformDim { BASELINE, DEV, TIE };
 
 	// dimensions: optimization
 	private int[] totalByOptimization = new int[3];
@@ -418,7 +422,7 @@ public class CompareODResults {
 
         		// for each optimization, require our result to be the winner 80% of the time
         		if(metricsDimLabels[m].startsWith(optimizationDimLabels[o])) {
-            		if(ourPercentage <= 80) {
+            		if(ourPercentage < 80) {
             			overallResult = false;
                 		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 80%+]");
             		} else {
@@ -427,16 +431,16 @@ public class CompareODResults {
             	} else {
             		// for the other two metrics (has results and matches), require 100% and 80%+ respectively
             		if(m == metricsDim.hasResults.ordinal()) {
-                		if(ourPercentage <= 95) {
+                		if(ourPercentage < 95) {
                 			overallResult = false;
                     		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 95%+]");
                 		} else {
                     		System.out.println(" [PASS with " + String.format("%.0f",  ourPercentage) + "%]");
                 		}
             		} else if(m == metricsDim.match.ordinal()) {
-                		if(ourPercentage <= 65) {
+                		if(ourPercentage < 60) {
                 			overallResult = false;
-                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 65%+]");
+                    		System.out.println(" [FAIL; have " + String.format("%.0f",  ourPercentage) + "% need 60%+]");
                 		} else {
                     		System.out.println(" [PASS with " + String.format("%.0f",  ourPercentage) + "%]");
                 		}
@@ -463,86 +467,4 @@ public class CompareODResults {
     	assertTrue(overallResult);
     }
 
-    private class Query {
-    	
-    	public long time;
-    	
-    	public boolean accessible;
-
-    	public String origin;
-    	
-    	public String destination;
-    	
-    	public String optimizeFlag;
-    	
-    	public Query(String line) throws Exception {
-    		String parts[] = line.split(" ");
-    		
-    		if(parts.length != 6 && parts[0].equals("Q"))
-    			throw new Exception("Nope.");
-
-    		accessible = parts[1].trim().equals("Y");
-    		time = Long.parseLong(parts[2].trim());
-    		origin = parts[3].trim();
-    		destination = parts[4].trim();
-    		optimizeFlag = parts[5].trim();
-    	}
-
-        @Override
-        public boolean equals(Object o) {
-        	return this.hashCode() == o.hashCode();
-        }
-
-        @Override
-        public int hashCode() {
-            return (int)(time * 31) * origin.hashCode() 
-            		* destination.hashCode() + 
-            		optimizeFlag.hashCode() + 
-            		(accessible ? 3 : 0);
-        }
-        
-        public String toString() { // TODO: make into BASELINE URLs
-        	return origin + " -> " + destination;
-        }
-    }
-    
-    private class Result {
-
-        public Query query;
-
-        List<ItinerarySummary> itineraries = new ArrayList<ItinerarySummary>();
-
-    }
-   
-    private class ItinerarySummary {
-    
-    	public int itineraryNumber;
-    	
-    	public double walkDistance;
-    	
-    	public int transitTime;
-    	
-    	public String routes = "";
-    	
-    	public platformDim platform;
-
-    	public String toString() {
-    		return platform.toString() + "" + itineraryNumber + ": Walk=" + walkDistance + ", transit=" + transitTime + ", Routes = " + routes;
-    	}
-    	
-    	public ItinerarySummary(String line) throws Exception {
-    		String parts[] = line.split(" ");
-    		
-    		if(parts.length < 4 && parts[0].equals("S"))
-    			throw new Exception("Nope.");
-    		
-    		itineraryNumber = Integer.parseInt(parts[1].trim());
-    		walkDistance = Double.parseDouble(parts[2].trim());
-    		transitTime = Integer.parseInt(parts[3].trim());
-
-    		// some results have no routes
-    		if(parts.length > 4)
-    			routes = parts[4].trim();
-    	}
-    }
 }
