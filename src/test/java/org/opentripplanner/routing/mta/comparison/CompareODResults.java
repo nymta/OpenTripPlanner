@@ -35,7 +35,7 @@ public class CompareODResults {
     
 	private enum optimizationDim { W, X, T };
 	
-    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "BASELINE TOP IN DEV RESULTS**" };
+    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "BASELINE TOP IN TEST RESULTS**" };
 
     private enum metricsDim { W, X, T, hasResults, match };
 
