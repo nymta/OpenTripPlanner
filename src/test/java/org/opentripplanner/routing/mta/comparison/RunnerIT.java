@@ -30,12 +30,12 @@ public class RunnerIT {
     	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
     	t.setMTAOnly(true);
 
-    	t.setPairsToGenerate(100);
+    	t.setPairsToGenerate(150);
     	t.setAccessibilityPercent(0.0);
-    	t.setMax("MTA", 25);
-    	t.setMax("MTASBWY", 25);
-    	t.setMax("LI", 25);
-    	t.setMax("MNR", 25);
+    	t.setMax("MTA", 37);
+    	t.setMax("MTASBWY", 37);
+    	t.setMax("LI", 37);
+    	t.setMax("MNR", 37);
     	
     	t.setOutputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
     	t.run();
@@ -48,12 +48,12 @@ public class RunnerIT {
     	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
     	t.setMTAOnly(true);
 
-    	t.setPairsToGenerate(100);
+    	t.setPairsToGenerate(150);
     	t.setAccessibilityPercent(1.0);
-    	t.setMax("MTA", 75);
-    	t.setMax("MTASBWY", 75);
-    	t.setMax("LI", 75);
-    	t.setMax("MNR", 75);
+    	t.setMax("MTA", 37);
+    	t.setMax("MTASBWY", 37);
+    	t.setMax("LI", 37);
+    	t.setMax("MNR", 37);
     	
     	t.setOutputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
     	t.run();
