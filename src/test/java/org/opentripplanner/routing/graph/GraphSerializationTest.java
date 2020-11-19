@@ -86,8 +86,10 @@ public class GraphSerializationTest {
         // We can exclude relatively few classes here, because the object trees are of course perfectly identical.
         // We do skip edge lists - otherwise we trigger a depth-first search of the graph causing a stack overflow.
         // We also skip some deeply buried weak-value hash maps, which refuse to tell you what their keys are.
+        // Skip comparing the LOG and log objects
+        // - they seem to cause problems in Java 11 during the comparison that cause the max recursions to be reached
         ObjectDiffer objectDiffer = new ObjectDiffer();
-        objectDiffer.ignoreFields("incoming", "outgoing");
+        objectDiffer.ignoreFields("incoming", "outgoing", "LOG", "log");
         objectDiffer.useEquals(BitSet.class, LineString.class, Polygon.class);
         // ThreadPoolExecutor contains a weak reference to a very deep chain of Finalizer instances.
         // Method instances usually are part of a proxy which are totally un-reflectable in Java 11
