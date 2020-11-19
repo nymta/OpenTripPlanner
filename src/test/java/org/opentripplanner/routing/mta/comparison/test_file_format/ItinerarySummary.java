@@ -14,6 +14,8 @@ public class ItinerarySummary {
 	
 	public platformDim platform;
 
+	public Boolean approveOfResult;
+	
 	public String toString() {
 		return platform.toString() + "" + itineraryNumber + ": Walk=" + walkDistance + ", transit=" + transitTime + ", Routes = " + routes;
 	}
@@ -29,7 +31,21 @@ public class ItinerarySummary {
 		transitTime = Integer.parseInt(parts[3].trim());
 
 		// some results have no routes
-		if(parts.length > 4)
-			routes = parts[4].trim();
+		if(parts.length > 4) {
+			// case: approve/disapprove no routes
+			if(parts.length == 5) {
+				if(parts[4].trim().equals("A") || parts[4].trim().equals("D"))
+					approveOfResult = new Boolean(parts[4].trim().equals("A"));
+				else
+					routes = parts[4].trim();
+
+			// both approve/disapprove and routes
+			} else {
+				routes = parts[4].trim();
+
+				if(parts[5].trim().equals("A") || parts[5].trim().equals("D"))
+					approveOfResult = new Boolean(parts[5].trim());
+			}
+		}
 	}
 }

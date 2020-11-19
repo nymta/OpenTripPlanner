@@ -116,16 +116,12 @@ public class RunnerIT {
     }
         
     @Test
-    public void k1_QAXProd_Results() throws IOException, Exception {    	
+    public void k1_QAXProd_Not_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
-    	System.out.println("                                    PROD   vs   QA");
+    	System.out.println("                                    PROD   vs   QA - NO ACCESSIBLE          ");
     	System.out.println("             ***************************************************************");
-
-    	System.out.println("");
-    	System.out.println("NO ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-      	CompareODResults t3 = new CompareODResults();
+ 
+    	CompareODResults t3 = new CompareODResults();
     	t3.setBaselineResultsFile("src/test/resources/mta/test_prod_0_accessible.txt");
     	t3.setTestResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
     	t3.run();
@@ -133,12 +129,11 @@ public class RunnerIT {
     }
     
     @Test
-    public void k2_QAXProd_Results() throws IOException, Exception {    	
-
-    	System.out.println("");
-    	System.out.println("ACCESSIBLE QUERIES");
-    	System.out.println("");
-
+    public void k2_QAXProd_Accessible_Results() throws IOException, Exception {    	
+    	System.out.println("             ***************************************************************");
+    	System.out.println("                                    PROD   vs   QA - ACCESSIBLE          ");
+    	System.out.println("             ***************************************************************");
+ 
       	CompareODResults t4 = new CompareODResults();
     	t4.setBaselineResultsFile("src/test/resources/mta/test_prod_100_accessible.txt");
     	t4.setTestResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
@@ -147,28 +142,22 @@ public class RunnerIT {
     	
     
     @Test
-    public void l1_DevXQA_Results() throws IOException, Exception {    	
+    public void l1_DevXQA_Not_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
-    	System.out.println("                                    QA   vs   DEV");
+    	System.out.println("                                    QA   vs   DEV - NO ACCESSIBLE           ");
     	System.out.println("             ***************************************************************");
 
-    	System.out.println("");
-    	System.out.println("NO ACCESSIBLE QUERIES");
-    	System.out.println("");
-
-
-      	CompareODResults t3 = new CompareODResults();
+       	CompareODResults t3 = new CompareODResults();
     	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
     	t3.setTestResultsFile("src/test/resources/mta/test_dev_0_accessible.txt");
     	t3.run();
     }
     
     @Test
-    public void l2_DevXQA_Results() throws IOException, Exception {    	
-    	
-    	System.out.println("");
-    	System.out.println("ACCESSIBLE QUERIES");
-    	System.out.println("");
+    public void l2_DevXQA_Accessible_Results() throws IOException, Exception {    	
+    	System.out.println("             ***************************************************************");
+    	System.out.println("                                    QA   vs   DEV - ACCESSIBLE           ");
+    	System.out.println("             ***************************************************************");
     	
       	CompareODResults t4 = new CompareODResults();
     	t4.setBaselineResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
