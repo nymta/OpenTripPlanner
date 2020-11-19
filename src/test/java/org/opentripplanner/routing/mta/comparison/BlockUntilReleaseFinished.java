@@ -82,8 +82,12 @@ public class BlockUntilReleaseFinished {
             
             HashMap<String, Object> builderVersion = (HashMap<String, Object>) versionResponse.get("builderVersion");
             if(builderVersion == null) {
-                System.out.print("A version was not included in response; continuing since there's nothing to compare!");        	
-                break;
+            	builderVersion = (HashMap<String, Object>) versionResponse.get("serverVersion");
+            	
+                if(builderVersion == null) {
+                	System.out.print("A version was not included in response; continuing since there's nothing to compare!");        	
+                	break;
+                }
             }
             
         	String commitIdDeployed = (String) builderVersion.get("commit");

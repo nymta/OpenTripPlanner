@@ -104,7 +104,7 @@ public class RunnerIT {
     public void g_Block_Until_Released() throws IOException, Exception {    	
 		
     	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
-    	t.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/version?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+    	t.setOTPURL("https://otp-mta-dev.camsys-apps.com/otp/?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
     	t.run();
     }
     
