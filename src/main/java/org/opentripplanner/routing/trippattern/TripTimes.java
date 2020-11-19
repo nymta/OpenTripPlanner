@@ -211,7 +211,7 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         if (trip.getDrtAvgTravelTime() != null) {
             this.avgTravelTime = DrtTravelTime.fromSpec(trip.getDrtAvgTravelTime());
         }
-        this.advanceBookMin = trip.getDrtAdvanceBookMin();
+        this.advanceBookMin = getAdvancedBookingMinimum();
         LOG.trace("trip {} has timepoint at indexes {}", trip, timepoints);
     }
 
@@ -334,7 +334,9 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         int minBoardTime = getArrivalTime(stop + 1) - travelTime;
         int ret = (int) Math.min(Math.max(currTime, getDepartureTime(stop)), minBoardTime);
         if (useClockTime) {
-            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(trip.getDrtAdvanceBookMin() * 60.0));
+            double advancedBookingMinimum = getAdvancedBookingMinimum();
+
+            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(advancedBookingMinimum * 60.0));
             if (ret >= clockTime) {
                 return ret;
             } else if (clockTime < minBoardTime) {
@@ -346,12 +348,25 @@ public class TripTimes implements Serializable, Comparable<TripTimes>, Cloneable
         return ret;
     }
 
+    private double getAdvancedBookingMinimum() {
+        //Denver RTD advanced booking override
+        double advancedBookingMinimum = trip.getDrtAdvanceBookMin();
+        if(advancedBookingMinimum <= 0)
+        {
+            //TODO make this hard coded value configurable in the DB
+            advancedBookingMinimum = 60.0*10;
+        }
+        return advancedBookingMinimum;
+    }
+
     public int getCallAndRideAlightTime(int stop, long currTime, int directTime, ServiceDay sd, boolean useClockTime, long startClockTime) {
         int travelTime = getDemandResponseMaxTime(directTime);
         int maxAlightTime = getDepartureTime(stop - 1) + travelTime;
         int ret = (int) Math.max(Math.min(currTime, getArrivalTime(stop)), maxAlightTime);
         if (useClockTime) {
-            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(trip.getDrtAdvanceBookMin() * 60.0));
+            double advancedBookingMinimum = getAdvancedBookingMinimum();
+
+            int clockTime = (int) (sd.secondsSinceMidnight(startClockTime) + Math.round(advancedBookingMinimum * 60.0));
             // boarding time must be > clockTime
             int boardTime = ret - travelTime;
             if (boardTime >= clockTime) {
