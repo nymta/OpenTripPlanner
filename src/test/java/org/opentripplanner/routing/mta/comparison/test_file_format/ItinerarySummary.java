@@ -63,6 +63,7 @@ public class ItinerarySummary {
 	public static Comparator<ItinerarySummary> RANKER_EQUAL = new Comparator<ItinerarySummary>() {
 		@Override
 		public int compare(ItinerarySummary o1, ItinerarySummary o2) {
+			//System.out.println(o1.routes + "?" + o2.routes);
 			return o1.routes.compareTo(o2.routes);
 		}
 	};	
@@ -71,12 +72,21 @@ public class ItinerarySummary {
 		return itineraryNumber + ": Walk=" + walkDistance + ", transit=" + transitTime + ", Routes = " + routes;
 	}
 	
-	private String removeTrailingTransfer(String s) {
+	private String normalize(String s) {
 	    StringBuilder sb = new StringBuilder(s);
 	    while (sb.length() > 0 && sb.charAt(sb.length() - 1) == '>') {
 	        sb.setLength(sb.length() - 1);
 	    }
-	    return sb.toString();
+	    
+	    String r = sb.toString().toUpperCase();
+	    
+	    // assume LTD routes are always equivalent to their non limited counterparts
+	    r = r.replaceAll("-LTD", "");
+	    
+	    // remove leading zeros in route names, e.g. Q07 -> Q7
+	    r = r.replaceAll("^([A-Za-z])0+(?!$)", "$1");	    		
+	    
+	    return r;
 	}
 	
 	public ItinerarySummary(String line) throws Exception {
@@ -96,11 +106,11 @@ public class ItinerarySummary {
 				if(parts[4].trim().equals("A") || parts[4].trim().equals("D"))
 					approveOfResult = new Boolean(parts[4].trim().equals("A"));
 				else
-					routes = removeTrailingTransfer(parts[4].trim());
+					routes = normalize(parts[4].trim());
 
 			// both approve/disapprove and routes
 			} else {
-				routes = removeTrailingTransfer(parts[4].trim());
+				routes = normalize(parts[4].trim());
 
 				if(parts[5].trim().equals("A") || parts[5].trim().equals("D"))
 					approveOfResult = new Boolean(parts[5].trim().equals("A"));

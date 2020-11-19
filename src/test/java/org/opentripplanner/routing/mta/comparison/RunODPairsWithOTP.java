@@ -73,9 +73,19 @@ public class RunODPairsWithOTP {
     		boolean accessible = line.split(" ")[1].trim().equals("Y");
     		
     		long epoch = Long.parseLong(line.split(" ")[2].trim());
-    		if(USE_CURRENT_TIME)
-    			epoch = DateTime.now().getMillis();
-    		
+
+    		// this is a misnomer--it's actually more this week, adjusting by week so we try to match the 
+    		// same service period
+    		if(USE_CURRENT_TIME) {
+    			Calendar c = Calendar.getInstance();
+				c.setTime(DateTime.now().toDate());
+    			
+    			while(epoch < DateTime.now().getMillis()) {
+    				c.add(Calendar.DAY_OF_MONTH, 7);    				
+        			epoch = c.getTimeInMillis();
+    			}
+    		}
+    			
     		String stop1 = line.split(" ")[3].trim();
     		String stop2 = line.split(" ")[4].trim();
     		
