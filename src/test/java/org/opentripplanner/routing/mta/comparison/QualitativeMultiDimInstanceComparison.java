@@ -25,9 +25,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.*;
 
-public class CompareODResults {
+public class QualitativeMultiDimInstanceComparison {
 	
-    private String DEV_RESULTS_TXT = null; 
+    private String TEST_RESULTS_TXT = null; 
 
     private String BASELINE_RESULTS_TXT = null;
 
@@ -39,12 +39,13 @@ public class CompareODResults {
 
     private enum metricsDim { W, X, T, hasResults, match };
 
-	public enum platformDim { BASELINE, DEV, TIE };
+	public enum platformDim { BASELINE, TEST, TIE };
 
 	// dimensions: optimization
 	private int[] totalByOptimization = new int[3];
 
 	// dimensions: optimization | metric | metric
+	@SuppressWarnings("unchecked")
 	private List<Double>[][][]resultWinMargin = new ArrayList[3][5][3];
 
 	// dimensions: optimization | metric | platform
@@ -55,7 +56,7 @@ public class CompareODResults {
 	}
 	
 	public void setTestResultsFile(String f) {
-		this.DEV_RESULTS_TXT = f;
+		this.TEST_RESULTS_TXT = f;
 	}
 	
 	private void scorePlatform(optimizationDim optimization, metricsDim metric, 
@@ -168,7 +169,11 @@ public class CompareODResults {
     		if(line.startsWith("S")) {
     			ItinerarySummary s = new ItinerarySummary(line);
     			s.platform = platform;
-    			r.itineraries.add(s);
+    			
+    			// data file may contain things we don't want to see; don't include those here
+    			// legacy files didn't have this flag, and only included things we want to see (the null check)
+    			if(s.approveOfResult == null || s.approveOfResult == true)
+    				r.itineraries.add(s);
     		}
     	}
     	
@@ -184,10 +189,10 @@ public class CompareODResults {
 	
     //@Test
     public void run() throws IOException, Exception {    	
-    	File devResultsFile = new File(DEV_RESULTS_TXT);
+    	File devResultsFile = new File(TEST_RESULTS_TXT);
     	File baselineResultsFile = new File(BASELINE_RESULTS_TXT);
 
-    	List<Result> devResults = loadResults(devResultsFile, platformDim.DEV);
+    	List<Result> devResults = loadResults(devResultsFile, platformDim.TEST);
     	List<Result> baselineResults = loadResults(baselineResultsFile, platformDim.BASELINE);
 
     	// initialize stats storage array
@@ -202,7 +207,7 @@ public class CompareODResults {
     	List<Query> noResultQueries = new ArrayList<Query>();
 
     	for(int i = 0; i < Math.max(baselineResults.size(), devResults.size()); i++) {
-    		Result devResult = devResults.get(i);
+    		Result testResult = devResults.get(i);
     		Result baselineResult = baselineResults.get(i);
 
     		Query query = baselineResult.query;
@@ -212,7 +217,7 @@ public class CompareODResults {
     		// add all system's itineraries to an array to sort based on metric and score
     		List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
     		sortedResults.addAll(baselineResult.itineraries);
-    		sortedResults.addAll(devResult.itineraries);
+    		sortedResults.addAll(testResult.itineraries);
 
     		// both systems produced nothing; skip?
     		if(sortedResults.isEmpty()) {
@@ -227,62 +232,22 @@ public class CompareODResults {
     			switch(metricsDim.values()[m]) {
     			case T:
 					// time, walk, transfers
-    				Comparator<ItinerarySummary> timeRanker = new Comparator<ItinerarySummary>() {
-    					@Override
-    					public int compare(ItinerarySummary o1, ItinerarySummary o2) {
-    						if(o1.transitTime == o2.transitTime) {
-    							return 0;
-    						} else if(o1.transitTime < o2.transitTime) {
-    							return -1;
-    						} else {
-    							return 1;
-    						}
-    					}
-    				};
-
     				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, timeRanker);
+    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_TIME);
 
     				break;
     			case W:
 					// walk, transit time, transfers
-    				Comparator<ItinerarySummary> walkingRanker = new Comparator<ItinerarySummary>() {
-    					@Override
-    					public int compare(ItinerarySummary o1, ItinerarySummary o2) {
-    						if(o1.walkDistance == o2.walkDistance) {
-    							return 0;
-    						} else if(o1.walkDistance < o2.walkDistance) { 
-    							return -1;
-    						} else {
-    							return 1;
-    						}
-    					}
-    				};
-
+    				
     				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, walkingRanker);
+    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_WALKING);
 
     				break;
     			case X:
 					// transfers, time, walk distance
-    				Comparator<ItinerarySummary> transfersRanker = new Comparator<ItinerarySummary>() {
-    					@Override
-    					public int compare(ItinerarySummary o1, ItinerarySummary o2) {
-    						int o1x = o1.routes.split(">").length;
-    						int o2x = o2.routes.split(">").length;
-
-    						if(o1x == o2x) {
-    							return 0;
-    						} else if(o1x < o2x) {
-    							return -1;
-    						} else {
-    							return 1;
-    						}
-    					}
-    				};
-
+    				
     				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, transfersRanker);
+    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_XFERS);
 
     				break;
     				
@@ -292,10 +257,10 @@ public class CompareODResults {
     				
 					ItinerarySummary ourTopResult = baselineResult.itineraries.get(0);
 
-    				for(int z = 0; z < devResult.itineraries.size(); z++) {
-    					ItinerarySummary theirResult = devResult.itineraries.get(z);
+    				for(int z = 0; z < testResult.itineraries.size(); z++) {
+    					ItinerarySummary theirResult = testResult.itineraries.get(z);
 
-    					if(ourTopResult.routes.equals(theirResult.routes)) { 
+    					if(ItinerarySummary.RANKER_EQUAL.compare(ourTopResult, theirResult) == 0) {
         					this.resultSummary
         					[o]
         					[m]	
@@ -308,7 +273,7 @@ public class CompareODResults {
     				
     			case hasResults:
 
-    				if(!baselineResult.itineraries.isEmpty() && !devResult.itineraries.isEmpty()) {
+    				if(!baselineResult.itineraries.isEmpty() && !testResult.itineraries.isEmpty()) {
     					this.resultSummary
     					[o]
     					[m]
@@ -319,11 +284,11 @@ public class CompareODResults {
     					[o]
     					[m]
    						[platformDim.BASELINE.ordinal()]++;
-    				} else if(!devResult.itineraries.isEmpty()) {
+    				} else if(!testResult.itineraries.isEmpty()) {
     					this.resultSummary
     					[o]
     					[m]
-    					[platformDim.DEV.ordinal()]++;
+    					[platformDim.TEST.ordinal()]++;
     				}
 
     				break;
@@ -339,7 +304,7 @@ public class CompareODResults {
 
     	boolean overallResult = true;
     	    	
-    	System.out.println("\n\nTOTAL RESULTS: " + baselineResults.size() + "\n\n");
+    	System.out.println("TOTAL RESULTS: " + baselineResults.size() + "\n");
   
     	for(int o = 0; o < optimizationDim.values().length; o++) {
     		String header = "OPTIMIZATION: " + String.format("%-10s (n=%3d)", optimizationDimLabels[o], totalByOptimization[o]) + 
@@ -355,9 +320,9 @@ public class CompareODResults {
         			baselineValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.BASELINE.ordinal()].get(ii);   
         		}
         		
-        		double[] devValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size()];
-        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size(); ii++) {
-        			devValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.DEV.ordinal()].get(ii);   
+        		double[] devValuesAsPrimitive = new double[this.resultWinMargin[o][m][platformDim.TEST.ordinal()].size()];
+        		for(int ii = 0; ii < this.resultWinMargin[o][m][platformDim.TEST.ordinal()].size(); ii++) {
+        			devValuesAsPrimitive[ii] = this.resultWinMargin[o][m][platformDim.TEST.ordinal()].get(ii);   
         		}
 
         		Mean meanStat = new Mean();
@@ -390,11 +355,11 @@ public class CompareODResults {
             			this.resultSummary
         				[o]
         				[m]
-        				[platformDim.DEV.ordinal()], 
+        				[platformDim.TEST.ordinal()], 
         				((float)this.resultSummary
         				[o]
         				[m]
-        				[platformDim.DEV.ordinal()]/total)*100)
+        				[platformDim.TEST.ordinal()]/total)*100)
             		+ "   " + 
         			(m != metricsDim.match.ordinal() && m != metricsDim.hasResults.ordinal() 
         				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(baselineValuesAsPrimitive), 
@@ -405,7 +370,7 @@ public class CompareODResults {
             		+ 
         			(m != metricsDim.match.ordinal() && m != metricsDim.hasResults.ordinal() 
         				? String.format(" M=%-6.2f n=%3d,[%6.2f,%-6.2f]", meanStat.evaluate(devValuesAsPrimitive), 
-        						this.resultWinMargin[o][m][platformDim.DEV.ordinal()].size(),
+        						this.resultWinMargin[o][m][platformDim.TEST.ordinal()].size(),
         						minStat.evaluate(devValuesAsPrimitive), 
         						maxStat.evaluate(devValuesAsPrimitive)) + "    " 
         						: "                                   ")
@@ -416,7 +381,7 @@ public class CompareODResults {
             	// if this is the metric for the optimization--e.g. it's the WALKING results for the optimization WALKING, make 
             	// it one of the things that makes the whole test pass/fail
         		float ourPercentage = 
-        				((float)((this.resultSummary[o][m][platformDim.DEV.ordinal()] + 
+        				((float)((this.resultSummary[o][m][platformDim.TEST.ordinal()] + 
         						this.resultSummary[o][m][platformDim.TIE.ordinal()])
         				/ (float)totalByOptimization[o])) * 100;
 
