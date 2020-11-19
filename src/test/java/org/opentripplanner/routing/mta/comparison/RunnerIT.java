@@ -22,7 +22,7 @@ import java.io.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RunnerIT {
-
+	
     @Test
     public void a_ODGen_QA_NoAccessible() throws IOException, Exception {    	
 		
@@ -76,7 +76,6 @@ public class RunnerIT {
     	t2.setOutputFile("src/test/resources/mta/test_qa_100_accessible.txt");
     	t2.run();    	
     }
-    
  	
     @Test
     public void e_Baseline_Prod_NoAccessible() throws IOException, Exception {    	
@@ -96,27 +95,74 @@ public class RunnerIT {
     	t2.run();    	
     }
     
+    
+
+    
+    
+	// this blocks the rest from continuing until dev is updated with the code we just committed
+	@Test
+    public void g_Block_Until_Released() throws IOException, Exception {    	
+		
+    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
+    	t.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/version?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+    	t.run();
+    }
+    
     @Test
-    public void g_Test_Dev_NoAccessible() throws IOException, Exception {    	
+    public void h_Test_Dev_NoAccessible() throws IOException, Exception {    	
     	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
     	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
     	t2.setInputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
     	t2.setOutputFile("src/test/resources/mta/test_dev_0_accessible.txt");
     	t2.run();    	
     }
-    
-    
+   
     @Test
-    public void h_Test_Dev_Accessible() throws IOException, Exception {    	
+    public void i_Test_Dev_Accessible() throws IOException, Exception {    	
     	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
     	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
     	t2.setInputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
     	t2.setOutputFile("src/test/resources/mta/test_dev_100_accessible.txt");
     	t2.run();    	
     }
-        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+     
     @Test
-    public void k1_QAXProd_Not_Accessible_Results() throws IOException, Exception {    	
+    public void l_TestEval_Get_Reference() throws IOException, Exception {    	
+    	FetchTripEvaluationReference t2 = new FetchTripEvaluationReference();
+    	t2.setOutputQueryFile("src/test/resources/mta/tripeval_od_pairs.txt");
+    	t2.setOutputReferenceFile("src/test/resources/mta/tripeval_output_results.txt");
+    	t2.run();    	
+    }
+    
+    @Test
+    public void m_TestEval_Dev() throws IOException, Exception {    	
+    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
+    	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
+    	t2.setInputFile("src/test/resources/mta/testeval_od_pairs.txt");
+    	t2.setOutputFile("src/test/resources/mta/testeval_dev_results.txt");
+    	t2.run();    	
+    }
+    
+
+    
+    
+    
+    
+    
+    
+    
+    @Test
+    public void q1_QAXProd_Not_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
     	System.out.println("                                    PROD   vs   QA - NO ACCESSIBLE          ");
     	System.out.println("             ***************************************************************");
@@ -129,7 +175,7 @@ public class RunnerIT {
     }
     
     @Test
-    public void k2_QAXProd_Accessible_Results() throws IOException, Exception {    	
+    public void q2_QAXProd_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
     	System.out.println("                                    PROD   vs   QA - ACCESSIBLE          ");
     	System.out.println("             ***************************************************************");
@@ -142,7 +188,7 @@ public class RunnerIT {
     	
     
     @Test
-    public void l1_DevXQA_Not_Accessible_Results() throws IOException, Exception {    	
+    public void r1_DevXQA_Not_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
     	System.out.println("                                    QA   vs   DEV - NO ACCESSIBLE           ");
     	System.out.println("             ***************************************************************");
@@ -154,7 +200,7 @@ public class RunnerIT {
     }
     
     @Test
-    public void l2_DevXQA_Accessible_Results() throws IOException, Exception {    	
+    public void r2_DevXQA_Accessible_Results() throws IOException, Exception {    	
     	System.out.println("             ***************************************************************");
     	System.out.println("                                    QA   vs   DEV - ACCESSIBLE           ");
     	System.out.println("             ***************************************************************");
@@ -164,6 +210,21 @@ public class RunnerIT {
     	t4.setTestResultsFile("src/test/resources/mta/test_dev_100_accessible.txt");
     	t4.run();
     }    		
-       
+
+    
+    
+    
+    
+    @Test
+    public void s_DevXTripEval_Results() throws IOException, Exception {    	
+    	System.out.println("             ***************************************************************");
+    	System.out.println("                                 TRIPEVAL   vs   DEV                        ");
+    	System.out.println("             ***************************************************************");
+    	
+      	CompareODResults t4 = new CompareODResults();
+    	t4.setBaselineResultsFile("src/test/resources/mta/tripeval_output_results.txt");
+    	t4.setTestResultsFile("src/test/resources/mta/testeval_dev_results.txt");
+    	t4.run();
+    } 
 }
 
