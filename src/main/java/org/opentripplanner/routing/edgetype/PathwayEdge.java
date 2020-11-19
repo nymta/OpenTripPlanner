@@ -1,6 +1,7 @@
 package org.opentripplanner.routing.edgetype;
 
 import org.opentripplanner.common.geometry.GeometryUtils;
+import org.opentripplanner.model.FeedScopedId;
 import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.core.StateEditor;
 import org.opentripplanner.routing.graph.Edge;
@@ -21,6 +22,7 @@ public class PathwayEdge extends Edge {
     private int steps;
     private double angle;
     private String name = "pathway";
+    private FeedScopedId id;
 
     private boolean wheelchairAccessible = true;
 
@@ -50,6 +52,31 @@ public class PathwayEdge extends Edge {
         } else if (tov.getName() != null) {
             this.name = tov.getName();
         }
+    }
+
+    public PathwayEdge(
+            Vertex fromv,
+            Vertex tov,
+            String name,
+            int traversalTime,
+            double distance,
+            int steps,
+            double angle,
+            boolean wheelchairAccessible,
+            FeedScopedId id
+    ) {
+        super(fromv, tov);
+        this.traversalTime = traversalTime;
+        this.distance = distance;
+        this.steps = steps;
+        this.angle = angle;
+        this.wheelchairAccessible = wheelchairAccessible;
+        if (name != null) {
+            this.name = name;
+        } else if (tov.getName() != null) {
+            this.name = tov.getName();
+        }
+        this.id = id;
     }
 
     private static final long serialVersionUID = -3311099256178798982L;

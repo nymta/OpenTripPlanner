@@ -66,7 +66,8 @@ public class SearchParams {
         this.boardSlackInSeconds = builder.boardSlackInSeconds();
         this.numberOfAdditionalTransfers = builder.numberOfAdditionalTransfers();
         this.maxNumberOfTransfers = builder.maxNumberOfTransfers();
-        this.relaxCostAtDestination = builder.relaxCostAtDestination();
+//        this.relaxCostAtDestination = builder.relaxCostAtDestination();
+        this.relaxCostAtDestination = 3;
         this.timetableEnabled = builder.timetableEnabled();
         this.accessLegs = java.util.List.copyOf(builder.accessLegs());
         this.egressLegs = java.util.List.copyOf(builder.egressLegs());
