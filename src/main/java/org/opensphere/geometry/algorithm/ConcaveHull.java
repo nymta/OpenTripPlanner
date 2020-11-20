@@ -89,8 +89,8 @@ public class ConcaveHull {
 	/**
 	 * Create a new concave hull construction for the input {@link Geometry}.
 	 * 
-	 * @param geometry
-	 * @param threshold
+	 * @param geometry .
+	 * @param threshold .
 	 */
 	public ConcaveHull(Geometry geometry, double threshold) {
 		this.geometries = transformIntoPointGeometryCollection(geometry);
@@ -101,8 +101,8 @@ public class ConcaveHull {
 	/**
 	 * Create a new concave hull construction for the input {@link GeometryCollection}.
 	 * 
-	 * @param geometries
-	 * @param threshold
+	 * @param geometries .
+	 * @param threshold .
 	 */
 	public ConcaveHull(GeometryCollection geometries, double threshold) {
 		this.geometries = transformIntoPointGeometryCollection(geometries);

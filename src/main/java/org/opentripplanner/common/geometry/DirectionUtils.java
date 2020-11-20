@@ -30,6 +30,9 @@ public class DirectionUtils {
     /**
      * Returns the approximate azimuth from coordinate A to B in decimal degrees clockwise from North,
      * in the range (-180° to +180°). The computation is exact for small delta between A and B.
+     * @param a .
+     * @param b .
+     * @return . .
      */
     public static synchronized double getAzimuth(Coordinate a, Coordinate b) {
         double cosLat = FastMath.cos(FastMath.toRadians((a.y + b.y) / 2.0)); 
@@ -45,6 +48,7 @@ public class DirectionUtils {
      * Computes the angle of the last segment of a LineString or MultiLineString in radians clockwise from North
      * in the range (-PI, PI).
      * @param geometry a LineString or a MultiLineString
+     * @return . .
      */
     public static synchronized double getLastAngle(Geometry geometry) {
         LineString line;
@@ -71,6 +75,7 @@ public class DirectionUtils {
      * Computes the angle of the first segment of a LineString or MultiLineString in radians clockwise from North
      * in the range (-PI, PI).
      * @param geometry a LineString or a MultiLineString
+     * @return . .
      */
     public static synchronized double getFirstAngle(Geometry geometry) {
         LineString line;

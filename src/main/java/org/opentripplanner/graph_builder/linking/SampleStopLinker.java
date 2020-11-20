@@ -53,6 +53,8 @@ public class SampleStopLinker {
      * If you're not generating transfers via the street network there is no need to make
      * transfers at this stage. But if you're not generating transfers via the street network,
      * why are you using this module at all?
+     *
+     * @param makeTransfers .
      */
     public void link (boolean makeTransfers) {
         if (makeTransfers)

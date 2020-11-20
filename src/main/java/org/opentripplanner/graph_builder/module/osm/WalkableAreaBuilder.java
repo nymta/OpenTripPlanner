@@ -73,10 +73,10 @@ import org.opentripplanner.util.I18NString;
  * safety preferences. Ted Chiang's "Story Of Your Life" describes how a very similar problem in
  * optics gives rise to Snell's Law. It is the second-best story about a law of physics that I know
  * of (Chiang's "Exhalation" is the first).
- * <p/>
+ * <p>
  * Anyway, since we're not going to run an O(N^3) algorithm at runtime just to give people who don't
  * understand Snell's Law weird paths that they can complain about, this should be just fine.
- * 
+ * </p>
  */
 public class WalkableAreaBuilder {
 
@@ -110,7 +110,7 @@ public class WalkableAreaBuilder {
 
     /**
      * For all areas just use outermost rings as edges so that areas can be routable without visibility calculations
-     * @param group
+     * @param group .
      */
     public void buildWithoutVisibility(AreaGroup group) {
         Set<Edge> edges = new HashSet<Edge>();

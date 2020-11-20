@@ -77,7 +77,7 @@ public final class CompactLineString implements Serializable {
      * @param lineString The geometry to compact. Please be aware that we ignore first and last
      *        coordinate in the line string, they need to be exactly the same as A and B.
      * @param reverse True if A and B are inverted (B is start, A is end).
-     * @return
+     * @return . .
      */
     public static int[] compactLineString(double xa, double ya, double xb, double yb,
             LineString lineString, boolean reverse) {
@@ -121,12 +121,13 @@ public final class CompactLineString implements Serializable {
     /**
      * Same as the other version, but in a var-len int packed form (Dlugosz coding).
      * 
-     * @param x0
-     * @param y0
-     * @param x1
-     * @param y1
-     * @param lineString
-     * @return
+     * @param x0 .
+     * @param y0 .
+     * @param x1 .
+     * @param y1 .
+     * @param lineString .
+     * @param reverse .
+     * @return . .
      */
     public static byte[] compackLineString(double x0, double y0, double x1, double y1,
             LineString lineString, boolean reverse) {
@@ -139,13 +140,13 @@ public final class CompactLineString implements Serializable {
     /**
      * Construct a LineString based on external end-points and compacted int version.
      * 
-     * @param xa
-     * @param ya
-     * @param xb
-     * @param yb
+     * @param xa .
+     * @param ya .
+     * @param xb .
+     * @param yb .
      * @param coords Compact version of coordinates
      * @param reverse True if A and B and the compacted geometry is reversed.
-     * @return
+     * @return . .
      */
     public static LineString uncompactLineString(double xa, double ya, double xb, double yb,
             int[] coords, boolean reverse) {
@@ -176,13 +177,13 @@ public final class CompactLineString implements Serializable {
 
     /**
      * Same as the other version, but in a var-len int packed form (Dlugosz coding).
-     * 
-     * @param x0
-     * @param y0
-     * @param x1
-     * @param y1
-     * @param coords
-     * @return
+     * @param x0 .
+     * @param y0 .
+     * @param x1 .
+     * @param y1 .
+     * @param packedCoords .
+     * @param reverse .
+     * @return . .
      */
     public static LineString uncompackLineString(double x0, double y0, double x1, double y1,
             byte[] packedCoords, boolean reverse) {

@@ -74,8 +74,8 @@ public interface ZSampleGrid<TZ> extends Iterable<ZSamplePoint<TZ>> {
     }
 
     /**
-     * @param x
-     * @param y
+     * @param x .
+     * @param y .
      * @return The sample point located at (x,y). Create a new one if not existing.
      */
     public ZSamplePoint<TZ> getOrCreate(int x, int y);

@@ -43,7 +43,6 @@ public class AccumulativeGridSampler<TZ> {
      * cell corner TZ values.
      * 
      * @author laurent
-     * @param <TZ>
      */
     public interface AccumulativeMetric<TZ> {
         /**
@@ -78,6 +77,7 @@ public class AccumulativeGridSampler<TZ> {
     private boolean closed = false;
 
     /**
+     * @param sampleGrid .
      * @param metric TZ data "behavior" and "metric".
      */
     public AccumulativeGridSampler(ZSampleGrid<TZ> sampleGrid, AccumulativeMetric<TZ> metric) {

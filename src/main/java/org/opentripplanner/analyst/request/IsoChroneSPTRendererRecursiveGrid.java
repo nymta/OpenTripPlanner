@@ -53,9 +53,9 @@ public class IsoChroneSPTRendererRecursiveGrid implements IsoChroneSPTRenderer {
     }
 
     /**
-     * @param isoChroneRequest
-     * @param sptRequest
-     * @return
+     * @param isoChroneRequest .
+     * @param sptRequest .
+     * @return . .
      */
     @Override
     public List<IsochroneData> getIsochrones(IsoChroneRequest isoChroneRequest,

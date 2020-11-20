@@ -133,7 +133,7 @@ public class LinearIterator implements Iterable<LinearLocation> {
     /**
      * Checks whether the iterator cursor is pointing to the endpoint of a linestring.
      * 
-     * @return <code>true</true> if the iterator is at an endpoint
+     * @return {@code true} if the iterator is at an endpoint
      */
     public boolean isEndOfLine() {
         if (componentIndex >= numLines)

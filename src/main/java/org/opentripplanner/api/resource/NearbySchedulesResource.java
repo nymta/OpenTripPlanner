@@ -244,6 +244,7 @@ public class NearbySchedulesResource {
     /**
      * Return upcoming vehicle arrival/departure times at given stops. Matches stops by lat/lon/radius,
      * and/or by list of stops. Arrival/departure times can be filtered by route and direction.
+     * @return . .
      */
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML + Q})

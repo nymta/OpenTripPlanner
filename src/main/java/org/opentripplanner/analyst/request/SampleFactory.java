@@ -177,7 +177,11 @@ public class SampleFactory implements SampleSource {
      * 
      * Here we want to compare squared distances to all line segments until we find the best one, 
      * then do the precise calculations.
-     * 
+     *
+     * @param edges  .
+     * @param pt .
+     * @param xscale .
+     * @return . .
      */
     public Sample findClosest(List<Edge> edges, Coordinate pt, double xscale) {
         Candidate c = new Candidate();

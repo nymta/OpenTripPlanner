@@ -50,12 +50,13 @@ public class Ring {
      * have the same erasure, meaning that even though Java has enough information at compile-time
      * to figure out which constructor I am talking about, it intentionally throws this away in the
      * interest of having worse run-time performance. Thanks, Java!
-     * <p/>
+     * <p>
      * Oh, and most people would solve this problem by making a static factory method but that won't
      * work because then all of this class's outer classes would have to be static.
+     * </p>
      * 
-     * @param osmNodes
-     * @param javaSucks
+     * @param osmNodes .
+     * @param javaSucks .
      */
     public Ring(List<OSMNode> osmNodes, boolean javaSucks) {
         ArrayList<VLPoint> vertices = new ArrayList<VLPoint>();

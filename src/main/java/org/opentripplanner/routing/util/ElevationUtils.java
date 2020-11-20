@@ -256,7 +256,7 @@ public class ElevationUtils {
 
     /**
      * The cost for walking in hilly/mountain terrain dependent on slope using an empirical function by
-     * WG Rees (Comp & Geosc, 2004), that overhauls the Naismith rule for mountaineering.<br>
+     * WG Rees (Comp &amp; Geosc, 2004), that overhauls the Naismith rule for mountaineering.<br>
      * For a slope of 0 = 0 degree a cost is returned that approximates a speed of 1.333 m/sec = 4.8km/h<br>
      * TODO: Not sure if it makes sense to use maxSlope as input and instead better use
      * a lower estimate / average value. However, the DEM is most likely generalized/smoothed

@@ -46,7 +46,9 @@ public class AddTripPattern extends Modification {
     /** GTFS mode (route_type), see constants in com.conveyal.gtfs.model.Route */
     public int mode = Route.BUS;
 
-    /** Create temporary stops associated with the given graph. Note that a given AddTripPattern can be associated only with a single graph. */
+    /** Create temporary stops associated with the given graph. Note that a given AddTripPattern can be associated only with a single graph.
+     * @param graph .
+     */
     public void materialize (Graph graph) {
         SampleFactory sfac = graph.getSampleFactory();
 

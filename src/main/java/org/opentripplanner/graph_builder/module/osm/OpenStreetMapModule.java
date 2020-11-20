@@ -128,6 +128,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
 
     /**
      * The source for OSM map data
+     * @param provider .
      */
     public void setProvider(OpenStreetMapProvider provider) {
         _providers.add(provider);
@@ -135,6 +136,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
 
     /**
      * Multiple sources for OSM map data
+     * @param providers .
      */
     public void setProviders(List<OpenStreetMapProvider> providers) {
         _providers.addAll(providers);
@@ -158,6 +160,7 @@ public class OpenStreetMapModule implements GraphBuilderModule {
 
     /**
      * Construct and set providers all at once.
+     * @param providers .
      */
     public OpenStreetMapModule(List<OpenStreetMapProvider> providers) {
         this.setProviders(providers);

@@ -98,7 +98,7 @@ public class RouterInfo {
      *
      * It is first called when OSM is loaded. Then after transit data is loaded.
      * So that center is set in all combinations of street and transit loading.
-     * @param center
+     * @param center .
      */
     public void addCenter(Optional<Coordinate> center) {
         //Transit data was loaded and center was calculated with calculateTransitCenter

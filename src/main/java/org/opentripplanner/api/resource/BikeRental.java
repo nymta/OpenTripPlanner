@@ -79,7 +79,11 @@ public class BikeRental {
         return brsl;
     }
 
-    /** Envelopes are in latitude, longitude format */
+    /** Envelopes are in latitude, longitude format
+     * @param lowerLeft .
+     * @param upperRight .
+     * @return . .
+     * */
     public static Envelope getEnvelope(String lowerLeft, String upperRight) {
         String[] lowerLeftParts = lowerLeft.split(",");
         String[] upperRightParts = upperRight.split(",");

@@ -253,8 +253,9 @@ public class RecursiveGridIsolineBuilder {
      * Create an object to compute isochrones. One may call several time isochronify on the same
      * IsoChronificator object, this will re-use the z = f(x,y) sampling if possible, as they are
      * kept in cache.
-     * 
-     * @param request Parameters for the computation
+     *
+     * @param dX Parameters for the computation
+     * @param dY Parameters for the computation
      * @param center Center point (eg origin)
      * @param fz Function returning the z-value for a xy-coordinate
      * @param p0List Initial set of coverage points to seed the heuristics
