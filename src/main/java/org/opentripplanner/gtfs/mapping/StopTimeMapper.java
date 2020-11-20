@@ -3,7 +3,6 @@ package org.opentripplanner.gtfs.mapping;
 import org.opentripplanner.model.Stop;
 import org.opentripplanner.model.StopTime;
 import org.opentripplanner.util.MapUtils;
-import sun.rmi.runtime.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
