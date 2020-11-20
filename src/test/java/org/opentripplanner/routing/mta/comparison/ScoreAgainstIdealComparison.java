@@ -139,7 +139,7 @@ public class ScoreAgainstIdealComparison {
     	}
 
     	System.out.println("");
-    	System.out.println("Queries by approved results (bin = # approved queries)");
+    	System.out.println("Queries by approved results (bin = # approved results)");
     	System.out.println("");
     	
     	for(int i = 0; i < matchCDF.length; i++) {
