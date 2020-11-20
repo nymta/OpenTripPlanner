@@ -78,14 +78,15 @@ public class RunODPairsWithOTP {
     		// same service period
     		if(USE_CURRENT_TIME) {
     			Calendar c = Calendar.getInstance();
-				c.setTime(DateTime.now().toDate());
+				c.setTime(new Date(epoch));
     			
     			while(epoch < DateTime.now().getMillis()) {
     				c.add(Calendar.DAY_OF_MONTH, 7);    				
         			epoch = c.getTimeInMillis();
     			}
     		}
-    			
+
+    		
     		String stop1 = line.split(" ")[3].trim();
     		String stop2 = line.split(" ")[4].trim();
     		
@@ -168,11 +169,11 @@ public class RunODPairsWithOTP {
                 	 
                 	 if(summaryString.length() > 0)
                 		 summaryString += ">";                	 
-                	 summaryString += ((String) leg.get("routeId")).split(":")[1];
+                	 summaryString += ((String) leg.get("route"));
                 	 
                      otpResults.write(
                     		 (itin_i + 1) + " " + ((String)onStop.get("name")).replace("[", "(").replace("]", ")") + " -> " + 
-                    		 ((String) leg.get("routeId")).split(":")[1] + " to " + leg.get("tripHeadsign") + " -> " + 
+                    		 ((String) leg.get("route")) + " to " + leg.get("tripHeadsign") + " -> " + 
                     		 ((String)offStop.get("name")).replace("[", "(").replace("]", ")") + "\n");
                 }
                 
