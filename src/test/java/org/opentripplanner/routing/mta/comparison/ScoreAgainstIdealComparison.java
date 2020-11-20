@@ -12,12 +12,16 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.mta.comparison;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
 import org.opentripplanner.routing.mta.comparison.test_file_format.Query;
 import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
 
 import java.util.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.*;
 
@@ -31,7 +35,9 @@ public class ScoreAgainstIdealComparison {
 
 	// dimensions: metric
 	private int[] resultSummary = new int[3];
-
+	
+	private int[] matchCDF = new int[10]; // assumes no query with have more than 10 itins	
+	
 	public void setBaselineResultsFile(String f) {
 		this.BASELINE_RESULTS_TXT = f;
 	}
@@ -92,6 +98,7 @@ public class ScoreAgainstIdealComparison {
     		Result baselineResult = baselineResults.get(i);
     		Query baselineQuery = baselineResult.query;
 
+    		int testItinCount = 0;
 			for(ItinerarySummary testItin : testResult.itineraries) {
 				total++;
 				
@@ -100,6 +107,7 @@ public class ScoreAgainstIdealComparison {
     				if(ItinerarySummary.RANKER_EQUAL.compare(refItin,  testItin) == 0) {
     	    			if(refItin.approveOfResult == true) {
     	        			resultSummary[0]++;
+    	        			testItinCount++;
     					} else if(refItin.approveOfResult == false) {
     		    			resultSummary[1]++;    	    			
     					}
@@ -113,15 +121,37 @@ public class ScoreAgainstIdealComparison {
         		if(! foundInRef) {
         			resultSummary[2]++;
         		}
-    		}
+
+        		matchCDF[testItinCount]++;
+			}
     	}
 
     	// ==========================PRINT RESULTS=====================================
+
+    	System.out.println("");
+    	System.out.println("Aggregate statistics:");
+    	System.out.println("");
+
     	for(int i = 0; i < metricsDimLabels.length; i++) {
     		System.out.println(String.format("%30s", metricsDimLabels[i]) + " ......................... [" + 
     			String.format("%.1f", (float)((resultSummary[i]/(float)total)*100)) 
     			+ "%] " + resultSummary[i] + "/" + total);
     	}
+
+    	System.out.println("");
+    	System.out.println("Queries by approved results (bin = # approved queries)");
+    	System.out.println("");
+    	
+    	for(int i = 0; i < matchCDF.length; i++) {
+    		System.out.println(i + " (" + String.format("%-4.1f%%", (float)((matchCDF[i]/(float)total) * 100)) + ") : " + StringUtils.repeat(".", matchCDF[i]));
+    	}
+    	
+    	// disapproved results < 10%
+    	assertTrue((float)(resultSummary[1]/(float)total) < .10f);
+
+    	// queries with 0 approved results < 10%
+    	assertTrue((float)(matchCDF[0]/(float)total) < .10f);
+
     }
 
 }
