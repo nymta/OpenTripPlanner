@@ -37,6 +37,8 @@ public class ScoreAgainstIdealComparison {
 	private int[] resultSummary = new int[3];
 	
 	private int[] matchCDF = new int[10]; // assumes no query with have more than 10 itins	
+
+	private Map<Integer, Integer> matchPercentCDF = new HashMap<Integer, Integer>();
 	
 	public void setBaselineResultsFile(String f) {
 		this.BASELINE_RESULTS_TXT = f;
@@ -123,6 +125,16 @@ public class ScoreAgainstIdealComparison {
         		}
 
         		matchCDF[testItinCount]++;
+
+        		
+        		int matchPercent = (int)(((float)testItinCount / (float)testResult.itineraries.size())*100f);
+        		Integer count = matchPercentCDF.get(matchPercent);
+        		if(count == null)
+        				count = 1;
+        		else 
+        				count++;
+        		
+        		matchPercentCDF.put(matchPercent, count);
 			}
     	}
 
@@ -145,7 +157,16 @@ public class ScoreAgainstIdealComparison {
     	for(int i = 0; i < matchCDF.length; i++) {
     		System.out.println(i + " (" + String.format("%-4.1f%%", (float)((matchCDF[i]/(float)total) * 100)) + ") : " + StringUtils.repeat(".", matchCDF[i]));
     	}
+
+    	System.out.println("");
+    	System.out.println("Queries by % of results approved (bin = % results that are approved)");
+    	System.out.println("");
     	
+    	for(Integer bin : matchPercentCDF.keySet()) {
+    		System.out.println(String.format("%-3d",bin) + "% (" + String.format("%-4.1f%%", (float)((matchPercentCDF.get(bin)/(float)total) * 100)) + ") : " + StringUtils.repeat(".", matchPercentCDF.get(bin)));
+    	}
+    	
+
     	// disapproved results < 10%
     	assertTrue((float)(resultSummary[1]/(float)total) < .10f);
 
