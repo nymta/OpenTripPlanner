@@ -12,6 +12,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.mta.comparison;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -162,7 +163,7 @@ public class GenerateTestODPairsFromRunningInstance {
     				randomTime.getMillis() + " " + 
     				s1.get("lat") + "," + s1.get("lon") + " " + 
     				s2.get("lat") + "," + s2.get("lon") + " " +
-    				optimizations[(int)Math.round(Math.random() * 2)] + 
+    				optimizations[RandomUtils.nextInt(optimizations.length + 1)] + 
     				"\n");
 
     		System.out.print(".");
