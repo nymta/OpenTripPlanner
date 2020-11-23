@@ -163,7 +163,7 @@ public class GenerateTestODPairsFromRunningInstance {
     				randomTime.getMillis() + " " + 
     				s1.get("lat") + "," + s1.get("lon") + " " + 
     				s2.get("lat") + "," + s2.get("lon") + " " +
-    				optimizations[RandomUtils.nextInt(optimizations.length + 1)] + 
+    				optimizations[RandomUtils.nextInt(optimizations.length)] + 
     				"\n");
 
     		System.out.print(".");
