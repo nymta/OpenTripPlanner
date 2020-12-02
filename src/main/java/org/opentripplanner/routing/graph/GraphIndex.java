@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.Calendar;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
@@ -17,9 +20,13 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+
+import ch.qos.logback.core.rolling.helper.PeriodicityType;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.execution.ExecutorServiceExecutionStrategy;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.lucene.util.PriorityQueue;
 import org.joda.time.LocalDate;
@@ -60,6 +67,7 @@ import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.spt.DominanceFunction;
 import org.opentripplanner.routing.trippattern.FrequencyEntry;
 import org.opentripplanner.routing.trippattern.TripTimes;
+import org.opentripplanner.routing.vertextype.TransitStationStop;
 import org.opentripplanner.routing.vertextype.TransitStop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +85,7 @@ import java.util.concurrent.Executors;
  * The index is bootstrapped from the graph's list of edges.
  */
 public class GraphIndex {
-
+	
     private static final Logger LOG = LoggerFactory.getLogger(GraphIndex.class);
     private static final int CLUSTER_RADIUS = 500; // meters
 
@@ -103,6 +111,8 @@ public class GraphIndex {
     public final Map<Stop, StopCluster> stopClusterForStop = Maps.newHashMap();
     public final Map<String, StopCluster> stopClusterForId = Maps.newHashMap();
     public final Multimap<String, PathwayEdge> pathwayForElevator = ArrayListMultimap.create();
+    public final Map<String, HashSet<PathwayEdge>> equipmentEdgesForStationId = new HashMap<String, HashSet<PathwayEdge>>();
+	public final Map<String, HashSet<Vertex>> connectionsFromMap = new HashMap<String, HashSet<Vertex>>();    	
 
     /* Should eventually be replaced with new serviceId indexes. */
     private final CalendarService calendarService;
@@ -218,65 +228,89 @@ public class GraphIndex {
         //
         LOG.info("Computing pathway/station accessibility via pathways...");
 
-        Set<Integer> visitedList = new HashSet<Integer>();
         for (Vertex v : vertices) {
-        	if(!(v instanceof TransitStop))
+        	if(!(v instanceof TransitStop) && !(v instanceof TransitStationStop))
         		continue;
 
-        	TransitStop ts = (TransitStop)v;
+        	System.out.println("Starting pathway walk from " + v.getLabel());
 
-        	// only start walking from entrances--everything should connect to at least one via some
-        	// pathway(s). For those stops that don't have entrances, just process anything that will be linked
-        	// to the OSM street graph
-        	if((ts.hasEntrances() && !ts.isEntrance()) 
-        			|| (!ts.hasEntrances() && !ts.shouldLinkToStreet()) 
-        			|| ts.hasWheelchairEntrance() == true) 
-        		continue;
+        	HashSet<Vertex> connectionsFromHere = new HashSet<Vertex>();
+        	HashSet<Vertex> visitedList = new HashSet<Vertex>();
 
-        	boolean r = walkEdges(ts.getOutgoing(), ts.getCoordinate(), visitedList, graph);
-        	ts.setWheelchairEntrance(r);
+        	Boolean hasAtLeastOneAccessiblePath = walkPathwayEdges(v, connectionsFromHere, visitedList, true, 0);       
+        	if(hasAtLeastOneAccessiblePath != null && v instanceof TransitStop) {
+        		TransitStop ts = (TransitStop)v;
+        		ts.setWheelchairEntrance(hasAtLeastOneAccessiblePath);
+        	}
+        	
+        	connectionsFromMap.put(v.getLabel(), connectionsFromHere);
         }
+        
+        LOG.info("done");
     }
 
-    private boolean walkEdges(Collection<Edge> edges, Coordinate fromLocation, Set<Integer>visitedList, Graph graph) {
+	private Boolean walkPathwayEdges(Vertex v, HashSet<Vertex> connectionsFromHere, HashSet<Vertex> visitedList,
+			Boolean accessibleToHere, int depth) {    	
     	
-    	if(edges.isEmpty())
-    		return false;
+        // stop if we've been here before
+        if(visitedList.contains(v))
+        	return accessibleToHere;
+        visitedList.add(v);
+        
+		int newDepth = depth + 1;
     	
-    	boolean r = false;
-    	for(Edge e : edges) {
-    		// if we've ventured out of pathways network, skip
+		TransitStationStop tss = (TransitStationStop)v;
+        Stop s = tss.getStop();
+
+    	System.out.println(StringUtils.repeat(">", newDepth) + " Vertex:" + v.getLabel() + " accessibleToHere=" + accessibleToHere);
+    	
+        if(s.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT || s.getLocationType() == Stop.LOCATION_TYPE_STOP)
+        	connectionsFromHere.add(v); 
+		
+    	// don't go out of the station--terminate search
+        if(s.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT)
+        	return accessibleToHere;
+
+		HashSet<PathwayEdge> equipmentHere = equipmentEdgesForStationId.get(v.getLabel());
+		if(equipmentHere == null) 
+			equipmentHere = new HashSet<PathwayEdge>();
+		
+    	Boolean hasAtLeastOneAccessiblePath = false;
+    	for(Edge e : v.getOutgoing()) {
+        	// only follow pathways
     		if(!(e instanceof PathwayEdge))
     			continue;
-    		
-    		// don't label entrances we traverse to via other pathways as accessible
-    		if(e.getToVertex() instanceof TransitStop 
-    				&& ((TransitStop)e.getToVertex()).isEntrance())
-    			continue;
-    		
-    		if(visitedList.contains(e.getId()))
-    			continue;    		
-    		visitedList.add(e.getId());
 
+        	PathwayEdge pe = (PathwayEdge)e;   
+        	System.out.println(StringUtils.repeat(">", newDepth) + " Pathway Edge:" + pe.getPathwayId() + " accessible=" + e.isWheelchairAccessible() + " mode=" + pe.getPathwayMode());
+
+    		boolean newAccessibleToHere = accessibleToHere;
+
+    		if(pe.getElevatorId() != null) {
+    			equipmentHere.add(pe);
+    		}
+    		
     		// "generic nodes" in GTFS don't have lat/longs, so use the station's coordinate
     		// to display the node on a map. 
     		Coordinate toLocation = e.getToVertex().getCoordinate();
     		if(toLocation.x == StopTime.MISSING_VALUE || toLocation.y == StopTime.MISSING_VALUE)
-    			toLocation = fromLocation;
+    			toLocation = v.getCoordinate();    		
+    		pe.setGeometry(v.getCoordinate(), toLocation);
     		
-    		((PathwayEdge)e).setGeometry(fromLocation, toLocation);
-
-    		// (since we use this loop to update geoms, we need to keep going even though we know the result
-    		// on accessibililty will be false)
-    		if(e.isWheelchairAccessible())
-    			r = true;
+    		// false is sticky--that is, once we get one false, the whole result is false
+    		if(newAccessibleToHere == true)
+    			newAccessibleToHere = e.isWheelchairAccessible();
     		
-    		if(walkEdges(e.getToVertex().getOutgoing(), 
-    				toLocation, visitedList, graph))
-    			r = true;
+    		// true is sticky here
+    		if(walkPathwayEdges(e.getToVertex(), connectionsFromHere, visitedList, newAccessibleToHere, newDepth) == true 
+    			&& hasAtLeastOneAccessiblePath == false)
+    			hasAtLeastOneAccessiblePath = true;
     	}
+
+    	// update equipment index
+    	equipmentEdgesForStationId.put(v.getLabel(), equipmentHere);
     	
-    	return r;
+    	return hasAtLeastOneAccessiblePath;
     }
 
     
@@ -486,7 +520,7 @@ public class GraphIndex {
 
 
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups,
-                                                     RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes) {
+                                                     RouteMatcher routeMatcher, Integer direction, String headsign, Set<String> bannedAgencies, Set<Integer> bannedRouteTypes, boolean ignoreRealtimeUpdates) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, direction,
                 headsign, null, null, bannedAgencies, bannedRouteTypes, null, false, false, false);
     }
@@ -628,11 +662,15 @@ public class GraphIndex {
     }
 
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups, RouteMatcher routeMatcher, String headsign) {
-        return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, null, headsign, null, null);
+        return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, routeMatcher, null, headsign, null, null, false);
     }
 
     public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups) {
         return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, RouteMatcher.emptyMatcher(), null);
+    }
+
+    public List<StopTimesInPattern> stopTimesForStop(Stop stop, long startTime, int timeRange, int numberOfDepartures, boolean omitNonPickups, boolean ignoreRealtimeUpdates) {
+        return stopTimesForStop(stop, startTime, timeRange, numberOfDepartures, omitNonPickups, RouteMatcher.emptyMatcher(), null, null, null, null, null, null, null, false, false, false);
     }
 
     /**
@@ -643,17 +681,17 @@ public class GraphIndex {
      * @param serviceDate Return all departures for the specified date
      * @return
      */
-    public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate, boolean omitNonPickups) {
+    public List<StopTimesInPattern> getStopTimesForStop(Stop stop, ServiceDate serviceDate, boolean omitNonPickups, boolean ignoreRealtimeUpdates) {
         List<StopTimesInPattern> ret = new ArrayList<>();
         TimetableSnapshot snapshot = null;
-        if (graph.timetableSnapshotSource != null) {
+        if (graph.timetableSnapshotSource != null && !ignoreRealtimeUpdates) {
             snapshot = graph.timetableSnapshotSource.getTimetableSnapshot();
         }
         Collection<TripPattern> patterns = patternsForStop.get(stop);
         for (TripPattern pattern : patterns) {
             StopTimesInPattern stopTimes = new StopTimesInPattern(pattern);
             Timetable tt;
-            if (snapshot != null){
+            if (snapshot != null && !ignoreRealtimeUpdates){
                 tt = snapshot.resolve(pattern, serviceDate);
             } else {
                 tt = pattern.scheduledTimetable;

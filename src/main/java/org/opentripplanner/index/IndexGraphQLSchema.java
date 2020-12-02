@@ -323,7 +323,7 @@ public class IndexGraphQLSchema {
                         return index.getStopTimesForStop(
                             (Stop) environment.getSource(),
                             ServiceDate.parseString(environment.getArgument("date")),
-                            environment.getArgument("omitNonPickups"));
+                            environment.getArgument("omitNonPickups"), false);
                     } catch (ParseException e) {
                         return null;
                     }

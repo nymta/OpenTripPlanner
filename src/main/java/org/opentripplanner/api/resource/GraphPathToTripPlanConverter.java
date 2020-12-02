@@ -995,7 +995,7 @@ public abstract class GraphPathToTripPlanConverter {
         RouteMatcher matcher = RouteMatcher.emptyMatcher();
         matcher.addRouteId(pattern.route.getId());
         List<StopTimesInPattern> stips = index.stopTimesForStop(stop, time + 60, options.nextDepartureWindow, options.numberOfDepartures, true, matcher,
-                pattern.directionId, leg.headsign, null, null);
+                pattern.directionId, leg.headsign, null, null, false);
         StopTimesByStop stbs = new StopTimesByStop(stop, stips);
         stbs.limitTimes(time, options.nextDepartureWindow, options.numberOfDepartures);
 

@@ -20,6 +20,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.webcohesion.enunciate.metadata.Ignore;
 import com.webcohesion.enunciate.metadata.rs.TypeHint;
+
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.FeedInfo;
@@ -30,6 +31,8 @@ import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.api.model.VehicleInfo;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
 import org.opentripplanner.gtfs.GtfsLibrary;
+import org.opentripplanner.index.model.AccessibilityShort;
+import org.opentripplanner.index.model.EquipmentShort;
 import org.opentripplanner.index.model.PatternDetail;
 import org.opentripplanner.index.model.PatternShort;
 import org.opentripplanner.index.model.RouteShort;
@@ -43,8 +46,10 @@ import org.opentripplanner.index.model.TripShort;
 import org.opentripplanner.index.model.TripTimeShort;
 import org.opentripplanner.model.Landmark;
 import org.opentripplanner.profile.StopCluster;
+import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.core.TraverseMode;
+import org.opentripplanner.routing.edgetype.PathwayEdge;
 import org.opentripplanner.routing.edgetype.Timetable;
 import org.opentripplanner.routing.edgetype.TransferEdge;
 import org.opentripplanner.routing.edgetype.TripPattern;
@@ -74,6 +79,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -81,6 +87,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,16 +110,19 @@ public class IndexAPI {
     private final GraphIndex index;
     private final StreetVertexIndexService streetIndex;
     private final ObjectMapper deserializer = new ObjectMapper();
+    private final Graph graph;
 
     public IndexAPI (@Context OTPServer otpServer, @PathParam("routerId") String routerId) {
         Router router = otpServer.getRouter(routerId);
-        index = router.graph.index;
-        streetIndex = router.graph.streetIndex;
+        this.index = router.graph.index;
+        this.graph = router.graph;
+        this.streetIndex = router.graph.streetIndex;
     }
 
     public IndexAPI(Graph graph) {
-        index = graph.index;
-        streetIndex = graph.streetIndex;
+        this.index = graph.index;
+        this.graph = graph;
+        this.streetIndex = graph.streetIndex;
     }
 
    /* Needed to check whether query parameter map is empty, rather than chaining " && x == null"s */
@@ -412,9 +422,67 @@ public class IndexAPI {
             return Response.status(Status.BAD_REQUEST).entity(MSG_400).build();
         }
 
-        List<StopTimesInPattern> ret = index.getStopTimesForStop(stop, sd, omitNonPickups);
+        List<StopTimesInPattern> ret = index.getStopTimesForStop(stop, sd, omitNonPickups, false);
         return Response.status(Status.OK).entity(ret).build();
     }
+    
+    /**
+     * @param stopIdString stop in Agency:Stop ID format.
+     */
+    @GET
+    @Path("/stops/{stopId}/equipment")
+    public Response getEquipment(@PathParam("stopId") String stopIdString) {
+    	Set<PathwayEdge> equipmentHere = index.equipmentEdgesForStationId.get(stopIdString);
+    	
+    	if (equipmentHere != null) {
+    		Set<EquipmentShort> result = new HashSet<EquipmentShort>();
+    		
+    	    for(PathwayEdge equipmentEdge : equipmentHere) {
+    	    	String equipmentId = equipmentEdge.getElevatorId();
+
+    	    	EquipmentShort resultItem = new EquipmentShort();
+    	    	resultItem.isCurrentlyAccessible = true;
+    	    	resultItem.equipmentId = equipmentId;
+    	    	
+    	    	Set<Alert> alerts = new HashSet<Alert>();
+        	   	for (AlertPatch alert : graph.getAlertPatches(equipmentEdge)) {
+        	   		if(alert.getStop().equals(GtfsLibrary.convertIdFromString(stopIdString)) 
+        	   				&& alert.getElevatorId().equals(equipmentId)) {
+        	   			alerts.add(alert.getAlert());
+
+        	   			if(alert.isRoutingConsequence())
+        	    	    	resultItem.isCurrentlyAccessible = false;
+        	   		}
+        	   	}
+        	   	
+        	    resultItem.alerts = alerts;    	 
+    	    	
+    	    	result.add(resultItem);
+    	    } 
+        	
+            return Response.status(Status.OK).entity(result).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
+        }
+    }
+    
+    /**
+     * @param stopIdString stop in Agency:Stop ID format.
+     */
+    @GET
+    @Path("/stops/{stopId}/accessibility")
+    public Response getAccessibility(@PathParam("stopId") String stopIdString) {
+
+        Stop stop = index.stopForId.get(GtfsLibrary.convertIdFromString(stopIdString));
+        
+        if (stop != null) {
+            return Response.status(Status.OK).entity(new AccessibilityShort(stop)).build();
+        } else {
+            return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
+        }
+        
+    }
+    
     
     /**
      * Return the generated transfers a stop in the graph, by stop ID

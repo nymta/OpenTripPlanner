@@ -23,10 +23,12 @@ import java.util.Locale;
  *
  * @author mabu
  */
-public class NonLocalizedString implements I18NString, Serializable {
-    private String name;
 
-    public NonLocalizedString(String name) {
+public class NonLocalizedString implements I18NString, Serializable {
+	
+	public String name;
+
+	public NonLocalizedString(String name) {
         this.name = name;
     }
 
