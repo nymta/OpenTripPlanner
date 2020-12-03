@@ -56,6 +56,7 @@ import org.opentripplanner.routing.edgetype.TripPattern;
 import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.GraphIndex;
+import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.services.StreetVertexIndexService;
 import org.opentripplanner.routing.vertextype.TransitStationStop;
 import org.opentripplanner.routing.vertextype.TransitStop;
@@ -433,7 +434,7 @@ public class IndexAPI {
     @Path("/stops/{stopId}/equipment")
     public Response getEquipment(@PathParam("stopId") String stopIdString) {
     	Set<PathwayEdge> equipmentHere = index.equipmentEdgesForStationId.get(stopIdString);
-    	
+
     	if (equipmentHere != null) {
     		Set<EquipmentShort> result = new HashSet<EquipmentShort>();
     		
@@ -466,6 +467,53 @@ public class IndexAPI {
         }
     }
     
+    @GET
+    @Path("/agency/{agencyId}/equipment")
+    public Response getEquipmentForAgency(@PathParam("agencyId") String agencyIdString) {
+		Set<EquipmentShort> result = new HashSet<EquipmentShort>();
+
+    	for(Vertex v : graph.getVertices()) {
+    		if(!(v instanceof TransitStationStop))
+    			continue;
+    		
+    		TransitStationStop tss = (TransitStationStop)v;
+    		
+    		if(!tss.getStopId().getAgencyId().equals(agencyIdString))
+    			continue;
+
+        	Set<PathwayEdge> equipmentHere = 
+        			index.equipmentEdgesForStationId.get(GtfsLibrary.convertIdToString(tss.getStopId()));
+
+        	if(equipmentHere == null || equipmentHere.isEmpty())
+        		continue;
+        	
+    	    for(PathwayEdge equipmentEdge : equipmentHere) {
+    	    	String equipmentId = equipmentEdge.getElevatorId();
+
+    	    	EquipmentShort resultItem = new EquipmentShort();
+    	    	resultItem.isCurrentlyAccessible = true;
+    	    	resultItem.equipmentId = equipmentId;
+    	    	
+    	    	Set<Alert> alerts = new HashSet<Alert>();
+        	   	for (AlertPatch alert : graph.getAlertPatches(equipmentEdge)) {
+        	   		if(alert.getStop().equals(tss.getStopId())
+        	   				&& alert.getElevatorId().equals(equipmentId)) {
+        	   			alerts.add(alert.getAlert());
+
+        	   			if(alert.isRoutingConsequence())
+        	    	    	resultItem.isCurrentlyAccessible = false;
+        	   		}
+        	   	}
+        	   	
+        	    resultItem.alerts = alerts;    	 
+    	    	
+    	    	result.add(resultItem);
+    	    } 
+    	}        	
+         
+    	return Response.status(Status.OK).entity(result).build();
+    }
+    
     /**
      * @param stopIdString stop in Agency:Stop ID format.
      */
@@ -476,7 +524,7 @@ public class IndexAPI {
         Stop stop = index.stopForId.get(GtfsLibrary.convertIdFromString(stopIdString));
         
         if (stop != null) {
-            return Response.status(Status.OK).entity(new AccessibilityShort(stop)).build();
+            return Response.status(Status.OK).entity(new AccessibilityShort(stop, index.getParentStopForStop(stop))).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
         }

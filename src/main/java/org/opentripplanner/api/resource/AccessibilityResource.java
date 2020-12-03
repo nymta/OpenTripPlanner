@@ -14,12 +14,15 @@ package org.opentripplanner.api.resource;
 
 import org.joda.time.DateTime;
 import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.api.common.ParameterException;
 import org.opentripplanner.api.model.PairwiseAccessibilityShort;
 import org.opentripplanner.gtfs.GtfsLibrary;
+import org.opentripplanner.index.model.RouteShort;
 import org.opentripplanner.index.model.StopShort;
+import org.opentripplanner.index.model.StopTimesInPattern;
 import org.opentripplanner.routing.alertpatch.Alert;
 import org.opentripplanner.routing.alertpatch.AlertPatch;
 import org.opentripplanner.routing.algorithm.GenericDijkstra;
@@ -92,8 +95,8 @@ public class AccessibilityResource {
      * @throws ParameterException 
      */
     @GET
-    @Path("/matrix/{stopId}")
-    public Response accessibilityMatrix (@PathParam("stopId") String stopIdString) {
+    @Path("/stop/{stopId}")
+    public Response stopAccessibility (@PathParam("stopId") String stopIdString) {
     	
     	class SkipNonPathwayEdgeStrategy implements SkipEdgeStrategy {
 
@@ -148,13 +151,19 @@ public class AccessibilityResource {
                 resultItem.to = new StopShort(toGTFSStop);
                 resultItem.isCurrentlyAccessible = false;
 
+                if(toGTFSStop.getLocationType() == Stop.LOCATION_TYPE_STATION || toGTFSStop.getLocationType() == Stop.LOCATION_TYPE_STOP) {
+                	resultItem.service = new HashSet<RouteShort>();
+                	for(StopTimesInPattern st : index.getStopTimesForStop(toGTFSStop, sd, true, ignoreRealtimeUpdates)) {
+                		resultItem.service.add(st.route);
+                	}
+                }
+                
                 List<GraphPath> paths = spt.getPaths();
                 if(!paths.isEmpty()) {
                     resultItem.dependsOnEquipment = new HashSet<String>();
                     resultItem.isCurrentlyAccessible = true;
-                    resultItem.upcomingService = index.getStopTimesForStop(toGTFSStop, sd, true, ignoreRealtimeUpdates);
-                    
-                    resultItem.alerts = new ArrayList<Alert>();
+
+                    resultItem.alerts = new HashSet<Alert>();
                     if(!ignoreRealtimeUpdates) {
                     	resultItem.alerts.addAll(consequencesStrategy.getConsequences(paths));
                     }

@@ -24,11 +24,8 @@ public class AccessibilityShort {
 
 	public AccessibleFlag accessibility;
 	
-	public AccessibilityShort(Stop stop) {
-		switch(stop.getWheelchairBoarding()) {			
-			default:
-				this.accessibility = AccessibleFlag.NOT_ACCESSIBLE;
-		}
+	public AccessibilityShort(Stop stop, Stop parentStop) {
+
 	}
 	
 }

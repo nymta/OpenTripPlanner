@@ -12,11 +12,10 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.api.model;
 
-import java.util.List;
 import java.util.Set;
 
+import org.opentripplanner.index.model.RouteShort;
 import org.opentripplanner.index.model.StopShort;
-import org.opentripplanner.index.model.StopTimesInPattern;
 import org.opentripplanner.routing.alertpatch.Alert;
 
 /** Accessibility matrix for a set of stops/entrances connected by pathways (a PathwayCluster) */
@@ -28,8 +27,8 @@ public class PairwiseAccessibilityShort {
 
 	public Boolean isCurrentlyAccessible;
 		
-	public List<Alert> alerts;
+	public Set<Alert> alerts;
 	
-	public List<StopTimesInPattern> upcomingService;
+	public Set<RouteShort> service;
 	
 }

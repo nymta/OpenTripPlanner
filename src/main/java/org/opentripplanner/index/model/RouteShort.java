@@ -1,6 +1,7 @@
 package org.opentripplanner.index.model;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -63,4 +64,22 @@ public class RouteShort {
         return out;
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        RouteShort other = (RouteShort) obj;
+        if (!this.id.equals(other.id))
+            return false;
+        return true;
+    }
 }
