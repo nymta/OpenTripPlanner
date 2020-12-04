@@ -232,7 +232,7 @@ public class GraphIndex {
         	if(!(v instanceof TransitStop) && !(v instanceof TransitStationStop))
         		continue;
 
-        	System.out.println("Starting pathway walk from " + v.getLabel());
+//        	System.out.println("Starting pathway walk from " + v.getLabel());
 
         	HashSet<Vertex> connectionsFromHere = new HashSet<Vertex>();
         	HashSet<Vertex> visitedList = new HashSet<Vertex>();
@@ -262,7 +262,7 @@ public class GraphIndex {
 		TransitStationStop tss = (TransitStationStop)v;
         Stop s = tss.getStop();
 
-    	System.out.println(StringUtils.repeat(">", newDepth) + " Vertex:" + v.getLabel() + " accessibleToHere=" + accessibleToHere);
+//    	System.out.println(StringUtils.repeat(">", newDepth) + " Vertex:" + v.getLabel() + " accessibleToHere=" + accessibleToHere);
     	
         if(s.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT || s.getLocationType() == Stop.LOCATION_TYPE_STOP)
         	connectionsFromHere.add(v); 
@@ -282,7 +282,7 @@ public class GraphIndex {
     			continue;
 
         	PathwayEdge pe = (PathwayEdge)e;   
-        	System.out.println(StringUtils.repeat(">", newDepth) + " Pathway Edge:" + pe.getPathwayId() + " accessible=" + e.isWheelchairAccessible() + " mode=" + pe.getPathwayMode());
+//        	System.out.println(StringUtils.repeat(">", newDepth) + " Pathway Edge:" + pe.getPathwayId() + " accessible=" + e.isWheelchairAccessible() + " mode=" + pe.getPathwayMode());
 
     		boolean newAccessibleToHere = accessibleToHere;
 
