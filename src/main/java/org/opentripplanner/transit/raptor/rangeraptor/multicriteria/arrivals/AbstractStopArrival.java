@@ -15,7 +15,8 @@ public abstract class AbstractStopArrival<T extends RaptorTripSchedule> implemen
     public static <T extends RaptorTripSchedule> ParetoComparator<AbstractStopArrival<T>> compareArrivalTimeRoundAndCost() {
         // This is important with respect to performance. Using the short-circuit logical OR(||) is
         // faster than bitwise inclusive OR(|) (even between boolean expressions)
-        return (l, r) -> l.arrivalTime < r.arrivalTime || l.paretoRound < r.paretoRound || l.cost < r.cost;
+        //TODO added a relaxed cost to the comparator
+        return (l, r) -> l.arrivalTime < r.arrivalTime || l.paretoRound < r.paretoRound || l.cost() < Math.round(r.cost() * 3.5);
     }
 
     public static <T extends RaptorTripSchedule> ParetoComparator<AbstractStopArrival<T>> compareArrivalTimeAndRound() {
