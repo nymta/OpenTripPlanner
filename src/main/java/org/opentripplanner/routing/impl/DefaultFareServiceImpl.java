@@ -373,7 +373,7 @@ public class DefaultFareServiceImpl implements FareService, Serializable {
                 continue;
             
             if (ruleSet.matches(agencies, startZone, endZone, zones, routes, trips)) {
-                // TODO Maybe move the code below in FareRuleSet::matches() ?
+                // TODO Maybe move the code below in FareRuleSet::matches()   ?
                 if (attribute.isTransfersSet() && attribute.getTransfers() < transfersUsed) {
                     continue;
                 }
