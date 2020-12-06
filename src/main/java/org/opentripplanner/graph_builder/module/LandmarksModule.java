@@ -18,13 +18,18 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import org.onebusaway.gtfs.model.AgencyAndId;
+import org.onebusaway.gtfs.model.Stop;
 import org.opentripplanner.graph_builder.services.GraphBuilderModule;
+import org.opentripplanner.gtfs.GtfsLibrary;
 import org.opentripplanner.model.Landmark;
 import org.opentripplanner.routing.edgetype.LandmarkEdge;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.graph.Vertex;
 import org.opentripplanner.routing.vertextype.LandmarkVertex;
 import org.opentripplanner.routing.vertextype.TransitStationStop;
+import org.opentripplanner.routing.vertextype.TransitStop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +79,23 @@ public class LandmarksModule implements GraphBuilderModule {
             graph.addLandmark(landmark);
             Vertex lv = makeLandmarkVertex(graph, landmark);
             for (Vertex stop : landmark.getStops()) {
-                new LandmarkEdge(lv, stop);
-                new LandmarkEdge(stop, lv);
+            	if(stop instanceof TransitStationStop) {
+            		TransitStop ts = (TransitStop)stop;
+            		if(ts.hasEntrances()) {
+            			for(Stop entrance : graph.index.stopsForParentStation.get(
+            					new AgencyAndId(ts.getStopId().getAgencyId(),ts.getStop().getParentStation()))) {
+            				if(entrance.getLocationType() != Stop.LOCATION_TYPE_ENTRANCE_EXIT)
+            					continue;
+            				
+            				Vertex entranceVertex = graph.getVertex(GtfsLibrary.convertIdToString(entrance.getId()));
+                            new LandmarkEdge(lv, entranceVertex);
+                            new LandmarkEdge(entranceVertex, lv);
+            			}            			
+            		} else {
+                        new LandmarkEdge(lv, stop);
+                        new LandmarkEdge(stop, lv);
+            		}
+            	}
             }
         }
     }
