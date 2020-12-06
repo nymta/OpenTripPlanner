@@ -483,26 +483,12 @@ public class TestPatternHopFactory extends TestCase {
         path = spt.getPath(near_c, false);
         assertNull(path);
         
-        // stop E has no accessibility information, but we should still be able to route to it.
+        // stop E has no accessibility information, but GraphIndex's pathways eval should make it not accessible
         options.setRoutingContext(graph, near_a, near_e);
         spt = aStar.getShortestPathTree(options);
 
         path = spt.getPath(near_e, false);
-        assertNotNull(path);
-
-        // from stop A to stop D would normally be trip 1.1 to trip 2.1, arriving at 00:30. But trip
-        // 2 is not accessible, so we'll do 1.1 to 3.1, arriving at 01:00
-        GregorianCalendar time = new GregorianCalendar(2009, 8, 18, 0, 0, 0);
-        time.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-        options.dateTime = TestUtils.toSeconds(time);
-        options.setRoutingContext(graph, near_a, split_d);
-        spt = aStar.getShortestPathTree(options);
-        
-        time.add(Calendar.HOUR, 1);
-        time.add(Calendar.SECOND, 1); //for the StreetTransitLink
-        path = spt.getPath(split_d, false);
-        assertNotNull(path);
-        assertEquals(TestUtils.toSeconds(time), path.getEndTime());
+        assertNull(path);
     }
 
     public void testRunForTrain() {
