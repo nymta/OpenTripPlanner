@@ -111,10 +111,13 @@ public class RunODPairsWithOTP {
     		switch(optimizeFlag) {
     			case "W":
     				builder.setParameter("optimize",  "WALKING");
+    				break;
     			case "X":
     				builder.setParameter("optimize",  "TRANSFERS");
+    				break;
     			case "T":
     				builder.setParameter("optimize",  "QUICK");
+    				break;
     		}
     		
 
