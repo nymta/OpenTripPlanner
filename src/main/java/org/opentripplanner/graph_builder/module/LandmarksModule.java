@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -79,11 +81,21 @@ public class LandmarksModule implements GraphBuilderModule {
             graph.addLandmark(landmark);
             Vertex lv = makeLandmarkVertex(graph, landmark);
             for (Vertex stop : landmark.getStops()) {
-            	if(stop instanceof TransitStationStop) {
-            		TransitStop ts = (TransitStop)stop;
-            		if(ts.hasEntrances()) {
-            			for(Stop entrance : graph.index.stopsForParentStation.get(
-            					new AgencyAndId(ts.getStopId().getAgencyId(),ts.getStop().getParentStation()))) {
+               	if(stop instanceof TransitStationStop) {
+               		TransitStationStop ts = (TransitStationStop)stop;
+
+               		boolean hasEntrances = false;
+               		Collection<Stop> stops = graph.index.stopsForParentStation.get(
+        					new AgencyAndId(ts.getStopId().getAgencyId(),ts.getStop().getParentStation()));
+               		for(Stop entrance : stops) {
+        				if(entrance.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT) {
+        					hasEntrances = true;
+        					break;
+        				}
+        			}
+               		
+               		if(hasEntrances) {
+            			for(Stop entrance : stops) {
             				if(entrance.getLocationType() != Stop.LOCATION_TYPE_ENTRANCE_EXIT)
             					continue;
             				
