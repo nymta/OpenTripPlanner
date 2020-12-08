@@ -109,6 +109,8 @@ public class PathwayEdge extends Edge {
         return this.getName();
     }
 
+    public FeedScopedId getId( ){ return id; }
+
     public void setWheelchairAccessible(boolean wheelchairAccessible) {
         this.wheelchairAccessible = wheelchairAccessible;
     }

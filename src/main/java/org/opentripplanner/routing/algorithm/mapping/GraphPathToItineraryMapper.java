@@ -136,6 +136,7 @@ public abstract class GraphPathToItineraryMapper {
         }
 
         setLegPathwayFlag(legs, legsStates);
+        setRoute(legs, legsStates);
 
         Itinerary itinerary = new Itinerary(legs);
 
@@ -145,6 +146,8 @@ public abstract class GraphPathToItineraryMapper {
 
         return itinerary;
     }
+
+
 
     private static Calendar makeCalendar(State state) {
         RoutingContext rctx = state.getContext();
@@ -350,6 +353,19 @@ public abstract class GraphPathToItineraryMapper {
             for (int j = 1; j < legsStates[i].length; j++) {
                 if (legsStates[i][j].getBackEdge() instanceof PathwayEdge) {
                     legs.get(i).pathway = true;
+                    break OUTER;
+                }
+            }
+        }
+    }
+
+    private static void setRoute(List<Leg> legs, State[][] legsStates) {
+        OUTER:
+        for (int i = 0; i < legsStates.length; i++) {
+            for (int j = 1; j < legsStates[i].length; j++) {
+                if (legsStates[i][j].getBackEdge() instanceof PathwayEdge) {
+                    PathwayEdge pe = (PathwayEdge) legsStates[i][j].getBackEdge();
+                    legs.get(i).edgeIdentifier = pe.getId();
                     break OUTER;
                 }
             }
