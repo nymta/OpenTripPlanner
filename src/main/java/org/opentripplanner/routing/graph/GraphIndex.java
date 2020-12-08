@@ -238,6 +238,7 @@ public class GraphIndex {
 
         	HashSet<Vertex> connectionsFromHere = new HashSet<Vertex>();
         	HashSet<Vertex> visitedList = new HashSet<Vertex>();
+
         	boolean initialState = graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(tss.getStop());
         	
         	Boolean hasAtLeastOneAccessiblePath = walkPathwayEdges(v, connectionsFromHere, visitedList, initialState, 0);       
@@ -269,7 +270,15 @@ public class GraphIndex {
     	
         if(s.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT || s.getLocationType() == Stop.LOCATION_TYPE_STOP)
         	connectionsFromHere.add(v); 
-		
+
+        // don't evaluate bus stops or stations with no entrances
+        if(v instanceof TransitStop && !((TransitStop) v).hasEntrances())        
+        	return accessibleToHere;
+        
+        // if there are no pathways to evaluate, stop here
+        if(v.getOutgoing().stream().filter(PathwayEdge.class::isInstance).count() == 0)
+        	return accessibleToHere;
+        	        
     	// don't go out of the station--terminate search
         if(s.getLocationType() == Stop.LOCATION_TYPE_ENTRANCE_EXIT)
         	return accessibleToHere;
@@ -305,8 +314,8 @@ public class GraphIndex {
     			newAccessibleToHere = e.isWheelchairAccessible();
     		
     		// true is sticky here
-    		if(walkPathwayEdges(e.getToVertex(), connectionsFromHere, visitedList, newAccessibleToHere, newDepth) == true 
-    			&& hasAtLeastOneAccessiblePath == false)
+    		if(walkPathwayEdges(e.getToVertex(), connectionsFromHere, visitedList, newAccessibleToHere, newDepth) 
+    			&& !hasAtLeastOneAccessiblePath)
     			hasAtLeastOneAccessiblePath = true;
     	}
 
