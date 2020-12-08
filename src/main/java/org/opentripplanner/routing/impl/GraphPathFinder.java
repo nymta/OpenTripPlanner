@@ -72,7 +72,7 @@ public class GraphPathFinder {
     private static final double DEFAULT_MAX_WALK = 2000;
     private static final double CLAMP_MAX_WALK = 15000;
 
-    private boolean verbose = true;
+    private boolean verbose = false;
 
     Router router;
 

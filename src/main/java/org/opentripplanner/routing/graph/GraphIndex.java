@@ -232,16 +232,17 @@ public class GraphIndex {
         	if(!(v instanceof TransitStop) && !(v instanceof TransitStationStop))
         		continue;
 
-        	TransitStop ts = (TransitStop)v;
+        	TransitStationStop tss = (TransitStationStop)v;
         	
 //        	System.out.println("Starting pathway walk from " + v.getLabel());
 
         	HashSet<Vertex> connectionsFromHere = new HashSet<Vertex>();
         	HashSet<Vertex> visitedList = new HashSet<Vertex>();
-        	boolean initialState = graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(ts.getStop());
+        	boolean initialState = graph.stopAccessibilityStrategy.transitStopEvaluateGTFSAccessibilityFlag(tss.getStop());
         	
         	Boolean hasAtLeastOneAccessiblePath = walkPathwayEdges(v, connectionsFromHere, visitedList, initialState, 0);       
         	if(hasAtLeastOneAccessiblePath != null && v instanceof TransitStop) {
+            	TransitStop ts = (TransitStop)v;
         		ts.setWheelchairEntrance(hasAtLeastOneAccessiblePath);
         	}
         	
