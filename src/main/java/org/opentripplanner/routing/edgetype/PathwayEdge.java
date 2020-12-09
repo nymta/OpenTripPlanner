@@ -238,7 +238,7 @@ public class PathwayEdge extends Edge {
         }
 
         if(time == -1) {
-        	LOG.warn("Traversal time on pathway {} is negative; bumping to 0 to avoid routing problems. "
+        	LOG.debug("Traversal time on pathway {} is negative; bumping to 0 to avoid routing problems. "
         			+ "Check your pathways data: one of traversal time, length or stair count should be set.", this.getPathwayId());
         	time = 0;
         }

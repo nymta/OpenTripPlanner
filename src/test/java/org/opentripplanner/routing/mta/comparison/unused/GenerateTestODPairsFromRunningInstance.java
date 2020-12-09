@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison;
+package org.opentripplanner.routing.mta.comparison.unused;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,21 +20,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
-import org.junit.Test;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.graph.Graph;
 
 import flexjson.JSONDeserializer;
 
-import java.awt.List;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,9 +75,7 @@ public class GenerateTestODPairsFromRunningInstance {
     public void setMax(String agency, int max) {
     	agencyMax.put(agency,  max);
     }
-
     
-//	@Test
     @SuppressWarnings("unchecked")
     public void run() throws IOException, URISyntaxException {
 

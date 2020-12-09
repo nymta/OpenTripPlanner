@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison;
+package org.opentripplanner.routing.mta.comparison.unused;
 
 import org.opentripplanner.ConstantsForTests;
 import org.opentripplanner.routing.graph.Graph;
@@ -34,7 +34,6 @@ public class GenerateTestODPairsFromTestGTFS {
     
     protected static Graph graph;
 
-//    @Test
     public void run() throws IOException {
         graph = ConstantsForTests.buildGraph(NYCT_SUBWAYS_GTFS);
     	

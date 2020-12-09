@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison;
+package org.opentripplanner.routing.mta.comparison.unused;
 
 import flexjson.JSONDeserializer;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -53,7 +53,6 @@ public class RunODPairsWithOTP {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-//	@Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);

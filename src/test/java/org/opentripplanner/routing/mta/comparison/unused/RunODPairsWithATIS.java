@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison;
+package org.opentripplanner.routing.mta.comparison.unused;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -107,7 +107,6 @@ public class RunODPairsWithATIS {
     }
 
     @SuppressWarnings("unchecked")
-//    @Test
     public void run() throws IOException, InterruptedException {
 
     	FileWriter atisResults = new FileWriter(ATIS_RESULTS_TXT);

@@ -2,6 +2,8 @@ package org.opentripplanner.routing.mta.comparison.test_file_format;
 
 import java.util.Comparator;
 
+import org.opentripplanner.api.model.Itinerary;
+import org.opentripplanner.api.model.Leg;
 import org.opentripplanner.routing.mta.comparison.QualitativeMultiDimInstanceComparison.platformDim;
 
 public class ItinerarySummary {
@@ -17,6 +19,23 @@ public class ItinerarySummary {
 	public platformDim platform;
 
 	public Boolean approveOfResult = true;
+	
+	public static ItinerarySummary fromItinerary(Itinerary itin) {
+		ItinerarySummary is = new ItinerarySummary();
+		is.walkDistance = (double)(itin.walkDistance/1000f);
+		is.transitTime = (int)((float)itin.transitTime/60f);
+		is.routes = "";
+		
+		for(Leg leg : itin.legs) {
+			if(leg.mode.equals("WALK"))
+				continue;
+			if(!is.routes.isEmpty()) 
+				is.routes += ">";
+			is.routes += (leg.route != null) ? leg.route : leg.routeId;
+		}
+		
+		return is;		
+	}
 	
 	public static Comparator<ItinerarySummary> RANKER_TIME = new Comparator<ItinerarySummary>() {
 		@Override
@@ -88,6 +107,8 @@ public class ItinerarySummary {
 	    
 	    return r;
 	}
+	
+	public ItinerarySummary() {}
 	
 	public ItinerarySummary(String line) throws Exception {
 		String parts[] = line.split(" ");

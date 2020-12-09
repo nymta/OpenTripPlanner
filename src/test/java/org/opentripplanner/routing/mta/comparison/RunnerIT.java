@@ -12,222 +12,203 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.mta.comparison;
 
-import org.junit.Test;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.runners.MethodSorters;
-import org.opentripplanner.routing.mta.comparison.GenerateTestODPairsFromRunningInstance;
+import org.joda.time.DateTime;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.opentripplanner.routing.core.OptimizeType;
+import org.opentripplanner.routing.core.RoutingRequest;
+import org.opentripplanner.routing.error.PathNotFoundException;
+import org.opentripplanner.routing.graph.Graph;
+import org.opentripplanner.routing.impl.GraphPathFinder;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import org.opentripplanner.api.common.RoutingResource;
+import org.opentripplanner.api.model.Itinerary;
+import org.opentripplanner.api.model.TripPlan;
+import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
+import org.opentripplanner.graph_builder.GraphBuilder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RunnerIT {
+import org.opentripplanner.routing.mta.comparison.test_file_format.*;
+import org.opentripplanner.routing.spt.GraphPath;
+import org.opentripplanner.standalone.CommandLineParameters;
+import org.opentripplanner.standalone.OTPMain;
+import org.opentripplanner.standalone.Router;
+
+public class RunnerIT extends RoutingResource {
 	
-    @Test
-    public void a_ODGen_QA_NoAccessible() throws IOException, Exception {    	
+	private static String ALL_TESTS_DIR = "src/test/resources/mta/comparison/"; 
+
+	private Graph graph;
+	
+	private Router router;
+	
+	private void buildGraph(File graphDir) {
+		if(graphDir.exists()) {
+			File graphFile = new File(graphDir + "/Graph.obj");
+			if(graphFile.exists()) {
+				try {
+					graph = Graph.load(graphFile);
+				} catch (Exception e) {
+					GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
+					builder.run();
+					graph = builder.getGraph();
+				}
+			} else {
+				GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
+				builder.run();
+				graph = builder.getGraph();
+			}
+			
+    		router = new Router(graphDir.getParent(), graph);
+    		router.startup(OTPMain.loadJson(new File(graphDir, Router.ROUTER_CONFIG_FILENAME)));
+		}
+	}
+	
+    private List<File> findTestDirs() {
+    	List<File> data = new ArrayList<File>();
+    
+    	File allTests = new File(ALL_TESTS_DIR);
+    	for(String testDirPath : allTests.list()) {
+    		File testDir = new File(ALL_TESTS_DIR + "/" + testDirPath);    		
+    		if(!testDir.isDirectory())
+    			continue;
+    		
+    		for(String idealResultPath : testDir.list()) {
+        		File idealResultFile = new File(testDir + "/" + idealResultPath);
+    			
+        		if(!idealResultFile.isFile() || !idealResultFile.getName().endsWith(".txt") || idealResultFile.getName().endsWith("_results.txt"))
+        			continue;
+
+        		data.add(testDir); 
+    		}
+    	}
+    	
+    	return data;
+    }
+    	  
+    private void runTripQueries(File testDir) throws Exception {    	
+    	if(!testDir.isDirectory())
+    		return;
+    		
+		File idealResultFile = new File(testDir + "/ideal.txt");
+		File resultsFile = new File(testDir + "/ideal_results.txt");
+		FileWriter resultsFileWriter = new FileWriter(resultsFile);
 		
-    	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
-    	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
-    	t.setMTAOnly(true);
+		List<Result> results = Result.loadResults(idealResultFile);			
+		for(Result result : results) {
+			RoutingRequest request = 
+					super.buildRequest(router.defaultRoutingRequest, graph.getTimeZone());
+			
+			request.wheelchairAccessible = result.query.accessible;
+			request.setDateTime(new DateTime(result.query.time).toDate());
+			request.setFrom(Double.parseDouble(result.query.origin.split(",")[0]), 
+					Double.parseDouble(result.query.origin.split(",")[1]));
+			request.setTo(Double.parseDouble(result.query.destination.split(",")[0]), 
+					Double.parseDouble(result.query.destination.split(",")[1]));
+			request.ignoreRealtimeUpdates = true;
+			request.numItineraries = 6;
+			request.hardPathBanning = true; // once we use a set of routes, don't use it again
 
-    	t.setPairsToGenerate(150);
-    	t.setAccessibilityPercent(0.0);
-    	t.setMax("MTA", 50);
-    	t.setMax("MTASBWY", 50);
-    	t.setMax("LI", 25);
-    	t.setMax("MNR", 25);
-    	
-    	t.setOutputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
-    	t.run();
-    }
-    
-    @Test    
-    public void b_ODGen_QA_Accessible() throws IOException, Exception {    	
+	  		switch(result.query.optimizeFlag) {
+    			case "W":
+    				request.optimize = OptimizeType.WALKING; 
+    				break;
+    			case "X":
+    				request.optimize = OptimizeType.TRANSFERS;
+    				break;
+    			case "T":
+    				request.optimize = OptimizeType.QUICK;
+    				break;
+	  		}
+	  		
+	  		try {
+	  			GraphPathFinder gpFinder = new GraphPathFinder(router);
+	  			List<GraphPath> paths = gpFinder.graphPathFinderEntryPoint(request);
 
-    	GenerateTestODPairsFromRunningInstance t = new GenerateTestODPairsFromRunningInstance();
-    	t.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
-    	t.setMTAOnly(true);
+	  			TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
 
-    	t.setPairsToGenerate(150);
-    	t.setAccessibilityPercent(1.0);
-    	t.setMax("MTA", 50);
-    	t.setMax("MTASBWY", 50);
-    	t.setMax("LI", 25);
-    	t.setMax("MNR", 25);
-    	
-    	t.setOutputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
-    	t.run();
-    }
-    
-    @Test  	
-    public void c_Baseline_QA_NoAccessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/plan?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_qa_0_accessible.txt");
-    	t2.run();    	
-    }
-    
-    @Test
-    public void d_Baseline_QA_Accessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-qa.camsys-apps.com/otp/routers/default/plan?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_qa_100_accessible.txt");
-    	t2.run();    	
-    }
- 	
-    @Test
-    public void e_Baseline_Prod_NoAccessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-prod.camsys-apps.com/otp/routers/default/plan?apikey=Z276E3rCeTzOQEoBPPN4JCEc6GfvdnYE");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_prod_0_accessible.txt");
-    	t2.run();    	
-    }
+                String optimizeFlag = null;
+        		switch(request.optimize) {
+    			case WALKING:
+    				optimizeFlag = "W";
+    				break;
+    			case TRANSFERS:
+    				optimizeFlag = "X";
+    				break;
+    			case QUICK:
+    				optimizeFlag = "T";
+    				break;
+				default:
+					break;
+        		}
+        		
+                resultsFileWriter.write("Q " + ((request.wheelchairAccessible) ? "Y " : "N ") + 
+        				request.dateTime*1000 + " " + 
+        				request.from.lat + "," + request.from.lng + " " + 
+        				request.to.lat + "," + request.to.lng + " " + 
+        				optimizeFlag + 
+        				"\n");
+                
+                int i = 1;
+                for(Itinerary itin : plan.itinerary) {
+                	ItinerarySummary is = ItinerarySummary.fromItinerary(itin);
+                	is.itineraryNumber = i;
+                	i++;
+                    
+                	resultsFileWriter.write(
+                     		 "S " + is.itineraryNumber + " " + String.format("%.2f",is.walkDistance)
+                     		 		+ " " + is.transitTime + " " + is.routes + "\n");
+                }
+	  		} catch (PathNotFoundException e) {
+	  			resultsFileWriter.write("**** NOT FOUND ****");
+	  		}
+            
+		} // for result
 
-    @Test
-    public void f_Baseline_Prod_Accessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-prod.camsys-apps.com/otp/routers/default/plan?apikey=Z276E3rCeTzOQEoBPPN4JCEc6GfvdnYE");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_prod_100_accessible.txt");
-    	t2.run();    	
+		resultsFileWriter.close();
     }
     
-    
+	@TestFactory
+	public Collection<DynamicTest> runTests() throws Exception {		
+		List<DynamicTest> generatedTests = new ArrayList<>();
 
-    
-    
-	// this blocks the rest from continuing until dev is updated with the code we just committed
-	@Test
-    public void g_Block_Until_Released() throws IOException, Exception {    	
-		
-    	BlockUntilReleaseFinished t = new BlockUntilReleaseFinished();
-    	t.setOTPURL("https://otp-mta-dev.camsys-apps.com/otp/?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
-    	t.run();
-    }
-    
-    @Test
-    public void h_Test_Dev_NoAccessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_0_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_dev_0_accessible.txt");
-    	t2.run();    	
-    }
-   
-    @Test
-    public void i_Test_Dev_Accessible() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
-    	t2.setInputFile("src/test/resources/mta/test_pairs_100_accessible.txt");
-    	t2.setOutputFile("src/test/resources/mta/test_dev_100_accessible.txt");
-    	t2.run();    	
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-     
-    @Test
-    public void l_TestEval_Get_Reference() throws IOException, Exception {    	
-    	FetchTripEvaluationReference t2 = new FetchTripEvaluationReference();
-    	t2.setOutputQueryFile("src/test/resources/mta/tripeval_od_pairs.txt");
-    	t2.setOutputReferenceFile("src/test/resources/mta/tripeval_output_results.txt");
-    	t2.run();    	
-    }
-    
-    @Test
-    public void m_TestEval_Dev() throws IOException, Exception {    	
-    	RunODPairsWithOTP t2 = new RunODPairsWithOTP();
-    	t2.setOTPURL("http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp");
-    	t2.setInputFile("src/test/resources/mta/tripeval_od_pairs.txt");
-    	t2.setOutputFile("src/test/resources/mta/tripeval_dev_results.txt");
-    	t2.setUseCurrentTime(true);
-    	t2.run();    	
-    }
-    
+		for(File testDir : this.findTestDirs()) {
+			System.out.println("             ***************************************************************");
+    		System.out.println("                              TEST DIR: " + testDir.getName());
+    		System.out.println("             ***************************************************************");
 
-    
-    
-    
-    
-    
-    
-    
-    @Test
-    public void q1_QAXProd_Not_Accessible_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    PROD   vs   QA - NO ACCESSIBLE          ");
-    	System.out.println("             ***************************************************************");
- 
-    	QualitativeMultiDimInstanceComparison t3 = new QualitativeMultiDimInstanceComparison();
-    	t3.setBaselineResultsFile("src/test/resources/mta/test_prod_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
-    	t3.run();
+			buildGraph(new File(testDir + "/graph"));
+			runTripQueries(testDir);
+			
+			File idealResultFile = new File(testDir.getAbsolutePath() + "/ideal.txt");
+			File resultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
+			
+	      	ScoreAgainstIdealComparison t2 = new ScoreAgainstIdealComparison();
+	    	t2.setBaselineResultsFile(idealResultFile.getPath());
+	    	t2.setTestResultsFile(resultsFile.getPath());
+			
+	    	generatedTests.addAll(t2.getTests());
+						
+			QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
+	    	t1.setBaselineResultsFile(idealResultFile.getPath());
+	    	t1.setTestResultsFile(resultsFile.getPath());
+			
+	    	generatedTests.addAll(t1.getTests());
 
-    }
-    
-    @Test
-    public void q2_QAXProd_Accessible_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    PROD   vs   QA - ACCESSIBLE          ");
-    	System.out.println("             ***************************************************************");
- 
-    	QualitativeMultiDimInstanceComparison t4 = new QualitativeMultiDimInstanceComparison();
-    	t4.setBaselineResultsFile("src/test/resources/mta/test_prod_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
-    	t4.run();
-    }    	
-    	
-    
-    @Test
-    public void r1_DevXQA_Not_Accessible_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    QA   vs   DEV - NO ACCESSIBLE           ");
-    	System.out.println("             ***************************************************************");
+	    	
+/*		
+			QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
+	    	t1.setBaselineResultsFile(idealResultFile.getPath());
+	    	t1.setTestResultsFile(resultsFile.getPath());
+			generatedTests.addAll(t1.getTests());
+*/
+		}
 
-    	QualitativeMultiDimInstanceComparison t3 = new QualitativeMultiDimInstanceComparison();
-    	t3.setBaselineResultsFile("src/test/resources/mta/test_qa_0_accessible.txt");
-    	t3.setTestResultsFile("src/test/resources/mta/test_dev_0_accessible.txt");
-    	t3.run();
-    }
+		return generatedTests;
+	}
     
-    @Test
-    public void r2_DevXQA_Accessible_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                    QA   vs   DEV - ACCESSIBLE           ");
-    	System.out.println("             ***************************************************************");
-    	
-    	QualitativeMultiDimInstanceComparison t4 = new QualitativeMultiDimInstanceComparison();
-    	t4.setBaselineResultsFile("src/test/resources/mta/test_qa_100_accessible.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/test_dev_100_accessible.txt");
-    	t4.run();
-    }    		
-
-    
-    
-    
-    
-    @Test
-    public void s_DevXTripEval_Results() throws IOException, Exception {    	
-    	System.out.println("             ***************************************************************");
-    	System.out.println("                                 TRIPEVAL   vs   DEV                        ");
-    	System.out.println("             ***************************************************************");
-    	System.out.println("");
-    	
-      	ScoreAgainstIdealComparison t4 = new ScoreAgainstIdealComparison();
-    	t4.setBaselineResultsFile("src/test/resources/mta/tripeval_output_results.txt");
-    	t4.setTestResultsFile("src/test/resources/mta/tripeval_dev_results.txt");
-    	t4.run();
-
-    } 
 }
 

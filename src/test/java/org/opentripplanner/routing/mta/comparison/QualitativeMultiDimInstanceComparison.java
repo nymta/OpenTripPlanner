@@ -15,6 +15,16 @@ package org.opentripplanner.routing.mta.comparison;
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
 import org.apache.commons.math3.stat.descriptive.rank.Max;
 import org.apache.commons.math3.stat.descriptive.rank.Min;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.DynamicContainer;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
 import org.opentripplanner.routing.mta.comparison.test_file_format.Query;
 import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
@@ -31,16 +41,24 @@ public class QualitativeMultiDimInstanceComparison {
 
     private String BASELINE_RESULTS_TXT = null;
 
-    private final String[] optimizationDimLabels = new String[] { "WALKING", "TRANSFERS", "TIME" };
-    
+	public void setBaselineResultsFile(String f) {
+		this.BASELINE_RESULTS_TXT = f;
+	}
+	
+	public void setTestResultsFile(String f) {
+		this.TEST_RESULTS_TXT = f;
+	}
+	
 	private enum optimizationDim { W, X, T };
 	
-    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "BASELINE TOP IN TEST RESULTS**" };
-
+	private final String[] optimizationDimLabels = new String[] { "WALKING", "TRANSFERS", "TIME" };
+	
     private enum metricsDim { W, X, T, hasResults, match };
 
-	public enum platformDim { BASELINE, TEST, TIE };
+    private final String[] metricsDimLabels = new String[] { "WALKING (km)", "TRANSFERS", "TIME (min)", "PRODUCED A RESULT", "BASELINE TOP IN TEST RESULTS**" };
 
+	public enum platformDim { BASELINE, TEST, TIE };
+	
 	// dimensions: optimization
 	private int[] totalByOptimization = new int[3];
 
@@ -51,14 +69,8 @@ public class QualitativeMultiDimInstanceComparison {
 	// dimensions: optimization | metric | platform
 	private int[][][] resultSummary = new int[3][5][3];
 		
-	public void setBaselineResultsFile(String f) {
-		this.BASELINE_RESULTS_TXT = f;
-	}
-	
-	public void setTestResultsFile(String f) {
-		this.TEST_RESULTS_TXT = f;
-	}
-	
+	private List<Query> noResultQueries = new ArrayList<Query>();
+
 	private void scorePlatform(optimizationDim optimization, metricsDim metric, 
 			List<ItinerarySummary> sortedResults, Comparator<ItinerarySummary> ranker) {
 
@@ -145,162 +157,123 @@ public class QualitativeMultiDimInstanceComparison {
 		}
 	}
 	
-	private List<Result> loadResults(File resultsFile, platformDim platform) throws Exception {
-    	List<Result> results = new ArrayList<Result>();
+	private boolean isSetup = false;
+	public void setup() throws IOException, Exception {    	
+		if(isSetup)
+			return;
+		isSetup = true;
 
-    	Scanner resultsReader = new Scanner(resultsFile);
+		File devResultsFile = new File(TEST_RESULTS_TXT);
+		File baselineResultsFile = new File(BASELINE_RESULTS_TXT);
 
-		Query q = null;
-		Result r = null;
-    	while (resultsReader.hasNextLine()) {
-    		String line = resultsReader.nextLine();
+		List<Result> devResults = Result.loadResults(devResultsFile, platformDim.TEST);
+		List<Result> baselineResults = Result.loadResults(baselineResultsFile, platformDim.BASELINE);
 
-    		if(line.startsWith("Q")) {
-    	    	if(r != null) {
-    				results.add(r);
-    	    		r = null;
-    	    	}
-    			
-    			q = new Query(line);
-    			r = new Result();    			
-    			r.query = q;
-    		}
+		// initialize stats storage array
+		for(int i = 0; i < resultWinMargin.length; i++) {
+			for(int z = 0; z < resultWinMargin[i].length; z++)
+				for(int a = 0; a < resultWinMargin[i][z].length; a++)
+					resultWinMargin[i][z][a] = new ArrayList();
+		}
 
-    		if(line.startsWith("S")) {
-    			ItinerarySummary s = new ItinerarySummary(line);
-    			s.platform = platform;
-    			
-    			// data file may contain things we don't want to see; don't include those here
-    			// legacy files didn't have this flag, and only included things we want to see (the null check)
-    			if(s.approveOfResult == null || s.approveOfResult == true)
-    				r.itineraries.add(s);
-    		}
-    	}
-    	
-    	if(r != null) {
-			results.add(r);
-			r = null;
-    	}
-    	
-    	resultsReader.close();
-    	
-    	return results;
-	}
-	
-    //@Test
-    public void run() throws IOException, Exception {    	
-    	File devResultsFile = new File(TEST_RESULTS_TXT);
-    	File baselineResultsFile = new File(BASELINE_RESULTS_TXT);
 
-    	List<Result> devResults = loadResults(devResultsFile, platformDim.TEST);
-    	List<Result> baselineResults = loadResults(baselineResultsFile, platformDim.BASELINE);
+		// ==========================COMPARE RESULTS=====================================
 
-    	// initialize stats storage array
-    	for(int i = 0; i < resultWinMargin.length; i++) {
-        	for(int z = 0; z < resultWinMargin[i].length; z++)
-        		for(int a = 0; a < resultWinMargin[i][z].length; a++)
-            		resultWinMargin[i][z][a] = new ArrayList();
-    	}
-    	
-    	
-    	// ==========================COMPARE RESULTS=====================================
-    	List<Query> noResultQueries = new ArrayList<Query>();
+		for(int i = 0; i < Math.max(baselineResults.size(), devResults.size()); i++) {
+			Result testResult = devResults.get(i);
+			Result baselineResult = baselineResults.get(i);
 
-    	for(int i = 0; i < Math.max(baselineResults.size(), devResults.size()); i++) {
-    		Result testResult = devResults.get(i);
-    		Result baselineResult = baselineResults.get(i);
+			Query query = baselineResult.query;
 
-    		Query query = baselineResult.query;
+			int o = optimizationDim.valueOf(query.optimizeFlag).ordinal();
 
-    		int o = optimizationDim.valueOf(query.optimizeFlag).ordinal();
+			// add all system's itineraries to an array to sort based on metric and score
+			List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
+			sortedResults.addAll(baselineResult.itineraries);
+			sortedResults.addAll(testResult.itineraries);
 
-    		// add all system's itineraries to an array to sort based on metric and score
-    		List<ItinerarySummary> sortedResults = new ArrayList<ItinerarySummary>();
-    		sortedResults.addAll(baselineResult.itineraries);
-    		sortedResults.addAll(testResult.itineraries);
+			// both systems produced nothing; skip?
+			if(sortedResults.isEmpty()) {
+				noResultQueries.add(baselineResult.query);
 
-    		// both systems produced nothing; skip?
-    		if(sortedResults.isEmpty()) {
-    			noResultQueries.add(baselineResult.query);
-    			
-    			continue;
-    		}
+				continue;
+			}
 
-    		totalByOptimization[o]++;
+			totalByOptimization[o]++;
 
-    		for(int m = 0; m < metricsDim.values().length; m++) {
-    			switch(metricsDim.values()[m]) {
-    			case T:
+			for(int m = 0; m < metricsDim.values().length; m++) {
+				switch(metricsDim.values()[m]) {
+				case T:
 					// time, walk, transfers
-    				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_TIME);
+					scorePlatform(optimizationDim.values()[o], 
+							metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_TIME);
 
-    				break;
-    			case W:
+					break;
+				case W:
 					// walk, transit time, transfers
-    				
-    				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_WALKING);
 
-    				break;
-    			case X:
+					scorePlatform(optimizationDim.values()[o], 
+							metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_WALKING);
+
+					break;
+				case X:
 					// transfers, time, walk distance
-    				
-    				scorePlatform(optimizationDim.values()[o], 
-    						metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_XFERS);
 
-    				break;
-    				
-    			case match:
-    				if(baselineResult.itineraries.size() == 0)
-    					break;
-    				
+					scorePlatform(optimizationDim.values()[o], 
+							metricsDim.values()[m], sortedResults, ItinerarySummary.RANKER_XFERS);
+
+					break;
+
+				case match:
+					if(baselineResult.itineraries.size() == 0)
+						break;
+
 					ItinerarySummary ourTopResult = baselineResult.itineraries.get(0);
 
-    				for(int z = 0; z < testResult.itineraries.size(); z++) {
-    					ItinerarySummary theirResult = testResult.itineraries.get(z);
+					for(int z = 0; z < testResult.itineraries.size(); z++) {
+						ItinerarySummary theirResult = testResult.itineraries.get(z);
 
-    					if(ItinerarySummary.RANKER_EQUAL.compare(ourTopResult, theirResult) == 0) {
-        					this.resultSummary
-        					[o]
-        					[m]	
-        					[platformDim.TIE.ordinal()]++;
-    						break;
-    					}
-    				}
+						if(ItinerarySummary.RANKER_EQUAL.compare(ourTopResult, theirResult) == 0) {
+							this.resultSummary
+							[o]
+									[m]	
+											[platformDim.TIE.ordinal()]++;
+							break;
+						}
+					}
 
-    				break;
-    				
-    			case hasResults:
+					break;
 
-    				if(!baselineResult.itineraries.isEmpty() && !testResult.itineraries.isEmpty()) {
-    					this.resultSummary
-    					[o]
-    					[m]
-   						[platformDim.TIE.ordinal()]++;
-    					
-    				} else if(!baselineResult.itineraries.isEmpty()) {
-    					this.resultSummary
-    					[o]
-    					[m]
-   						[platformDim.BASELINE.ordinal()]++;
-    				} else if(!testResult.itineraries.isEmpty()) {
-    					this.resultSummary
-    					[o]
-    					[m]
-    					[platformDim.TEST.ordinal()]++;
-    				}
+				case hasResults:
 
-    				break;
+					if(!baselineResult.itineraries.isEmpty() && !testResult.itineraries.isEmpty()) {
+						this.resultSummary
+						[o]
+								[m]
+										[platformDim.TIE.ordinal()]++;
 
-    			// will never get here
-    			default:
-    				break; 
-    			} // end switch
-    		} // for each metric
-    	}
+					} else if(!baselineResult.itineraries.isEmpty()) {
+						this.resultSummary
+						[o]
+								[m]
+										[platformDim.BASELINE.ordinal()]++;
+					} else if(!testResult.itineraries.isEmpty()) {
+						this.resultSummary
+						[o]
+								[m]
+										[platformDim.TEST.ordinal()]++;
+					}
 
-    	// ==========================PRINT RESULTS=====================================
+					break;
+
+					// will never get here
+				default:
+					break; 
+				} // end switch
+			} // for each metric
+		}
+		
+		// ==========================PRINT RESULTS=====================================
 
     	boolean overallResult = true;
     	    	
@@ -428,8 +401,56 @@ public class QualitativeMultiDimInstanceComparison {
     	
     	System.out.println("");
     	System.out.println("");
+	}
+	    
+    @TestFactory
+    public Collection<DynamicTest> getTests() throws IOException, Exception {
+    	setup();
+    	
+    	Collection<DynamicTest> results = new ArrayList<DynamicTest>();
+    	    	
+    	for(int o = 0; o < optimizationDim.values().length; o++) {
+        	for(int m = 0; m < metricsDim.values().length; m++) {
+                float ourPercentage = 
+                		((float)((this.resultSummary[o][m][platformDim.TEST.ordinal()] + 
+                				this.resultSummary[o][m][platformDim.TIE.ordinal()])
+                		/ (float)totalByOptimization[o])) * 100;
 
-//    	assertTrue(overallResult);
+                // for each optimization, require our result to be the winner 80% of the time
+                if(metricsDimLabels[m].startsWith(optimizationDimLabels[o])) {
+            		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + ""
+            				+ " > System under test wins on optimization vs. baseline >= 80%", new Executable() {
+            			@Override
+            			public void execute() throws Throwable {
+            				assertTrue(ourPercentage >= 80f);	
+            			}
+                   	}));
+
+            	} else {
+            		// for the other two metrics (has results and matches), require 100% and 80%+ respectively
+            		if(m == metricsDim.hasResults.ordinal()) {
+                		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + " "
+                				+ "> Provided result >= 95%", new Executable() {
+                			@Override
+                			public void execute() throws Throwable {
+                				assertTrue(ourPercentage >= 95f);	
+                			}
+                       	}));
+
+            		} else if(m == metricsDim.match.ordinal()) {
+                		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + " "
+                				+ "> System under test matches baseline >= 60%", new Executable() {
+                			@Override
+                			public void execute() throws Throwable {
+                				assertTrue(ourPercentage >= 60);	
+                			}
+                       	}));
+            		}
+            	}
+        	}
+    	}
+   
+       	return results;
     }
 
 }

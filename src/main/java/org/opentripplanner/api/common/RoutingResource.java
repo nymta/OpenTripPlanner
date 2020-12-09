@@ -555,6 +555,11 @@ public abstract class RoutingResource {
     protected RoutingRequest buildRequest() throws ParameterException {
         Router router = otpServer.getRouter(routerId);
         RoutingRequest request = router.defaultRoutingRequest.clone();
+        return this.buildRequest(request, router.graph.getTimeZone());
+    }
+    
+    protected RoutingRequest buildRequest(RoutingRequest _request, TimeZone tz) throws ParameterException {
+        RoutingRequest request = _request.clone();
         request.routerId = routerId;
         // The routing request should already contain defaults, which are set when it is initialized or in the JSON
         // router configuration and cloned. We check whether each parameter was supplied before overwriting the default.
@@ -566,8 +571,6 @@ public abstract class RoutingResource {
 
         {
             //FIXME: move into setter method on routing request
-            TimeZone tz;
-            tz = router.graph.getTimeZone();
             if (date == null && time != null) { // Time was provided but not date
                 LOG.debug("parsing ISO datetime {}", time);
                 try {

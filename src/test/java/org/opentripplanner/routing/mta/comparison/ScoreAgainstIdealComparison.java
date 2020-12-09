@@ -13,32 +13,23 @@
 package org.opentripplanner.routing.mta.comparison;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
-import org.opentripplanner.routing.mta.comparison.test_file_format.Query;
 import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
 
 import java.util.*;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.*;
 
 public class ScoreAgainstIdealComparison {
 	
-    private String TEST_RESULTS_TXT = "src/test/resources/mta/tripeval_dev_results.txt"; 
-
-    private String BASELINE_RESULTS_TXT = "src/test/resources/mta/tripeval_output_results.txt";
-		
-    private final String[] metricsDimLabels = new String[] { "APPROVED RESULTS PRESENT", "DISAPPROVED RESULTS PRESENT", "RESULT NOT TAGGED PRESENT" };
-
-	// dimensions: metric
-	private int[] resultSummary = new int[3];
-	
-	private int[] matchCDF = new int[10]; // assumes no query with have more than 10 itins	
-
-	private Map<Integer, Integer> matchPercentCDF = new HashMap<Integer, Integer>();
+    private String TEST_RESULTS_TXT = null; 
+    
+    private String BASELINE_RESULTS_TXT = null;
 	
 	public void setBaselineResultsFile(String f) {
 		this.BASELINE_RESULTS_TXT = f;
@@ -47,62 +38,37 @@ public class ScoreAgainstIdealComparison {
 	public void setTestResultsFile(String f) {
 		this.TEST_RESULTS_TXT = f;
 	}
+    
+    private final String[] metricsDimLabels = new String[] { "APPROVED RESULTS PRESENT", "DISAPPROVED RESULTS PRESENT", "RESULT NOT TAGGED PRESENT" };
+
+	private int[] resultSummary = new int[3]; // dimensions: metric
 	
-	private List<Result> loadResults(File resultsFile) throws Exception {
-    	List<Result> results = new ArrayList<Result>();
+	private int[] matchCDF = new int[10]; // assumes no query with have more than 10 itins	
 
-    	Scanner resultsReader = new Scanner(resultsFile);
-
-		Query q = null;
-		Result r = null;
-    	while (resultsReader.hasNextLine()) {
-    		String line = resultsReader.nextLine();
-
-    		if(line.startsWith("Q")) {
-    	    	if(r != null) {
-    				results.add(r);
-    	    		r = null;
-    	    	}
-    			
-    			q = new Query(line);
-    			r = new Result();    			
-    			r.query = q;
-    		}
-
-    		if(line.startsWith("S")) {
-    			ItinerarySummary s = new ItinerarySummary(line);
-    			r.itineraries.add(s);
-    		}
-    	}
-    	
-    	if(r != null) {
-			results.add(r);
-			r = null;
-    	}
-    	
-    	resultsReader.close();
-    	
-    	return results;
-	}
+	private int total = 0;
 	
-    @Test
-    public void run() throws IOException, Exception {    	
+	private Map<Integer, Integer> matchPercentCDF = new HashMap<Integer, Integer>();
+	
+	private boolean isSetup = false;
+    public void setup() throws IOException, Exception {    	
+    	if(isSetup)
+    		return;
+    	isSetup = true;
+
     	File testResultsFile = new File(TEST_RESULTS_TXT);
     	File baselineResultsFile = new File(BASELINE_RESULTS_TXT);
 
-    	List<Result> testResults = loadResults(testResultsFile);
-    	List<Result> baselineResults = loadResults(baselineResultsFile);
+    	List<Result> testResults = Result.loadResults(testResultsFile);
+    	List<Result> baselineResults = Result.loadResults(baselineResultsFile);
 
     	// ==========================COMPARE RESULTS=====================================
-    	int total = 0;
     	for(int i = 0; i < Math.max(baselineResults.size(), testResults.size()); i++) {
     		Result testResult = testResults.get(i);
     		Result baselineResult = baselineResults.get(i);
-    		Query baselineQuery = baselineResult.query;
 
     		int testItinCount = 0;
 			for(ItinerarySummary testItin : testResult.itineraries) {
-				total++;
+				this.total++;
 				
     			boolean foundInRef = false;
         		for(ItinerarySummary refItin : baselineResult.itineraries) {
@@ -165,14 +131,31 @@ public class ScoreAgainstIdealComparison {
     	for(Integer bin : matchPercentCDF.keySet()) {
     		System.out.println(String.format("%-3d",bin) + "% (" + String.format("%-4.1f%%", (float)((matchPercentCDF.get(bin)/(float)total) * 100)) + ") : " + StringUtils.repeat(".", matchPercentCDF.get(bin)));
     	}
-    	
-
-    	// disapproved results < 10%
-    	assertTrue((float)(resultSummary[1]/(float)total) < .10f);
-
-    	// queries with 0 approved results < 10%
-    	assertTrue((float)(matchCDF[0]/(float)total) < .10f);
-
     }
+    
+    @TestFactory
+    Collection<DynamicTest> getTests() throws IOException, Exception {
+    	setup();
+    	
+       	return Arrays.asList(
+       			
+       	  DynamicTest.dynamicTest("Ideal: Disapproved < 5%", new Executable() {
+			@Override
+			public void execute() throws Throwable {
+				assertTrue((float)resultSummary[1]/(float)total < .05f);
+			}
+       	  }),
+
+       	  DynamicTest.dynamicTest("Ideal: Approved > 65%", new Executable() {
+			@Override
+			public void execute() throws Throwable {
+				assertTrue((float)resultSummary[0]/(float)total > .65f);
+			}
+       	  })
+
+       	  
+       	);
+    }
+    
 
 }
