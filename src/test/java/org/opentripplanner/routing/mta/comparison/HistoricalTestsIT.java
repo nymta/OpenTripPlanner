@@ -12,8 +12,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.routing.mta.comparison;
 
+import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
+import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
+
 import org.joda.time.DateTime;
+import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.opentripplanner.routing.core.OptimizeType;
 import org.opentripplanner.routing.core.RoutingRequest;
@@ -31,13 +36,12 @@ import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.graph_builder.GraphBuilder;
 
-import org.opentripplanner.routing.mta.comparison.test_file_format.*;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.OTPMain;
 import org.opentripplanner.standalone.Router;
 
-public class RunnerIT extends RoutingResource {
+public class HistoricalTestsIT extends RoutingResource {
 	
 	private static String ALL_TESTS_DIR = "src/test/resources/mta/comparison/"; 
 
@@ -172,6 +176,7 @@ public class RunnerIT extends RoutingResource {
     }
     
 	@TestFactory
+	@Test
 	public Collection<DynamicTest> runTests() throws Exception {		
 		List<DynamicTest> generatedTests = new ArrayList<>();
 

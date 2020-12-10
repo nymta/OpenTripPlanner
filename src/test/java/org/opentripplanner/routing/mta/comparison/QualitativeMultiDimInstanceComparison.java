@@ -277,6 +277,7 @@ public class QualitativeMultiDimInstanceComparison {
 
     	boolean overallResult = true;
     	    	
+    	System.out.println("");
     	System.out.println("TOTAL RESULTS: " + baselineResults.size() + "\n");
   
     	for(int o = 0; o < optimizationDim.values().length; o++) {
