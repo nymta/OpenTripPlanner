@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison.unused;
+package org.opentripplanner.routing.mta.comparison.testgen;
 
 import flexjson.JSONDeserializer;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;  
 import java.util.*;
@@ -28,11 +29,11 @@ import java.net.URISyntaxException;
 
 public class RunODPairsWithOTP {
 	
-    private String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
+    private String PAIRS_TXT = "src/test/resources/mta/comparison/baseline_ods.txt";
 
-    private String OTP_RESULTS_TXT = "src/test/resources/mta/test_otp_results.txt";
+    private String OTP_RESULTS_TXT = "src/test/resources/mta/comparison/baseline.txt";
 
-    private String OTP_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/plan?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
+    private String OTP_URL = "http://otp-mta-qa.camsys-apps.com/otp/routers/default/plan?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L";
 
     private boolean USE_CURRENT_TIME = false;
     
@@ -53,6 +54,7 @@ public class RunODPairsWithOTP {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
     public void run() throws IOException, InterruptedException, URISyntaxException {
 
     	FileWriter otpResults = new FileWriter(OTP_RESULTS_TXT);

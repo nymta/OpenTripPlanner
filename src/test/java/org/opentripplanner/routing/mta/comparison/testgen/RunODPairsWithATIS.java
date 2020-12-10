@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison.unused;
+package org.opentripplanner.routing.mta.comparison.testgen;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -36,9 +36,9 @@ import java.io.*;
 
 public class RunODPairsWithATIS {
 	
-    private static final String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
+    private static final String PAIRS_TXT = "src/test/resources/mta/comparison/baseline_ods.txt";
 
-    private String ATIS_RESULTS_TXT = "src/test/resources/mta/test_atis_results.txt";
+    private String ATIS_RESULTS_TXT = "src/test/resources/mta/comparison/baseline.txt";
 
     private static final String ATIS_URL = "https://dataservice.mta.info/cgi-bin-soap-2.10.1/soap.cgi";
 

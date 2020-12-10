@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison.unused;
+package org.opentripplanner.routing.mta.comparison.testgen;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -18,16 +18,17 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.junit.jupiter.api.Test;
+
 import java.io.*;
 
 public class FetchTripEvaluationReference implements Runnable {
 	
     private String TE_URL = "http://mta-trip-evaluation.camsys-apps.com/trip/file";
     
-    private String OD_PAIRS_TXT = "src/test/resources/mta/tripeval_od_pairs.txt";
+    private String OD_PAIRS_TXT = "src/test/resources/mta/comparison/ideal_ods.txt";;
 
-    private String REFERENCE_RESULTS_TXT = "src/test/resources/mta/tripeval_results.txt";
-
+    private String REFERENCE_RESULTS_TXT = "src/test/resources/mta/comparison/ideal.txt";
     
     public void setOutputQueryFile(String f) {
     	this.OD_PAIRS_TXT = f;
@@ -37,6 +38,7 @@ public class FetchTripEvaluationReference implements Runnable {
     	this.REFERENCE_RESULTS_TXT = f;
     }
     
+    @Test
     public void run() {
     	try {
 	        CloseableHttpClient httpClient = HttpClients.createDefault();

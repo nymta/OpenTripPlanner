@@ -10,7 +10,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package org.opentripplanner.routing.mta.comparison.unused;
+package org.opentripplanner.routing.mta.comparison.testgen;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -20,6 +20,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Test;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.graph.Graph;
 
@@ -29,25 +30,35 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GenerateTestODPairsFromRunningInstance {
 	
-    private String PAIRS_TXT = "src/test/resources/mta/test_od_pairs.txt";
+    private String PAIRS_TXT = "src/test/resources/mta/comparison/baseline_ods.txt";
  
     private double ACCESSIBILITY_PCT = .5;
     
-    private boolean MTA_ONLY = false;
+    private boolean MTA_ONLY = true;
     
-    private String OTP_STOPS_URL = "http://otp-mta-demo.camsys-apps.com/otp/routers/default/index/stops?apikey=z6odKJINMNQww8M1zWfFoTMCUPcfbKnt";
+    private String OTP_STOPS_URL = "http://otp-mta-qa.camsys-apps.com/otp/routers/default/index/stops?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L";
 
-    private int PAIRS_TO_GENERATE = 50;
+    private int PAIRS_TO_GENERATE = 200;
 
     private static final String[] optimizations = new String[] { "W", "X", "T" };
     
-    private Map<String, Integer> agencyMax = new HashMap<String, Integer>();
-    private ArrayList<String> agenciesIndex;
+    private Map<String, Integer> agencyMax = (Map<String, Integer>) Stream.of(new Object[][] { 
+        { "MTA", 50 }, 
+        { "MTASBWY", 50 }, 
+        { "MNR", 50 }, 
+        { "LI", 50 }}
+    ).collect(Collectors.toMap(data -> (String) data[0], data -> (Integer) data[1]));
+
+    private ArrayList<String> agenciesIndex = new ArrayList<>(Arrays.asList("MTA", "MTASBWY", "MNR", "LI" ));
+    
     private int pointsByAgency[];
 	
     protected static Graph graph;
@@ -77,6 +88,7 @@ public class GenerateTestODPairsFromRunningInstance {
     }
     
     @SuppressWarnings("unchecked")
+    @Test
     public void run() throws IOException, URISyntaxException {
 
     	CloseableHttpClient httpClient = HttpClients.createDefault();    	
@@ -138,6 +150,11 @@ public class GenerateTestODPairsFromRunningInstance {
        		// probability of finding a trip that works goes /way/ down
        		if(!agencyMax.isEmpty()) {
        			String agency1 = stop1id.getAgencyId();
+       			
+       			if(agenciesIndex.indexOf(agency1) < 0) {
+       				System.out.println("Unknown agency: " + agency1);
+       				continue;
+       			}
        			
        			if(pointsByAgency[agenciesIndex.indexOf(agency1)] > agencyMax.get(agency1)) {
        				continue;
