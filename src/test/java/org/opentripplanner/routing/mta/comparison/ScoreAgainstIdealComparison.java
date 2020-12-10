@@ -31,7 +31,7 @@ public class ScoreAgainstIdealComparison {
     
     private String BASELINE_RESULTS_TXT = null;
 	
-	public void setBaselineResultsFile(String f) {
+	public void setIdealFile(String f) {
 		this.BASELINE_RESULTS_TXT = f;
 	}
 	

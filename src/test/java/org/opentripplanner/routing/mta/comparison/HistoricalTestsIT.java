@@ -16,7 +16,6 @@ import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
 
 import org.joda.time.DateTime;
-import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -93,16 +92,11 @@ public class HistoricalTestsIT extends RoutingResource {
     	return data;
     }
     	  
-    private void runTripQueries(File testDir) throws Exception {    	
-    	if(!testDir.isDirectory())
-    		return;
-    		
-		File idealResultFile = new File(testDir + "/ideal.txt");
-		File resultsFile = new File(testDir + "/ideal_results.txt");
-		FileWriter resultsFileWriter = new FileWriter(resultsFile);
+    private void runThroughGraph(File input, File output) throws Exception {
+		FileWriter resultsFileWriter = new FileWriter(output);
 		
-		List<Result> results = Result.loadResults(idealResultFile);			
-		for(Result result : results) {
+		List<Result> ideals = Result.loadResults(input);			
+		for(Result result : ideals) {
 			RoutingRequest request = 
 					super.buildRequest(router.defaultRoutingRequest, graph.getTimeZone());
 			
@@ -175,41 +169,51 @@ public class HistoricalTestsIT extends RoutingResource {
 		resultsFileWriter.close();
     }
     
+    private void runQueries(File testDir) throws Exception {    	
+    	if(!testDir.isDirectory())
+    		return;
+    		
+		File idealFile = new File(testDir + "/ideal.txt");
+		File idealResultsFile = new File(testDir + "/ideal_results.txt");
+		runThroughGraph(idealFile, idealResultsFile);
+		
+		File baselineFile = new File(testDir + "/baseline.txt");
+		File baselineResultsFile = new File(testDir + "/baseline_results.txt");
+		runThroughGraph(baselineFile, baselineResultsFile);
+    }
+    
 	@TestFactory
 	@Test
 	public Collection<DynamicTest> runTests() throws Exception {		
 		List<DynamicTest> generatedTests = new ArrayList<>();
 
 		for(File testDir : this.findTestDirs()) {
-			System.out.println("             ***************************************************************");
-    		System.out.println("                              TEST DIR: " + testDir.getName());
-    		System.out.println("             ***************************************************************");
+			System.out.println("***************************************************************");
+    		System.out.println("                TEST DIR: " + testDir.getName());
+    		System.out.println("***************************************************************");
 
 			buildGraph(new File(testDir + "/graph"));
-			runTripQueries(testDir);
+			runQueries(testDir);
 			
-			File idealResultFile = new File(testDir.getAbsolutePath() + "/ideal.txt");
-			File resultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
+			File idealFile = new File(testDir.getAbsolutePath() + "/ideal.txt");
+			if(idealFile.exists()) {
+				File idealResultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
 			
-	      	ScoreAgainstIdealComparison t2 = new ScoreAgainstIdealComparison();
-	    	t2.setBaselineResultsFile(idealResultFile.getPath());
-	    	t2.setTestResultsFile(resultsFile.getPath());
+				ScoreAgainstIdealComparison t2 = new ScoreAgainstIdealComparison();
+				t2.setIdealFile(idealFile.getPath());
+				t2.setTestResultsFile(idealResultsFile.getPath());			
+	    		generatedTests.addAll(t2.getTests());
+			}
 			
-	    	generatedTests.addAll(t2.getTests());
-						
-			QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
-	    	t1.setBaselineResultsFile(idealResultFile.getPath());
-	    	t1.setTestResultsFile(resultsFile.getPath());
-			
-	    	generatedTests.addAll(t1.getTests());
+			File baselineFile = new File(testDir.getAbsolutePath() + "/baseline.txt");
+			if(baselineFile.exists()) {
+				File baselineResultsFile = new File(testDir.getAbsolutePath() + "/baseline_results.txt");
 
-	    	
-/*		
-			QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
-	    	t1.setBaselineResultsFile(idealResultFile.getPath());
-	    	t1.setTestResultsFile(resultsFile.getPath());
-			generatedTests.addAll(t1.getTests());
-*/
+				QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
+				t1.setBaselineResultsFile(baselineFile.getPath());
+				t1.setTestResultsFile(baselineResultsFile.getPath());
+				generatedTests.addAll(t1.getTests());
+			}
 		}
 
 		return generatedTests;
