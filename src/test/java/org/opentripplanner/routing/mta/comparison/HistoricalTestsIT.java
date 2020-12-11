@@ -16,6 +16,8 @@ import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
 
 import org.joda.time.DateTime;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -29,6 +31,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
+
 import org.opentripplanner.api.common.RoutingResource;
 import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.TripPlan;
@@ -40,6 +44,31 @@ import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.OTPMain;
 import org.opentripplanner.standalone.Router;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.HeadBucketRequest;
+import com.amazonaws.services.s3.model.HeadBucketResult;
+import com.amazonaws.services.s3.model.ProgressEvent;
+import com.amazonaws.services.s3.model.ProgressListener;
+import com.amazonaws.services.s3.transfer.MultipleFileDownload;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
+import com.amazonaws.services.securitytoken.model.Credentials;
+
 public class HistoricalTestsIT extends RoutingResource {
 	
 	private static String ALL_TESTS_DIR = "src/test/resources/mta/comparison/"; 
@@ -47,6 +76,41 @@ public class HistoricalTestsIT extends RoutingResource {
 	private Graph graph;
 	
 	private Router router;
+	
+	@BeforeAll
+	private static void syncS3ToDisk() {
+		try {
+            AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion("us-east-1")
+                    .build();
+            
+            AssumeRoleRequest roleRequest = new AssumeRoleRequest()
+            		.withRoleArn("arn:aws:iam::347059689224:role/mta-otp-integration-test-bundle")
+            		.withRoleSessionName(UUID.randomUUID().toString());
+
+            AssumeRoleResult roleResponse = stsClient.assumeRole(roleRequest);
+            Credentials sessionCredentials = roleResponse.getCredentials();
+            
+            BasicSessionCredentials awsCredentials = new BasicSessionCredentials(
+                    sessionCredentials.getAccessKeyId(),
+                    sessionCredentials.getSecretAccessKey(),
+                    sessionCredentials.getSessionToken());
+
+			AmazonS3ClientBuilder.standard()
+		            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
+		            .build();
+
+			File f = new File(ALL_TESTS_DIR);
+		
+			TransferManager tm = TransferManagerBuilder.standard().build();
+		    MultipleFileDownload x = tm.downloadDirectory("mta-otp-integration-test-bundles", null, f);
+		    x.waitForCompletion();
+		    tm.shutdownNow();
+		} catch (AmazonClientException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	private void buildGraph(File graphDir) {
 		if(graphDir.exists()) {
