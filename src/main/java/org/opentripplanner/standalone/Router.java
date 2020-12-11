@@ -85,6 +85,27 @@ public class Router {
         this.graph = graph;
     }
 
+    
+    /* config flags that must be set before we can load the graph--e.g. things that affect indexing */
+    public static void preLoadStartup(JsonNode config, Graph graph) {
+    	graph.stopAccessibilityStrategy = new DefaultStopAccessibilityStrategy(graph);
+        JsonNode stopAccessibilityStrategy = config.get("stopAccessibilityStrategy");
+        if (stopAccessibilityStrategy != null) {
+            if (stopAccessibilityStrategy.asText().equals("mta")) {
+            	graph.stopAccessibilityStrategy = new MTAStopAccessibilityStrategy(graph);
+            }
+        }
+
+        graph.transferPermissionStrategy = new DefaultTransferPermissionStrategy();
+        JsonNode transferPermissionStrategy = config.get("transferPermissionStrategy");
+        if (transferPermissionStrategy != null) {
+            if (transferPermissionStrategy.asText().equals("mta")) {
+            	graph.transferPermissionStrategy = new MTATransferPermissionStrategy(graph);
+            }
+        }    	
+    }
+    
+
 
     /**
      * Below is functionality moved into Router from the "router lifecycle manager" interface and implementation.

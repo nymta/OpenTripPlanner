@@ -18,9 +18,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
 import com.google.common.io.ByteStreams;
+
+import org.opentripplanner.routing.connectivity.DefaultStopAccessibilityStrategy;
+import org.opentripplanner.routing.connectivity.MTAStopAccessibilityStrategy;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.services.GraphSource;
 import org.opentripplanner.routing.services.StreetVertexIndexFactory;
+import org.opentripplanner.routing.transfers.DefaultTransferPermissionStrategy;
+import org.opentripplanner.routing.transfers.MTATransferPermissionStrategy;
 import org.opentripplanner.standalone.Router;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,13 +192,38 @@ public class InputStreamGraphSource implements GraphSource {
     /**
      * Do the actual operation of graph loading. Load configuration if present, and startup the
      * router with the help of the router lifecycle manager.
+     * @throws IOException 
      */
+    private JsonNode loadConfig(Graph newGraph) {
+        try (InputStream is = streams.getConfigInputStream()) {
+        	JsonNode config = MissingNode.getInstance();
+
+        	ObjectMapper mapper = new ObjectMapper();
+        	mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+        	mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+        	if (is != null) {
+        		config = mapper.readTree(is);
+        	} else if (newGraph != null && newGraph.routerConfig != null) {
+        		config = mapper.readTree(newGraph.routerConfig);
+        	}       
+        	return config;       	
+        } catch (IOException e) {
+        	LOG.error("Can't read config file.");
+        	LOG.error(e.getMessage());
+        	return null;
+        }
+    }
+    
     private Router loadGraph() {
         final Graph newGraph;
         try (InputStream is = streams.getGraphInputStream()) {
             LOG.info("Loading graph...");
+
+            // try to load from JSON so new config is available for Graph.load()
+            JsonNode config = loadConfig(null); 
+            
             try {
-                newGraph = Graph.load(is);
+                newGraph = Graph.load(is, config);
             } catch (Exception ex) {
                 LOG.error("Exception while loading graph '{}'.", routerId, ex);
                 return null;
@@ -205,28 +235,11 @@ public class InputStreamGraphSource implements GraphSource {
             return null;
         }
 
-        // Decorate the graph TODO how are we "decorating" it? This appears to refer to loading its configuration.
-        // Even if a config file is not present on disk one could be bundled inside.
-        try (InputStream is = streams.getConfigInputStream()) {
-            JsonNode config = MissingNode.getInstance();
-            // TODO reuse the exact same JSON loader from OTPConfigurator
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
-            mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-            if (is != null) {
-                config = mapper.readTree(is);
-            } else if (newGraph.routerConfig != null) {
-                config = mapper.readTree(newGraph.routerConfig);
-            }
-            Router newRouter = new Router(routerId, newGraph);
-            newRouter.startup(config);
-            LOG.info("inputstreamgraphsource router router-config : {} ", newRouter.graph.routerConfig);
-            return newRouter;
-        } catch (IOException e) {
-            LOG.error("Can't read config file.");
-            LOG.error(e.getMessage());
-            return null;
-        }
+        JsonNode config = loadConfig(newGraph);  
+    	Router newRouter = new Router(routerId, newGraph);
+    	newRouter.startup(config);
+    	LOG.info("inputstreamgraphsource router router-config : {} ", newRouter.graph.routerConfig);
+        return newRouter;
     }
 
     /**

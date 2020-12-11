@@ -20,6 +20,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.ExternalizableSerializer;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.*;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -73,6 +74,7 @@ import org.opentripplanner.routing.transfers.TransferPermissionStrategy;
 import org.opentripplanner.routing.trippattern.Deduplicator;
 import org.opentripplanner.routing.vertextype.PatternArriveVertex;
 import org.opentripplanner.routing.vertextype.TransitStop;
+import org.opentripplanner.standalone.Router;
 import org.opentripplanner.traffic.StreetSpeedSnapshotSource;
 import org.opentripplanner.updater.GraphUpdaterConfigurator;
 import org.opentripplanner.updater.GraphUpdaterManager;
@@ -729,6 +731,10 @@ public class Graph implements Serializable {
     }
     
     public static Graph load(InputStream in) {
+    	return load(in, null);
+    }
+    
+    public static Graph load(InputStream in, JsonNode config) {
         // TODO store version information, halt load if versions mismatch
         Input input = new Input(in);
         Kryo kryo = makeKryo();
@@ -756,6 +762,10 @@ public class Graph implements Serializable {
         }
 
         LOG.info("Main graph read. |V|={} |E|={}", graph.countVertices(), graph.countEdges());
+
+        if(config != null)
+        	Router.preLoadStartup(config, graph);
+
         graph.index(new DefaultStreetVertexIndexFactory());
         return graph;
     }

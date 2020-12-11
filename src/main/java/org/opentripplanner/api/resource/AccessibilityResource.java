@@ -140,7 +140,10 @@ public class AccessibilityResource {
            		TransitStationStop toStop = (TransitStationStop)connectionTo;
             	Stop toGTFSStop = index.stopForId.get(GtfsLibrary.convertIdFromString(connectionTo.getLabel()));
 
-            	request.setRoutingContext(graph, fromStop, toStop);
+           		if(toStop.getStopId().equals(fromStop.getStopId()))
+           				continue;
+ 
+           		request.setRoutingContext(graph, fromStop, toStop);
 
                 ConsequencesStrategy consequencesStrategy = request.rctx.graph.consequencesStrategy.create(request);
 
