@@ -13,7 +13,7 @@
        for logging and debug log messages will never make it to slf4j. -->
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
-  <appender name="application" class="ch.qos.logback.core.ConsoleAppender">
+  <appender name="application" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${LOG_FILE_ROOT}/application.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_FILE_ROOT}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -27,7 +27,7 @@
   </appender>
 
   <!-- Change this to debug to let more messages through. -->
-  <root level="debug">
+  <root level="info">
     <appender-ref ref="application" />
   </root>
   <logger name="ch.qos.logback" level="warn"/>
@@ -36,11 +36,11 @@
   <logger name="com.conveyal" level="info"/>
 
   <logger name="org.opentripplanner.graph_builder.module.DirectTransferGenerator" level="info" />
-  <logger name="org.opentripplanner" level="debug" />
+  <logger name="org.opentripplanner" level="info" />
   <logger name="org.opentripplanner.analyst" level="info" />
-  <logger name="org.opentripplanner.routing" level="debug" />
+  <logger name="org.opentripplanner.routing" level="info" />
   <logger name="org.opentripplanner.routing.impl.RetryingPathServiceImpl" level="info" />
-  <logger name="org.opentripplanner.routing.algorithm.GenericAStar" level="debug" />
+  <logger name="org.opentripplanner.routing.algorithm.GenericAStar" level="info" />
   <!-- Avoid printing debug messages about free-flowing vertices -->
   <logger name="org.opentripplanner.routing.vertextype.IntersectionVertex" level="info" />
   <!-- Avoid printing debug messages when walk limits are exceeded -->
