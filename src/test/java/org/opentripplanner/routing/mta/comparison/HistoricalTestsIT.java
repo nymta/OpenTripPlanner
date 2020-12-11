@@ -81,7 +81,6 @@ public class HistoricalTestsIT extends RoutingResource {
 	private static void syncS3ToDisk() {
 		try {
             AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
-                    .withCredentials(new ProfileCredentialsProvider())
                     .withRegion("us-east-1")
                     .build();
             
