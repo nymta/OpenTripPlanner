@@ -31,4 +31,7 @@ _site/
 /otp
 /otp-batch-analyst
 lucene/
-src/test/resources/mta/
+.DS_Store
+src/test/resources/mta/comparison/*/*_results.txt
+src/test/resources/mta/comparison/*/*_ods.txt
+src/test/resources/mta/comparison/*/graph/Graph.obj

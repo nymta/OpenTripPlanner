@@ -179,7 +179,7 @@ public class QualitativeMultiDimInstanceComparison {
 
 		// ==========================COMPARE RESULTS=====================================
 
-		for(int i = 0; i < Math.max(baselineResults.size(), devResults.size()); i++) {
+		for(int i = 0; i < Math.min(baselineResults.size(), devResults.size()); i++) {
 			Result testResult = devResults.get(i);
 			Result baselineResult = baselineResults.get(i);
 

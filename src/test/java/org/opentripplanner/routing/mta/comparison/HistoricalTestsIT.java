@@ -79,14 +79,7 @@ public class HistoricalTestsIT extends RoutingResource {
     		if(!testDir.isDirectory())
     			continue;
     		
-    		for(String idealResultPath : testDir.list()) {
-        		File idealResultFile = new File(testDir + "/" + idealResultPath);
-    			
-        		if(!idealResultFile.isFile() || !idealResultFile.getName().endsWith(".txt") || idealResultFile.getName().endsWith("_results.txt"))
-        			continue;
-
-        		data.add(testDir); 
-    		}
+        	data.add(testDir); 
     	}
     	
     	return data;
@@ -175,11 +168,15 @@ public class HistoricalTestsIT extends RoutingResource {
     		
 		File idealFile = new File(testDir + "/ideal.txt");
 		File idealResultsFile = new File(testDir + "/ideal_results.txt");
-		runThroughGraph(idealFile, idealResultsFile);
+		
+		if(idealFile.exists())
+			runThroughGraph(idealFile, idealResultsFile);
 		
 		File baselineFile = new File(testDir + "/baseline.txt");
 		File baselineResultsFile = new File(testDir + "/baseline_results.txt");
-		runThroughGraph(baselineFile, baselineResultsFile);
+
+		if(baselineFile.exists())
+			runThroughGraph(baselineFile, baselineResultsFile);
     }
     
 	@TestFactory
@@ -196,9 +193,8 @@ public class HistoricalTestsIT extends RoutingResource {
 			runQueries(testDir);
 			
 			File idealFile = new File(testDir.getAbsolutePath() + "/ideal.txt");
-			if(idealFile.exists()) {
-				File idealResultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
-			
+			File idealResultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
+			if(idealFile.exists() && idealResultsFile.exists()) {			
 				ScoreAgainstIdealComparison t2 = new ScoreAgainstIdealComparison();
 				t2.setIdealFile(idealFile.getPath());
 				t2.setTestResultsFile(idealResultsFile.getPath());			
@@ -206,9 +202,8 @@ public class HistoricalTestsIT extends RoutingResource {
 			}
 			
 			File baselineFile = new File(testDir.getAbsolutePath() + "/baseline.txt");
-			if(baselineFile.exists()) {
-				File baselineResultsFile = new File(testDir.getAbsolutePath() + "/baseline_results.txt");
-
+			File baselineResultsFile = new File(testDir.getAbsolutePath() + "/baseline_results.txt");
+			if(baselineFile.exists() && baselineResultsFile.exists()) {
 				QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
 				t1.setBaselineResultsFile(baselineFile.getPath());
 				t1.setTestResultsFile(baselineResultsFile.getPath());
