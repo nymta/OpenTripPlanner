@@ -193,7 +193,7 @@
 							</goals>
 							<configuration>
 								<mainClass>org.opentripplanner.standalone.OTPMain</mainClass>
-								<commandlineArgs>--router default --server --verbose</commandlineArgs>
+								<commandlineArgs>--router default --server --verbose --clientFiles /Users/jmaki/Workspace/otp-test-harness-ui/dist --clientPath / --disableNativeClient --clientFallback</commandlineArgs>
 							</configuration>
 						</execution>
 						<execution>

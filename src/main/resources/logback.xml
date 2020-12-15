@@ -13,7 +13,7 @@
        for logging and debug log messages will never make it to slf4j. -->
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
-  <appender name="application" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <appender name="application" class="ch.qos.logback.core.ConsoleAppender">
     <file>${LOG_FILE_ROOT}/application.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>${LOG_FILE_ROOT}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -27,7 +27,7 @@
   </appender>
 
   <!-- Change this to debug to let more messages through. -->
-  <root level="info">
+  <root level="debug">
     <appender-ref ref="application" />
   </root>
   <logger name="ch.qos.logback" level="warn"/>
