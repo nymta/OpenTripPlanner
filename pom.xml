@@ -295,7 +295,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- latest version (2.20.1) does not work well with JUnit5 -->
 				<configuration>
-					<argLine>-Xmx4G</argLine>
+					<argLine>-Xmx10G -server</argLine>
 					<!-- Jenkins needs XML test reports to determine whether the build is 
 						stable. -->
 					<disableXmlReport>false</disableXmlReport>
