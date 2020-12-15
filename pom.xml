@@ -193,7 +193,7 @@
 							</goals>
 							<configuration>
 								<mainClass>org.opentripplanner.standalone.OTPMain</mainClass>
-								<commandlineArgs>--router default --server --verbose</commandlineArgs>
+								<commandlineArgs>--router default --server --verbose  --clientFiles /var/otp/ui --clientPath / --disableNativeClient --clientFallback</commandlineArgs>
 							</configuration>
 						</execution>
 						<execution>
@@ -295,7 +295,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- latest version (2.20.1) does not work well with JUnit5 -->
 				<configuration>
-					<argLine>-Xmx10G -server</argLine>
+					<argLine>-Xmx10G -server @{argLine}</argLine>
 					<!-- Jenkins needs XML test reports to determine whether the build is 
 						stable. -->
 					<disableXmlReport>false</disableXmlReport>
