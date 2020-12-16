@@ -14,8 +14,6 @@ package org.opentripplanner.index.model;
 
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.mta.MTASubwayRouteStop;
-import org.onebusaway.gtfs.model.mta.MTASubwayRouteStop.ADAStatus;
 
 public class AccessibilityShort {
 	
@@ -23,15 +21,11 @@ public class AccessibilityShort {
 	
 	public String stopName;
 	
-	public ADAStatus accessibility;
+//	public ADAStatus accessibility;
 	
 	public String accessibilityNotes;
 	
 	public AccessibilityShort(Stop stop, Stop parentStop) {
-    	MTASubwayRouteStop srs = stop.getExtension(MTASubwayRouteStop.class);
-    	
-    	this.accessibility = srs.getAda();
-    	this.accessibilityNotes = srs.getNotes();
     	this.stopId = stop.getId();
     	this.stopName = stop.getName();		
 	}
