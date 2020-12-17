@@ -30,6 +30,7 @@ import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.opentripplanner.api.model.VehicleInfo;
 import org.opentripplanner.common.geometry.SphericalDistanceLibrary;
+import org.opentripplanner.graph_builder.module.RouteStopsAccessibilityTaggerModule.RouteStopTag;
 import org.opentripplanner.gtfs.GtfsLibrary;
 import org.opentripplanner.index.model.AccessibilityShort;
 import org.opentripplanner.index.model.EquipmentShort;
@@ -522,9 +523,12 @@ public class IndexAPI {
     public Response getAccessibility(@PathParam("stopId") String stopIdString) {
 
         Stop stop = index.stopForId.get(GtfsLibrary.convertIdFromString(stopIdString));
+        ArrayList<RouteStopTag> tags = graph.routeStopTagsByStopId.get(stopIdString);
+        if(stop != null && tags == null) 
+        	tags = graph.routeStopTagsByStopId.get(stop.getId().getAgencyId() + GtfsLibrary.ID_SEPARATOR + stop.getParentStation());
         
-        if (stop != null) {
-            return Response.status(Status.OK).entity(new AccessibilityShort(stop, index.getParentStopForStop(stop))).build();
+        if (stop != null && tags != null && !tags.isEmpty()) {
+            return Response.status(Status.OK).entity(new AccessibilityShort(stop, tags)).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
         }

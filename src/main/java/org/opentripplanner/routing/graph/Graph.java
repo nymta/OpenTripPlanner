@@ -51,6 +51,7 @@ import org.opentripplanner.common.geometry.GraphUtils;
 import org.opentripplanner.graph_builder.annotation.GraphBuilderAnnotation;
 import org.opentripplanner.graph_builder.annotation.NoFutureDates;
 import org.opentripplanner.graph_builder.model.GraphVersion;
+import org.opentripplanner.graph_builder.module.RouteStopsAccessibilityTaggerModule.RouteStopTag;
 import org.opentripplanner.kryo.HashBiMapSerializer;
 import org.opentripplanner.model.GraphBundle;
 import org.opentripplanner.model.Landmark;
@@ -235,6 +236,9 @@ public class Graph implements Serializable {
     /** Landmarks **/
     public Map<String, Landmark> landmarksByName = new HashMap<>();
 
+    // used in IndexAPI, created by RouteStopAccessibilityTaggerModule
+    public HashMap<String, ArrayList<RouteStopTag>> routeStopTagsByStopId = new HashMap<>();
+    
     /** Consequences strategy */
     public ConsequencesStrategyFactory consequencesStrategy;
 

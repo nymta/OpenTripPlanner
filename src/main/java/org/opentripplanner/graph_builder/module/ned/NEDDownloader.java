@@ -558,9 +558,11 @@ class EDCNamespaceContext implements NamespaceContext {
         }
     }
 
-    public Iterator<?> getPrefixes(String namespace) {
-        return null;
-    }
+	@Override
+	public Iterator getPrefixes(String namespaceURI) {
+		return null;
+	}
+
 }
 
 class NotAZipFileException extends RuntimeException {

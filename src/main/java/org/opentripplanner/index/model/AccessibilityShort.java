@@ -12,22 +12,23 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.index.model;
 
-import org.onebusaway.gtfs.model.AgencyAndId;
+import java.util.ArrayList;
+
 import org.onebusaway.gtfs.model.Stop;
+import org.opentripplanner.graph_builder.module.RouteStopsAccessibilityTaggerModule.RouteStopTag;
+import org.opentripplanner.gtfs.GtfsLibrary;
 
 public class AccessibilityShort {
 	
-	public AgencyAndId stopId;
+	public String stopId;
 	
 	public String stopName;
+
+	public ArrayList<RouteStopTag> service;
 	
-//	public ADAStatus accessibility;
-	
-	public String accessibilityNotes;
-	
-	public AccessibilityShort(Stop stop, Stop parentStop) {
-    	this.stopId = stop.getId();
-    	this.stopName = stop.getName();		
+	public AccessibilityShort(Stop stop, ArrayList<RouteStopTag> tags) {
+		this.stopId = GtfsLibrary.convertIdToString(stop.getId());
+		this.stopName = stop.getName();
+		this.service = tags;
 	}
-	
 }
