@@ -366,10 +366,6 @@ public class GraphBuilder implements Runnable {
         	}
         	LOG.info("Stop accessibility strategy = " + graphBuilder.getGraph().stopAccessibilityStrategy.getClass().getCanonicalName());
 
-        	if(!csvFiles.isEmpty()) {
-            	graphBuilder.addModule(new RouteStopsAccessibilityTaggerModule(csvFiles));
-            }
-        	
             // Make transfer edges from feed_transfers.txt
             if (crossFeedTransfers != null)  {
                 CrossFeedTransferGenerator module = new CrossFeedTransferGenerator(crossFeedTransfers);
@@ -387,6 +383,9 @@ public class GraphBuilder implements Runnable {
         }
         if (landmarks != null) {
             graphBuilder.addModule(new LandmarksModule(landmarks));
+        }
+    	if(!csvFiles.isEmpty()) {
+        	graphBuilder.addModule(new RouteStopsAccessibilityTaggerModule(csvFiles));
         }
         if (versionFile != null) {
             LOG.info("found versionFile=" + versionFile);

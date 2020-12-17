@@ -12,23 +12,42 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package org.opentripplanner.index.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.Stop;
+import org.opentripplanner.graph_builder.module.RouteStopsAccessibilityTaggerModule.ADAFlag;
 import org.opentripplanner.graph_builder.module.RouteStopsAccessibilityTaggerModule.RouteStopTag;
 import org.opentripplanner.gtfs.GtfsLibrary;
+import org.opentripplanner.routing.graph.Graph;
 
-public class AccessibilityShort {
-	
-	public String stopId;
-	
-	public String stopName;
+public class AccessibilityShort extends StopShort {
 
-	public ArrayList<RouteStopTag> service;
+	public class RouteShortWrapper extends RouteShort implements Serializable {
+		
+		private static final long serialVersionUID = 3915566835621828907L;
+
+		public RouteShortWrapper(Route route, RouteStopTag tag) {
+			super(route);
+			this.accessibilityFlag = tag.accessibilityFlag;
+			this.accessibilityNotes = tag.accessibilityNotes;
+		}
+
+		public ADAFlag accessibilityFlag;
+			
+		public String accessibilityNotes;
+	}
 	
-	public AccessibilityShort(Stop stop, ArrayList<RouteStopTag> tags) {
-		this.stopId = GtfsLibrary.convertIdToString(stop.getId());
-		this.stopName = stop.getName();
-		this.service = tags;
+	public ArrayList<RouteShortWrapper> service;
+	
+	public AccessibilityShort(Stop stop, ArrayList<RouteStopTag> tags, Graph graph) {
+		super(stop);
+
+		this.service = new ArrayList<RouteShortWrapper>();		
+		for(RouteStopTag tag : tags) {
+			Route route = graph.index.routeForId.get(GtfsLibrary.convertIdFromString(tag.routeId));
+			this.service.add(new RouteShortWrapper(route, tag));
+		}
 	}
 }

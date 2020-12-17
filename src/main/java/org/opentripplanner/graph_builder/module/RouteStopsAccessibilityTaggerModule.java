@@ -41,12 +41,11 @@ public class RouteStopsAccessibilityTaggerModule implements GraphBuilderModule {
 		
 		private static final long serialVersionUID = 3915566835621828907L;
 
-		public String routeId;
-			
 		public ADAFlag accessibilityFlag;
 			
 		public String accessibilityNotes;
 
+		public String routeId;
 	}
 	
     private static final Logger LOG = LoggerFactory.getLogger(RouteStopsAccessibilityTaggerModule.class);
@@ -117,8 +116,8 @@ public class RouteStopsAccessibilityTaggerModule implements GraphBuilderModule {
 	    				tags = new ArrayList<RouteStopTag>();
 	    			
 	    			RouteStopTag newTag = new RouteStopTag();
-	    			newTag.accessibilityNotes = row.get("Notes");
 	    			newTag.routeId = row.get("route_id");
+	    			newTag.accessibilityNotes = row.get("Notes");
 	    			
 	    			try {
 	    				newTag.accessibilityFlag = ADAFlag.values()[Integer.parseInt(row.get("ada")) + 1];
@@ -133,7 +132,8 @@ public class RouteStopsAccessibilityTaggerModule implements GraphBuilderModule {
 	    			i++;
 	    		}
 	    	} catch (Exception e) {
-	    		LOG.error("Error processing row in {}: {}", inputFile, e.getMessage());
+	    		LOG.error("Error processing row in {}", inputFile);
+	    		e.printStackTrace();
 	    	}
 	    }
     }

@@ -528,7 +528,7 @@ public class IndexAPI {
         	tags = graph.routeStopTagsByStopId.get(stop.getId().getAgencyId() + GtfsLibrary.ID_SEPARATOR + stop.getParentStation());
         
         if (stop != null && tags != null && !tags.isEmpty()) {
-            return Response.status(Status.OK).entity(new AccessibilityShort(stop, tags)).build();
+            return Response.status(Status.OK).entity(new AccessibilityShort(stop, tags, graph)).build();
         } else {
             return Response.status(Status.NOT_FOUND).entity(MSG_404).build();
         }
