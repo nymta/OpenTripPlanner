@@ -67,6 +67,7 @@ public class HistoricalTestsIT extends RoutingResource {
 	
 	@BeforeAll
 	private static void syncS3ToDisk() {
+
 		try {
             AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
                     .withCredentials(new DefaultAWSCredentialsProviderChain())
@@ -139,7 +140,8 @@ public class HistoricalTestsIT extends RoutingResource {
     	  
     private void runThroughGraph(File input, File output) throws Exception {
 		FileWriter resultsFileWriter = new FileWriter(output);
-		
+		GraphPathFinder gpFinder = new GraphPathFinder(router);
+
 		List<Result> ideals = Result.loadResults(input);			
 		for(Result result : ideals) {
 			RoutingRequest request = 
@@ -168,7 +170,6 @@ public class HistoricalTestsIT extends RoutingResource {
 	  		}
 	  		
 	  		try {
-	  			GraphPathFinder gpFinder = new GraphPathFinder(router);
 	  			List<GraphPath> paths = gpFinder.graphPathFinderEntryPoint(request);
 
 	  			TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
