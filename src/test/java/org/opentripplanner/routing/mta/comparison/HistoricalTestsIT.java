@@ -178,18 +178,15 @@ public class HistoricalTestsIT extends RoutingResource {
 			RoutingRequest request = 
 					super.buildRequest(router.defaultRoutingRequest, graph.getTimeZone());
 			
-			request.wheelchairAccessible = result.query.accessible;
-			request.setDateTime(new DateTime(result.query.time).toDate());
 			request.setFrom(Double.parseDouble(result.query.origin.split(",")[0]), 
 					Double.parseDouble(result.query.origin.split(",")[1]));
 			request.setTo(Double.parseDouble(result.query.destination.split(",")[0]), 
 					Double.parseDouble(result.query.destination.split(",")[1]));
-			request.ignoreRealtimeUpdates = true;
+			request.wheelchairAccessible = result.query.accessible;
+			request.setDateTime(new DateTime(result.query.time).toDate());
 			request.modes = new TraverseModeSet("TRANSIT,WALK");
 			request.maxWalkDistance = 500.0;
-			request.numItineraries = 6;
-			request.hardPathBanning = true; // once we use a set of routes, don't use it again
-
+			request.ignoreRealtimeUpdates = true;
 	  		switch(result.query.optimizeFlag) {
     			case "W":
     				request.optimize = OptimizeType.WALKING; 

@@ -20,6 +20,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;  
@@ -33,7 +35,7 @@ public class RunODPairsWithOTP {
 
     private String OTP_RESULTS_TXT = "src/test/resources/mta/comparison/baseline.txt";
 
-    private String OTP_URL = "http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp";
+    private String OTP_URL = "http://localhost:8080/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp";
 
     private boolean USE_CURRENT_TIME = false;
     
@@ -104,8 +106,12 @@ public class RunODPairsWithOTP {
     		builder.setParameter("fromPlace", originLat + "," + originLon);
     		builder.setParameter("toPlace", destLat + "," + destLon);
     		builder.setParameter("wheelchair", accessible + "");
-    		builder.setParameter("date", new SimpleDateFormat("MM-dd-YYYY").format(epoch));
-    		builder.setParameter("time", new SimpleDateFormat("hh:mm aa").format(epoch));
+    		
+    		DateTimeFormatter dateF = DateTimeFormat.forPattern("MM-dd-YYYY");
+    		DateTimeFormatter timeF = DateTimeFormat.forPattern("hh:mm aa");
+    		builder.setParameter("date", new DateTime(epoch).toString(dateF));
+    		builder.setParameter("time", new DateTime(epoch).toString(timeF));
+
     		builder.setParameter("mode", "TRANSIT,WALK");
     		builder.setParameter("maxWalkDistance", "500");
     		builder.setParameter("ignoreRealtimeUpdates", "true");
