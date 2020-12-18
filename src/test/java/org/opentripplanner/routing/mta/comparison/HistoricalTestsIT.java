@@ -113,6 +113,7 @@ public class HistoricalTestsIT extends RoutingResource {
 			LOG.error("Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private void buildGraph(File graphDir) {
@@ -210,33 +211,33 @@ public class HistoricalTestsIT extends RoutingResource {
     				break;
 	  		}
 	  		
+            String optimizeFlag = null;
+    		switch(request.optimize) {
+			case WALKING:
+				optimizeFlag = "W";
+				break;
+			case TRANSFERS:
+				optimizeFlag = "X";
+				break;
+			case QUICK:
+				optimizeFlag = "T";
+				break;
+			default:
+				break;
+    		}
+    		
+            resultsFileWriter.write("Q " + ((request.wheelchairAccessible) ? "Y " : "N ") + 
+    				request.dateTime*1000 + " " + 
+    				request.from.lat + "," + request.from.lng + " " + 
+    				request.to.lat + "," + request.to.lng + " " + 
+    				optimizeFlag + 
+    				"\n");
+            
 	  		try {
 	  			List<GraphPath> paths = gpFinder.graphPathFinderEntryPoint(request);
 
 	  			TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
 
-                String optimizeFlag = null;
-        		switch(request.optimize) {
-    			case WALKING:
-    				optimizeFlag = "W";
-    				break;
-    			case TRANSFERS:
-    				optimizeFlag = "X";
-    				break;
-    			case QUICK:
-    				optimizeFlag = "T";
-    				break;
-				default:
-					break;
-        		}
-        		
-                resultsFileWriter.write("Q " + ((request.wheelchairAccessible) ? "Y " : "N ") + 
-        				request.dateTime*1000 + " " + 
-        				request.from.lat + "," + request.from.lng + " " + 
-        				request.to.lat + "," + request.to.lng + " " + 
-        				optimizeFlag + 
-        				"\n");
-                
                 int i = 1;
                 for(Itinerary itin : plan.itinerary) {
                 	ItinerarySummary is = ItinerarySummary.fromItinerary(itin);
@@ -248,7 +249,7 @@ public class HistoricalTestsIT extends RoutingResource {
                      		 		+ " " + is.transitTime + " " + is.routes + "\n");
                 }
 	  		} catch (PathNotFoundException e) {
-	  			resultsFileWriter.write("**** NOT FOUND ****");
+	  			resultsFileWriter.write("**** NOT FOUND ****\n");
 	  		}
             
 		} // for result
