@@ -295,7 +295,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- latest version (2.20.1) does not work well with JUnit5 -->
 				<configuration>
-					<argLine>-Xmx4G -server</argLine>
+					<argLine>-Xmx1g</argLine>
 					<!-- Jenkins needs XML test reports to determine whether the build is 
 						stable. -->
 					<disableXmlReport>false</disableXmlReport>
@@ -306,7 +306,9 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>-Xmx16g -server</argLine>
-				</configuration>
+                    <forkCount>0</forkCount>
+                    <reuseForks>true</reuseForks>
+              	</configuration>
 				<dependencies>
 					<dependency>
 		    			<groupId>org.junit.jupiter</groupId>
