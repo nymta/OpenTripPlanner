@@ -115,51 +115,35 @@ public class HistoricalTestsIT extends RoutingResource {
 			LOG.error("Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	private void buildGraph(File graphDir) {
 		LOG.info("Starting graph build for dir=" + graphDir);
 
-		if(graphDir.exists()) {
-			File graphFile = new File(graphDir + "/Graph.obj");
-			if(graphFile.exists()) {
-				LOG.info("Graph file exists, trying to load it...");
+		GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
+		builder.run();
+		builder.getGraph();
 
-				try {
-					graph = Graph.load(graphFile);
+		LOG.info("Success.");
+	}
+	
+	private void loadGraph(File graphDir) {
+		File graphFile = new File(graphDir + "/Graph.obj");
+		if(graphFile.exists()) {
+			LOG.info("Graph file is present, trying to load it...");
 
-					LOG.info("Success.");
-				} catch (Exception e) {
-					LOG.info("Failed. Rebuilding (exception thrown was {})", e.getMessage());
-
-					GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
-					builder.run();
-					graph = builder.getGraph();
-
-					LOG.info("Success.");
-				}
-			} else {
-				LOG.info("Not found. Building...");
-
-				GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
-				builder.run();
-				graph = builder.getGraph();
-
-				LOG.info("Success.");
+			try {
+				graph = Graph.load(graphFile);
+			} catch (Exception e) {
+				LOG.info("Failed (exception thrown was {})", e.getMessage());
 			}
 			
 			LOG.info("Initializing router...");
-
     		router = new Router(graphDir.getParent(), graph);
-
     		LOG.info("Complete");
     		
     		LOG.info("Calling graph startup to load JSON...");
-    	
     		router.startup(OTPMain.loadJson(new File(graphDir, Router.ROUTER_CONFIG_FILENAME)));
-
     		LOG.info("Complete");
 		}
 	}
@@ -286,12 +270,24 @@ public class HistoricalTestsIT extends RoutingResource {
 		List<DynamicTest> generatedTests = new ArrayList<>();
 
 		for(File testDir : this.findTestDirs()) {
+			graph = null;
+			router = null;
+			
 			System.out.println("***************************************************************");
     		System.out.println("                TEST DIR: " + testDir.getName());
     		System.out.println("***************************************************************");
 
-			buildGraph(new File(testDir + "/graph"));
-			runQueries(testDir);
+    		loadGraph(new File(testDir + "/graph"));
+    		if(graph == null) {
+    			buildGraph(new File(testDir + "/graph"));
+    			loadGraph(new File(testDir + "/graph"));
+			}
+
+    		if(graph == null) {
+    			throw new Exception("Graph could not be loaded.");
+    		}
+    		
+    		runQueries(testDir);
 			
 			File idealFile = new File(testDir.getAbsolutePath() + "/ideal.txt");
 			File idealResultsFile = new File(testDir.getAbsolutePath() + "/ideal_results.txt");
