@@ -206,7 +206,7 @@ public class StreetEdge extends Edge implements Cloneable {
     private boolean canTraverse(RoutingRequest options, TraverseMode mode) {
     	if (options.wheelchairAccessible) {
             if (!isWheelchairAccessible()) {
-            	LOG.info("OSM way is marked non-accessible; accessible street route will differ from non-accessible");
+            	LOG.debug("OSM way is marked non-accessible; accessible street route will differ from non-accessible");
                 return false;
             }
             if (getMaxSlope() > options.maxSlope) {
