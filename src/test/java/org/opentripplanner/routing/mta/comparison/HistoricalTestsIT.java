@@ -25,6 +25,7 @@ import org.opentripplanner.routing.core.RoutingRequest;
 import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.GraphPathFinder;
+import org.opentripplanner.routing.impl.NycFareServiceImpl;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.standalone.CommandLineParameters;
 import org.opentripplanner.standalone.OTPMain;
 import org.opentripplanner.standalone.Router;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -59,6 +62,8 @@ import com.amazonaws.services.securitytoken.model.Credentials;
 
 public class HistoricalTestsIT extends RoutingResource {
 	
+    private static final Logger LOG = LoggerFactory.getLogger(HistoricalTestsIT.class);
+
 	private static String ALL_TESTS_DIR = "src/test/resources/mta/comparison/"; 
 
 	private Graph graph;
@@ -67,7 +72,8 @@ public class HistoricalTestsIT extends RoutingResource {
 	
 	@BeforeAll
 	private static void syncS3ToDisk() {
-
+		LOG.info("Starting sync to disk from S3...");
+		
 		try {
             AWSSecurityTokenService stsClient = AWSSecurityTokenServiceClientBuilder.standard()
                     .withCredentials(new DefaultAWSCredentialsProviderChain())
@@ -90,36 +96,67 @@ public class HistoricalTestsIT extends RoutingResource {
 		            .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
 		            .build();
 
+			LOG.info("Got credentials.");
+
 			File f = new File(ALL_TESTS_DIR);
-		
+
+			LOG.info("Starting xfer.");
+
 			TransferManager tm = TransferManagerBuilder.standard().build();
 		    MultipleFileDownload x = tm.downloadDirectory("mta-otp-integration-test-bundles", null, f);
 		    x.waitForCompletion();
 		    tm.shutdownNow();
+
+			LOG.info("Complete.");
+
 		} catch (AmazonClientException | InterruptedException e) {
+			LOG.error("Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	private void buildGraph(File graphDir) {
+		LOG.info("Starting graph build for dir=" + graphDir);
+
 		if(graphDir.exists()) {
 			File graphFile = new File(graphDir + "/Graph.obj");
 			if(graphFile.exists()) {
+				LOG.info("Graph file exists, trying to load it...");
+
 				try {
 					graph = Graph.load(graphFile);
+
+					LOG.info("Success.");
 				} catch (Exception e) {
+					LOG.info("Failed. Rebuilding (exception thrown was {})", e.getMessage());
+
 					GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
 					builder.run();
 					graph = builder.getGraph();
+
+					LOG.info("Success.");
 				}
 			} else {
+				LOG.info("Not found. Building...");
+
 				GraphBuilder builder = GraphBuilder.forDirectory(new CommandLineParameters(), graphDir);
 				builder.run();
 				graph = builder.getGraph();
+
+				LOG.info("Success.");
 			}
 			
+			LOG.info("Initializing router...");
+
     		router = new Router(graphDir.getParent(), graph);
+
+    		LOG.info("Complete");
+    		
+    		LOG.info("Calling graph startup to load JSON...");
+    	
     		router.startup(OTPMain.loadJson(new File(graphDir, Router.ROUTER_CONFIG_FILENAME)));
+
+    		LOG.info("Complete");
 		}
 	}
 	
@@ -132,6 +169,8 @@ public class HistoricalTestsIT extends RoutingResource {
     		if(!testDir.isDirectory())
     			continue;
     		
+    		LOG.info("Found test directory " + testDir);
+
         	data.add(testDir); 
     	}
     	
@@ -141,6 +180,8 @@ public class HistoricalTestsIT extends RoutingResource {
     private void runThroughGraph(File input, File output) throws Exception {
 		FileWriter resultsFileWriter = new FileWriter(output);
 		GraphPathFinder gpFinder = new GraphPathFinder(router);
+		
+		LOG.info("Loading test ideals from " + input);
 
 		List<Result> ideals = Result.loadResults(input);			
 		for(Result result : ideals) {
