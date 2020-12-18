@@ -33,4 +33,5 @@ _site/
 lucene/
 .DS_Store
 src/test/resources/mta/comparison/*/graph/**
+src/test/resources/mta/comparison/*/*_results.txt
 /bin/

@@ -22,12 +22,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.opentripplanner.routing.core.OptimizeType;
 import org.opentripplanner.routing.core.RoutingRequest;
+import org.opentripplanner.routing.core.TraverseModeSet;
 import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.GraphPathFinder;
 import org.opentripplanner.routing.impl.NycFareServiceImpl;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -183,6 +185,8 @@ public class HistoricalTestsIT extends RoutingResource {
 			request.setTo(Double.parseDouble(result.query.destination.split(",")[0]), 
 					Double.parseDouble(result.query.destination.split(",")[1]));
 			request.ignoreRealtimeUpdates = true;
+			request.modes = new TraverseModeSet("TRANSIT,WALK");
+			request.maxWalkDistance = 500.0;
 			request.numItineraries = 6;
 			request.hardPathBanning = true; // once we use a set of routes, don't use it again
 
@@ -305,6 +309,10 @@ public class HistoricalTestsIT extends RoutingResource {
 			File baselineFile = new File(testDir.getAbsolutePath() + "/baseline.txt");
 			File baselineResultsFile = new File(testDir.getAbsolutePath() + "/baseline_results.txt");
 			if(baselineFile.exists() && baselineResultsFile.exists()) {
+				System.out.println("***************************************************************");
+	    		System.out.println("                       NOT ACCESSIBLE");
+	    		System.out.println("***************************************************************");
+
 				QualitativeMultiDimInstanceComparison t1 = new QualitativeMultiDimInstanceComparison();
 				t1.setBaselineResultsFile(baselineFile.getPath());
 				t1.setTestResultsFile(baselineResultsFile.getPath());
@@ -313,8 +321,12 @@ public class HistoricalTestsIT extends RoutingResource {
 
 			File baselineAccessibleFile = new File(testDir.getAbsolutePath() + "/baseline-accessible.txt");
 			File baselineAccessibleResultsFile = new File(testDir.getAbsolutePath() + "/baseline-accessible_results.txt");
-			if(baselineFile.exists() && baselineResultsFile.exists()) {
-				QualitativeMultiDimInstanceComparison t3 = new QualitativeMultiDimInstanceComparison();
+			if(baselineAccessibleFile.exists() && baselineAccessibleResultsFile.exists()) {
+				System.out.println("***************************************************************");
+	    		System.out.println("                        ACCESSIBLE");
+	    		System.out.println("***************************************************************");
+
+	    		QualitativeMultiDimInstanceComparison t3 = new QualitativeMultiDimInstanceComparison();
 				t3.setBaselineResultsFile(baselineAccessibleFile.getPath());
 				t3.setTestResultsFile(baselineAccessibleResultsFile.getPath());
 				generatedTests.addAll(t3.getTests());
