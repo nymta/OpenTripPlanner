@@ -35,7 +35,7 @@ public class RunODPairsWithOTP {
 
     private String OTP_RESULTS_TXT = "src/test/resources/mta/comparison/baseline.txt";
 
-    private String OTP_URL = "http://localhost:8080/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp";
+    private String OTP_URL = "http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp";
 
     private boolean USE_CURRENT_TIME = false;
     
@@ -134,22 +134,27 @@ public class RunODPairsWithOTP {
             CloseableHttpResponse response = httpClient.execute(get);
             String responseString = EntityUtils.toString(response.getEntity());
 
-            HashMap<String, Map> planResponse = (HashMap<String, Map>)new JSONDeserializer().deserialize(responseString);             
-            HashMap<String, Object> root = (HashMap<String, Object>)planResponse.get("plan");
-            
-            // write the OD input line back to the results so we can compare
-            otpResults.write(line + "\n");
+        	// write the OD input line back to the results so we can compare
+        	otpResults.write(line + "\n");
 
-            if(root == null) {
-            	otpResults.write("\n***** FAILED *****\n");
-            	otpResults.write("***** FAILED *****\n");
-            	otpResults.write("***** FAILED *****\n\n");
-            	
-            	otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
-
-            	continue;
+        	HashMap<String, Object> root = null;
+            try {
+            	HashMap<String, Map> planResponse = (HashMap<String, Map>)new JSONDeserializer().deserialize(responseString);             
+            	root = (HashMap<String, Object>)planResponse.get("plan");            
+            } catch (Exception e) {
+            	root = null;
             }
-            
+
+        	if(root == null) {
+        		otpResults.write("\n***** FAILED *****\n");
+        		otpResults.write("***** FAILED *****\n");
+        		otpResults.write("***** FAILED *****\n\n");
+        	
+        		otpResults.write("D " + responseString.replace("\n",  "").replace("\r", "").replace("\t",  "") + "\n\n");
+
+        		continue;
+        	}
+
             ArrayList<Map> itineraries = (ArrayList<Map>) root.get("itineraries");
             
             for(int itin_i = 0; itin_i < itineraries.size(); itin_i++) {
