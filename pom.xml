@@ -306,8 +306,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>-Xmx16g -server</argLine>
-                    <forkCount>0</forkCount>
-                    <reuseForks>true</reuseForks>
               	</configuration>
 				<dependencies>
 					<dependency>
