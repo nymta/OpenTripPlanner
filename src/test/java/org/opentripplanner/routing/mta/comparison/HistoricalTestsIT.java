@@ -36,6 +36,7 @@ import java.util.UUID;
 import org.opentripplanner.api.common.RoutingResource;
 import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.TripPlan;
+import org.opentripplanner.api.model.error.PlannerError;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.graph_builder.GraphBuilder;
 
@@ -72,6 +73,7 @@ public class HistoricalTestsIT extends RoutingResource {
 	
 	@BeforeAll
 	private static void syncS3ToDisk() {
+		
 		LOG.info("Starting sync to disk from S3...");
 		
 		try {
@@ -113,6 +115,7 @@ public class HistoricalTestsIT extends RoutingResource {
 			LOG.error("Exception: " + e.getMessage());
 			e.printStackTrace();
 		}
+		
 		
 	}
 	
@@ -248,7 +251,10 @@ public class HistoricalTestsIT extends RoutingResource {
                      		 "S " + is.itineraryNumber + " " + String.format("%.2f",is.walkDistance)
                      		 		+ " " + is.transitTime + " " + is.routes + "\n");
                 }
-	  		} catch (PathNotFoundException e) {
+	  		} catch (Exception e) {
+	            if(!PlannerError.isPlanningError(e.getClass()))
+	                LOG.warn("Error while planning path: ", e);
+
 	  			resultsFileWriter.write("**** NOT FOUND ****\n");
 	  		}
             
