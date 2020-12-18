@@ -253,15 +253,19 @@ public class HistoricalTestsIT extends RoutingResource {
     		
 		File idealFile = new File(testDir + "/ideal.txt");
 		File idealResultsFile = new File(testDir + "/ideal_results.txt");
-		
 		if(idealFile.exists())
 			runThroughGraph(idealFile, idealResultsFile);
 		
 		File baselineFile = new File(testDir + "/baseline.txt");
 		File baselineResultsFile = new File(testDir + "/baseline_results.txt");
-
 		if(baselineFile.exists())
 			runThroughGraph(baselineFile, baselineResultsFile);
+
+		File baselineAccessibleFile = new File(testDir + "/baseline-accessible.txt");
+		File baselineAccessibleResultsFile = new File(testDir + "/baseline-accessible_results.txt");
+		if(baselineAccessibleFile.exists())
+			runThroughGraph(baselineAccessibleFile, baselineAccessibleResultsFile);
+
     }
     
 	@TestFactory
@@ -306,6 +310,16 @@ public class HistoricalTestsIT extends RoutingResource {
 				t1.setTestResultsFile(baselineResultsFile.getPath());
 				generatedTests.addAll(t1.getTests());
 			}
+
+			File baselineAccessibleFile = new File(testDir.getAbsolutePath() + "/baseline-accessible.txt");
+			File baselineAccessibleResultsFile = new File(testDir.getAbsolutePath() + "/baseline-accessible_results.txt");
+			if(baselineFile.exists() && baselineResultsFile.exists()) {
+				QualitativeMultiDimInstanceComparison t3 = new QualitativeMultiDimInstanceComparison();
+				t3.setBaselineResultsFile(baselineAccessibleFile.getPath());
+				t3.setTestResultsFile(baselineAccessibleResultsFile.getPath());
+				generatedTests.addAll(t3.getTests());
+			}
+
 		}
 
 		return generatedTests;

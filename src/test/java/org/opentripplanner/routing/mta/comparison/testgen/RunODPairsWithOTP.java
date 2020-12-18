@@ -33,7 +33,7 @@ public class RunODPairsWithOTP {
 
     private String OTP_RESULTS_TXT = "src/test/resources/mta/comparison/baseline.txt";
 
-    private String OTP_URL = "http://otp-mta-qa.camsys-apps.com/otp/routers/default/plan?apikey=EQVQV8RM6R4o3Dwb6YNWfg6OMSR7kT9L";
+    private String OTP_URL = "http://otp-mta-dev.camsys-apps.com/otp/routers/default/plan?apikey=hAR0VMP2Ufxk542WrtTW8ToBmi4N3UUp";
 
     private boolean USE_CURRENT_TIME = false;
     

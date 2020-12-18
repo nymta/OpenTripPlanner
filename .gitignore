@@ -32,5 +32,5 @@ _site/
 /otp-batch-analyst
 lucene/
 .DS_Store
-src/test/resources/mta/comparison/*/**
+src/test/resources/mta/comparison/*/graph/**
 /bin/

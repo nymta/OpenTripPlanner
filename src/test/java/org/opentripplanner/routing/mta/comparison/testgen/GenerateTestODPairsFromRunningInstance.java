@@ -40,7 +40,7 @@ public class GenerateTestODPairsFromRunningInstance {
 	
     private String PAIRS_TXT = "src/test/resources/mta/comparison/baseline_ods.txt";
  
-    private double ACCESSIBILITY_PCT = .5;
+    private double ACCESSIBILITY_PCT = 0;
     
     private boolean MTA_ONLY = true;
     

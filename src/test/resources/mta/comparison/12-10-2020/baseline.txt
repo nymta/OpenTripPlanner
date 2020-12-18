@@ -1,0 +1,3336 @@
+Q N 1608845050225 40.814919,-73.947823 40.691324,-73.747553 W
+1 WALK DISTANCE=0.61 km TRANIST TIME=80 min 
+1 ---------------------------
+1 135 St -> B to Brighton Beach -> 7 Av
+1 7 Av -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & TEARDROP CANOPY -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> 120TH AVE & NASHVILLE BLVD
+S 1 0.61 80 B>E>Q84
+
+2 WALK DISTANCE=0.55 km TRANIST TIME=97 min 
+2 ---------------------------
+2 135 St -> B to Brighton Beach -> 42 St-Bryant Pk
+2 42 St-Bryant Pk -> F to Jamaica-179 St -> 169 St
+2 HILLSIDE AVE & 168TH PL -> Q77 to Q77 - SPRINGFIELD GARDENS -> SPRINGFIELD BLVD & 120TH AVE
+S 2 0.55 97 B>F>Q77
+
+Q N 1609062918464 40.702368,-73.791681 40.656591,-74.005031 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.702368,-73.791681","toPlace":"40.656591,-74.005031","maxWalkDistance":"500","time":"04:55 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314041080,"requestDate":1640598900000,"precalculationTime":131,"pathCalculationTime":264,"pathTimes":[],"renderingTime":0,"totalTime":395,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:01-05:00"}}
+
+Q N 1608957888154 40.621669,-73.946002 40.767643,-73.982563 T
+1 WALK DISTANCE=0.07 km TRANIST TIME=59 min 
+1 ---------------------------
+1 NOSTRAND AVE & AV L -> B44 to B44 - WILLIAMSBURG BRIDGE PLAZA via NOSTRAND -> FULTON ST & NOSTRAND AVE
+1 Nostrand Av -> A to Inwood-207 St -> 59 St-Columbus Circle
+S 1 0.07 59 B44>A
+
+2 WALK DISTANCE=0.51 km TRANIST TIME=45 min 
+2 ---------------------------
+2 AV L & NOSTRAND AVE -> B9 to B9 - BAY RIDGE SHRE RD via AVENUE M via 60 ST -> AV M & E 15TH ST
+2 Avenue M -> Q to 96 St -> 57 St-7 Av
+S 2 0.51 45 B9>Q
+
+3 WALK DISTANCE=0.14 km TRANIST TIME=49 min 
+3 ---------------------------
+3 NOSTRAND AVE & AV L -> B44 to B44 - WILLIAMSBURG BRIDGE PLAZA via NOSTRAND -> NOSTRAND AVE & FLATBUSH AVE
+3 FLATBUSH AVE & NOSTRAND AVE -> B41 to B41 - DOWNTOWN BKLYN CADMAN PLAZA via FLATBUSH -> FLATBUSH AVE & PACIFIC ST
+3 Atlantic Av-Barclays Ctr -> D to Norwood-205 St -> 59 St-Columbus Circle
+S 3 0.14 49 B44>B41>D
+
+Q N 1608995925420 40.733004,-73.974593 40.648373,-73.999232 T
+1 WALK DISTANCE=0.43 km TRANIST TIME=40 min 
+1 ---------------------------
+1 AV C & E 20TH ST -> M23+ to M23+ - SELECT BUS CHELSEA PIERS 12AV CROSSTOWN -> E 23RD ST & BROADWAY
+1 23 St -> N to Coney Island-Stillwell Av -> 36 St
+1 39TH ST & 4TH AVE -> B35-LTD to B35 - LIMITED BROWNSVILLE M GASTON via CHURCH -> 39TH ST & 7TH AVE
+S 1 0.43 40 M23+>N>B35-LTD
+
+2 WALK DISTANCE=0.26 km TRANIST TIME=40 min 
+2 ---------------------------
+2 AV C & E 20TH ST -> M23+ to M23+ - SELECT BUS CHELSEA PIERS 12AV CROSSTOWN -> E 23RD ST & BROADWAY
+2 23 St -> N to Coney Island-Stillwell Av -> 36 St
+2 37TH ST & 4TH AVE -> B70 to B70 - DYKER HEIGHTS VA HOSPITAL via 8 AV -> 39TH ST & 7TH AVE
+S 2 0.26 40 M23+>N>B70
+
+3 WALK DISTANCE=0.44 km TRANIST TIME=46 min 
+3 ---------------------------
+3 AV C & E 20TH ST -> M9 to M9 - SOUTH END AVE & ALBANY ST -> ESSEX ST & DELANCEY ST
+3 Delancey St-Essex St -> F to Coney Island-Stillwell Av -> Church Av
+3 CHURCH AVE & MC DONALD AVE -> B35-LTD to B35 - LIMITED SUNSET PARK 1 AV via CHURCH AV -> 39TH ST & 7TH AVE
+S 3 0.44 46 M9>F>B35-LTD
+
+Q N 1608933232163 40.59681,-74.070561 40.554571,-74.117022 X
+1 WALK DISTANCE=1.26 km TRANIST TIME=17 min 
+1 ---------------------------
+1 HYLAN BLVD & W FINGERBOARD RD -> S78 to S78 - BRICKTOWN MALL via HYLAN -> HYLAN BLVD & GUYON AVE
+S 1 1.26 17 S78
+
+2 WALK DISTANCE=0.25 km TRANIST TIME=32 min 
+2 ---------------------------
+2 SAND LANE & MCCLEAN AVE -> S53 to S53 - PORT RICHMOND -> NARROWS RD N & RHINE AVE
+2 RICHMOND RD & NARROWS RD S -> S76 to S76 - OAKWOOD MILL RD -> MILL RD & TARLTON ST
+S 2 0.25 32 S53>S76
+
+3 WALK DISTANCE=0.96 km TRANIST TIME=16 min 
+3 ---------------------------
+3 SAND LANE & MCCLEAN AVE -> S53 to S53 - PORT RICHMOND -> HYLAN BLVD & CLOVE RD
+3 HYLAN BLVD & CLOVE RD -> S79+ to S79+ - SELECT BUS SI MALL via HYLAN -> HYLAN BLVD & GUYON AVE
+S 3 0.96 16 S53>S79+
+
+Q N 1608540914958 40.686732,-73.984581 40.680717,-73.970733 T
+1 WALK DISTANCE=0.55 km TRANIST TIME=2 min 
+1 ---------------------------
+1 ATLANTIC AVE & BOND ST -> B63 to B63 - BAY RIDGE SHORE RD via 5 AV -> 5TH AVE & DEAN ST
+S 1 0.55 2 B63
+
+2 WALK DISTANCE=0.96 km TRANIST TIME=2 min 
+2 ---------------------------
+2 LIVINGSTON ST & NEVINS ST -> B41 to B41 - KINGS PLAZA via FLATBUSH -> FLATBUSH AVE & DEAN ST
+S 2 0.96 2 B41
+
+3 WALK DISTANCE=0.00 km TRANIST TIME=6 min 
+3 ---------------------------
+3 ATLANTIC AVE & BOND ST -> B65 to B65 - CROWN HEIGHTS RALPH AV -> DEAN ST & CARLTON AVE
+S 3 0.00 6 B65
+
+Q N 1608576641891 40.674787,-73.807221 40.891926,-73.858111 W
+1 WALK DISTANCE=0.24 km TRANIST TIME=101 min 
+1 ---------------------------
+1 LINCOLN ST & ROCKAWAY BLVD -> Q9 to Q9 - JAMAICA 165 ST TERM -> SUTPHIN BLVD & ARCHER AVE
+1 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> 42 St-Port Authority Bus Terminal
+1 Times Sq-42 St -> 2 to Wakefield-241 St -> 233 St
+S 1 0.24 101 Q9>E>2
+
+2 WALK DISTANCE=0.26 km TRANIST TIME=111 min 
+2 ---------------------------
+2 ROCKAWAY BLVD & LINCOLN ST -> Q7 to Q7 - EAST NEW YORK EUCLID AV STA via ROCKAWAY BL -> ROCKAWAY BLVD & LIBERTY AVE
+2 Rockaway Blvd -> A to Inwood-207 St -> 42 St-Port Authority Bus Terminal
+2 Times Sq-42 St -> 2 to Wakefield-241 St -> 233 St
+S 2 0.26 111 Q7>A>2
+
+Q N 1608765759803 40.848989,-73.906703 40.703867,-73.94741 X
+1 WALK DISTANCE=0.20 km TRANIST TIME=49 min 
+1 ---------------------------
+1 Tremont Av -> D to Coney Island-Stillwell Av -> W 4 St-Wash Sq
+1 W 4 St-Wash Sq -> M to Middle Village-Metropolitan Av -> Lorimer St
+S 1 0.20 49 D>M
+
+2 WALK DISTANCE=0.20 km TRANIST TIME=54 min 
+2 ---------------------------
+2 Tremont Av -> B to Brighton Beach -> W 4 St-Wash Sq
+2 W 4 St-Wash Sq -> M to Middle Village-Metropolitan Av -> Lorimer St
+S 2 0.20 54 B>M
+
+3 WALK DISTANCE=0.59 km TRANIST TIME=54 min 
+3 ---------------------------
+3 176 St -> 4 to Crown Hts-Utica Av -> Fulton St
+3 Fulton St -> J to Jamaica Center-Parsons/Archer -> Lorimer St
+S 3 0.59 54 4>J
+
+Q N 1608619965833 40.610188,-74.146472 40.761418,-73.923931 T
+1 WALK DISTANCE=0.61 km TRANIST TIME=75 min 
+1 ---------------------------
+1 VICTORY BLVD & WILLOWBROOK RD -> S62 to S62 - ST GEORGE FERRY via VICTORY -> VICTORY BLVD & CLOVE RD
+1 CLOVE RD & NIAGARA ST -> S53 to S53 - BAY RIDGE 86 ST STATION -> HYLAN BLVD & NORWAY AVE
+1 HYLAN BLVD & MALLORY AVE -> SIM1C to SIM1C - CENTRAL PARK S & 6TH AVE -> AV OF THE AMERICAS & W 34TH ST
+1 W 32ND ST & BROADWAY -> Q32 to Q32 - JACKSON HTS NORTHERN-81 ST via ROOSEVELT -> QUEENS PLAZA S & 28TH ST
+1 JACKSON AVE & ORCHARD ST -> Q102 to Q102 - ASTORIA 27 AV via 31 ST -> 31ST ST & BROADWAY
+S 1 0.61 75 S62>S53>SIM1C>Q32>Q102
+
+2 WALK DISTANCE=1.05 km TRANIST TIME=89 min 
+2 ---------------------------
+2 VICTORY BLVD & WILLOWBROOK RD -> S62 to S62 - ST GEORGE FERRY via VICTORY -> ST GEORGE FERRY & ST GEORGE FERRY
+2 St. George Ferry Terminal -> Staten Island Ferry to Whitehall Ferry Terminal -> Whitehall Ferry Terminal
+2 SOUTH ST & WHITEHALL ST -> M15 to M15 - EAST HARLEM 125 ST via 1 AV -> 1ST AVE & E 60TH ST
+2 E 60TH ST & 2ND AVE -> Q101 to Q101 - STEINWAY 19 AV via STEINWAY ST -> STEINWAY ST & BROADWAY
+S 2 1.05 89 S62>Staten Island Ferry>M15>Q101
+
+3 WALK DISTANCE=1.26 km TRANIST TIME=64 min 
+3 ---------------------------
+3 VICTORY BLVD & WILLOWBROOK PARK -> SIM33 to SIM33 - GREENWICH VILLAGE via WEST ST via 6 AV -> AV OF THE AMERICAS & WAVERLY PL
+3 W 4 St-Wash Sq -> M to Forest Hills-71 Av -> Steinway St
+S 3 1.26 64 SIM33>M
+
+Q N 1608983620821 40.659099,-73.879781 40.701019,-73.940872 T
+1 WALK DISTANCE=0.29 km TRANIST TIME=26 min 
+1 ---------------------------
+1 WORTMAN AVE & BARBEY ST -> B20 to B20 - RIDGEWOOD FOREST AV -> JAMAICA AVE & BROADWAY
+1 Alabama Av -> J to Broad St -> Flushing Av
+S 1 0.29 26 B20>J
+
+2 WALK DISTANCE=0.54 km TRANIST TIME=24 min 
+2 ---------------------------
+2 VAN SICLEN AVE & WORTMAN AVE -> B83 to B83 - BROADWAY JCT VAN SINDEREN AV -> VAN SINDEREN AVFULTON & VAN SINDEREN AVFULTON
+2 Broadway Junction -> J to Broad St -> Flushing Av
+S 2 0.54 24 B83>J
+
+3 WALK DISTANCE=0.61 km TRANIST TIME=45 min 
+3 ---------------------------
+3 VAN SICLEN AVE & WORTMAN AVE -> B83 to B83 - BROADWAY JCT VAN SINDEREN AV -> NEW LOTS AVE & WYONA ST
+3 NEW LOTS AVE & WYONA ST -> B15 to B15 - BED-STUY WOODHULL HOSPITAL -> MARCUS GARVEY BLVD & BROADWAY
+S 3 0.61 45 B83>B15
+
+Q N 1608426341744 40.617811,-73.916643 40.657479,-73.73275 X
+1 WALK DISTANCE=0.24 km TRANIST TIME=108 min 
+1 ---------------------------
+1 RALPH AVE & MILL AVE -> B47 to B47 - BED-STUY WOODHULL HOSPITAL via RALPH AV -> BROADWAY & KOSSUTH PL
+1 Kosciuszko St -> J to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & PARSONS BLVD -> Q111 to Q111 - ROSEDALE F. LEWIS BL via BREWER BL via 147 AV -> 147TH AVE & 256TH ST
+S 1 0.24 108 B47>J>Q111
+
+2 WALK DISTANCE=0.98 km TRANIST TIME=111 min 
+2 ---------------------------
+2 RALPH AVE & MILL AVE -> B47 to B47 - BED-STUY WOODHULL HOSPITAL via RALPH AV -> BROADWAY & KOSSUTH PL
+2 Kosciuszko St -> J to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+2 ARCHER AVE & PARSONS BLVD -> Q85 to Q85 - ROSEDALE 147 AV -> 243RD ST & 145TH AVE
+S 2 0.98 111 B47>J>Q85
+
+Q N 1608526350528 40.700107,-73.906772 40.552489,-74.132811 W
+1 WALK DISTANCE=0.63 km TRANIST TIME=76 min 
+1 ---------------------------
+1 PALMETTO ST & ST NICHOLAS AVE -> B54 to B54 - DOWNTOWN BKLYN JAY ST via MYRTLE -> METROTECH UNDP & LAWRENCE ST
+1 Jay St-MetroTech -> R to Bay Ridge-95 St -> 86 St
+1 4TH AVE & 86TH ST -> S53 to S53 - PORT RICHMOND -> HYLAN BLVD & CLOVE RD
+1 HYLAN BLVD & CLOVE RD -> S78 to S78 - BRICKTOWN MALL via HYLAN -> HYLAN BLVD & BAY TERR
+S 1 0.63 76 B54>R>S53>S78
+
+2 WALK DISTANCE=0.67 km TRANIST TIME=70 min 
+2 ---------------------------
+2 Myrtle-Wyckoff Avs -> L to 8 Av -> 14 St-Union Sq.
+2 BROADWAY & E 13TH ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> HYLAN BLVD & BAY TERR
+S 2 0.67 70 L>SIM1C
+
+Q N 1608764133368 40.66861,-73.923033 40.78294,-73.953142 X
+1 WALK DISTANCE=1.15 km TRANIST TIME=40 min 
+1 ---------------------------
+1 Crown Hts-Utica Av -> 4 to Woodlawn -> 86 St
+S 1 1.15 40 4
+
+2 WALK DISTANCE=1.15 km TRANIST TIME=40 min 
+2 ---------------------------
+2 Crown Hts-Utica Av -> 5 to Eastchester-Dyre Av -> 86 St
+S 2 1.15 40 5
+
+3 WALK DISTANCE=0.89 km TRANIST TIME=47 min 
+3 ---------------------------
+3 Sutter Av-Rutland Rd -> 3 to Harlem-148 St -> Franklin Av-Medgar Evers College
+3 Franklin Av-Medgar Evers College -> 5 to Eastchester-Dyre Av -> 86 St
+S 3 0.89 47 3>5
+
+Q N 1608532372777 40.668753,-73.936611 40.730173,-73.778023 T
+1 WALK DISTANCE=1.29 km TRANIST TIME=63 min 
+1 ---------------------------
+1 UTICA AVE & EASTERN PKWY -> B46 to B46 - WILLIAMSBURG BRIDGE PLAZA via UTICA -> MALCOLM X BLVD & LAFAYETTE AVE
+1 PATCHEN AVE & LAFAYETTE AVE -> Q24 to Q24 - JAMAICA 168 ST via ATLANTIC -> ARCHER AVE & MERRICK BLVD
+1 MERRICK BLVD & JAMAICA AVE -> Q17 to Q17 - FLUSHING MAIN ST STATION -> 188TH ST & UNION TNPK
+S 1 1.29 63 B46>Q24>Q17
+
+2 WALK DISTANCE=0.86 km TRANIST TIME=67 min 
+2 ---------------------------
+2 KINGSTON AVE & UNION ST -> B43 to B43 - GREENPOINT BOX ST -> GRAHAM AVE & GRAND ST
+2 GRAND ST & GRAHAM AVE -> Q59 to Q59 - QUEENS BLVD 62 DRIVE via GRAND -> QUEENS BLVD & WOODHAVEN BLVD
+2 QUEENS BLVD & WOODHAVEN BLVD -> Q60 to Q60 - S. JAMAICA 109 AV via QUEENS BL -> QUEENS BLVD & UNION TPK
+2 QUEENS BLVD & 78TH AVE -> Q46 to Q46 - LAKE SUCCESS LIJ HOSPITAL via UNION -> UNION TNPK & 193RD ST
+S 2 0.86 67 B43>Q59>Q60>Q46
+
+3 WALK DISTANCE=1.09 km TRANIST TIME=76 min 
+3 ---------------------------
+3 UTICA AVE & EASTERN PKWY -> B46 to B46 - WILLIAMSBURG BRIDGE PLAZA via UTICA -> BROADWAY & JEFFERSON ST
+3 MYRTLE AVE & BROADWAY -> B54 to B54 - RIDGEWOOD TERM via MYRTLE -> PALMETTO ST & ST NICHOLAS AVE
+3 PALMETTO ST & MYRTLE AVE -> Q58 to Q58 - FLUSHING MAIN ST -> 41ST RD & MAIN ST
+3 KISSENA BLVD & MAIN ST -> Q17 to Q17 - JAMAICA MERRICK BL -> 188TH ST & UNION TNPK
+S 3 1.09 76 B46>B54>Q58>Q17
+
+Q N 1608865719284 40.818922,-73.952531 40.655123,-74.007091 W
+1 WALK DISTANCE=0.42 km TRANIST TIME=47 min 
+1 ---------------------------
+1 AMSTERDAM AVE & W 135TH ST -> M101 to M101 - EAST VILLAGE 6 ST via LEX AV -> W 125TH ST & ST NICHOLAS AVE
+1 125 St -> D to Coney Island-Stillwell Av -> 36 St
+S 1 0.42 47 M101>D
+
+2 WALK DISTANCE=0.45 km TRANIST TIME=47 min 
+2 ---------------------------
+2 AMSTERDAM AVE & W 136TH ST -> M100 to M100 - E HARLEM 2 AV-127 ST -> W 125TH ST & ST NICHOLAS AVE
+2 125 St -> D to Coney Island-Stillwell Av -> 36 St
+S 2 0.45 47 M100>D
+
+3 WALK DISTANCE=0.70 km TRANIST TIME=46 min 
+3 ---------------------------
+3 137 St-City College -> 1 to South Ferry -> Times Sq-42 St
+3 Times Sq-42 St -> N to Coney Island-Stillwell Av -> 36 St
+S 3 0.70 46 1>N
+
+Q N 1608603301622 40.889969,-73.819642 40.849981,-73.913162 W
+1 WALK DISTANCE=0.09 km TRANIST TIME=54 min 
+1 ---------------------------
+1 ROPES AVE & BOSTON RD -> BX16 to BX16 - NORWOOD - 205 ST STATION -> NEREID AVE & WHITE PLAINS RD
+1 Nereid Av -> 2 to Flatbush Av-Brooklyn College -> West Farms Sq-E Tremont Av
+1 BOSTON RD & E TREMONT AVE -> BX36 to BX36 - WASHINGTON HEIGHTS G W BRIDGE -> W TREMONT AVE & HARRISON AVE
+S 1 0.09 54 BX16>2>BX36
+
+2 WALK DISTANCE=0.35 km TRANIST TIME=48 min 
+2 ---------------------------
+2 BOSTON POST RD @ PELHAM PKWY -> 60 to Fordham -> FORDHAM RD @ HOFFMAN ST
+2 E FORDHAM RD & HOFFMAN ST -> BX17 to BX17 - PORT MORRIS 135 ST -> CROTONA AVE & E 180TH ST
+2 E 180TH ST & CROTONA AVE -> BX36 to BX36 - WASHINGTON HEIGHTS G W BRIDGE -> W TREMONT AVE & HARRISON AVE
+S 2 0.35 48 60>BX17>BX36
+
+3 WALK DISTANCE=0.58 km TRANIST TIME=43 min 
+3 ---------------------------
+3 ROPES AVE & BOSTON RD -> BX16 to BX16 - NORWOOD - 205 ST STATION -> BAINBRIDGE AVE & JEROME AVE
+3 Woodlawn -> 4 to New Lots Av -> 176 St
+S 3 0.58 43 BX16>4
+
+Q N 1608977661943 40.575874,-74.123292 40.717817,-73.735753 T
+1 WALK DISTANCE=0.76 km TRANIST TIME=80 min 
+1 ---------------------------
+1 RICHMOND RD & SUMMIT AVE -> S74 to S74 - ST GEORGE FERRY -> TARGEE ST & CLOVE RD
+1 NARROWS RD SO & TARGEE ST -> SIM3C to SIM3C - CENTRAL PARK S & 6TH AVE -> AV OF THE AMERICAS & W 34TH ST
+1 Penn Station -> Long Beach to Long Beach -> Jamaica
+1 Jamaica -> Hempstead to Hempstead -> Queens Village
+S 1 0.76 80 S74>SIM3C>Long Beach>Hempstead
+
+2 WALK DISTANCE=0.26 km TRANIST TIME=136 min 
+2 ---------------------------
+2 RICHMOND RD & BEACON AVE -> S74 to S74 - BRICKTOWN MALL via AR KILL RD -> ARTHUR KILL RD & OPP ASPEN KNOLLS
+2 ARTHUR KILL RD & ST JOHN NEWMANN -> SIM4C to SIM4C - MIDTOWN via CHURCH ST via MADISON AV -> AV OF THE AMERICAS & WAVERLY PL
+2 W 4 St-Wash Sq -> F to Jamaica-179 St -> 169 St
+2 HILLSIDE AVE & 168TH PL -> Q36 to Q36 - FLORAL PARK 257 ST via JAMAICA -> JAMAICA AVE & 218TH ST
+S 2 0.26 136 S74>SIM4C>F>Q36
+
+Q N 1608797731080 40.671762,-73.963033 40.663242,-73.991373 T
+1 WALK DISTANCE=0.32 km TRANIST TIME=12 min 
+1 ---------------------------
+1 EASTERN PKWY & WASHINGTON AVE -> B99 to B99 - COLUMBUS CIRCLE via 8 AV -> FLATBUSH AVE & BERGEN ST
+1 5TH AVE & DEAN ST -> B63 to B63 - BAY RIDGE SHORE RD via 5 AV -> 5TH AVE & PROSPECT AVE
+S 1 0.32 12 B99>B63
+
+2 WALK DISTANCE=0.66 km TRANIST TIME=27 min 
+2 ---------------------------
+2 EASTERN PKWY & WASHINGTON AVE -> B99 to B99 - MIDWOOD - NOSTRAND AV - AVENUE H -> NOSTRAND AVE & FLATBUSH AVE
+2 AV H & E 32ND ST -> BM2 to BM2 - MIDTOWN 57 ST via CHURCH ST via MADISON AV -> PROSPECT AVE & 4TH AVE
+S 2 0.66 27 B99>BM2
+
+3 WALK DISTANCE=0.46 km TRANIST TIME=25 min 
+3 ---------------------------
+3 Eastern Pkwy-Brooklyn Museum -> 4 to Woodlawn -> Bowling Green
+3 STATE ST & BATTERY PL -> BM2 to BM2 - CANARSIE WILLIAMS AV via AVENUE H via AVENUE M -> 17TH ST & 4TH AVE
+S 3 0.46 25 4>BM2
+
+Q N 1608863604399 40.754109,-73.980572 40.811315,-73.855942 T
+1 WALK DISTANCE=0.31 km TRANIST TIME=45 min 
+1 ---------------------------
+1 Grand Central-42 St -> 6 to Pelham Bay Park -> Morrison Av-Soundview
+1 MORRISON AVE & WESTCHESTER AVE -> BX27 to BX27 - CLASON PT -> SOUNDVIEW AVE & OBRIEN AVE
+S 1 0.31 45 6>BX27
+
+2 WALK DISTANCE=0.53 km TRANIST TIME=47 min 
+2 ---------------------------
+2 Grand Central-42 St -> 6 to Pelham Bay Park -> Parkchester
+2 WHITE PLAINS RD & WESTCHESTER AVE -> BX39 to BX39 - CLASON POINT -> WHITE PLAINS RD & OBRIEN AVE
+S 2 0.53 47 6>BX39
+
+3 WALK DISTANCE=0.46 km TRANIST TIME=38 min 
+3 ---------------------------
+3 MADISON AVE & E 45TH ST -> BXM8 to BxM8 - PELHAM BAY WESTCHESTER AVE via BRUCKNER BL -> BRUCKNER BLVD & WHITE PLAINS RD
+3 WHITE PLAINS RD & BRUCKNER BLVD -> BX39 to BX39 - CLASON POINT -> WHITE PLAINS RD & OBRIEN AVE
+S 3 0.46 38 BXM8>BX39
+
+Q N 1609106743137 40.692604,-73.85861 40.612402,-73.996873 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.692604,-73.85861","toPlace":"40.612402,-73.996873","maxWalkDistance":"500","time":"05:05 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314064269,"requestDate":1640642700000,"precalculationTime":104,"pathCalculationTime":215,"pathTimes":[],"renderingTime":0,"totalTime":319,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:24-05:00"}}
+
+Q N 1608507399042 40.607532,-74.162351 40.753652,-73.904772 X
+1 WALK DISTANCE=0.40 km TRANIST TIME=72 min 
+1 ---------------------------
+1 VICTORY BLVD & RICHMOND AVE -> SIM33C to SIM33C - MIDTOWN via CHURCH via MADISON AV -> CHURCH ST & FULTON ST
+1 World Trade Center -> E to Jamaica Center-Parsons/Archer -> Jackson Hts-Roosevelt Av
+1 Jackson Hts-Roosevelt Av -> R to Bay Ridge-95 St -> Northern Blvd
+S 1 0.40 72 SIM33C>E>R
+
+2 WALK DISTANCE=0.25 km TRANIST TIME=64 min 
+2 ---------------------------
+2 RICHMOND AVE & VICTORY BLVD -> SIM4C to SIM4C - MIDTOWN via CHURCH ST via MADISON AV -> AV OF THE AMERICAS & WAVERLY PL
+2 W 4 St-Wash Sq -> E to Jamaica Center-Parsons/Archer -> Jackson Hts-Roosevelt Av
+2 Jackson Hts-Roosevelt Av -> R to Bay Ridge-95 St -> Northern Blvd
+S 2 0.25 64 SIM4C>E>R
+
+Q N 1608798937229 40.571216,-73.863373 40.744162,-73.876723 T
+1 WALK DISTANCE=0.64 km TRANIST TIME=56 min 
+1 ---------------------------
+1 ROCKAWAY BEACH BLVD & B 147 ST -> Q22 to Q22 - FAR ROCKAWAY MOTT AV via ROCKAWAY BCH BL via BCH CHANN -> ROCKAWAY BEACH BLVD & BEACH 108 ST
+1 ROCKAWAY BEACH BLVD & BEACH 108 ST -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> BROADWAY & WHITNEY AVE
+S 1 0.64 56 Q22>Q53+
+
+2 WALK DISTANCE=0.69 km TRANIST TIME=53 min 
+2 ---------------------------
+2 BEACH 147 ST & NEPONSIT AVE -> Q35 to Q35 - ROCKAWAY PARK B.116 ST -> NEWPORT AVE & BEACH 116 ST
+2 BEACH 116 ST & ROCKAWAY BEACH BLVD -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> BROADWAY & WHITNEY AVE
+S 2 0.69 53 Q35>Q53+
+
+3 WALK DISTANCE=1.22 km TRANIST TIME=61 min 
+3 ---------------------------
+3 Rockaway Beach Blvd/ B. 149th St -> RWS to Rockaway -> Beach Channel Dr/B. 108th St
+3 ROCKAWAY BEACH BLVD & BEACH 108 ST -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> BROADWAY & WHITNEY AVE
+S 3 1.22 61 RWS>Q53+
+
+Q N 1609021680971 40.619962,-74.077173 40.857116,-73.867543 W
+1 WALK DISTANCE=0.19 km TRANIST TIME=72 min 
+1 ---------------------------
+1 TOMPKINS AVE & VANDERBILT AVE -> S52 to S52 - S I HOSPITAL SEAVIEW AV -> FINGERBOARD RD & NARROWS RD S
+1 NARROWS RD S & FINGERBOARD RD -> SIM33C to SIM33C - MIDTOWN via CHURCH via MADISON AV -> GREENWICH ST & BATTERY PL
+1 Bowling Green -> 5 to Wakefield-241 St -> Pelham Pkwy
+S 1 0.19 72 S52>SIM33C>5
+
+2 WALK DISTANCE=0.19 km TRANIST TIME=74 min 
+2 ---------------------------
+2 TOMPKINS AVE & VANDERBILT AVE -> S52 to S52 - S I HOSPITAL SEAVIEW AV -> FINGERBOARD RD & NARROWS RD S
+2 NARROWS RD S & FINGERBOARD RD -> SIM3C to SIM3C - CENTRAL PARK S & 6TH AVE -> GREENWICH ST & BATTERY PL
+2 Bowling Green -> 5 to Wakefield-241 St -> Pelham Pkwy
+S 2 0.19 74 S52>SIM3C>5
+
+3 WALK DISTANCE=0.28 km TRANIST TIME=77 min 
+3 ---------------------------
+3 TOMPKINS AVE & VANDERBILT AVE -> S78 to S78 - BRICKTOWN MALL via HYLAN -> HYLAN BLVD & NARROWS RD S
+3 STEUBEN ST & NARROWS RD S -> SIM1C to SIM1C - CENTRAL PARK S & 6TH AVE -> GREENWICH ST & BATTERY PL
+3 Bowling Green -> 5 to Wakefield-241 St -> Pelham Pkwy
+S 3 0.28 77 S78>SIM1C>5
+
+Q N 1608400228037 40.776341,-73.901663 40.807564,-73.919241 X
+1 WALK DISTANCE=1.14 km TRANIST TIME=24 min 
+1 ---------------------------
+1 ASTORIA BLVD & STEINWAY ST -> M60+ to M60+ - SELECT BUS WEST SIDE BROADWAY-106 ST -> E 125TH ST & LEXINGTON AVE
+1 125 St -> 6 to Parkchester -> Brook Av
+S 1 1.14 24 M60+>6
+
+2 WALK DISTANCE=0.35 km TRANIST TIME=43 min 
+2 ---------------------------
+2 20TH AVE & STEINWAY ST -> Q101 to Q101 - EAST MIDTOWN 2 AV via STEINWAY ST -> E 60TH ST & 2ND AVE
+2 59 St -> 6 to Parkchester -> Brook Av
+S 2 0.35 43 Q101>6
+
+3 WALK DISTANCE=1.46 km TRANIST TIME=25 min 
+3 ---------------------------
+3 ASTORIA BLVD & STEINWAY ST -> M60+ to M60+ - SELECT BUS WEST SIDE BROADWAY-106 ST -> E 125TH ST & 2ND AVE
+3 E 125TH ST & 2ND AVE -> BX15 to BX15 - FORDHAM PLZ via 3 AV -> WILLIS AVE & E 138TH ST
+S 3 1.46 25 M60+>BX15
+
+Q N 1608425373384 40.850655,-73.912152 40.673926,-73.731603 T
+1 WALK DISTANCE=0.75 km TRANIST TIME=89 min 
+1 ---------------------------
+1 Tremont Av -> D to Coney Island-Stillwell Av -> 7 Av
+1 7 Av -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & BAY D -> Q5 to Q5 - GREEN ACRES via MERRICK -> MERRICK BLVD & 241ST ST
+S 1 0.75 89 D>E>Q5
+
+2 WALK DISTANCE=0.13 km TRANIST TIME=120 min 
+2 ---------------------------
+2 W TREMONT AVE & W 177TH ST -> BX36 to BX36 - SOUNDVIEW PUGSLEY AV -> CROSS BX SVC RD S & BEACH AVE
+2 CROSS BX SVC RD S & BEACH AVE -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+2 ARCHER AVE & MERRICK BLVD -> Q5 to Q5 - GREEN ACRES via MERRICK -> MERRICK BLVD & 241ST ST
+S 2 0.13 120 BX36>Q44+>Q5
+
+Q N 1608941020638 40.639615,-74.139383 40.710673,-73.740531 W
+1 WALK DISTANCE=0.06 km TRANIST TIME=138 min 
+1 ---------------------------
+1 RICHMOND TERR & NICHOLAS AVE -> S40 to S40 - MATRIX PT RICH TERR via GULF AV ARLNGTON -> SOUTH AVE & BRABANT ST
+1 SOUTH AVE & BRABANT ST -> SIM33C to SIM33C - MIDTOWN via CHURCH via MADISON AV -> AV OF THE AMERICAS & WAVERLY PL
+1 W 4 St-Wash Sq -> F to Jamaica-179 St -> 169 St
+1 HILLSIDE AVE & 169TH ST -> Q2 to Q2 - BELMONT PARK 225 ST -> HOLLIS AVE & 217TH LANE
+S 1 0.06 138 S40>SIM33C>F>Q2
+
+2 WALK DISTANCE=0.10 km TRANIST TIME=144 min 
+2 ---------------------------
+2 RICHMOND TERR & NICHOLAS AVE -> S40 to S40 - ST GEORGE FERRY via RICHMOND TERR -> RICHMOND TERR & PARK AVE
+2 RICHMOND TERR & PARK AVE -> S53 to S53 - BAY RIDGE 86 ST STATION -> 4TH AVE & 86TH ST
+2 86 St -> R to Forest Hills-71 Av -> Jay St-MetroTech
+2 Jay St-MetroTech -> F to Jamaica-179 St -> 169 St
+2 HILLSIDE AVE & 169TH ST -> Q2 to Q2 - BELMONT PARK 225 ST -> HOLLIS AVE & 217TH LANE
+S 2 0.10 144 S40>S53>R>F>Q2
+
+Q N 1608500413655 40.682199,-73.970283 40.76646,-73.78969 T
+1 WALK DISTANCE=1.28 km TRANIST TIME=45 min 
+1 ---------------------------
+1 Lafayette Av -> C to 145 St -> 34 St-Penn Station
+1 Penn Station -> Port Washington to Port Washington -> Auburndale
+S 1 1.28 45 C>Port Washington
+
+2 WALK DISTANCE=0.85 km TRANIST TIME=72 min 
+2 ---------------------------
+2 Lafayette Av -> C to 145 St -> 42 St-Port Authority Bus Terminal
+2 Times Sq-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+2 39TH AVE & 138TH ST -> Q28 to Q28 - BAY TERRACE BELL BL -> FRANCIS LEWIS BLVD & 34TH AVE
+S 2 0.85 72 C>7>Q28
+
+Q N 1609172852513 40.680415,-73.842273 40.740404,-73.640806 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.680415,-73.842273","toPlace":"40.740404,-73.640806","maxWalkDistance":"500","time":"11:27 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314075657,"requestDate":1640708820000,"precalculationTime":145,"pathCalculationTime":268,"pathTimes":[],"renderingTime":0,"totalTime":413,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:35-05:00"}}
+
+Q N 1609102783445 40.752134,-73.721251 40.781978,-73.84585 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.752134,-73.721251","toPlace":"40.781978,-73.84585","maxWalkDistance":"500","time":"03:59 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314076093,"requestDate":1640638740000,"precalculationTime":69,"pathCalculationTime":162,"pathTimes":[],"renderingTime":0,"totalTime":231,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:36-05:00"}}
+
+Q N 1608625475025 40.710246,-73.95525 40.861016,-73.822651 W
+1 WALK DISTANCE=0.08 km TRANIST TIME=114 min 
+1 ---------------------------
+1 RODNEY ST & S 3RD ST -> Q54 to Q54 - JAMAICA 170 ST -> JAMAICA AVE & PARSONS BLVD
+1 PARSONS BLVD & JAMAICA AVE -> Q25 to Q25 - COLLEGE POINT 5 AV via KISSENA BL via 127 ST -> LINDEN PL & 31ST RD
+1 LINDEN PL & 31ST RD -> Q50-LTD to Q50 - LIMITED CO-OP CITY EARHART LA -> EARHART LANE & ERSKINE PL
+S 1 0.08 114 Q54>Q25>Q50-LTD
+
+2 WALK DISTANCE=0.17 km TRANIST TIME=87 min 
+2 ---------------------------
+2 RODNEY ST & S 3RD ST -> B24 to B24 - GREENPOINT WEST ST -> 47TH ST & GREENPOINT AVE
+2 46 St-Bliss St -> 7 to Flushing-Main St -> Flushing-Main St
+2 ROOSEVELT AVE & MAIN ST -> Q50-LTD to Q50 - LIMITED CO-OP CITY EARHART LA -> EARHART LANE & ERSKINE PL
+S 2 0.17 87 B24>7>Q50-LTD
+
+3 WALK DISTANCE=0.53 km TRANIST TIME=69 min 
+3 ---------------------------
+3 Marcy Av -> J to Broad St -> Canal St
+3 Canal St -> 6 to Pelham Bay Park -> Pelham Bay Park
+3 BRUCKNER BLVD & WILKINSON AVE -> BX23 to Bx23 - CO-OP CITY LOOP via SECTIONS 5-4-3-2-1 -> EARHART LANE & ERSKINE PL
+S 3 0.53 69 J>6>BX23
+
+Q N 1609049708307 40.758587,-73.768311 40.821202,-73.936041 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.758587,-73.768311","toPlace":"40.821202,-73.936041","maxWalkDistance":"500","time":"01:15 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314077689,"requestDate":1640585700000,"precalculationTime":109,"pathCalculationTime":250,"pathTimes":[],"renderingTime":0,"totalTime":359,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:37-05:00"}}
+
+Q N 1608518365142 40.665958,-73.959711 40.701615,-74.012975 W
+1 WALK DISTANCE=0.06 km TRANIST TIME=19 min 
+1 ---------------------------
+1 FRANKLIN AVE & MONTGOMERY ST -> B48 to B48 - LEFFERTS GARDENS PROSPECT PK STA -> LINCOLN RD & FLATBUSH AVE
+1 Prospect Park -> Q to 96 St -> DeKalb Av
+1 DeKalb Av -> R to Forest Hills-71 Av -> Whitehall St-South Ferry
+S 1 0.06 19 B48>Q>R
+
+2 WALK DISTANCE=0.51 km TRANIST TIME=14 min 
+2 ---------------------------
+2 Prospect Park -> Q to 96 St -> DeKalb Av
+2 DeKalb Av -> R to Forest Hills-71 Av -> Whitehall St-South Ferry
+S 2 0.51 14 Q>R
+
+3 WALK DISTANCE=0.89 km TRANIST TIME=12 min 
+3 ---------------------------
+3 Franklin Av-Medgar Evers College -> 4 to Woodlawn -> Bowling Green
+S 3 0.89 12 4
+
+Q N 1608340218041 40.814423,-73.913282 40.764892,-73.724303 T
+1 WALK DISTANCE=0.96 km TRANIST TIME=79 min 
+1 ---------------------------
+1 3 Av-149 St -> 5 to Bowling Green -> 59 St
+1 Lexington Av/63 St -> F to Jamaica-179 St -> 169 St
+1 HILLSIDE AVE & HOMELAWN ST -> Q30 to Q30 - LITTLE NECK LITTLE NECK PKY -> NASSAU BLVD & LITTLE NECK PKWY
+S 1 0.96 79 5>F>Q30
+
+2 WALK DISTANCE=0.95 km TRANIST TIME=85 min 
+2 ---------------------------
+2 3 Av-149 St -> 2 to Flatbush Av-Brooklyn College -> Times Sq-42 St
+2 6TH AVE & W 42ND ST -> QM5 to QM5 - UNION TNPK & 260TH ST -> HORACE HARDING EXPWY & LITTLE NECK PKWY
+S 2 0.95 85 2>QM5
+
+Q N 1608988822964 40.865499,-73.865821 40.718132,-73.995071 T
+1 WALK DISTANCE=0.45 km TRANIST TIME=52 min 
+1 ---------------------------
+1 Allerton Av -> 5 to Bowling Green -> Fulton St
+1 Fulton St -> J to Jamaica Center-Parsons/Archer -> Bowery
+S 1 0.45 52 5>J
+
+2 WALK DISTANCE=0.18 km TRANIST TIME=55 min 
+2 ---------------------------
+2 ALLERTON AVE & HOLLAND AVE -> BX26 to BX26 - BEDFORD PK BLVD - LEHMAN COLLEGE via ALLERTON -> BEDFORD PK BLVD & GRAND CONCOURSE
+2 Bedford Park Blvd -> D to Coney Island-Stillwell Av -> Grand St
+S 2 0.18 55 BX26>D
+
+3 WALK DISTANCE=0.71 km TRANIST TIME=64 min 
+3 ---------------------------
+3 WHITE PLAINS RD & ALLERTON AVE -> BXM11 to BxM11 - EAST MIDTOWN 23 ST via BRONX ZOO via 5 AV -> 5TH AVE & W 35TH ST
+3 5TH AVE & W 35TH ST -> M1 to M1 - CENTRE ST & BROOME ST -> CENTRE ST & BROOME ST
+S 3 0.71 64 BXM11>M1
+
+Q N 1609009388970 40.835537,-73.921403 40.537497,-74.150362 T
+1 WALK DISTANCE=0.09 km TRANIST TIME=76 min 
+1 ---------------------------
+1 167 St -> 4 to New Lots Av -> Bowling Green
+1 BROADWAY & MORRIS ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> HYLAN BLVD & ARMSTRONG AVE
+S 1 0.09 76 4>SIM1C
+
+2 WALK DISTANCE=0.35 km TRANIST TIME=94 min 
+2 ---------------------------
+2 167 St -> 4 to New Lots Av -> Wall St
+2 BROADWAY & RECTOR ST -> SIM4C to SIM4C - HUGUENOT via RICHMOND AV via ARTHUR KILL -> RICHMOND AVE & YUKON AVE
+2 RICHMOND AVE & YUKON AVE -> S79+ to S79+ - SELECT BUS BAY RIDGE 86 ST STATION -> HYLAN BLVD & WINCHESTER AVE
+S 2 0.35 94 4>SIM4C>S79+
+
+Q N 1608807682065 40.698109,-73.810041 40.585166,-74.106272 X
+1 WALK DISTANCE=1.52 km TRANIST TIME=52 min 
+1 ---------------------------
+1 Jamaica -> Babylon to Atlantic Terminal -> Atlantic Terminal
+1 Atlantic Av-Barclays Ctr -> 4 to Woodlawn -> Bowling Green
+1 BROADWAY & MORRIS ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> HYLAN BLVD & JEFFERSON AVE
+S 1 1.52 52 Babylon>4>SIM1C
+
+2 WALK DISTANCE=0.87 km TRANIST TIME=80 min 
+2 ---------------------------
+2 Sutphin Blvd-Archer Av-JFK Airport -> J to Broad St -> Broad St
+2 BROADWAY & RECTOR ST -> SIM33C to SIM33C - MARINERS HARBOR via N GANNON AV -> NARROWS RD N & TARGEE ST
+2 RICHMOND RD & DE KALB ST -> S76 to S76 - OAKWOOD MILL RD -> RICHMOND RD & HULL AVE
+S 2 0.87 80 J>SIM33C>S76
+
+Q N 1608742781869 40.63245,-73.96661 40.687822,-73.820444 X
+1 WALK DISTANCE=0.86 km TRANIST TIME=70 min 
+1 ---------------------------
+1 Newkirk Plaza -> B to 145 St -> W 4 St-Wash Sq
+1 W 4 St-Wash Sq -> A to Ozone Park-Lefferts Blvd -> Ozone Park-Lefferts Blvd
+S 1 0.86 70 B>A
+
+2 WALK DISTANCE=1.11 km TRANIST TIME=43 min 
+2 ---------------------------
+2 Newkirk Plaza -> Q to 96 St -> Atlantic Av-Barclays Ctr
+2 Atlantic Terminal -> Far Rockaway to Far Rockaway -> Jamaica
+2 SUTPHIN BLVD & ARCHER AVE -> Q41 to Q41 - HOWARD BEACH 164 AV -> 127TH ST & LIBERTY AVE
+S 2 1.11 43 Q>Far Rockaway>Q41
+
+Q N 1608510881233 40.696771,-73.837042 40.60505,-73.961843 T
+1 WALK DISTANCE=0.59 km TRANIST TIME=68 min 
+1 ---------------------------
+1 111 St -> J to Broad St -> Halsey St
+1 SARATOGA AVE & HALSEY ST -> B7 to B7 - MIDWOOD CONEY ISLAND AV via KINGS HWY -> QUINTIN RD CONEY ISLAN & QUINTIN RD CONEY ISLAN
+S 1 0.59 68 J>B7
+
+2 WALK DISTANCE=0.70 km TRANIST TIME=71 min 
+2 ---------------------------
+2 111 St -> J to Broad St -> Canal St
+2 Canal St -> Q to Coney Island-Stillwell Av -> Kings Hwy
+S 2 0.70 71 J>Q
+
+Q N 1608864938892 40.69954,-73.815342 40.72652,-73.852721 W
+1 WALK DISTANCE=0.33 km TRANIST TIME=8 min 
+1 ---------------------------
+1 Jamaica-Van Wyck -> E to World Trade Center -> 67 Av
+S 1 0.33 8 E
+
+2 WALK DISTANCE=0.34 km TRANIST TIME=30 min 
+2 ---------------------------
+2 VAN WYCK EP SR W & 91ST AVE -> Q24 to Q24 - LAFAYETTE AV PATCHEN AV via ATLANTIC AV -> ATLANTIC AVE & WOODHAVEN BLVD
+2 WOODHAVEN BLVD & ATLANTIC AVE -> Q11 to Q11 - ELMHURST WOODHAVEN BL STA via WOODHAVEN BL -> QUEENS BLVD & 59TH AVE
+2 Woodhaven Blvd -> R to Forest Hills-71 Av -> 67 Av
+S 2 0.34 30 Q24>Q11>R
+
+3 WALK DISTANCE=0.65 km TRANIST TIME=15 min 
+3 ---------------------------
+3 QUEENS BLVD & JAMAICA AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & 67TH RD
+S 3 0.65 15 Q60
+
+Q N 1609202552979 40.602847,-74.007992 40.654268,-73.952771 W
+1 WALK DISTANCE=12.77 km TRANIST TIME=30 min 
+1 ---------------------------
+1 Bay Ridge -> SB to Corlears Hook -> Atlantic Ave/BBP Pier 6
+S 1 12.77 30 SB
+
+2 WALK DISTANCE=13.98 km TRANIST TIME=84 min 
+2 ---------------------------
+2 Sunset Park/BAT -> RW to Rockaway -> Rockaway
+2 Rockaway -> RW to Wall St./Pier 11 -> Sunset Park/BAT
+S 2 13.98 84 RW>RW
+
+Q N 1609164287309 40.701839,-73.738331 40.686249,-73.794363 X
+1 WALK DISTANCE=5.44 km TRANIST TIME=0 min 
+1 ---------------------------
+S 1 5.44 0 
+
+Q N 1608377176076 40.672776,-73.993552 40.652999,-73.7319 T
+1 WALK DISTANCE=1.46 km TRANIST TIME=53 min 
+1 ---------------------------
+1 4 Av-9 St -> R to Forest Hills-71 Av -> Atlantic Av-Barclays Ctr
+1 Atlantic Terminal -> Hempstead to Hempstead -> Jamaica
+1 Sutphin Blvd-Archer Av-JFK Airport -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & PARSONS BLVD -> Q111 to Q111 - ROSEDALE F. LEWIS BL via BREWER BL via 147 AV -> 147TH AVE & 256TH ST
+S 1 1.46 53 R>Hempstead>E>Q111
+
+2 WALK DISTANCE=1.07 km TRANIST TIME=88 min 
+2 ---------------------------
+2 Smith-9 Sts -> F to Jamaica-179 St -> Parsons Blvd
+2 PARSONS BLVD & 88TH AVE -> Q111 to Q111 - ROSEDALE F. LEWIS BL via BREWER BL via 147 AV -> 147TH AVE & 256TH ST
+S 2 1.07 88 F>Q111
+
+Q N 1608682366048 40.719585,-74.00193 40.711972,-73.860332 W
+1 WALK DISTANCE=0.11 km TRANIST TIME=51 min 
+1 ---------------------------
+1 Canal St -> R to Forest Hills-71 Av -> Grand Av-Newtown
+1 BROADWAY & QUEENS BLVD -> Q53+ to Q53+ - +SELECT BUS ROCKAWAY PK B. 116 ST via WOODHAVEN BL vi -> WOODHAVEN BLVD & METROPOLITAN AVE
+S 1 0.11 51 R>Q53+
+
+2 WALK DISTANCE=0.13 km TRANIST TIME=57 min 
+2 ---------------------------
+2 Canal St -> J to Jamaica Center-Parsons/Archer -> Marcy Av
+2 WASHINGTON PLAZA & WASHINGTON PLAZA -> Q54 to Q54 - JAMAICA 170 ST -> METROPOLITAN AVE & AUBREY AVE
+S 2 0.13 57 J>Q54
+
+3 WALK DISTANCE=0.29 km TRANIST TIME=43 min 
+3 ---------------------------
+3 Canal St -> J to Jamaica Center-Parsons/Archer -> Woodhaven Blvd
+3 WOODHAVEN BLVD & JAMAICA AVE -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> WOODHAVEN BLVD & POLO PL
+S 3 0.29 43 J>Q53+
+
+Q N 1609107862935 40.601068,-74.13413 40.642571,-73.979579 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.601068,-74.13413","toPlace":"40.642571,-73.979579","maxWalkDistance":"500","time":"05:24 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314098984,"requestDate":1640643840000,"precalculationTime":113,"pathCalculationTime":189,"pathTimes":[],"renderingTime":0,"totalTime":302,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:54:58-05:00"}}
+
+Q N 1608947906615 40.604529,-74.178521 40.752161,-73.880793 T
+1 WALK DISTANCE=1.05 km TRANIST TIME=110 min 
+1 ---------------------------
+1 SOUTH AVE & TELEPORT DR -> S46 to S46 - ST GEORGE FERRY via CASTLETON -> GRANDVIEW AVE & FOREST AVE
+1 FOREST AVE & SOUTH AVE -> SIM33C to SIM33C - MIDTOWN via CHURCH via MADISON AV -> MADISON AVE & E 34TH ST
+1 MADISON AVE & E 34TH ST -> Q32 to Q32 - JACKSON HTS NORTHERN-81 ST via ROOSEVELT -> 81ST ST & 35TH AVE
+S 1 1.05 110 S46>SIM33C>Q32
+
+2 WALK DISTANCE=1.81 km TRANIST TIME=96 min 
+2 ---------------------------
+2 SOUTH AVE & TELEPORT DR -> S46 to S46 - ST GEORGE FERRY via CASTLETON -> ST GEORGE FERRY & ST GEORGE FERRY
+2 St. George Ferry Terminal -> Staten Island Ferry to Whitehall Ferry Terminal -> Whitehall Ferry Terminal
+2 Bowling Green -> 4 to Woodlawn -> Grand Central-42 St
+2 Grand Central-42 St -> 7 to Flushing-Main St -> 90 St-Elmhurst Av
+S 2 1.81 96 S46>Staten Island Ferry>4>7
+
+3 WALK DISTANCE=1.05 km TRANIST TIME=134 min 
+3 ---------------------------
+3 SOUTH AVE & TELEPORT DR -> S46 to S46 - ST GEORGE FERRY via CASTLETON -> CASTLETON AVE & BROADWAY
+3 CASTLETON AVE & BROADWAY -> S53 to S53 - BAY RIDGE 86 ST STATION -> 4TH AVE & 86TH ST
+3 86 St -> R to Forest Hills-71 Av -> Northern Blvd
+3 NORTHERN BLVD & 54TH ST -> Q66 to Q66 - FLUSHING MAIN ST STA via NORTHERN BL -> NORTHERN BLVD & 85TH ST
+S 3 1.05 134 S46>S53>R>Q66
+
+Q N 1609158490816 40.74408,-73.995659 40.831265,-73.906222 W
+1 WALK DISTANCE=8.58 km TRANIST TIME=55 min 
+1 ---------------------------
+1 East 34th St & Park Ave -> ERS to East River Midtown Shuttle -> East 34th Street Ferry Terminal
+1 East 34th Street -> SV to Soundview -> Soundview
+S 1 8.58 55 ERS>SV
+
+2 WALK DISTANCE=8.98 km TRANIST TIME=51 min 
+2 ---------------------------
+2 East 34th St & Park Ave -> ERS to East River Midtown Shuttle -> East 34th Street Ferry Terminal
+2 East 34th Street -> AS to East 90th St -> East 90th St
+S 2 8.98 51 ERS>AS
+
+3 WALK DISTANCE=9.21 km TRANIST TIME=39 min 
+3 ---------------------------
+3 Stuyvesant Cove -> SV to Soundview -> Soundview
+S 3 9.21 39 SV
+
+Q N 1608327564055 40.578116,-73.841962 40.681657,-73.728891 W
+1 WALK DISTANCE=0.25 km TRANIST TIME=86 min 
+1 ---------------------------
+1 ROCKAWAY BEACH BLVD & BEACH 123 ST -> Q22 to Q22 - FAR ROCKAWAY MOTT AV via ROCKAWAY BCH BL via BCH CHANN -> BEACH 20 ST & MOTT AVE
+1 MOTT AVE & CENTRAL AVE -> Q113-LTD to Q113 - LIMITED JAMAICA PARSONS-HILLSIDE via NASSAU EXY via B -> GUY R BREWER BLVD & FARMERS BLVD
+1 FARMERS BLVD & 145TH DR -> Q3 to Q3 - JAMAICA 179 ST STATION 165 ST TERMINAL -> FARMERS BLVD & 120TH AVE
+1 120TH AVE & FARMERS BLVD -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> 238TH ST & 128TH AVE
+S 1 0.25 86 Q22>Q113-LTD>Q3>Q84
+
+2 WALK DISTANCE=0.34 km TRANIST TIME=93 min 
+2 ---------------------------
+2 ROCKAWAY BEACH BLVD & BEACH 123 ST -> Q22 to Q22 - FAR ROCKAWAY MOTT AV via ROCKAWAY BCH BL via BCH CHANN -> ROCKAWAY BEACH BLVD & BEACH 108 ST
+2 ROCKAWAY BEACH BLVD & BEACH 108 ST -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> WOODHAVEN BLVD & JAMAICA AVE
+2 Woodhaven Blvd -> Z to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+2 ARCHER AVE & 153RD ST -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> 238TH ST & 128TH AVE
+S 2 0.34 93 Q22>Q53+>Z>Q84
+
+3 WALK DISTANCE=0.74 km TRANIST TIME=91 min 
+3 ---------------------------
+3 BEACH 116 ST & ROCKAWAY BEACH BLVD -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> WOODHAVEN BLVD & JAMAICA AVE
+3 Woodhaven Blvd -> Z to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+3 ARCHER AVE & 153RD ST -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> 238TH ST & 128TH AVE
+S 3 0.74 91 Q53+>Z>Q84
+
+Q N 1608480653537 40.833161,-73.827591 40.808257,-73.916393 W
+1 WALK DISTANCE=0.13 km TRANIST TIME=57 min 
+1 ---------------------------
+1 E TREMONT AVE & BRUCKNER BLVD -> BX42 to BX42 - RIVER PARK TOWER via TREMONT -> E TREMONT AVE & CROTONA AVE
+1 CROTONA AVE & TREMONT AVE -> BX17 to BX17 - PORT MORRIS 135 ST -> ST ANN'S AVE & E 141ST ST
+S 1 0.13 57 BX42>BX17
+
+2 WALK DISTANCE=0.13 km TRANIST TIME=57 min 
+2 ---------------------------
+2 E TREMONT AVE & BRUCKNER BLVD -> BX40 to BX40 - RIVER PARK TOWER via TREMONT -> E TREMONT AVE & CROTONA AVE
+2 CROTONA AVE & TREMONT AVE -> BX17 to BX17 - PORT MORRIS 135 ST -> ST ANN'S AVE & E 141ST ST
+S 2 0.13 57 BX40>BX17
+
+3 WALK DISTANCE=0.55 km TRANIST TIME=30 min 
+3 ---------------------------
+3 BRUCKNER BLVD & E TREMONT AVE -> BX5 to BX5 - WEST FARMS RD SOUTHRN BL via BRCKNR -> E 163RD ST & SOUTHERN BLVD
+3 Hunts Point Av -> 6 to Brooklyn Bridge-City Hall -> Brook Av
+S 3 0.55 30 BX5>6
+
+Q N 1609048380335 40.852423,-73.410902 40.625928,-74.030123 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.852423,-73.410902","toPlace":"40.625928,-74.030123","maxWalkDistance":"500","time":"12:53 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314103383,"requestDate":1640584380000,"precalculationTime":52,"pathCalculationTime":67,"pathTimes":[],"renderingTime":0,"totalTime":119,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:03-05:00"}}
+
+Q N 1608343619763 40.698742,-73.918431 40.731453,-73.770042 W
+1 WALK DISTANCE=0.28 km TRANIST TIME=78 min 
+1 ---------------------------
+1 Knickerbocker Av -> M to Delancey St-Essex St -> Delancey St-Essex St
+1 Delancey St-Essex St -> F to Jamaica-179 St -> Kew Gardens-Union Tpke
+1 UNION TNPK & QUEENS BLVD -> Q46 to Q46 - LAKE SUCCESS LIJ HOSPITAL via UNION -> UNION TNPK & FRANCIS LEWIS BLVD
+S 1 0.28 78 M>F>Q46
+
+2 WALK DISTANCE=0.08 km TRANIST TIME=63 min 
+2 ---------------------------
+2 Knickerbocker Av -> M to Delancey St-Essex St -> Myrtle Av
+2 Myrtle Av -> J to Jamaica Center-Parsons/Archer -> Sutphin Blvd-Archer Av-JFK Airport
+2 ARCHER AVE & SUTPHIN BLVD -> Q30 to Q30 - LITTLE NECK LITTLE NECK PKY -> HORACE HARDING EXPWY & FRANCIS LEWIS BLVD
+2 FRANCIS LEWIS BLVD & HORACE HARDING EXPWY S -> Q76 to Q76 - JAMAICA 165 ST TERM via FRANCIS LEWIS -> FRANCIS LEWIS BLVD & UNION TNPK
+S 2 0.08 63 M>J>Q30>Q76
+
+3 WALK DISTANCE=0.18 km TRANIST TIME=55 min 
+3 ---------------------------
+3 Knickerbocker Av -> M to Delancey St-Essex St -> Myrtle Av
+3 Myrtle Av -> J to Jamaica Center-Parsons/Archer -> Sutphin Blvd-Archer Av-JFK Airport
+3 ARCHER AVE & SUTPHIN BLVD -> Q31 to Q31 - BAYSIDE 27 AV FRANCIS LEWIS BL -> UTOPIA PKWY & UNION TNPK
+3 UNION TNPK & UTOPIA PKWY -> Q46 to Q46 - LAKE SUCCESS LIJ HOSPITAL via UNION -> UNION TNPK & FRANCIS LEWIS BLVD
+S 3 0.18 55 M>J>Q31>Q46
+
+Q N 1609112837969 40.507721,-74.229571 40.648612,-73.94942 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.507721,-74.229571","toPlace":"40.648612,-73.94942","maxWalkDistance":"500","time":"06:47 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314105545,"requestDate":1640648820000,"precalculationTime":95,"pathCalculationTime":73,"pathTimes":[],"renderingTime":0,"totalTime":168,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:05-05:00"}}
+
+Q N 1608977864357 40.681391,-73.839363 40.803966,-73.966849 W
+1 WALK DISTANCE=0.28 km TRANIST TIME=59 min 
+1 ---------------------------
+1 Rockaway Blvd -> A to Inwood-207 St -> 42 St-Port Authority Bus Terminal
+1 Times Sq-42 St -> 1 to Van Cortlandt Park-242 St -> Cathedral Pkwy (110 St)
+S 1 0.28 59 A>1
+
+2 WALK DISTANCE=0.76 km TRANIST TIME=68 min 
+2 ---------------------------
+2 CROSS BAY BLVD & ROCKAWAY BLVD -> QM17 to QM17 - MIDTOWN 57 ST via 6 AV -> 6TH AVE & W 38TH ST
+2 AV OF THE AMERICAS & W 38TH ST -> M5 to M5 - W 178TH ST & BROADWAY -> RIVERSIDE DR & W 108TH ST
+S 2 0.76 68 QM17>M5
+
+Q N 1608828347087 40.63166,-73.946701 40.823057,-73.855732 W
+1 WALK DISTANCE=0.46 km TRANIST TIME=103 min 
+1 ---------------------------
+1 Flatbush Av-Brooklyn College -> 2 to Wakefield-241 St -> West Farms Sq-E Tremont Av
+1 BOSTON RD & E 178TH ST -> BX36 to BX36 - SOUNDVIEW PUGSLEY AV -> LAFAYETTE AVE & WHITE PLAINS RD
+S 1 0.46 103 2>BX36
+
+2 WALK DISTANCE=0.49 km TRANIST TIME=88 min 
+2 ---------------------------
+2 Flatbush Av-Brooklyn College -> 5 to Eastchester-Dyre Av -> 174 St
+2 HOE AVE & E 174TH ST -> BX36 to BX36 - SOUNDVIEW PUGSLEY AV -> LAFAYETTE AVE & WHITE PLAINS RD
+S 2 0.49 88 5>BX36
+
+3 WALK DISTANCE=0.36 km TRANIST TIME=86 min 
+3 ---------------------------
+3 Flatbush Av-Brooklyn College -> 5 to Eastchester-Dyre Av -> Simpson St
+3 SOUTHERN BLVD & WESTCHESTER AVE -> BX5 to BX5 - PELHAM BAY via STORY AV via BRUCKNER BL -> LAFAYETTE AVE & PUGSLEY AVE
+S 3 0.36 86 5>BX5
+
+Q N 1609024448922 40.814075,-73.95579 40.711972,-73.943882 X
+1 WALK DISTANCE=0.73 km TRANIST TIME=26 min 
+1 ---------------------------
+1 125 St -> A to Far Rockaway-Mott Av -> 14 St
+1 8 Av -> L to Canarsie-Rockaway Pkwy -> Graham Av
+S 1 0.73 26 A>L
+
+2 WALK DISTANCE=0.73 km TRANIST TIME=31 min 
+2 ---------------------------
+2 125 St -> C to Euclid Av -> 14 St
+2 8 Av -> L to Canarsie-Rockaway Pkwy -> Graham Av
+S 2 0.73 31 C>L
+
+3 WALK DISTANCE=0.69 km TRANIST TIME=34 min 
+3 ---------------------------
+3 125 St -> 1 to South Ferry -> 14 St
+3 6 Av -> L to Canarsie-Rockaway Pkwy -> Graham Av
+S 3 0.69 34 1>L
+
+Q N 1608332861320 40.771669,-73.833621 40.805783,-73.914833 T
+1 WALK DISTANCE=0.29 km TRANIST TIME=52 min 
+1 ---------------------------
+1 WHITESTONE EXPWY & LINDEN PL -> Q50-LTD to Q50 - LIMITED CO-OP CITY EARHART LA -> BRUCKNER BLVD & WILKINSON AVE
+1 Pelham Bay Park -> 6 to Brooklyn Bridge-City Hall -> Cypress Av
+S 1 0.29 52 Q50-LTD>6
+
+2 WALK DISTANCE=0.22 km TRANIST TIME=64 min 
+2 ---------------------------
+2 WHITESTONE EXPWY & LINDEN PL -> QM2 to QM2 - MIDTOWN 57 ST via 6 AV -> E 34TH ST & PARK AVE
+2 33 St -> 6 to Pelham Bay Park -> Cypress Av
+S 2 0.22 64 QM2>6
+
+3 WALK DISTANCE=0.22 km TRANIST TIME=63 min 
+3 ---------------------------
+3 WHITESTONE EXPWY & LINDEN PL -> QM20 to QM20 - MIDTOWN 57 ST via 6 AV -> E 34TH ST & PARK AVE
+3 33 St -> 6 to Pelham Bay Park -> Cypress Av
+S 3 0.22 63 QM20>6
+
+Q N 1608314342414 40.514835,-74.245741 40.821391,-73.879871 W
+1 WALK DISTANCE=0.24 km TRANIST TIME=141 min 
+1 ---------------------------
+1 ARTHUR KILL RD & WOOD AVE -> S78 to S78 - ST GEORGE FERRY via HYLAN -> HYLAN BLVD & EBBITTS ST
+1 HYLAN BLVD & EBBITTS ST -> SIM1C to SIM1C - CENTRAL PARK S & 6TH AVE -> GREENWICH ST & BATTERY PL
+1 Bowling Green -> 5 to Eastchester-Dyre Av -> Simpson St
+1 SOUTHERN BLVD & WESTCHESTER AVE -> BX5 to BX5 - PELHAM BAY via STORY AV via BRUCKNER BL -> STORY AVE & COLGATE AVE
+S 1 0.24 141 S78>SIM1C>5>BX5
+
+2 WALK DISTANCE=0.23 km TRANIST TIME=150 min 
+2 ---------------------------
+2 ARTHUR KILL RD & WOOD AVE -> S78 to S78 - ST GEORGE FERRY via HYLAN -> HYLAN BLVD & BAY TERR
+2 HYLAN BLVD & BAY TERR -> SIM1C to SIM1C - CENTRAL PARK S & 6TH AVE -> CHURCH ST & FULTON ST
+2 Park Place -> 2 to Wakefield-241 St -> Simpson St
+2 SOUTHERN BLVD & WESTCHESTER AVE -> BX5 to BX5 - WHITE PLAINS ROAD -> STORY AVE & COLGATE AVE
+S 2 0.23 150 S78>SIM1C>2>BX5
+
+Q N 1608965134615 40.739863,-73.986602 40.672482,-73.759123 X
+1 WALK DISTANCE=0.75 km TRANIST TIME=67 min 
+1 ---------------------------
+1 23 St -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & PARSONS BLVD -> Q85 to Q85 - ROSEDALE 147 AV -> 140TH AVE & THURSTON ST
+S 1 0.75 67 E>Q85
+
+2 WALK DISTANCE=1.62 km TRANIST TIME=32 min 
+2 ---------------------------
+2 PARK AVE S & E 23RD ST -> M2 to M2 - WASHINGTON HTS BWAY-168 ST via MADISON -> MADISON AVE & E 30TH ST
+2 Penn Station -> Babylon to Babylon -> Jamaica
+2 Jamaica -> Long Beach to Long Beach -> Locust Manor
+S 2 1.62 32 M2>Babylon>Long Beach
+
+Q N 1609095301208 41.135763,-73.866163 40.660159,-73.980661 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"41.135763,-73.866163","toPlace":"40.660159,-73.980661","maxWalkDistance":"500","time":"01:55 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314115447,"requestDate":1640631300000,"precalculationTime":84,"pathCalculationTime":37,"pathTimes":[],"renderingTime":0,"totalTime":121,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:15-05:00"}}
+
+Q N 1609037537930 40.855374,-73.929536 40.734012,-73.724071 X
+1 WALK DISTANCE=1.76 km TRANIST TIME=82 min 
+1 ---------------------------
+1 191 St -> 1 to South Ferry -> 50 St
+1 6TH AVE & W 48TH ST -> QM6 to QM6 - NORTH SHORE TOWERS & BLDG EN -> UNION TNPK & 248TH ST
+S 1 1.76 82 1>QM6
+
+2 WALK DISTANCE=0.07 km TRANIST TIME=95 min 
+2 ---------------------------
+2 191 St -> 1 to South Ferry -> 14 St
+2 14 St -> F to Jamaica-179 St -> Sutphin Blvd
+2 SUTPHIN BLVD & HILLSIDE AVE -> Q43 to Q43 - FLORAL PARK 268 ST via HILLSIDE -> HILLSIDE AVE & CROSS ISLAND PKWY
+S 2 0.07 95 1>F>Q43
+
+Q N 1608789781663 40.753713,-73.985237 40.651482,-73.962732 X
+1 WALK DISTANCE=1.49 km TRANIST TIME=42 min 
+1 ---------------------------
+1 5TH AVE & W 39TH ST -> BM2 to BM2 - CANARSIE WILLIAMS AV via AVENUE H via AVENUE M -> CORTELYOU RD & E 18TH ST
+S 1 1.49 42 BM2
+
+2 WALK DISTANCE=0.13 km TRANIST TIME=29 min 
+2 ---------------------------
+2 Times Sq-42 St -> Q to Coney Island-Stillwell Av -> Church Av
+S 2 0.13 29 Q
+
+Q N 1608922701507 40.731352,-73.954455 40.615863,-74.067354 W
+1 WALK DISTANCE=0.17 km TRANIST TIME=82 min 
+1 ---------------------------
+1 Greenpoint Av -> G to Church Av -> 4 Av-9 St
+1 4 Av-9 St -> R to Bay Ridge-95 St -> 86 St
+1 4TH AVE & 86TH ST -> S79+ to S79+ - SELECT BUS SI MALL via HYLAN -> HYLAN BLVD & MIDLAND AVE
+1 MIDLAND AVE & HYLAN BLVD -> S51 to S51 - ST GEORGE FRRY via FT WDSWRTH via BAY ST -> BAY ST & VIRGINIA AVE
+S 1 0.17 82 G>R>S79+>S51
+
+2 WALK DISTANCE=0.63 km TRANIST TIME=54 min 
+2 ---------------------------
+2 Greenpoint Av -> G to Church Av -> Hoyt-Schermerhorn Sts
+2 Hoyt-Schermerhorn Sts -> A to Inwood-207 St -> Chambers St
+2 BROADWAY & BARCLAY ST -> SIM3C to SIM3C - PT RCHMND via NARROWS RD N via WATCHOGUE -> NARROWS RD N & FINGERBOARD RD
+2 SCHOOL RD & TOMPKINS AVE -> S51 to S51 - ST GEORGE FERRY via BAY ST -> BAY ST & VIRGINIA AVE
+S 2 0.63 54 G>A>SIM3C>S51
+
+Q N 1608675810145 40.853246,-73.409123 40.774571,-73.846862 X
+1 WALK DISTANCE=0.35 km TRANIST TIME=94 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Penn Station -> Jamaica
+1 SUTPHIN BLVD & 94TH AVE -> Q65 to Q65 - COLLEGE PT 110 ST via 164 ST via COLLEGE PT BL -> COLLEGE PT BLVD & 26TH AVE
+S 1 0.35 94 Port Jefferson>Q65
+
+2 WALK DISTANCE=0.35 km TRANIST TIME=92 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Jamaica
+2 SUTPHIN BLVD & 94TH AVE -> Q65 to Q65 - COLLEGE PT 110 ST via 164 ST via COLLEGE PT BL -> COLLEGE PT BLVD & 26TH AVE
+S 2 0.35 92 Port Jefferson>Q65
+
+3 WALK DISTANCE=0.35 km TRANIST TIME=89 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Jamaica
+3 SUTPHIN BLVD & 94TH AVE -> Q65 to Q65 - COLLEGE PT 110 ST via 164 ST via COLLEGE PT BL -> COLLEGE PT BLVD & 26TH AVE
+S 3 0.35 89 Port Jefferson>Q65
+
+Q N 1609174087408 40.747453,-73.883973 40.816744,-73.919841 X
+1 WALK DISTANCE=12.09 km TRANIST TIME=19 min 
+1 ---------------------------
+1 Hunters Point South -> ER to Wall St./Pier 11 -> East 34th Street
+1 East 34th Street -> SV to Soundview -> East 90th St
+S 1 12.09 19 ER>SV
+
+2 WALK DISTANCE=15.04 km TRANIST TIME=25 min 
+2 ---------------------------
+2 Hunters Point South -> ER to Wall St./Pier 11 -> East 34th Street
+2 East 34th Street Ferry Terminal -> ERS to East River Midtown Shuttle -> East 50th St & Lexington Ave
+S 2 15.04 25 ER>ERS
+
+Q N 1609054093780 40.663742,-73.900522 40.630822,-74.11658 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.663742,-73.900522","toPlace":"40.630822,-74.11658","maxWalkDistance":"500","time":"02:28 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314125932,"requestDate":1640590080000,"precalculationTime":81,"pathCalculationTime":64,"pathTimes":[],"renderingTime":0,"totalTime":145,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:25-05:00"}}
+
+Q N 1608892275174 40.712723,-74.004971 40.665799,-73.865553 T
+1 WALK DISTANCE=0.53 km TRANIST TIME=41 min 
+1 ---------------------------
+1 Brooklyn Bridge-City Hall -> 4 to New Lots Av -> New Lots Av
+1 NEW LOTS AVE & JEROME ST -> B15 to B15 - JFK AIRPORT & TERMINAL 5 AIRTRAIN ST -> LINDEN BLVD & AUTUMN AVE
+S 1 0.53 41 4>B15
+
+2 WALK DISTANCE=0.30 km TRANIST TIME=49 min 
+2 ---------------------------
+2 Chambers St -> J to Jamaica Center-Parsons/Archer -> Alabama Av
+2 FULTON ST & ALABAMA AVE -> B20 to B20 - SPRING CREEK STANLEY AV POSTAL FAC -> STANLEY AVE & ELDERT LANE
+S 2 0.30 49 J>B20
+
+3 WALK DISTANCE=0.42 km TRANIST TIME=38 min 
+3 ---------------------------
+3 Chambers St -> A to Far Rockaway-Mott Av -> Euclid Av
+3 EUCLID AVE & PITKIN AVE -> B13 to B13 - SPRING CREEK GATEWAY MALL -> STANLEY AVE & AUTUMN AVE
+S 3 0.42 38 A>B13
+
+Q N 1608643780029 40.71833,-73.837325 40.689995,-73.951616 X
+1 WALK DISTANCE=0.60 km TRANIST TIME=34 min 
+1 ---------------------------
+1 Kew Gardens-Union Tpke -> E to World Trade Center -> Court Sq-23 St
+1 Court Sq -> G to Church Av -> Bedford-Nostrand Avs
+S 1 0.60 34 E>G
+
+2 WALK DISTANCE=0.26 km TRANIST TIME=65 min 
+2 ---------------------------
+2 75 Av -> F to Kings Hwy -> Jay St-MetroTech
+2 FULTON ST & SMITH ST -> B38-LTD to B38 - LTD RIDGEWOOD CATALPA AV -> LAFAYETTE AVE & BEDFORD AVE
+S 2 0.26 65 F>B38-LTD
+
+3 WALK DISTANCE=0.12 km TRANIST TIME=60 min 
+3 ---------------------------
+3 75 Av -> F to Coney Island-Stillwell Av -> Bergen St
+3 Bergen St -> G to Court Sq -> Bedford-Nostrand Avs
+S 3 0.12 60 F>G
+
+Q N 1608555078568 40.660474,-73.830304 40.840636,-73.913073 T
+1 WALK DISTANCE=0.07 km TRANIST TIME=77 min 
+1 ---------------------------
+1 Howard Beach-JFK Airport -> A to Inwood-207 St -> 125 St
+1 125 St -> D to Norwood-205 St -> 170 St
+S 1 0.07 77 A>D
+
+2 WALK DISTANCE=0.86 km TRANIST TIME=76 min 
+2 ---------------------------
+2 102ND ST & 159TH AVE -> Q11 to Q11 - ELMHURST WOODHAVEN BL STA via WOODHAVEN BL -> QUEENS BLVD & 59TH AVE
+2 Woodhaven Blvd -> R to Bay Ridge-95 St -> Lexington Av/59 St
+2 59 St -> 4 to Woodlawn -> Mt Eden Av
+S 2 0.86 76 Q11>R>4
+
+3 WALK DISTANCE=0.26 km TRANIST TIME=80 min 
+3 ---------------------------
+3 102ND ST & 159TH AVE -> Q11 to Q11 - ELMHURST WOODHAVEN BL STA via WOODHAVEN BL -> CROSS BAY BLVD & ROCKAWAY BLVD
+3 Rockaway Blvd -> A to 168 St -> 125 St
+3 125 St -> D to Norwood-205 St -> 170 St
+S 3 0.26 80 Q11>A>D
+
+Q N 1608444285727 40.833224,-73.860816 40.676532,-73.857684 X
+1 WALK DISTANCE=1.23 km TRANIST TIME=77 min 
+1 ---------------------------
+1 WESTCHESTER AVE & VIRGINIA AVE -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+1 ARCHER AVE & MERRICK BLVD -> Q24 to Q24 - LAFAYETTE AV PATCHEN AV via ATLANTIC AV -> ATLANTIC AVE & 80TH ST
+S 1 1.23 77 Q44+>Q24
+
+2 WALK DISTANCE=0.39 km TRANIST TIME=77 min 
+2 ---------------------------
+2 Parkchester -> 6 to Brooklyn Bridge-City Hall -> Bleecker St
+2 Broadway-Lafayette St -> A to Far Rockaway-Mott Av -> 80 St
+S 2 0.39 77 6>A
+
+Q N 1608521425041 40.903123,-73.850622 40.846824,-73.939841 X
+1 WALK DISTANCE=0.42 km TRANIST TIME=50 min 
+1 ---------------------------
+1 Wakefield-241 St -> 2 to Flatbush Av-Brooklyn College -> West Farms Sq-E Tremont Av
+1 BOSTON RD & E TREMONT AVE -> BX36 to BX36 - WASHINGTON HEIGHTS G W BRIDGE -> W 179TH ST & BROADWAY
+S 1 0.42 50 2>BX36
+
+2 WALK DISTANCE=1.21 km TRANIST TIME=30 min 
+2 ---------------------------
+2 Wakefield -> Harlem to Grand Central -> Tremont
+2 VALENTINE AVE & TREMONT AVE -> BX36 to BX36 - WASHINGTON HEIGHTS G W BRIDGE -> W 179TH ST & BROADWAY
+S 2 1.21 30 Harlem>BX36
+
+3 WALK DISTANCE=0.81 km TRANIST TIME=43 min 
+3 ---------------------------
+3 Wakefield-241 St -> 2 to Flatbush Av-Brooklyn College -> Freeman St
+3 LOUIS NINE BLVD & E 170TH ST -> BX11 to BX11 - WASHINGTON HEIGHTS G W BRIDGE -> W 179TH ST & BROADWAY
+S 3 0.81 43 2>BX11
+
+Q N 1609051559158 40.650571,-73.899488 40.706089,-73.90267 T
+1 WALK DISTANCE=7.28 km TRANIST TIME=0 min 
+1 ---------------------------
+S 1 7.28 0 
+
+Q N 1608315220134 40.596062,-73.973358 40.665086,-73.903211 W
+1 WALK DISTANCE=0.12 km TRANIST TIME=73 min 
+1 ---------------------------
+1 Avenue U -> F to Jamaica-179 St -> 14 St
+1 6 Av -> L to Canarsie-Rockaway Pkwy -> Sutter Av
+1 SUTTER AVE & VAN SINDEREN AVE -> B14 to B14 - CROWN HEIGHTS UTICA AV -> DUMONT AVE & POWELL ST
+S 1 0.12 73 F>L>B14
+
+2 WALK DISTANCE=0.30 km TRANIST TIME=87 min 
+2 ---------------------------
+2 Avenue U -> F to Jamaica-179 St -> 14 St
+2 14 St -> 3 to New Lots Av -> Junius St
+S 2 0.30 87 F>3
+
+3 WALK DISTANCE=0.30 km TRANIST TIME=49 min 
+3 ---------------------------
+3 Avenue U -> F to Jamaica-179 St -> 4 Av-9 St
+3 4 Av-9 St -> R to Forest Hills-71 Av -> Atlantic Av-Barclays Ctr
+3 Atlantic Av-Barclays Ctr -> 3 to New Lots Av -> Junius St
+S 3 0.30 49 F>R>3
+
+Q N 1608343007334 40.841928,-73.939455 40.708358,-73.957761 W
+1 WALK DISTANCE=0.00 km TRANIST TIME=44 min 
+1 ---------------------------
+1 168 St -> A to Far Rockaway-Mott Av -> Fulton St
+1 Fulton St -> J to Jamaica Center-Parsons/Archer -> Marcy Av
+S 1 0.00 44 A>J
+
+2 WALK DISTANCE=0.00 km TRANIST TIME=40 min 
+2 ---------------------------
+2 168 St -> C to Euclid Av -> Delancey St-Essex St
+2 Delancey St-Essex St -> J to Jamaica Center-Parsons/Archer -> Marcy Av
+S 2 0.00 40 C>J
+
+3 WALK DISTANCE=0.00 km TRANIST TIME=36 min 
+3 ---------------------------
+3 168 St -> A to Far Rockaway-Mott Av -> Delancey St-Essex St
+3 Delancey St-Essex St -> M to Middle Village-Metropolitan Av -> Marcy Av
+S 3 0.00 36 A>M
+
+Q N 1608687164027 40.904156,-73.905008 40.731352,-73.954449 X
+1 WALK DISTANCE=0.16 km TRANIST TIME=78 min 
+1 ---------------------------
+1 RIVERDALE AVE & W 256TH ST -> BX7 to BX7 - ISHAM ST -> BROADWAY & ISHAM ST
+1 Inwood-207 St -> A to Far Rockaway-Mott Av -> Hoyt-Schermerhorn Sts
+1 Hoyt-Schermerhorn Sts -> G to Court Sq -> Greenpoint Av
+S 1 0.16 78 BX7>A>G
+
+2 WALK DISTANCE=0.21 km TRANIST TIME=65 min 
+2 ---------------------------
+2 RIVERDALE AVE & W 256TH ST -> BXM2 to BxM2 - WEST MIDTOWN PENN STA-34 ST via KAPPOCK ST -> 7TH AVE & W 41ST ST
+2 Times Sq-42 St -> 7 to Flushing-Main St -> Court Sq
+2 Court Sq -> G to Church Av -> Greenpoint Av
+S 2 0.21 65 BXM2>7>G
+
+3 WALK DISTANCE=0.19 km TRANIST TIME=58 min 
+3 ---------------------------
+3 RIVERDALE AVE & W 256TH ST -> BXM1 to BxM1 - EAST MIDTOWN 34 ST via INWOOD via LEX AV -> LEXINGTON AVE & E 50TH ST
+3 Lexington Av/53 St -> E to Jamaica Center-Parsons/Archer -> Court Sq-23 St
+3 Court Sq -> G to Church Av -> Greenpoint Av
+S 3 0.19 58 BXM1>E>G
+
+Q N 1608866885947 40.718801,-74.000196 40.596179,-73.767893 T
+1 WALK DISTANCE=0.63 km TRANIST TIME=51 min 
+1 ---------------------------
+1 Canal St -> A to Far Rockaway-Mott Av -> Beach 36 St
+S 1 0.63 51 A
+
+2 WALK DISTANCE=0.28 km TRANIST TIME=80 min 
+2 ---------------------------
+2 Canal St -> J to Jamaica Center-Parsons/Archer -> Woodhaven Blvd
+2 WOODHAVEN BLVD & JAMAICA AVE -> Q52+ to Q52+ - +SELECT BUS ARVERNE B. 54 ST via WOODHAVEN BL via CRO -> ROCKAWAY BEACH BLVD & BEACH 84 ST
+2 ROCKAWAY BEACH BLVD & BEACH 84 ST -> Q22 to Q22 - FAR ROCKAWAY MOTT AV via ROCKAWAY BCH BL via BCH CHANN -> BEACH CHANNEL DR & BEACH 35 ST
+S 2 0.28 80 J>Q52+>Q22
+
+Q N 1608471879618 40.710355,-74.009661 40.691248,-73.729561 X
+1 WALK DISTANCE=0.13 km TRANIST TIME=81 min 
+1 ---------------------------
+1 Fulton St -> J to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & PARSONS BLVD -> Q4 to Q4 - CAMBRIA HEIGHTS 235 ST via LINDEN -> LINDEN BLVD & 232ND ST
+S 1 0.13 81 J>Q4
+
+2 WALK DISTANCE=0.95 km TRANIST TIME=77 min 
+2 ---------------------------
+2 World Trade Center -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+2 ARCHER AVE & 153RD ST -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> 120TH AVE & 232ND ST
+S 2 0.95 77 E>Q84
+
+3 WALK DISTANCE=0.32 km TRANIST TIME=81 min 
+3 ---------------------------
+3 World Trade Center -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+3 ARCHER AVE & PARSONS BLVD -> Q4 to Q4 - CAMBRIA HEIGHTS 235 ST via LINDEN -> LINDEN BLVD & 232ND ST
+S 3 0.32 81 E>Q4
+
+Q N 1609086214937 40.746242,-73.9816 40.863096,-73.89636 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.746242,-73.9816","toPlace":"40.863096,-73.89636","maxWalkDistance":"500","time":"11:23 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314142819,"requestDate":1640622180000,"precalculationTime":186,"pathCalculationTime":286,"pathTimes":[],"renderingTime":0,"totalTime":472,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:42-05:00"}}
+
+Q N 1609072794394 40.710468,-73.793607 40.824973,-73.891433 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.710468,-73.793607","toPlace":"40.824973,-73.891433","maxWalkDistance":"500","time":"07:39 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314143411,"requestDate":1640608740000,"precalculationTime":186,"pathCalculationTime":225,"pathTimes":[],"renderingTime":0,"totalTime":411,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:43-05:00"}}
+
+Q N 1608409792598 40.750851,-73.975078 40.762859,-73.798383 W
+1 WALK DISTANCE=0.42 km TRANIST TIME=46 min 
+1 ---------------------------
+1 Grand Central-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+1 39TH AVE & 138TH ST -> Q28 to Q28 - BAY TERRACE BELL BL -> CROCHERON AVE & 168TH ST
+S 1 0.42 46 7>Q28
+
+2 WALK DISTANCE=0.49 km TRANIST TIME=29 min 
+2 ---------------------------
+2 Grand Central-42 St -> 7 to Flushing-Main St -> Woodside-61 St
+2 Woodside -> Port Washington to Port Washington -> Broadway
+S 2 0.49 29 7>Port Washington
+
+3 WALK DISTANCE=0.49 km TRANIST TIME=29 min 
+3 ---------------------------
+3 Grand Central-42 St -> 7 to Flushing-Main St -> Woodside-61 St
+3 Woodside -> Port Washington to Port Washington -> Broadway
+S 3 0.49 29 7>Port Washington
+
+Q N 1608453174583 40.878855,-73.904834 40.692596,-73.780102 W
+1 WALK DISTANCE=0.11 km TRANIST TIME=91 min 
+1 ---------------------------
+1 BROADWAY & W 231ST ST -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 180TH ST
+1 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+1 ARCHER AVE & 165TH ST -> Q85 to Q85 - ROSEDALE 147 AV -> MERRICK BLVD & SAYRES AVE
+S 1 0.11 91 BX9>Q44+>Q85
+
+2 WALK DISTANCE=0.17 km TRANIST TIME=87 min 
+2 ---------------------------
+2 BROADWAY & W 231ST ST -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 180TH ST
+2 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+2 ARCHER AVE & 165TH ST -> Q84 to Q84 - LAURELTON 238 ST via 120 AV -> MERRICK BLVD & SAYRES AVE
+S 2 0.17 87 BX9>Q44+>Q84
+
+3 WALK DISTANCE=0.02 km TRANIST TIME=86 min 
+3 ---------------------------
+3 231 St -> 1 to South Ferry -> Times Sq-42 St
+3 42 St-Port Authority Bus Terminal -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+3 ARCHER AVE & BAY D -> Q5 to Q5 - ROSEDALE LIRR via MERRICK -> MERRICK BLVD & SAYRES AVE
+S 3 0.02 86 1>E>Q5
+
+Q N 1609198197852 40.705943,-73.922036 40.826549,-73.950365 W
+1 WALK DISTANCE=11.08 km TRANIST TIME=45 min 
+1 ---------------------------
+1 South Williamsburg -> ER to Hunters Point South -> East 34th Street
+1 East 34th Street -> AS to East 90th St -> East 90th St
+S 1 11.08 45 ER>AS
+
+2 WALK DISTANCE=11.08 km TRANIST TIME=51 min 
+2 ---------------------------
+2 South Williamsburg -> ER to Wall St./Pier 11 -> Wall St/Pier 11
+2 Wall St/Pier 11 -> SV to Soundview -> East 90th St
+S 2 11.08 51 ER>SV
+
+3 WALK DISTANCE=13.48 km TRANIST TIME=18 min 
+3 ---------------------------
+3 Long Island City -> AS to East 90th St -> East 90th St
+S 3 13.48 18 AS
+
+Q N 1609200344170 40.758615,-73.981095 40.700397,-73.953464 T
+1 WALK DISTANCE=4.43 km TRANIST TIME=20 min 
+1 ---------------------------
+1 East 34th Street -> ER to Wall St./Pier 11 -> South Williamsburg
+S 1 4.43 20 ER
+
+2 WALK DISTANCE=4.43 km TRANIST TIME=37 min 
+2 ---------------------------
+2 East 34th Street -> SV to Wall St./Pier 11 -> Wall St/Pier 11
+2 Wall St/Pier 11 -> ER to Hunters Point South -> South Williamsburg
+S 2 4.43 37 SV>ER
+
+3 WALK DISTANCE=6.57 km TRANIST TIME=32 min 
+3 ---------------------------
+3 East 34th Street -> AS to Wall St./Pier 11 -> Wall St/Pier 11
+3 Wall St/Pier 11 -> SB to Corlears Hook -> Dumbo/BBP Pier 1
+S 3 6.57 32 AS>SB
+
+Q N 1609078536044 40.669367,-73.901981 40.589321,-73.941401 T
+1 WALK DISTANCE=16.26 km TRANIST TIME=85 min 
+1 ---------------------------
+1 South Williamsburg -> ER to Wall St./Pier 11 -> Wall St/Pier 11
+1 Wall St/Pier 11 -> RW to Rockaway -> Rockaway
+1 Beach Channel Dr/B. 108th St -> RWS to Rockaway West -> Rockaway Point Blvd/B. 169th St
+S 1 16.26 85 ER>RW>RWS
+
+Q N 1609080418569 40.596701,-73.973402 40.807542,-73.85233 W
+1 WALK DISTANCE=8.30 km TRANIST TIME=62 min 
+1 ---------------------------
+1 Sunset Park/BAT -> RW to Wall St./Pier 11 -> Wall St/Pier 11
+1 Wall St/Pier 11 -> SV to Soundview -> Soundview
+S 1 8.30 62 RW>SV
+
+2 WALK DISTANCE=8.30 km TRANIST TIME=82 min 
+2 ---------------------------
+2 Sunset Park/BAT -> SB to Corlears Hook -> Wall St/Pier 11
+2 Wall St/Pier 11 -> SV to Soundview -> Soundview
+S 2 8.30 82 SB>SV
+
+Q N 1608992125898 40.907521,-73.896543 40.838707,-73.859441 X
+1 WALK DISTANCE=0.18 km TRANIST TIME=54 min 
+1 ---------------------------
+1 BROADWAY & W 260TH ST -> BX9 to BX9 - WEST FARMS -> E FORDHAM RD & CAMBRELENG AVE
+1 E FORDHAM RD & CAMBRELENG AVE -> BX22 to BX22 - CASTLE HILL PARK - ZEREGA AVENUE -> AB RYAN OVAL & METROPOLITAN AVE
+S 1 0.18 54 BX9>BX22
+
+2 WALK DISTANCE=1.32 km TRANIST TIME=52 min 
+2 ---------------------------
+2 BROADWAY & W 260TH ST -> BXM3 to BxM3 - MIDTOWN 26 ST via 5 AV -> 5TH AVE & W 125TH ST
+2 125 St -> 6 to Pelham Bay Park -> Parkchester
+S 2 1.32 52 BXM3>6
+
+3 WALK DISTANCE=0.67 km TRANIST TIME=66 min 
+3 ---------------------------
+3 BROADWAY & W 260TH ST -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 178TH ST
+3 E TREMONT AVE & BOSTON RD -> BX42 to BX42 - THROGGS NECK HARDING AV via TREMONT -> E TREMONT AVE & UNIONPORT RD
+S 3 0.67 66 BX9>BX42
+
+Q N 1608858655763 40.704906,-73.811956 40.704919,-73.809402 W
+1 WALK DISTANCE=0.09 km TRANIST TIME=0 min 
+1 ---------------------------
+1 HILLSIDE AVE & 144TH ST -> Q20B to Q20B - JAMAICA MERRICK BL via 14 AV via MAIN ST -> SUTPHIN BLVD & HILLSIDE AVE
+S 1 0.09 0 Q20B
+
+2 WALK DISTANCE=0.09 km TRANIST TIME=0 min 
+2 ---------------------------
+2 HILLSIDE AVE & 144TH ST -> Q20A to Q20A - JAMAICA MERRICK BL via 20 AV via MAIN ST -> SUTPHIN BLVD & HILLSIDE AVE
+S 2 0.09 0 Q20A
+
+3 WALK DISTANCE=0.32 km TRANIST TIME=0 min 
+3 ---------------------------
+S 3 0.32 0 
+
+Q N 1608407762706 40.861183,-73.92511 40.608889,-74.090784 X
+1 WALK DISTANCE=0.49 km TRANIST TIME=67 min 
+1 ---------------------------
+1 Dyckman St -> 1 to South Ferry -> Rector St
+1 BROADWAY & RECTOR ST -> SIM3C to SIM3C - PT RCHMND via NARROWS RD N via WATCHOGUE -> NARROWS RD N & TARGEE ST
+S 1 0.49 67 1>SIM3C
+
+2 WALK DISTANCE=0.49 km TRANIST TIME=67 min 
+2 ---------------------------
+2 Dyckman St -> 1 to South Ferry -> Rector St
+2 BROADWAY & RECTOR ST -> SIM33C to SIM33C - MARINERS HARBOR via N GANNON AV -> NARROWS RD N & TARGEE ST
+S 2 0.49 67 1>SIM33C
+
+Q N 1609056530725 40.749656,-73.99113 40.713351,-73.851562 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.749656,-73.99113","toPlace":"40.713351,-73.851562","maxWalkDistance":"500","time":"03:08 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314155004,"requestDate":1640592480000,"precalculationTime":141,"pathCalculationTime":223,"pathTimes":[],"renderingTime":0,"totalTime":364,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:55-05:00"}}
+
+Q N 1609086171292 40.889683,-73.897925 40.750394,-73.980963 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.889683,-73.897925","toPlace":"40.750394,-73.980963","maxWalkDistance":"500","time":"11:22 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314155392,"requestDate":1640622120000,"precalculationTime":120,"pathCalculationTime":168,"pathTimes":[],"renderingTime":0,"totalTime":288,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:55:55-05:00"}}
+
+Q N 1609201586386 40.745723,-73.982531 40.752213,-74.007572 T
+1 WALK DISTANCE=2.59 km TRANIST TIME=0 min 
+1 ---------------------------
+S 1 2.59 0 
+
+Q N 1608456431259 40.587814,-73.814037 40.829418,-73.874811 X
+1 WALK DISTANCE=0.36 km TRANIST TIME=88 min 
+1 ---------------------------
+1 ROCKAWAY BEACH BLVD & BEACH 92 ST -> QM17 to QM17 - MIDTOWN 57 ST via 6 AV -> E 34TH ST & PARK AVE
+1 33 St -> 6 to Parkchester -> Morrison Av-Soundview
+S 1 0.36 88 QM17>6
+
+2 WALK DISTANCE=0.55 km TRANIST TIME=89 min 
+2 ---------------------------
+2 ROCKAWAY BEACH BLVD & BEACH 96 ST -> Q53+ to Q53+ - +SELECT BUS WOODSIDE 61 ST STA via CROSS BAY BLVD via -> BROADWAY & 75TH ST
+2 Jackson Hts-Roosevelt Av -> F to Church Av -> Lexington Av/53 St
+2 51 St -> 6 to Parkchester -> Morrison Av-Soundview
+S 2 0.55 89 Q53+>F>6
+
+3 WALK DISTANCE=0.03 km TRANIST TIME=94 min 
+3 ---------------------------
+3 Beach 90 St -> S to Broad Channel -> Broad Channel
+3 Broad Channel -> A to 168 St -> Broadway-Lafayette St
+3 Bleecker St -> 6 to Parkchester -> Morrison Av-Soundview
+S 3 0.03 94 S>A>6
+
+Q N 1608462858789 40.777543,-73.950737 40.878411,-73.87074 X
+1 WALK DISTANCE=0.47 km TRANIST TIME=43 min 
+1 ---------------------------
+1 86 St -> 4 to Woodlawn -> Bedford Park Blvd-Lehman College
+1 BEDFORD PARK & JEROME AVE -> BX28 to BX28 - CO-OP CITY - EARHART LANE via GUN HILL ROAD -> E GUN HILL RD & WEBSTER AVE
+S 1 0.47 43 4>BX28
+
+2 WALK DISTANCE=0.52 km TRANIST TIME=45 min 
+2 ---------------------------
+2 E 86TH ST & 2ND AVE -> M86+ to M86+ - SELECT BUS WESTSIDE WEST END AV CROSSTWN -> W 86TH ST & BROADWAY
+2 86 St -> 2 to Wakefield-241 St -> Gun Hill Rd
+S 2 0.52 45 M86+>2
+
+Q N 1608356705701 40.670588,-73.959093 40.804846,-73.91855 T
+1 WALK DISTANCE=1.43 km TRANIST TIME=55 min 
+1 ---------------------------
+1 EASTERN PKWY & FRANKLIN AVE -> B99 to B99 - COLUMBUS CIRCLE via 8 AV -> CANAL ST & BOWERY
+1 PIKE ST & DIVISION ST -> M15 to M15 - EAST HARLEM 125 ST via 1 AV -> 1ST AVE & E 125TH ST
+1 E 125TH ST & 1ST AVE -> BX15 to BX15 - FORDHAM PLZ via 3 AV -> WILLIS AVE & E 138TH ST
+S 1 1.43 55 B99>M15>BX15
+
+2 WALK DISTANCE=1.03 km TRANIST TIME=65 min 
+2 ---------------------------
+2 EASTERN PKWY & FRANKLIN AVE -> B99 to B99 - COLUMBUS CIRCLE via 8 AV -> 8TH AVE & W 14TH ST
+2 W 14TH ST & 8TH AVE -> BX99 to BX99 - WOODLAWN -> 1ST AVE & E 125TH ST
+2 E 125TH ST & 1ST AVE -> BX15 to BX15 - FORDHAM PLZ via 3 AV -> WILLIS AVE & E 138TH ST
+S 2 1.03 65 B99>BX99>BX15
+
+Q N 1609196061108 40.77972,-73.955596 40.719552,-73.874672 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.77972,-73.955596","toPlace":"40.719552,-73.874672","maxWalkDistance":"500","time":"05:54 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314161741,"requestDate":1640732040000,"precalculationTime":189,"pathCalculationTime":324,"pathTimes":[],"renderingTime":0,"totalTime":513,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:01-05:00"}}
+
+Q N 1608859416009 40.692258,-73.986114 40.775116,-73.987283 T
+1 WALK DISTANCE=0.97 km TRANIST TIME=25 min 
+1 ---------------------------
+1 Hoyt St -> 2 to Wakefield-241 St -> 72 St
+S 1 0.97 25 2
+
+2 WALK DISTANCE=0.50 km TRANIST TIME=31 min 
+2 ---------------------------
+2 Hoyt St -> 3 to Harlem-148 St -> 72 St
+2 W 72ND ST & AMSTERDAM AVE -> M72 to M72 - WEST SIDE FREEDOM PL CROSSTOWN -> W 66TH ST & FREEDOM PL
+S 2 0.50 31 3>M72
+
+3 WALK DISTANCE=0.51 km TRANIST TIME=23 min 
+3 ---------------------------
+3 Jay St-MetroTech -> A to Inwood-207 St -> 42 St-Port Authority Bus Terminal
+3 Times Sq-42 St -> 1 to Van Cortlandt Park-242 St -> 66 St-Lincoln Center
+S 3 0.51 23 A>1
+
+Q N 1608787769030 40.644653,-74.01469 40.615139,-73.974198 T
+1 WALK DISTANCE=0.94 km TRANIST TIME=12 min 
+1 ---------------------------
+1 53 St -> N to Coney Island-Stillwell Av -> Bay Pkwy
+S 1 0.94 12 N
+
+2 WALK DISTANCE=0.09 km TRANIST TIME=24 min 
+2 ---------------------------
+2 53 St -> R to Whitehall St-South Ferry -> 4 Av-9 St
+2 4 Av-9 St -> F to Coney Island-Stillwell Av -> Avenue N
+S 2 0.09 24 R>F
+
+3 WALK DISTANCE=0.73 km TRANIST TIME=16 min 
+3 ---------------------------
+3 60TH ST & 4TH AVE -> B9 to B9 - FLATBUSH AV -> AV N & MC DONALD AVE
+S 3 0.73 16 B9
+
+Q N 1608442706020 40.704096,-74.013293 40.833225,-73.860888 W
+1 WALK DISTANCE=0.25 km TRANIST TIME=55 min 
+1 ---------------------------
+1 Bowling Green -> 4 to Woodlawn -> 149 St-Grand Concourse
+1 E 149TH ST & GRAND CONCOURSE -> BX19 to BX19 - BRONX PARK via 149 ST via SOUTHERN -> SOUTHERN BLVD & WESTCHESTER AVE
+1 WESTCHESTER AVE & SOUTHERN BLVD -> BX4 to BX4 - TREMONT AVE & LANE AVE -> HUGH GRANT CIRCLE & CROSS BX SVC RD
+S 1 0.25 55 4>BX19>BX4
+
+2 WALK DISTANCE=0.20 km TRANIST TIME=84 min 
+2 ---------------------------
+2 South Ferry -> 1 to Van Cortlandt Park-242 St -> 238 St
+2 BROADWAY & W 238TH ST -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 180TH ST
+2 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> WESTCHESTER AVE & VIRGINIA AVE
+S 2 0.20 84 1>BX9>Q44+
+
+Q N 1608492433485 40.719918,-74.00662 40.677333,-73.949882 X
+1 WALK DISTANCE=1.40 km TRANIST TIME=18 min 
+1 ---------------------------
+1 Chambers St -> 3 to New Lots Av -> Nostrand Av
+S 1 1.40 18 3
+
+2 WALK DISTANCE=0.53 km TRANIST TIME=21 min 
+2 ---------------------------
+2 Canal St -> E to Jamaica Center-Parsons/Archer -> W 4 St-Wash Sq
+2 W 4 St-Wash Sq -> C to Euclid Av -> Nostrand Av
+S 2 0.53 21 E>C
+
+3 WALK DISTANCE=0.32 km TRANIST TIME=35 min 
+3 ---------------------------
+3 Franklin St -> 1 to Van Cortlandt Park-242 St -> Times Sq-42 St
+3 42 St-Port Authority Bus Terminal -> C to Euclid Av -> Nostrand Av
+S 3 0.32 35 1>C
+
+Q N 1609150795933 40.682893,-73.910458 40.843958,-73.922793 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.682893,-73.910458","toPlace":"40.843958,-73.922793","maxWalkDistance":"500","time":"05:19 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314166667,"requestDate":1640686740000,"precalculationTime":135,"pathCalculationTime":221,"pathTimes":[],"renderingTime":0,"totalTime":356,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:06-05:00"}}
+
+Q N 1608595831746 40.611813,-73.98185 40.582273,-74.083962 X
+1 WALK DISTANCE=1.31 km TRANIST TIME=83 min 
+1 ---------------------------
+1 Bay Pkwy -> N to Astoria-Ditmars Blvd -> 14 St-Union Sq
+1 BROADWAY & E 13TH ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> HYLAN BLVD & CROMWELL AVE
+S 1 1.31 83 N>SIM1C
+
+2 WALK DISTANCE=1.14 km TRANIST TIME=38 min 
+2 ---------------------------
+2 Bay Pkwy -> N to Astoria-Ditmars Blvd -> 53 St
+2 53 St -> R to Bay Ridge-95 St -> 86 St
+2 4TH AVE & 86TH ST -> S79+ to S79+ - SELECT BUS SI MALL via HYLAN -> HYLAN BLVD & SEAVIEW AVE
+S 2 1.14 38 N>R>S79+
+
+Q N 1608457886429 40.724637,-73.706397 40.835331,-73.928142 W
+1 WALK DISTANCE=0.25 km TRANIST TIME=83 min 
+1 ---------------------------
+1 Floral Park -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+1 Atlantic Av-Barclays Ctr -> 4 to Woodlawn -> 161 St-Yankee Stadium
+1 E 161ST ST & RIVER AVE -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> OGDEN AVE & W 165TH ST
+S 1 0.25 83 Hempstead>4>BX13
+
+2 WALK DISTANCE=0.25 km TRANIST TIME=83 min 
+2 ---------------------------
+2 Floral Park -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+2 Atlantic Av-Barclays Ctr -> 4 to Woodlawn -> 161 St-Yankee Stadium
+2 E 161ST ST & RIVER AVE -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> OGDEN AVE & W 165TH ST
+S 2 0.25 83 Hempstead>4>BX13
+
+3 WALK DISTANCE=0.25 km TRANIST TIME=83 min 
+3 ---------------------------
+3 Floral Park -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+3 Atlantic Av-Barclays Ctr -> 4 to Woodlawn -> 161 St-Yankee Stadium
+3 E 161ST ST & RIVER AVE -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> OGDEN AVE & W 165TH ST
+S 3 0.25 83 Hempstead>4>BX13
+
+Q N 1608651881000 40.758663,-73.981329 40.642983,-74.001653 W
+1 WALK DISTANCE=0.15 km TRANIST TIME=36 min 
+1 ---------------------------
+1 47-50 Sts-Rockefeller Ctr -> D to Coney Island-Stillwell Av -> 36 St
+1 37TH ST & 4TH AVE -> B70 to B70 - DYKER HEIGHTS VA HOSPITAL via 8 AV -> 8TH AVE & 46TH ST
+S 1 0.15 36 D>B70
+
+2 WALK DISTANCE=0.27 km TRANIST TIME=39 min 
+2 ---------------------------
+2 47-50 Sts-Rockefeller Ctr -> D to Coney Island-Stillwell Av -> 50 St
+2 49TH ST & NEW UTRECHT AVE -> B11 to B11 - SUNSET PARK 1 AV-58 ST -> 49TH ST & 8TH AVE
+S 2 0.27 39 D>B11
+
+3 WALK DISTANCE=0.15 km TRANIST TIME=42 min 
+3 ---------------------------
+3 47-50 Sts-Rockefeller Ctr -> B to Brighton Beach -> Atlantic Av-Barclays Ctr
+3 Atlantic Av-Barclays Ctr -> N to Coney Island-Stillwell Av -> 8 Av
+3 8TH AVE & 62ND ST -> B70 to B70 - SUNSET PARK 39ST-1AV via 8 AV -> 8TH AVE & 47TH ST
+S 3 0.15 42 B>N>B70
+
+Q N 1609048626667 40.678388,-73.948221 40.815667,-73.91663 T
+1 WALK DISTANCE=9.56 km TRANIST TIME=34 min 
+1 ---------------------------
+1 South Williamsburg -> ER to Hunters Point South -> East 34th Street
+1 East 34th Street -> SV to Soundview -> East 90th St
+S 1 9.56 34 ER>SV
+
+2 WALK DISTANCE=9.56 km TRANIST TIME=68 min 
+2 ---------------------------
+2 South Williamsburg -> ER to Wall St./Pier 11 -> Wall St/Pier 11
+2 Wall St/Pier 11 -> AS to East 90th St -> East 90th St
+S 2 9.56 68 ER>AS
+
+Q N 1608382412703 40.710435,-74.011066 40.724646,-73.795501 T
+1 WALK DISTANCE=0.53 km TRANIST TIME=53 min 
+1 ---------------------------
+1 CHURCH ST & LIBERTY ST -> M55 to M55 - 44 ST 6 AV -> AV OF THE AMERICAS & W 42ND ST
+1 6TH AVE & W 42ND ST -> QM6 to QM6 - NORTH SHORE TOWERS & BLDG EN -> UNION TNPK & 168TH ST
+S 1 0.53 53 M55>QM6
+
+2 WALK DISTANCE=0.26 km TRANIST TIME=50 min 
+2 ---------------------------
+2 World Trade Center -> E to Jamaica Center-Parsons/Archer -> Kew Gardens-Union Tpke
+2 UNION TNPK & QUEENS BLVD -> Q46 to Q46 - LAKE SUCCESS LIJ HOSPITAL via UNION -> UNION TNPK & 173RD ST
+S 2 0.26 50 E>Q46
+
+3 WALK DISTANCE=0.54 km TRANIST TIME=55 min 
+3 ---------------------------
+3 CHURCH ST & LIBERTY ST -> M55 to M55 - 44 ST 6 AV -> AV OF THE AMERICAS & W 38TH ST
+3 6TH AVE & W 37TH ST -> QM5 to QM5 - UNION TNPK & 260TH ST -> UNION TNPK & 168TH ST
+S 3 0.54 55 M55>QM5
+
+Q N 1608643235370 40.706082,-73.9223 40.74539,-73.792592 W
+1 WALK DISTANCE=0.07 km TRANIST TIME=66 min 
+1 ---------------------------
+1 Jefferson St -> L to 8 Av -> Lorimer St
+1 Metropolitan Av -> G to Court Sq -> Court Sq
+1 Court Sq -> 7 to Flushing-Main St -> Flushing-Main St
+1 MAIN ST & 39TH AVE -> Q27 to Q27 - JAMAICA AV -> HOLLIS CT BLVD & 190TH ST
+1 HOLLIS CT BLVD & 190TH ST -> Q31 to Q31 - JAMAICA LIRR -> UTOPIA PKWY & PECK AVE
+S 1 0.07 66 L>G>7>Q27>Q31
+
+2 WALK DISTANCE=0.13 km TRANIST TIME=61 min 
+2 ---------------------------
+2 Jefferson St -> L to Canarsie-Rockaway Pkwy -> Broadway Junction
+2 Broadway Junction -> J to Jamaica Center-Parsons/Archer -> Sutphin Blvd-Archer Av-JFK Airport
+2 ARCHER AVE & SUTPHIN BLVD -> Q31 to Q31 - BAYSIDE 27 AV FRANCIS LEWIS BL -> UTOPIA PKWY & 50TH AVE
+S 2 0.13 61 L>J>Q31
+
+Q N 1608547570461 40.620825,-73.975138 40.818246,-73.938003 T
+1 WALK DISTANCE=0.58 km TRANIST TIME=53 min 
+1 ---------------------------
+1 BAY PKWY & MC DONALD AVE -> B6 to B6 - ROCKAWAY PKY STA -> AV J & E 16TH ST
+1 Avenue J -> Q to 96 St -> Times Sq-42 St
+1 Times Sq-42 St -> 2 to Wakefield-241 St -> 135 St
+S 1 0.58 53 B6>Q>2
+
+2 WALK DISTANCE=0.27 km TRANIST TIME=55 min 
+2 ---------------------------
+2 Bay Pkwy -> F to Jamaica-179 St -> 14 St
+2 14 St -> 3 to Harlem-148 St -> 145 St
+S 2 0.27 55 F>3
+
+3 WALK DISTANCE=0.51 km TRANIST TIME=53 min 
+3 ---------------------------
+3 Bay Pkwy -> F to Jamaica-179 St -> 14 St
+3 14 St -> 2 to Wakefield-241 St -> 135 St
+S 3 0.51 53 F>2
+
+Q N 1609064180843 40.756624,-73.914407 40.587101,-73.918501 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.756624,-73.914407","toPlace":"40.587101,-73.918501","maxWalkDistance":"500","time":"05:16 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314180582,"requestDate":1640600160000,"precalculationTime":95,"pathCalculationTime":221,"pathTimes":[],"renderingTime":0,"totalTime":316,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:20-05:00"}}
+
+Q N 1608366224134 40.859022,-73.93418 40.613605,-73.926743 T
+1 WALK DISTANCE=0.40 km TRANIST TIME=111 min 
+1 ---------------------------
+1 FT WASHINGTON AVE & CABRINI BLVD -> M4 to M4 - E 32ND ST & 5TH AVE -> 5TH AVE & W 38TH ST
+1 5TH AVE & W 39TH ST -> BM2 to BM2 - CANARSIE WILLIAMS AV via AVENUE H via AVENUE M -> AV H & UTICA AVE
+1 UTICA AVE & AV H -> B46 to B46 - KINGS PLAZA via UTICA -> UTICA AVE & FLATBUSH AVE
+S 1 0.40 111 M4>BM2>B46
+
+2 WALK DISTANCE=0.60 km TRANIST TIME=102 min 
+2 ---------------------------
+2 FT WASHINGTON AVE & CABRINI BLVD -> M4 to M4 - E 32ND ST & 5TH AVE -> 5TH AVE & W 36TH ST
+2 34 St-Herald Sq -> Q to Coney Island-Stillwell Av -> 7 Av
+2 FLATBUSH AVE & PARK PL -> B41 to B41 - KINGS PLAZA via FLATBUSH -> FLATBUSH AVE & AV S
+S 2 0.60 102 M4>Q>B41
+
+3 WALK DISTANCE=0.91 km TRANIST TIME=79 min 
+3 ---------------------------
+3 191 St -> 1 to South Ferry -> 96 St
+3 96 St -> 3 to New Lots Av -> Crown Hts-Utica Av
+3 UTICA AVE & EASTERN PKWY -> B46 to B46 - KINGS PLAZA via UTICA -> UTICA AVE & FLATBUSH AVE
+S 3 0.91 79 1>3>B46
+
+Q N 1609101176380 40.695186,-73.903065 40.794224,-73.815892 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.695186,-73.903065","toPlace":"40.794224,-73.815892","maxWalkDistance":"500","time":"03:32 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314182088,"requestDate":1640637120000,"precalculationTime":92,"pathCalculationTime":216,"pathTimes":[],"renderingTime":0,"totalTime":308,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:22-05:00"}}
+
+Q N 1608388860465 40.852461,-73.828127 40.776996,-73.946431 X
+1 WALK DISTANCE=1.30 km TRANIST TIME=36 min 
+1 ---------------------------
+1 AMENDOLA PL & WILKINSON AVE -> BX12 to BX12 - SEDGWICK AVENUE -> PELHAM PKWY & WILLIAMSBRIDGE RD
+1 Pelham Pkwy -> 5 to Bowling Green -> 86 St
+S 1 1.30 36 BX12>5
+
+2 WALK DISTANCE=1.12 km TRANIST TIME=46 min 
+2 ---------------------------
+2 AMENDOLA PL & WILKINSON AVE -> BX12+ to BX12+ - SELECT BUS BROADWAY INWOOD -> E FORDHAM RD & JEROME AVE
+2 Fordham Rd -> 4 to Crown Hts-Utica Av -> 86 St
+S 2 1.12 46 BX12+>4
+
+3 WALK DISTANCE=0.36 km TRANIST TIME=48 min 
+3 ---------------------------
+3 BRUCKNER BLVD & BURR AVE -> BXM8 to BxM8 - MIDTOWN 23 ST via 5 AV -> 5TH AVE & W 85 ST TRAVERSE
+3 E 84TH ST & 5TH AVE -> M86+ to M86+ - SELECT BUS YORKVILLE 1AV-92 ST CROSSTOWN -> YORK AVE & E 86TH ST
+S 3 0.36 48 BXM8>M86+
+
+Q N 1608954239409 41.637525,-73.57145 40.696873,-73.743503 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-25-2020","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"41.637525,-73.57145","toPlace":"40.696873,-73.743503","maxWalkDistance":"500","time":"10:43 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314183669,"requestDate":1608954180000,"precalculationTime":59,"pathCalculationTime":10,"pathTimes":[],"renderingTime":0,"totalTime":69,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:23-05:00"}}
+
+Q N 1609035454108 40.878245,-73.921455 40.702354,-73.818281 T
+1 WALK DISTANCE=0.81 km TRANIST TIME=64 min 
+1 ---------------------------
+1 HENRY HUDSON PKWY W & INDEPENDENCE AVE -> BXM1 to BxM1 - EAST MIDTOWN 34 ST via INWOOD via LEX AV -> LEXINGTON AVE & E 65TH ST
+1 Lexington Av/63 St -> E to Jamaica Center-Parsons/Archer -> Jamaica-Van Wyck
+S 1 0.81 64 BXM1>E
+
+2 WALK DISTANCE=0.58 km TRANIST TIME=54 min 
+2 ---------------------------
+2 Spuyten Duyvil -> Hudson to Grand Central -> Harlem-125th St.
+2 125 St -> 4 to New Lots Av -> 59 St
+2 Lexington Av/63 St -> E to Jamaica Center-Parsons/Archer -> Jamaica-Van Wyck
+S 2 0.58 54 Hudson>4>E
+
+3 WALK DISTANCE=1.02 km TRANIST TIME=65 min 
+3 ---------------------------
+3 HENRY HUDSON PKWY W & INDEPENDENCE AVE -> BXM2 to BxM2 - WEST MIDTOWN PENN STA-34 ST via KAPPOCK ST -> 7TH AVE & W 57TH ST
+3 57 St -> E to Jamaica Center-Parsons/Archer -> Jamaica-Van Wyck
+S 3 1.02 65 BXM2>E
+
+Q N 1609188425728 40.985922,-73.682553 40.63644,-74.00867 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.985922,-73.682553","toPlace":"40.63644,-74.00867","maxWalkDistance":"500","time":"03:47 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314184593,"requestDate":1640724420000,"precalculationTime":48,"pathCalculationTime":70,"pathTimes":[],"renderingTime":0,"totalTime":118,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:24-05:00"}}
+
+Q N 1608408991155 41.076473,-73.864563 40.576126,-73.97594 T
+1 WALK DISTANCE=0.29 km TRANIST TIME=100 min 
+1 ---------------------------
+1 Tarrytown -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 6 to Brooklyn Bridge-City Hall -> 14 St-Union Sq
+1 14 St-Union Sq -> Q to Coney Island-Stillwell Av -> W 8 St-NY Aquarium
+S 1 0.29 100 Hudson>6>Q
+
+2 WALK DISTANCE=0.29 km TRANIST TIME=115 min 
+2 ---------------------------
+2 Tarrytown -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> 14 St-Union Sq
+2 14 St-Union Sq -> Q to Coney Island-Stillwell Av -> W 8 St-NY Aquarium
+S 2 0.29 115 Hudson>4>Q
+
+3 WALK DISTANCE=0.29 km TRANIST TIME=103 min 
+3 ---------------------------
+3 Tarrytown -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 6 to Brooklyn Bridge-City Hall -> 14 St-Union Sq
+3 14 St-Union Sq -> Q to Coney Island-Stillwell Av -> W 8 St-NY Aquarium
+S 3 0.29 103 Hudson>6>Q
+
+Q N 1608355209506 41.010333,-73.796407 40.585734,-73.954371 T
+1 WALK DISTANCE=1.32 km TRANIST TIME=108 min 
+1 ---------------------------
+1 Hartsdale -> Harlem to Grand Central -> Grand Central
+1 MADISON AVE & E 42ND ST -> M4 to M4 - WSHNGTN HTS CABRINI via MADISON via BWAY -> MADISON AVE & E 49TH ST
+1 5TH AVE & W 48TH ST -> BM2 to BM2 - CANARSIE WILLIAMS AV via AVENUE H via AVENUE M -> CORTELYOU RD & WESTMINSTER RD
+1 CONEY ISLAND AVE & CORTELYOU RD -> B68 to B68 - CONEY ISLAND STILLWELL AV via C I AV -> CONEY ISLAND AVE & AV Z
+S 1 1.32 108 Harlem>M4>BM2>B68
+
+2 WALK DISTANCE=0.14 km TRANIST TIME=96 min 
+2 ---------------------------
+2 Hartsdale -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 6 to Brooklyn Bridge-City Hall -> 14 St-Union Sq
+2 14 St-Union Sq -> Q to Coney Island-Stillwell Av -> Sheepshead Bay
+S 2 0.14 96 Harlem>6>Q
+
+3 WALK DISTANCE=0.14 km TRANIST TIME=102 min 
+3 ---------------------------
+3 Hartsdale -> Harlem to Grand Central -> Grand Central
+3 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> 14 St-Union Sq
+3 14 St-Union Sq -> Q to Coney Island-Stillwell Av -> Sheepshead Bay
+S 3 0.14 102 Harlem>4>Q
+
+Q N 1609029789006 41.637525,-73.57145 40.687288,-73.913612 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-26-2020","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"41.637525,-73.57145","toPlace":"40.687288,-73.913612","maxWalkDistance":"500","time":"07:43 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314187041,"requestDate":1609029780000,"precalculationTime":74,"pathCalculationTime":9,"pathTimes":[],"renderingTime":0,"totalTime":83,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:27-05:00"}}
+
+Q N 1608894465575 40.82583,-73.930677 40.847388,-73.939706 T
+1 WALK DISTANCE=0.82 km TRANIST TIME=12 min 
+1 ---------------------------
+1 E 161ST ST & RIVER AVE -> BX6+ to BX6+ - SELECT BUS WASHINGTON HTS RIVERSIDE DR -> W 155TH ST & AMSTERDAM AVE
+1 AMSTERDAM AVE & W 155TH ST -> M100 to M100 - INWOOD 220 ST via AMSTERDAM via BROADWAY -> BROADWAY & W 175TH ST
+S 1 0.82 12 BX6+>M100
+
+2 WALK DISTANCE=0.61 km TRANIST TIME=12 min 
+2 ---------------------------
+2 161 St-Yankee Stadium -> D to Coney Island-Stillwell Av -> 145 St
+2 145 St -> A to Inwood-207 St -> 175 St
+S 2 0.61 12 D>A
+
+3 WALK DISTANCE=0.84 km TRANIST TIME=21 min 
+3 ---------------------------
+3 RIVER AVE & E 157TH ST -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> W 179TH ST & BROADWAY
+S 3 0.84 21 BX13
+
+Q N 1609031847361 41.208638,-73.097415 40.609143,-73.750541 X
+1 WALK DISTANCE=5.11 km TRANIST TIME=192 min 
+1 ---------------------------
+1 Milford -> New Haven to Grand Central -> Grand Central
+1 Grand Central-42 St -> 4 to New Lots Av -> Fulton St
+1 Fulton St -> A to Far Rockaway-Mott Av -> Far Rockaway-Mott Av
+S 1 5.11 192 New Haven>4>A
+
+2 WALK DISTANCE=5.25 km TRANIST TIME=193 min 
+2 ---------------------------
+2 Milford -> New Haven to Grand Central -> Grand Central
+2 MADISON AVE & E 42ND ST -> M4 to M4 - WSHNGTN HTS CABRINI via MADISON via BWAY -> MADISON AVE & E 55TH ST
+2 E 57TH ST & MADISON AVE -> QM17 to QM17 - FAR ROCKAWAY B. 21 ST via CROSS BAY BL via BCH CHANNE -> BEACH 20 ST & MOTT AVE
+S 2 5.25 193 New Haven>M4>QM17
+
+Q N 1609116661498 40.807993,-73.105777 40.72672,-73.991523 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.807993,-73.105777","toPlace":"40.72672,-73.991523","maxWalkDistance":"500","time":"07:51 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314189611,"requestDate":1640652660000,"precalculationTime":92,"pathCalculationTime":60,"pathTimes":[],"renderingTime":0,"totalTime":152,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:29-05:00"}}
+
+Q N 1608892278190 40.699747,-73.807503 40.709829,-73.898891 T
+1 WALK DISTANCE=0.72 km TRANIST TIME=23 min 
+1 ---------------------------
+1 JAMAICA AVE & SUTPHIN BLVD -> Q54 to Q54 - WILLAMSBURG BRIDGE PLZ -> METROPOLITAN AVE & 62ND ST
+S 1 0.72 23 Q54
+
+2 WALK DISTANCE=0.17 km TRANIST TIME=40 min 
+2 ---------------------------
+2 SUTPHIN BLVD & ARCHER AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & BROADWAY
+2 BROADWAY & QUEENS BLVD -> Q58 to Q58 - RIDGEWOOD TERM -> FRESH POND RD & LINDEN ST
+S 2 0.17 40 Q60>Q58
+
+3 WALK DISTANCE=0.63 km TRANIST TIME=28 min 
+3 ---------------------------
+3 Sutphin Blvd-Archer Av-JFK Airport -> J to Broad St -> Crescent St
+3 CRESCENT ST & FULTON ST -> B13 to B13 - WYCKOFF HTS HOSP WYCKOFF AV DEKALB AV -> PUTNAM AVE & FRESH POND RD
+S 3 0.63 28 J>B13
+
+Q N 1608955328881 41.069041,-73.49788 40.821315,-72.705262 T
+1 WALK DISTANCE=0.99 km TRANIST TIME=209 min 
+1 ---------------------------
+1 Noroton Heights -> New Haven to Grand Central -> Grand Central
+1 5TH AVE & W 44TH ST -> M4 to M4 - E 32ND ST & 5TH AVE -> E 32ND ST & 5TH AVE
+1 Penn Station -> Babylon to Babylon -> Babylon
+1 Babylon -> Montauk to Speonk -> Speonk
+S 1 0.99 209 New Haven>M4>Babylon>Montauk
+
+2 WALK DISTANCE=0.16 km TRANIST TIME=213 min 
+2 ---------------------------
+2 Noroton Heights -> New Haven to Grand Central -> Grand Central
+2 MADISON AVE & E 42ND ST -> Q32 to Q32 - JACKSON HTS NORTHERN-81 ST via ROOSEVELT -> ROOSEVELT AVE & 61ST ST
+2 Woodside -> Babylon to Babylon -> Babylon
+2 Babylon -> Montauk to Montauk -> Speonk
+S 2 0.16 213 New Haven>Q32>Babylon>Montauk
+
+Q N 1609137149048 40.919839,-72.666911 40.583075,-73.954581 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.919839,-72.666911","toPlace":"40.583075,-73.954581","maxWalkDistance":"500","time":"01:32 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314193677,"requestDate":1640673120000,"precalculationTime":31,"pathCalculationTime":25,"pathTimes":[],"renderingTime":0,"totalTime":56,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:33-05:00"}}
+
+Q N 1608959500440 40.949393,-73.830166 40.547932,-74.226161 X
+1 WALK DISTANCE=0.48 km TRANIST TIME=128 min 
+1 ---------------------------
+1 Tuckahoe -> Harlem to Grand Central -> Grand Central
+1 5TH AVE & W 44TH ST -> M3 to M3 - E 8TH ST & LAFAYETTE ST -> 5TH AVE & W 33RD ST
+1 5TH AVE & W 32ND ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> ELTINGVILLE & TRANSIT CENTER
+1 ELTINGVILLE & TRANSIT CENTER -> S74 to S74 - BRICKTOWN MALL via AR KILL RD -> ARTHUR KILL RD & CORRECTIONAL FACILITY
+S 1 0.48 128 Harlem>M3>SIM1C>S74
+
+2 WALK DISTANCE=0.46 km TRANIST TIME=128 min 
+2 ---------------------------
+2 Tuckahoe -> Harlem to Grand Central -> Harlem-125th St.
+2 LEXINGTON AVE & E 124TH ST -> M103 to M103 - PARK ROW & BEEKMAN ST -> PARK ROW & BEEKMAN ST
+2 BROADWAY & BARCLAY ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> ELTINGVILLE & TRANSIT CENTER
+2 ELTINGVILLE & TRANSIT CENTER -> S74 to S74 - BRICKTOWN MALL via AR KILL RD -> ARTHUR KILL RD & CORRECTIONAL FACILITY
+S 2 0.46 128 Harlem>M103>SIM1C>S74
+
+Q N 1609099788418 40.685015,-73.977505 40.554793,-74.193592 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.685015,-73.977505","toPlace":"40.554793,-74.193592","maxWalkDistance":"500","time":"03:09 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314195889,"requestDate":1640635740000,"precalculationTime":94,"pathCalculationTime":84,"pathTimes":[],"renderingTime":0,"totalTime":178,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:35-05:00"}}
+
+Q N 1608350653686 40.938984,-72.310046 40.686723,-73.774671 T
+1 WALK DISTANCE=0.12 km TRANIST TIME=148 min 
+1 ---------------------------
+1 Bridgehampton -> Montauk to Jamaica -> Jamaica
+1 Sutphin Blvd-Archer Av-JFK Airport -> J to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & BAY D -> Q5 to Q5 - GREEN ACRES via MERRICK -> MERRICK BLVD & FOCH BLVD
+S 1 0.12 148 Montauk>J>Q5
+
+2 WALK DISTANCE=1.28 km TRANIST TIME=232 min 
+2 ---------------------------
+2 Montauk Hwy/Corwith Ave -> S92 to S92 -> Riverhead County Center
+2 Riverhead County Center -> S66 to S66 -> Patchogue LIRR (No Pick Ups)
+2 Patchogue -> Montauk to Babylon -> Babylon
+2 Babylon -> Babylon to Penn Station -> Freeport
+2 Freeport Sta / South Bay 1 -> n4 to Jamaica -> Merrick Blvd Opp Foch Blvd
+S 2 1.28 232 S92>S66>Montauk>Babylon>n4
+
+3 WALK DISTANCE=0.24 km TRANIST TIME=140 min 
+3 ---------------------------
+3 Bridgehampton -> Montauk to Jamaica -> Jamaica
+3 Sutphin Blvd-Archer Av-JFK Airport -> J to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+3 ARCHER AVE & PARSONS BLVD -> Q85 to Q85 - ROSEDALE 147 AV -> MERRICK BLVD & FOCH BLVD
+S 3 0.24 140 Montauk>J>Q85
+
+Q N 1608558622040 41.189785,-73.882381 40.729907,-73.958023 X
+1 WALK DISTANCE=0.44 km TRANIST TIME=87 min 
+1 ---------------------------
+1 Croton-Harmon -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 7 to Flushing-Main St -> Vernon Blvd-Jackson Av
+1 11TH ST & JACKSON AVE -> B32 to B32 - WILLIAMSBURG BRIDGE PLAZA -> FRANKLIN ST & GREENPOINT AVE
+S 1 0.44 87 Hudson>7>B32
+
+2 WALK DISTANCE=0.50 km TRANIST TIME=65 min 
+2 ---------------------------
+2 Croton-Harmon Amtrak Station -> Empire Service to New York Penn Station -> New York Penn Station
+2 34 St-Penn Station -> E to Jamaica Center-Parsons/Archer -> Court Sq-23 St
+2 Court Sq -> G to Church Av -> Greenpoint Av
+S 2 0.50 65 Empire Service>E>G
+
+3 WALK DISTANCE=0.61 km TRANIST TIME=75 min 
+3 ---------------------------
+3 Croton-Harmon -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7 to Flushing-Main St -> Court Sq
+3 JACKSON AVE & 23RD ST -> B62 to B62 - DOWNTOWN BKLYN FULTON MALL -> MANHATTAN AVE & INDIA ST
+S 3 0.61 75 Hudson>7>B62
+
+Q N 1609145097465 40.835638,-73.451086 40.616518,-73.912034 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"40.835638,-73.451086","toPlace":"40.616518,-73.912034","maxWalkDistance":"500","time":"03:44 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314198215,"requestDate":1640681040000,"precalculationTime":52,"pathCalculationTime":62,"pathTimes":[],"renderingTime":0,"totalTime":114,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:38-05:00"}}
+
+Q N 1609162395717 40.740354,-73.086455 40.893215,-73.857344 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.740354,-73.086455","toPlace":"40.893215,-73.857344","maxWalkDistance":"500","time":"08:33 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314198352,"requestDate":1640698380000,"precalculationTime":53,"pathCalculationTime":44,"pathTimes":[],"renderingTime":0,"totalTime":97,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:38-05:00"}}
+
+Q N 1608698455546 40.853166,-73.409859 40.612881,-73.935031 X
+1 WALK DISTANCE=0.89 km TRANIST TIME=88 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Penn Station -> Jamaica
+1 Jamaica -> Far Rockaway to Atlantic Terminal -> Atlantic Terminal
+1 FLATBUSH AVE & ATLANTIC AVE -> B41 to B41 - KINGS PLAZA via FLATBUSH -> FLATBUSH AVE & AV R
+S 1 0.89 88 Port Jefferson>Far Rockaway>B41
+
+2 WALK DISTANCE=1.48 km TRANIST TIME=118 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Penn Station
+2 9TH AVE & W 34TH ST -> B99 to B99 - MIDWOOD - NOSTRAND AV - AVENUE H -> NOSTRAND AVE & FLATBUSH AVE
+2 AV H & FLATBUSH AVE -> Q35 to Q35 - ROCKAWAY PARK B.116 ST -> FLATBUSH AVE & QUENTIN RD
+S 2 1.48 118 Port Jefferson>B99>Q35
+
+3 WALK DISTANCE=1.48 km TRANIST TIME=120 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Penn Station
+3 9TH AVE & W 34TH ST -> B99 to B99 - MIDWOOD - NOSTRAND AV - AVENUE H -> NOSTRAND AVE & FLATBUSH AVE
+3 AV H & FLATBUSH AVE -> Q35 to Q35 - ROCKAWAY PARK B.116 ST -> FLATBUSH AVE & QUENTIN RD
+S 3 1.48 120 Port Jefferson>B99>Q35
+
+Q N 1609180547411 41.158015,-73.774885 40.710427,-73.737263 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"41.158015,-73.774885","toPlace":"40.710427,-73.737263","maxWalkDistance":"500","time":"01:35 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314200258,"requestDate":1640716500000,"precalculationTime":62,"pathCalculationTime":28,"pathTimes":[],"renderingTime":0,"totalTime":90,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:40-05:00"}}
+
+Q N 1608449699027 40.622175,-73.726183 40.622585,-74.025542 T
+1 WALK DISTANCE=0.47 km TRANIST TIME=56 min 
+1 ---------------------------
+1 Cedarhurst -> Far Rockaway to Atlantic Terminal -> Atlantic Terminal
+1 Atlantic Av-Barclays Ctr -> R to Bay Ridge-95 St -> 86 St
+S 1 0.47 56 Far Rockaway>R
+
+2 WALK DISTANCE=0.47 km TRANIST TIME=55 min 
+2 ---------------------------
+2 Cedarhurst -> Far Rockaway to Penn Station -> Jamaica
+2 Jamaica -> City Zone to Atlantic Terminal -> Atlantic Terminal
+2 Atlantic Av-Barclays Ctr -> R to Bay Ridge-95 St -> 86 St
+S 2 0.47 55 Far Rockaway>City Zone>R
+
+3 WALK DISTANCE=0.47 km TRANIST TIME=57 min 
+3 ---------------------------
+3 Cedarhurst -> Far Rockaway to Atlantic Terminal -> Atlantic Terminal
+3 Atlantic Av-Barclays Ctr -> R to Bay Ridge-95 St -> 86 St
+S 3 0.47 57 Far Rockaway>R
+
+Q N 1608684261388 41.196202,-73.432434 40.700778,-73.789333 X
+1 WALK DISTANCE=0.84 km TRANIST TIME=168 min 
+1 ---------------------------
+1 Wilton -> Danbury to Grand Central -> Grand Central
+1 Grand Central-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+1 MAIN ST & 39TH AVE -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+S 1 0.84 168 Danbury>7>Q44+
+
+2 WALK DISTANCE=0.63 km TRANIST TIME=157 min 
+2 ---------------------------
+2 Wilton -> Danbury to South Norwalk -> South Norwalk
+2 South Norwalk -> New Haven to Grand Central -> Fordham
+2 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 180TH ST
+2 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+S 2 0.63 157 Danbury>New Haven>BX9>Q44+
+
+3 WALK DISTANCE=0.64 km TRANIST TIME=157 min 
+3 ---------------------------
+3 Wilton -> Danbury to South Norwalk -> South Norwalk
+3 South Norwalk -> New Haven to Grand Central -> Grand Central
+3 MADISON AVE & E 42ND ST -> Q32 to Q32 - JACKSON HTS NORTHERN-81 ST via ROOSEVELT -> QUEENS BLVD & 44TH ST
+3 QUEENS BLVD & 44TH ST -> Q60 to Q60 - S. JAMAICA 109 AV via QUEENS BL -> QUEENS BLVD & MAIN ST
+3 QUEENS BLVD & MAIN ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> ARCHER AVE & MERRICK BLVD
+S 3 0.64 157 Danbury>New Haven>Q32>Q60>Q44+
+
+Q N 1608688222846 40.745851,-73.902975 40.764328,-73.825873 T
+1 WALK DISTANCE=0.76 km TRANIST TIME=11 min 
+1 ---------------------------
+1 Woodside-61 St -> 7X to Flushing-Main St -> Flushing-Main St
+S 1 0.76 11 7X
+
+2 WALK DISTANCE=0.42 km TRANIST TIME=13 min 
+2 ---------------------------
+2 Woodside -> Port Washington to Port Washington -> Murray Hill
+2 NORTHERN BLVD & 150TH ST -> Q28 to Q28 - FLUSHING MAIN ST STATION -> NORTHERN BLVD & BOWNE ST
+S 2 0.42 13 Port Washington>Q28
+
+3 WALK DISTANCE=0.76 km TRANIST TIME=15 min 
+3 ---------------------------
+3 Woodside-61 St -> 7 to Flushing-Main St -> Flushing-Main St
+S 3 0.76 15 7
+
+Q N 1608938305159 40.787148,-73.72608 40.681731,-73.983002 W
+1 WALK DISTANCE=0.48 km TRANIST TIME=59 min 
+1 ---------------------------
+1 Great Neck -> Port Washington to Penn Station -> Penn Station
+1 34 St-Penn Station -> 3 to New Lots Av -> Bergen St
+1 BERGEN ST & FLATBUSH AVE -> B65 to B65 - DOWNTOWN BKLYN FULTON MALL -> BERGEN ST & 3RD AVE
+S 1 0.48 59 Port Washington>3>B65
+
+2 WALK DISTANCE=0.48 km TRANIST TIME=59 min 
+2 ---------------------------
+2 Great Neck -> Port Washington to Penn Station -> Penn Station
+2 34 St-Penn Station -> 3 to New Lots Av -> Bergen St
+2 BERGEN ST & FLATBUSH AVE -> B65 to B65 - DOWNTOWN BKLYN FULTON MALL -> BERGEN ST & 3RD AVE
+S 2 0.48 59 Port Washington>3>B65
+
+3 WALK DISTANCE=0.48 km TRANIST TIME=59 min 
+3 ---------------------------
+3 Great Neck -> Port Washington to Penn Station -> Penn Station
+3 34 St-Penn Station -> 3 to New Lots Av -> Bergen St
+3 BERGEN ST & FLATBUSH AVE -> B65 to B65 - DOWNTOWN BKLYN FULTON MALL -> BERGEN ST & 3RD AVE
+S 3 0.48 59 Port Washington>3>B65
+
+Q N 1608358311428 40.642211,-73.658216 40.885533,-73.861662 X
+1 WALK DISTANCE=0.46 km TRANIST TIME=93 min 
+1 ---------------------------
+1 East Rockaway -> Long Beach to Penn Station -> Penn Station
+1 34 St-Penn Station -> 2 to Wakefield-241 St -> 219 St
+S 1 0.46 93 Long Beach>2
+
+2 WALK DISTANCE=0.46 km TRANIST TIME=89 min 
+2 ---------------------------
+2 East Rockaway -> Long Beach to Penn Station -> Penn Station
+2 34 St-Penn Station -> 2 to Wakefield-241 St -> 219 St
+S 2 0.46 89 Long Beach>2
+
+3 WALK DISTANCE=0.46 km TRANIST TIME=94 min 
+3 ---------------------------
+3 East Rockaway -> Long Beach to Jamaica -> Jamaica
+3 Jamaica -> Port Jefferson to Penn Station -> Penn Station
+3 34 St-Penn Station -> 2 to Wakefield-241 St -> 219 St
+S 3 0.46 94 Long Beach>Port Jefferson>2
+
+Q N 1608452134158 41.450181,-73.982449 40.791975,-73.850683 T
+1 WALK DISTANCE=5.00 km TRANIST TIME=137 min 
+1 ---------------------------
+1 Cold Spring -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+1 MAIN ST & ROOSEVELT AVE -> Q25 to Q25 - COLLEGE POINT 5 AV via KISSENA BL via 127 ST -> POPPENHUSEN AVE & 119TH ST
+S 1 5.00 137 Hudson>7>Q25
+
+2 WALK DISTANCE=5.00 km TRANIST TIME=137 min 
+2 ---------------------------
+2 Cold Spring -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+2 MAIN ST & ROOSEVELT AVE -> Q25 to Q25 - COLLEGE POINT 5 AV via KISSENA BL via 127 ST -> POPPENHUSEN AVE & 119TH ST
+S 2 5.00 137 Hudson>7>Q25
+
+3 WALK DISTANCE=5.00 km TRANIST TIME=139 min 
+3 ---------------------------
+3 Cold Spring -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7 to Flushing-Main St -> Flushing-Main St
+3 MAIN ST & ROOSEVELT AVE -> Q25 to Q25 - COLLEGE POINT 5 AV via KISSENA BL via 127 ST -> POPPENHUSEN AVE & 119TH ST
+S 3 5.00 139 Hudson>7>Q25
+
+Q N 1609039364879 41.189918,-73.882461 40.941898,-73.834766 W
+1 WALK DISTANCE=0.03 km TRANIST TIME=92 min 
+1 ---------------------------
+1 Croton-Harmon -> Hudson to Grand Central -> Harlem-125th St.
+1 Harlem-125th St. -> Harlem to North White Plains -> Bronxville
+S 1 0.03 92 Hudson>Harlem
+
+2 WALK DISTANCE=0.03 km TRANIST TIME=96 min 
+2 ---------------------------
+2 Croton-Harmon -> Hudson to Grand Central -> Harlem-125th St.
+2 Harlem-125th St. -> Harlem to North White Plains -> Bronxville
+S 2 0.03 96 Hudson>Harlem
+
+3 WALK DISTANCE=0.00 km TRANIST TIME=77 min 
+3 ---------------------------
+3 Croton-Harmon -> Hudson to Grand Central -> Harlem-125th St.
+3 Harlem-125th St. -> Harlem to North White Plains -> Bronxville
+S 3 0.00 77 Hudson>Harlem
+
+Q N 1608871455153 41.076225,-73.865182 40.807865,-73.852713 W
+1 WALK DISTANCE=0.24 km TRANIST TIME=76 min 
+1 ---------------------------
+1 Tarrytown -> Hudson to Grand Central -> University Heights
+1 W FORDHAM RD & CEDAR AVE -> BX12 to BX12 - BAY PLAZA via FORDHAM RD via PELHAM PKWY -> PELHAM PKWY & WHITE PLAINS RD
+1 WHITE PLAINS RD & PELHAM PKWY -> BX39 to BX39 - CLASON POINT -> SOUNDVIEW AVE & CORNELL AVE
+S 1 0.24 76 Hudson>BX12>BX39
+
+2 WALK DISTANCE=0.24 km TRANIST TIME=77 min 
+2 ---------------------------
+2 Tarrytown -> Hudson to Grand Central -> University Heights
+2 W FORDHAM RD & CEDAR AVE -> BX12 to BX12 - EDSON AV via FORDHAM RD via PELHAM PKY -> PELHAM PKWY & WHITE PLAINS RD
+2 WHITE PLAINS RD & PELHAM PKWY -> BX39 to BX39 - CLASON POINT -> SOUNDVIEW AVE & CORNELL AVE
+S 2 0.24 77 Hudson>BX12>BX39
+
+3 WALK DISTANCE=0.35 km TRANIST TIME=69 min 
+3 ---------------------------
+3 Tarrytown -> Hudson to Grand Central -> Marble Hill
+3 W 225TH ST & BROADWAY -> BX9 to BX9 - WEST FARMS -> BOSTON RD & E 180TH ST
+3 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> WESTCHESTER AVE & VIRGINIA AVE
+3 WHITE PLAINS RD & WESTCHESTER AVE -> BX39 to BX39 - CLASON POINT -> SOUNDVIEW AVE & CORNELL AVE
+S 3 0.35 69 Hudson>BX9>Q44+>BX39
+
+Q N 1608899871841 41.189785,-73.882381 40.878696,-73.904412 T
+1 WALK DISTANCE=0.20 km TRANIST TIME=49 min 
+1 ---------------------------
+1 Croton-Harmon -> Hudson to Grand Central -> Marble Hill
+1 W 225TH ST & BROADWAY -> BX9 to BX9 - RIVERDALE 262 ST -> BROADWAY & W 231ST ST
+S 1 0.20 49 Hudson>BX9
+
+2 WALK DISTANCE=0.20 km TRANIST TIME=50 min 
+2 ---------------------------
+2 Croton-Harmon -> Hudson to Grand Central -> Marble Hill
+2 W 225TH ST & BROADWAY -> BX9 to BX9 - RIVERDALE 262 ST -> BROADWAY & W 231ST ST
+S 2 0.20 50 Hudson>BX9
+
+3 WALK DISTANCE=0.16 km TRANIST TIME=48 min 
+3 ---------------------------
+3 Croton-Harmon -> Hudson to Grand Central -> Marble Hill
+3 Marble Hill-225 St -> 1 to Van Cortlandt Park-242 St -> 231 St
+S 3 0.16 48 Hudson>1
+
+Q N 1609083526847 41.049806,-73.773142 40.736544,-73.853561 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"41.049806,-73.773142","toPlace":"40.736544,-73.853561","maxWalkDistance":"500","time":"10:38 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314208755,"requestDate":1640619480000,"precalculationTime":92,"pathCalculationTime":86,"pathTimes":[],"renderingTime":0,"totalTime":178,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:48-05:00"}}
+
+Q N 1608581676069 40.685015,-73.977505 40.785064,-73.946551 X
+1 WALK DISTANCE=0.14 km TRANIST TIME=31 min 
+1 ---------------------------
+1 Atlantic Av-Barclays Ctr -> Q to 96 St -> 96 St
+S 1 0.14 31 Q
+
+2 WALK DISTANCE=0.48 km TRANIST TIME=33 min 
+2 ---------------------------
+2 Atlantic Av-Barclays Ctr -> 5 to Eastchester-Dyre Av -> Grand Central-42 St
+2 Grand Central-42 St -> 6 to Parkchester -> 96 St
+S 2 0.48 33 5>6
+
+Q N 1608826394349 40.829035,-73.687401 40.625307,-73.960969 T
+1 WALK DISTANCE=0.49 km TRANIST TIME=77 min 
+1 ---------------------------
+1 Port Washington -> Port Washington to Penn Station -> Penn Station
+1 34 St-Herald Sq -> Q to Coney Island-Stillwell Av -> Avenue J
+S 1 0.49 77 Port Washington>Q
+
+2 WALK DISTANCE=0.49 km TRANIST TIME=77 min 
+2 ---------------------------
+2 Port Washington -> Port Washington to Penn Station -> Penn Station
+2 34 St-Herald Sq -> Q to Coney Island-Stillwell Av -> Avenue J
+S 2 0.49 77 Port Washington>Q
+
+3 WALK DISTANCE=0.49 km TRANIST TIME=79 min 
+3 ---------------------------
+3 Port Washington -> Port Washington to Penn Station -> Penn Station
+3 34 St-Herald Sq -> Q to Coney Island-Stillwell Av -> Avenue J
+S 3 0.49 79 Port Washington>Q
+
+Q N 1608471663169 40.949393,-73.830166 40.623325,-73.955643 W
+1 WALK DISTANCE=0.44 km TRANIST TIME=100 min 
+1 ---------------------------
+1 Tuckahoe -> Harlem to Grand Central -> Grand Central
+1 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Franklin Av-Medgar Evers College
+1 BEDFORD AVE & EASTERN PKWY -> B49 to B49 - MANHATTAN BCH KINGSBORO CC via BEDFORD -> OCEAN AVE & AV K
+S 1 0.44 100 Harlem>4>B49
+
+2 WALK DISTANCE=0.44 km TRANIST TIME=104 min 
+2 ---------------------------
+2 Tuckahoe -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Franklin Av-Medgar Evers College
+2 BEDFORD AVE & EASTERN PKWY -> B49 to B49 - MANHATTAN BCH KINGSBORO CC via BEDFORD -> OCEAN AVE & AV K
+S 2 0.44 104 Harlem>4>B49
+
+3 WALK DISTANCE=0.44 km TRANIST TIME=104 min 
+3 ---------------------------
+3 Tuckahoe -> Harlem to Grand Central -> Grand Central
+3 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Franklin Av-Medgar Evers College
+3 BEDFORD AVE & EASTERN PKWY -> B49 to B49 - MANHATTAN BCH KINGSBORO CC via BEDFORD -> OCEAN AVE & AV K
+S 3 0.44 104 Harlem>4>B49
+
+Q N 1608466630588 40.82572,-73.930585 40.83107,-73.887121 X
+1 WALK DISTANCE=1.33 km TRANIST TIME=27 min 
+1 ---------------------------
+1 E 149TH ST & EXTERIOR ST -> BX19 to BX19 - BRONX PARK via 149 ST via SOUTHERN -> SOUTHERN BLVD & JENNINGS ST
+S 1 1.33 27 BX19
+
+2 WALK DISTANCE=0.54 km TRANIST TIME=19 min 
+2 ---------------------------
+2 161 St-Yankee Stadium -> 4 to Woodlawn -> 170 St
+2 W 170TH ST & JEROME AVE -> BX11 to BX11 - WEST FARMS RD SOUTHERN BL -> JENNINGS ST & LONGFELLOW AVE
+S 2 0.54 19 4>BX11
+
+3 WALK DISTANCE=0.46 km TRANIST TIME=33 min 
+3 ---------------------------
+3 RIVER AVE & E 157TH ST -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> W 169TH ST & OGDEN AVE
+3 OGDEN AVE & W 169TH ST -> BX11 to BX11 - WEST FARMS RD SOUTHERN BL -> JENNINGS ST & LONGFELLOW AVE
+S 3 0.46 33 BX13>BX11
+
+Q N 1609170903912 40.751143,-73.993696 40.526111,-74.179921 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.751143,-73.993696","toPlace":"40.526111,-74.179921","maxWalkDistance":"500","time":"10:55 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314215616,"requestDate":1640706900000,"precalculationTime":82,"pathCalculationTime":70,"pathTimes":[],"renderingTime":0,"totalTime":152,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:56:55-05:00"}}
+
+Q N 1608383260658 40.74031,-73.640683 40.869524,-73.846386 W
+1 WALK DISTANCE=0.16 km TRANIST TIME=78 min 
+1 ---------------------------
+1 Mineola -> Oyster Bay to Jamaica -> Jamaica
+1 Jamaica -> Long Beach to Penn Station -> Woodside
+1 Woodside-61 St -> 7 to 34 St-Hudson Yards -> Grand Central-42 St
+1 Grand Central-42 St -> 5 to Eastchester-Dyre Av -> Gun Hill Rd
+S 1 0.16 78 Oyster Bay>Long Beach>7>5
+
+2 WALK DISTANCE=0.35 km TRANIST TIME=79 min 
+2 ---------------------------
+2 Mineola -> Port Jefferson to Penn Station -> Penn Station
+2 34 St-Penn Station -> 2 to Wakefield-241 St -> E 180 St
+2 E 180 St -> 5 to Eastchester-Dyre Av -> Gun Hill Rd
+S 2 0.35 79 Port Jefferson>2>5
+
+3 WALK DISTANCE=0.35 km TRANIST TIME=77 min 
+3 ---------------------------
+3 Mineola -> Port Jefferson to Penn Station -> Penn Station
+3 34 St-Penn Station -> 2 to Wakefield-241 St -> E 180 St
+3 E 180 St -> 5 to Eastchester-Dyre Av -> Gun Hill Rd
+S 3 0.35 77 Port Jefferson>2>5
+
+Q N 1608455313373 40.78764,-73.724737 40.75024,-73.983324 X
+1 WALK DISTANCE=0.85 km TRANIST TIME=35 min 
+1 ---------------------------
+1 Great Neck -> Port Washington to Penn Station -> Penn Station
+S 1 0.85 35 Port Washington
+
+2 WALK DISTANCE=0.85 km TRANIST TIME=36 min 
+2 ---------------------------
+2 Great Neck -> Port Washington to Penn Station -> Penn Station
+S 2 0.85 36 Port Washington
+
+3 WALK DISTANCE=0.85 km TRANIST TIME=36 min 
+3 ---------------------------
+3 Great Neck -> Port Washington to Penn Station -> Penn Station
+S 3 0.85 36 Port Washington
+
+Q N 1608749476456 40.735169,-73.662521 40.812302,-73.936521 X
+1 WALK DISTANCE=0.64 km TRANIST TIME=54 min 
+1 ---------------------------
+1 Merillon Avenue -> Port Jefferson to Penn Station -> Penn Station
+1 34 St-Penn Station -> 3 to Harlem-148 St -> 135 St
+S 1 0.64 54 Port Jefferson>3
+
+2 WALK DISTANCE=0.64 km TRANIST TIME=56 min 
+2 ---------------------------
+2 Merillon Avenue -> Port Jefferson to Penn Station -> Penn Station
+2 34 St-Penn Station -> 3 to Harlem-148 St -> 135 St
+S 2 0.64 56 Port Jefferson>3
+
+3 WALK DISTANCE=0.64 km TRANIST TIME=53 min 
+3 ---------------------------
+3 Merillon Avenue -> Port Jefferson to Penn Station -> Penn Station
+3 34 St-Penn Station -> 2 to Wakefield-241 St -> 135 St
+S 3 0.64 53 Port Jefferson>2
+
+Q N 1609167991270 40.683596,-73.975671 40.799236,-73.962662 T
+1 WALK DISTANCE=6.06 km TRANIST TIME=44 min 
+1 ---------------------------
+1 Atlantic Ave/BBP Pier 6 -> SB to Corlears Hook -> Wall St/Pier 11
+1 Wall St/Pier 11 -> SV to Soundview -> East 90th St
+S 1 6.06 44 SB>SV
+
+2 WALK DISTANCE=6.75 km TRANIST TIME=57 min 
+2 ---------------------------
+2 Dumbo/BBP Pier 1 -> ER to Hunters Point South -> East 34th Street
+2 East 34th Street -> AS to East 90th St -> East 90th St
+S 2 6.75 57 ER>AS
+
+3 WALK DISTANCE=6.75 km TRANIST TIME=46 min 
+3 ---------------------------
+3 Dumbo/BBP Pier 1 -> ER to Hunters Point South -> East 34th Street
+3 East 34th Street -> SV to Soundview -> East 90th St
+S 3 6.75 46 ER>SV
+
+Q N 1608746693830 41.051203,-73.772357 40.752687,-73.877312 W
+1 WALK DISTANCE=0.61 km TRANIST TIME=77 min 
+1 ---------------------------
+1 North White Plains -> Harlem to Grand Central -> Grand Central
+1 Grand Central-42 St -> 7 to Flushing-Main St -> 90 St-Elmhurst Av
+S 1 0.61 77 Harlem>7
+
+2 WALK DISTANCE=0.61 km TRANIST TIME=89 min 
+2 ---------------------------
+2 North White Plains -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to Flushing-Main St -> 90 St-Elmhurst Av
+S 2 0.61 89 Harlem>7
+
+3 WALK DISTANCE=0.61 km TRANIST TIME=77 min 
+3 ---------------------------
+3 North White Plains -> Harlem to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7 to Flushing-Main St -> 90 St-Elmhurst Av
+S 3 0.61 77 Harlem>7
+
+Q N 1608885934444 40.742213,-73.947207 40.703225,-73.820592 T
+1 WALK DISTANCE=1.10 km TRANIST TIME=39 min 
+1 ---------------------------
+1 JACKSON AVE & 21ST ST -> B62 to B62 - L I CITY QUEENS PLAZA -> 28TH ST & QUEENS PLAZA S
+1 QUEENS PLAZA S & 28TH ST -> Q60 to Q60 - S. JAMAICA 109 AV via QUEENS BL -> QUEENS BLVD & JAMAICA AVE
+S 1 1.10 39 B62>Q60
+
+2 WALK DISTANCE=1.05 km TRANIST TIME=29 min 
+2 ---------------------------
+2 Court Sq-23 St -> E to Jamaica Center-Parsons/Archer -> Jamaica-Van Wyck
+S 2 1.05 29 E
+
+3 WALK DISTANCE=0.38 km TRANIST TIME=31 min 
+3 ---------------------------
+3 Hunters Point Av -> 7 to Flushing-Main St -> Court Sq
+3 Court Sq-23 St -> E to Jamaica Center-Parsons/Archer -> Jamaica-Van Wyck
+S 3 0.38 31 7>E
+
+Q N 1609055322465 41.030171,-73.598306 40.64486,-74.01002 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"41.030171,-73.598306","toPlace":"40.64486,-74.01002","maxWalkDistance":"500","time":"02:48 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314220741,"requestDate":1640591280000,"precalculationTime":49,"pathCalculationTime":57,"pathTimes":[],"renderingTime":0,"totalTime":106,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:57:00-05:00"}}
+
+Q N 1608386497673 40.8615,-73.89058 40.846366,-73.935744 X
+1 WALK DISTANCE=0.46 km TRANIST TIME=21 min 
+1 ---------------------------
+1 E FORDHAM RD & WEBSTER AVE -> BX12+ to BX12+ - SELECT BUS BROADWAY INWOOD -> W FORDHAM RD & UNIVERSITY AVE
+1 UNIVERSITY AVE & W FORDHAM RD -> BX3 to BX3 - WASHINGTON HEIGHTS G W BRIDGE -> W 181ST ST & ST NICHOLAS AVE
+S 1 0.46 21 BX12+>BX3
+
+2 WALK DISTANCE=0.48 km TRANIST TIME=26 min 
+2 ---------------------------
+2 WEBSTER AVE & E FORDHAM RD -> BX41 to BX41 - THE HUB 150 ST via WEBSTER -> WEBSTER AVE & E 180TH ST
+2 WEBSTER AVE & E 180TH ST -> BX36 to BX36 - WASHINGTON HEIGHTS G W BRIDGE -> W 181ST ST & ST NICHOLAS AVE
+S 2 0.48 26 BX41>BX36
+
+3 WALK DISTANCE=0.41 km TRANIST TIME=25 min 
+3 ---------------------------
+3 E FORDHAM RD & WEBSTER AVE -> BX12+ to BX12+ - SELECT BUS BROADWAY INWOOD -> BROADWAY & W 207TH ST
+3 BROADWAY & W 207TH ST -> BX7 to BX7 - WASHINGTON HEIGHTS 168 ST via BROADWAY -> BROADWAY & W 176TH ST
+S 3 0.41 25 BX12+>BX7
+
+Q N 1609110879208 40.675478,-73.668864 40.766852,-73.727173 W
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"WALKING","fromPlace":"40.675478,-73.668864","toPlace":"40.766852,-73.727173","maxWalkDistance":"500","time":"06:14 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314221452,"requestDate":1640646840000,"precalculationTime":73,"pathCalculationTime":155,"pathTimes":[],"renderingTime":0,"totalTime":228,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:57:01-05:00"}}
+
+Q N 1608802744439 40.808059,-73.107213 40.757902,-73.789851 W
+1 WALK DISTANCE=0.08 km TRANIST TIME=102 min 
+1 ---------------------------
+1 Ronkonkoma -> Ronkonkoma to Penn Station -> Penn Station
+1 Penn Station -> Port Washington to Great Neck -> Bayside
+1 BELL BLVD & 41ST AVE -> Q13 to Q13 - FLUSHING MAIN ST STATION -> NORTHERN BLVD & 192ND ST
+S 1 0.08 102 Ronkonkoma>Port Washington>Q13
+
+2 WALK DISTANCE=0.44 km TRANIST TIME=83 min 
+2 ---------------------------
+2 Ronkonkoma -> Ronkonkoma to Penn Station -> Woodside
+2 Woodside -> Port Washington to Port Washington -> Auburndale
+S 2 0.44 83 Ronkonkoma>Port Washington
+
+3 WALK DISTANCE=0.15 km TRANIST TIME=103 min 
+3 ---------------------------
+3 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+3 ARCHER AVE & SUTPHIN BLVD -> Q31 to Q31 - BAYSIDE 27 AV FRANCIS LEWIS BL -> BELL BLVD & NORTHERN BLVD
+3 NORTHERN BLVD & BELL BLVD -> Q12 to Q12 - FLUSHING MAIN ST STATION via NORTHERN -> NORTHERN BLVD & 192ND ST
+S 3 0.15 103 Ronkonkoma>Q31>Q12
+
+Q N 1608758844162 40.745851,-73.902975 40.65769,-73.939552 X
+1 WALK DISTANCE=1.03 km TRANIST TIME=53 min 
+1 ---------------------------
+1 Woodside-61 St -> 7 to 34 St-Hudson Yards -> Grand Central-42 St
+1 Grand Central-42 St -> 5 to Flatbush Av-Brooklyn College -> Winthrop St
+S 1 1.03 53 7>5
+
+2 WALK DISTANCE=1.33 km TRANIST TIME=47 min 
+2 ---------------------------
+2 Woodside -> Port Washington to Penn Station -> Penn Station
+2 34 St-Penn Station -> 2 to Flatbush Av-Brooklyn College -> Winthrop St
+S 2 1.33 47 Port Washington>2
+
+Q N 1608440942316 40.853166,-73.409859 40.718245,-73.988472 W
+1 WALK DISTANCE=0.40 km TRANIST TIME=82 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Penn Station -> Penn Station
+1 7TH AVE & W 31ST ST -> M7 to M7 - 14 ST via COLUMBUS via 7 AV -> W 14TH ST & 7TH AVE
+1 W 14TH ST & 7TH AVE -> M14A+ to M14A+ - SELECT BUS LES GRAND-FDR via 14 ST -> ESSEX ST & DELANCEY ST
+S 1 0.40 82 Port Jefferson>M7>M14A+
+
+2 WALK DISTANCE=0.40 km TRANIST TIME=82 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Penn Station
+2 7TH AVE & W 31ST ST -> M7 to M7 - 14 ST via COLUMBUS via 7 AV -> W 14TH ST & 7TH AVE
+2 W 14TH ST & 7TH AVE -> M14A+ to M14A+ - SELECT BUS LES GRAND-FDR via 14 ST -> ESSEX ST & DELANCEY ST
+S 2 0.40 82 Port Jefferson>M7>M14A+
+
+3 WALK DISTANCE=0.51 km TRANIST TIME=95 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Woodside
+3 ROOSEVELT AVE & 64TH ST -> Q32 to Q32 - W 32ND ST & 7TH AVE -> E 60TH ST & 2ND AVE
+3 2ND AVE & E 61ST ST -> M15 to M15 - SOUTH ST & WHITEHALL ST -> ALLEN ST & DELANCEY ST
+S 3 0.51 95 Port Jefferson>Q32>M15
+
+Q N 1608448750968 40.740166,-73.641215 40.742715,-73.992617 W
+1 WALK DISTANCE=0.54 km TRANIST TIME=39 min 
+1 ---------------------------
+1 Mineola -> Port Jefferson to Penn Station -> Penn Station
+1 34 St-Herald Sq -> F to Church Av -> 23 St
+S 1 0.54 39 Port Jefferson>F
+
+2 WALK DISTANCE=0.41 km TRANIST TIME=38 min 
+2 ---------------------------
+2 Mineola -> Port Jefferson to Penn Station -> Penn Station
+2 7TH AVE & W 31ST ST -> M7 to M7 - 14 ST via COLUMBUS via 7 AV -> 7TH AVE & W 23RD ST
+S 2 0.41 38 Port Jefferson>M7
+
+3 WALK DISTANCE=0.68 km TRANIST TIME=35 min 
+3 ---------------------------
+3 Mineola -> Ronkonkoma to Penn Station -> Penn Station
+3 7TH AVE & W 31ST ST -> M7 to M7 - 14 ST via COLUMBUS via 7 AV -> 7TH AVE & W 23RD ST
+S 3 0.68 35 Ronkonkoma>M7
+
+Q N 1608623107828 41.033977,-73.775519 40.853384,-73.9194 W
+1 WALK DISTANCE=0.19 km TRANIST TIME=55 min 
+1 ---------------------------
+1 White Plains -> Harlem to Grand Central -> Harlem-125th St.
+1 Harlem-125th St. -> Hudson to Croton-Harmon -> Morris Heights
+S 1 0.19 55 Harlem>Hudson
+
+2 WALK DISTANCE=0.28 km TRANIST TIME=52 min 
+2 ---------------------------
+2 White Plains -> Harlem to Grand Central -> Tremont
+2 E TREMONT AVE & WASHINGTON AVE -> BX42 to BX42 - RIVER PARK TOWER via TREMONT -> SEDGWICK AVE & W TREMONT AVE
+S 2 0.28 52 Harlem>BX42
+
+3 WALK DISTANCE=0.28 km TRANIST TIME=52 min 
+3 ---------------------------
+3 White Plains -> Harlem to Grand Central -> Tremont
+3 E TREMONT AVE & WASHINGTON AVE -> BX42 to BX42 - RIVER PARK TOWER via TREMONT -> SEDGWICK AVE & W TREMONT AVE
+S 3 0.28 52 Harlem>BX42
+
+Q N 1608721997832 40.740774,-73.63877 40.76295,-73.8646 W
+1 WALK DISTANCE=0.09 km TRANIST TIME=38 min 
+1 ---------------------------
+1 Mineola -> Port Jefferson to Penn Station -> Woodside
+1 Woodside-61 St -> 7 to Flushing-Main St -> 103 St-Corona Plaza
+1 103RD ST & ROOSEVELT AVE -> Q23 to Q23 - EAST ELMHURST DITMARS BL via 108 ST -> 29TH AVE & ERICSSON ST
+S 1 0.09 38 Port Jefferson>7>Q23
+
+2 WALK DISTANCE=0.09 km TRANIST TIME=45 min 
+2 ---------------------------
+2 Mineola -> Oyster Bay to Penn Station -> Woodside
+2 Woodside-61 St -> 7 to Flushing-Main St -> 103 St-Corona Plaza
+2 103RD ST & ROOSEVELT AVE -> Q23 to Q23 - EAST ELMHURST DITMARS BL via 108 ST -> 29TH AVE & ERICSSON ST
+S 2 0.09 45 Oyster Bay>7>Q23
+
+3 WALK DISTANCE=0.20 km TRANIST TIME=54 min 
+3 ---------------------------
+3 Mineola -> Oyster Bay to Penn Station -> Jamaica
+3 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Forest Hills-71 Av
+3 71ST AVE & QUEENS BLVD -> Q23 to Q23 - EAST ELMHURST DITMARS BL via 108 ST -> 29TH AVE & ERICSSON ST
+S 3 0.20 54 Oyster Bay>E>Q23
+
+Q N 1608802510194 41.354222,-72.093229 40.870418,-73.904573 W
+1 WALK DISTANCE=0.19 km TRANIST TIME=155 min 
+1 ---------------------------
+1 New London Union Station -> Acela to Washington Union Station -> Stamford Amtrak Station
+1 Stamford -> New Haven to Grand Central -> Fordham
+1 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> W KINGSBRIDGE RD & KINGSBRIDGE TERR
+S 1 0.19 155 Acela>New Haven>BX9
+
+2 WALK DISTANCE=0.19 km TRANIST TIME=172 min 
+2 ---------------------------
+2 New London Union Station -> Northeast Regional to Norfolk Amtrak Station -> Stamford Amtrak Station
+2 Stamford -> New Haven to Grand Central -> Fordham
+2 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> W KINGSBRIDGE RD & KINGSBRIDGE TERR
+S 2 0.19 172 Northeast Regional>New Haven>BX9
+
+3 WALK DISTANCE=0.19 km TRANIST TIME=170 min 
+3 ---------------------------
+3 New London Union Station -> Northeast Regional to Lynchburg Amtrak Station -> Stamford Amtrak Station
+3 Stamford -> New Haven to Grand Central -> Fordham
+3 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> W KINGSBRIDGE RD & KINGSBRIDGE TERR
+S 3 0.19 170 Northeast Regional>New Haven>BX9
+
+Q N 1609158871979 40.805215,-73.939036 40.681465,-73.890262 X
+1 WALK DISTANCE=11.74 km TRANIST TIME=47 min 
+1 ---------------------------
+1 East 90th St -> AS to Wall St./Pier 11 -> East 34th Street
+1 East 34th Street -> ER to Wall St./Pier 11 -> South Williamsburg
+S 1 11.74 47 AS>ER
+
+2 WALK DISTANCE=11.74 km TRANIST TIME=35 min 
+2 ---------------------------
+2 East 90th St -> SV to Wall St./Pier 11 -> East 34th Street
+2 East 34th Street -> ER to Wall St./Pier 11 -> South Williamsburg
+S 2 11.74 35 SV>ER
+
+Q N 1608771717790 41.157663,-73.869281 40.713063,-74.004131 X
+1 WALK DISTANCE=0.21 km TRANIST TIME=70 min 
+1 ---------------------------
+1 Ossining -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 6 to Brooklyn Bridge-City Hall -> Brooklyn Bridge-City Hall
+S 1 0.21 70 Hudson>6
+
+2 WALK DISTANCE=0.21 km TRANIST TIME=80 min 
+2 ---------------------------
+2 Ossining -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 4 to New Lots Av -> Brooklyn Bridge-City Hall
+S 2 0.21 80 Hudson>4
+
+3 WALK DISTANCE=0.21 km TRANIST TIME=64 min 
+3 ---------------------------
+3 Ossining -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 4 to New Lots Av -> Brooklyn Bridge-City Hall
+S 3 0.21 64 Hudson>4
+
+Q N 1608968097977 41.505829,-73.984956 40.779589,-73.981511 W
+1 WALK DISTANCE=0.16 km TRANIST TIME=114 min 
+1 ---------------------------
+1 Beacon -> Hudson to Grand Central -> Harlem-125th St.
+1 E 125TH ST & PARK AVE -> M60+ to M60+ - SELECT BUS WEST SIDE BROADWAY-106 ST -> BROADWAY & W 116TH ST
+1 BROADWAY & W 116TH ST -> M104 to M104 - 41 ST via BROADWAY/7 AV -> BROADWAY & W 74TH ST
+S 1 0.16 114 Hudson>M60+>M104
+
+2 WALK DISTANCE=0.18 km TRANIST TIME=111 min 
+2 ---------------------------
+2 Beacon -> Hudson to Grand Central -> Tarrytown
+2 Tarrytown -> Hudson to Grand Central -> Marble Hill
+2 Marble Hill-225 St -> 1 to South Ferry -> 72 St
+S 2 0.18 111 Hudson>Hudson>1
+
+3 WALK DISTANCE=0.18 km TRANIST TIME=111 min 
+3 ---------------------------
+3 Beacon -> Hudson to Grand Central -> Tarrytown
+3 Tarrytown -> Hudson to Grand Central -> Marble Hill
+3 Marble Hill-225 St -> 1 to South Ferry -> 72 St
+S 3 0.18 111 Hudson>Hudson>1
+
+Q N 1608415627163 40.920323,-73.128549 40.755033,-73.9221 W
+1 WALK DISTANCE=0.23 km TRANIST TIME=102 min 
+1 ---------------------------
+1 Stony Brook -> Port Jefferson to Huntington -> Huntington
+1 Huntington -> Port Jefferson to Penn Station -> Woodside
+1 Woodside-61 St -> 7 to Flushing-Main St -> 74 St-Broadway
+1 Jackson Hts-Roosevelt Av -> R to Bay Ridge-95 St -> Steinway St
+S 1 0.23 102 Port Jefferson>Port Jefferson>7>R
+
+2 WALK DISTANCE=0.44 km TRANIST TIME=107 min 
+2 ---------------------------
+2 Stony Brook -> Port Jefferson to Huntington -> Huntington
+2 Huntington -> Port Jefferson to Penn Station -> Forest Hills
+2 Forest Hills-71 Av -> R to Bay Ridge-95 St -> Steinway St
+S 2 0.44 107 Port Jefferson>Port Jefferson>R
+
+3 WALK DISTANCE=0.55 km TRANIST TIME=121 min 
+3 ---------------------------
+3 Stony Brook LIRR -> 3D to 3D -> E Suffolk Ave/Lowell Ave
+3 Central Islip -> Ronkonkoma to Penn Station -> Woodside
+3 Woodside-61 St -> 7 to 34 St-Hudson Yards -> Queensboro Plaza
+3 QUEENS PLAZA S & 27TH ST -> Q101 to Q101 - STEINWAY 19 AV via STEINWAY ST -> STEINWAY ST & 35TH AVE
+S 3 0.55 121 3D>Ronkonkoma>7>Q101
+
+Q N 1608892013433 40.665949,-73.735548 40.729614,-73.744602 W
+1 WALK DISTANCE=0.12 km TRANIST TIME=36 min 
+1 ---------------------------
+1 Rosedale -> Long Beach to Penn Station -> Jamaica
+1 ARCHER AVE & SUTPHIN BLVD -> Q43 to Q43 - FLORAL PARK 268 ST via HILLSIDE -> HILLSIDE AVE & SPRINGFIELD BLVD
+S 1 0.12 36 Long Beach>Q43
+
+2 WALK DISTANCE=0.12 km TRANIST TIME=35 min 
+2 ---------------------------
+2 Rosedale -> Long Beach to Penn Station -> Jamaica
+2 ARCHER AVE & SUTPHIN BLVD -> Q43 to Q43 - FLORAL PARK 268 ST via HILLSIDE -> HILLSIDE AVE & SPRINGFIELD BLVD
+S 2 0.12 35 Long Beach>Q43
+
+3 WALK DISTANCE=0.07 km TRANIST TIME=50 min 
+3 ---------------------------
+3 FRANCIS LEWIS BLVD & SUNRISE HWY -> Q5 to Q5 - JAMAICA PARSONS-ARCHER via MERRICK -> ARCHER AVE & PARSONS BLVD
+3 Jamaica Center-Parsons/Archer -> J to Broad St -> Sutphin Blvd-Archer Av-JFK Airport
+3 ARCHER AVE & SUTPHIN BLVD -> Q43 to Q43 - FLORAL PARK 268 ST via HILLSIDE -> HILLSIDE AVE & SPRINGFIELD BLVD
+S 3 0.07 50 Q5>J>Q43
+
+Q N 1608542941209 41.70679,-73.93816 40.634332,-74.118984 W
+1 WALK DISTANCE=0.21 km TRANIST TIME=166 min 
+1 ---------------------------
+1 Poughkeepsie -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Wall St
+1 BROADWAY & RECTOR ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> HYLAN BLVD & CLOVE RD
+1 HYLAN BLVD & CLOVE RD -> S53 to S53 - PORT RICHMOND -> CASTLETON AVE & CAROLINE ST
+S 1 0.21 166 Hudson>4>SIM1C>S53
+
+2 WALK DISTANCE=0.32 km TRANIST TIME=171 min 
+2 ---------------------------
+2 Poughkeepsie -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Wall St
+2 BROADWAY & RECTOR ST -> SIM33C to SIM33C - MARINERS HARBOR via N GANNON AV -> NARROWS RD N & TARGEE ST
+2 NARROWS RD N & RHINE AVE -> S53 to S53 - PORT RICHMOND -> CASTLETON AVE & CAROLINE ST
+S 2 0.32 171 Hudson>4>SIM33C>S53
+
+3 WALK DISTANCE=0.25 km TRANIST TIME=161 min 
+3 ---------------------------
+3 Poughkeepsie -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 5 to Flatbush Av-Brooklyn College -> Bowling Green
+3 BROADWAY & MORRIS ST -> SIM33C to SIM33C - MARINERS HARBOR via N GANNON AV -> N GANNON AVE & MANOR RD
+3 MANOR RD & N GANNON AVE -> S54 to S54 - W NEW BRIGHTON RICHMOND TERR -> CASTLETON AVE & CAROLINE ST
+S 3 0.25 161 Hudson>5>SIM33C>S54
+
+Q N 1608317061342 40.853246,-73.409123 40.779468,-73.955905 W
+1 WALK DISTANCE=0.15 km TRANIST TIME=69 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Jamaica -> Jamaica
+1 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Lexington Av/53 St
+1 51 St -> 6 to Parkchester -> 86 St
+S 1 0.15 69 Port Jefferson>E>6
+
+2 WALK DISTANCE=0.15 km TRANIST TIME=79 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Jamaica
+2 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Lexington Av/53 St
+2 51 St -> 6 to Parkchester -> 86 St
+S 2 0.15 79 Port Jefferson>E>6
+
+3 WALK DISTANCE=0.15 km TRANIST TIME=81 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Jamaica
+3 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Lexington Av/53 St
+3 51 St -> 6X to Pelham Bay Park -> 86 St
+S 3 0.15 81 Port Jefferson>E>6X
+
+Q N 1608894537167 40.681015,-73.39834 40.851691,-73.93797 X
+1 WALK DISTANCE=0.30 km TRANIST TIME=92 min 
+1 ---------------------------
+1 Copiague -> Babylon to Penn Station -> Penn Station
+1 34 St-Penn Station -> A to Inwood-207 St -> 181 St
+S 1 0.30 92 Babylon>A
+
+2 WALK DISTANCE=0.30 km TRANIST TIME=90 min 
+2 ---------------------------
+2 Copiague -> Babylon to Penn Station -> Penn Station
+2 34 St-Penn Station -> A to Inwood-207 St -> 181 St
+S 2 0.30 90 Babylon>A
+
+3 WALK DISTANCE=0.30 km TRANIST TIME=93 min 
+3 ---------------------------
+3 Copiague -> Babylon to Penn Station -> Penn Station
+3 34 St-Penn Station -> A to Inwood-207 St -> 181 St
+S 3 0.30 93 Babylon>A
+
+Q N 1608842289347 40.807871,-73.107182 40.727153,-73.881013 T
+1 WALK DISTANCE=0.03 km TRANIST TIME=98 min 
+1 ---------------------------
+1 Ronkonkoma -> Ronkonkoma to Penn Station -> Woodside
+1 Woodside-61 St -> 7 to Mets-Willets Point -> 69 St
+1 69TH ST & ROOSEVELT AVE -> Q47 to Q47 - GLENDALE ATLAS PK MALL -> 80TH ST & 58TH AVE
+S 1 0.03 98 Ronkonkoma>7>Q47
+
+2 WALK DISTANCE=0.16 km TRANIST TIME=91 min 
+2 ---------------------------
+2 Ronkonkoma -> Ronkonkoma to Penn Station -> Woodside
+2 WOODSIDE AVE & 63RD ST -> Q18 to Q18 - MASPETH GRAND AV -> 69TH ST & 50TH AVE
+2 69TH ST & 50TH AVE -> Q47 to Q47 - GLENDALE ATLAS PK MALL -> 80TH ST & 58TH AVE
+S 2 0.16 91 Ronkonkoma>Q18>Q47
+
+3 WALK DISTANCE=0.03 km TRANIST TIME=95 min 
+3 ---------------------------
+3 Ronkonkoma -> Ronkonkoma to Penn Station -> Woodside
+3 Woodside-61 St -> 7 to Flushing-Main St -> 69 St
+3 69TH ST & ROOSEVELT AVE -> Q47 to Q47 - GLENDALE ATLAS PK MALL -> 80TH ST & 58TH AVE
+S 3 0.03 95 Ronkonkoma>7>Q47
+
+Q N 1608527687877 41.208242,-73.729778 40.721076,-73.790372 T
+1 WALK DISTANCE=0.84 km TRANIST TIME=134 min 
+1 ---------------------------
+1 Mount Kisco -> Harlem to Grand Central -> Grand Central
+1 MADISON AVE & E 42ND ST -> Q32 to Q32 - JACKSON HTS NORTHERN-81 ST via ROOSEVELT -> QUEENS BLVD & 44TH ST
+1 QUEENS BLVD & 44TH ST -> Q60 to Q60 - S. JAMAICA 109 AV via QUEENS BL -> QUEENS BLVD & UNION TPK
+1 QUEENS BLVD & 78TH AVE -> Q46 to Q46 - LAKE SUCCESS LIJ HOSPITAL via UNION -> UNION TNPK & UTOPIA PKWY
+S 1 0.84 134 Harlem>Q32>Q60>Q46
+
+2 WALK DISTANCE=0.30 km TRANIST TIME=125 min 
+2 ---------------------------
+2 Mount Kisco -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to 34 St-Hudson Yards -> 5 Av
+2 42 St-Bryant Pk -> F to Jamaica-179 St -> 169 St
+2 HILLSIDE AVE & HOMELAWN ST -> Q30 to Q30 - QUEENSBOROUGH COMMUNITY COLLEGE -> UTOPIA PKWY & KILDARE RD
+S 2 0.30 125 Harlem>7>F>Q30
+
+3 WALK DISTANCE=0.56 km TRANIST TIME=108 min 
+3 ---------------------------
+3 Mount Kisco -> Harlem to Grand Central -> Harlem-125th St.
+3 125 St -> 4 to Crown Hts-Utica Av -> 59 St
+3 Lexington Av/63 St -> F to Jamaica-179 St -> 169 St
+3 HILLSIDE AVE & HOMELAWN ST -> Q30 to Q30 - QUEENSBOROUGH COMMUNITY COLLEGE -> UTOPIA PKWY & KILDARE RD
+S 3 0.56 108 Harlem>4>F>Q30
+
+Q N 1608698689581 41.39447,-73.619802 40.83401,-73.854451 X
+1 WALK DISTANCE=0.41 km TRANIST TIME=115 min 
+1 ---------------------------
+1 Brewster -> Harlem to Grand Central -> Harlem-125th St.
+1 125 St -> 6 to Pelham Bay Park -> Castle Hill Av
+S 1 0.41 115 Harlem>6
+
+2 WALK DISTANCE=0.41 km TRANIST TIME=108 min 
+2 ---------------------------
+2 Brewster -> Harlem to Grand Central -> Harlem-125th St.
+2 125 St -> 6 to Pelham Bay Park -> Castle Hill Av
+S 2 0.41 108 Harlem>6
+
+3 WALK DISTANCE=0.56 km TRANIST TIME=90 min 
+3 ---------------------------
+3 Brewster -> Harlem to Grand Central -> Fordham
+3 E FORDHAM RD & 3RD AVE -> BX12 to BX12 - EDSON AV via FORDHAM RD via PELHAM PKY -> PELHAM PKWY & WHITE PLAINS RD
+3 BOSTON RD & PELHAM PKWY -> BX22 to BX22 - CASTLE HILL PARK - ZEREGA AVENUE -> UNIONPORT RD & STARLING AVE
+S 3 0.56 90 Harlem>BX12>BX22
+
+Q N 1608972361486 40.852423,-73.410902 40.676313,-73.872201 X
+1 WALK DISTANCE=0.33 km TRANIST TIME=73 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Jamaica -> Jamaica
+1 SUTPHIN BLVD & ARCHER AVE -> Q8 to Q8 - SPRING CREEK GATEWAY MALL via 101 AV -> PITKIN AVE & EUCLID AVE
+S 1 0.33 73 Port Jefferson>Q8
+
+2 WALK DISTANCE=0.33 km TRANIST TIME=75 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Jamaica
+2 SUTPHIN BLVD & ARCHER AVE -> Q8 to Q8 - SPRING CREEK GATEWAY MALL via 101 AV -> PITKIN AVE & EUCLID AVE
+S 2 0.33 75 Port Jefferson>Q8
+
+3 WALK DISTANCE=0.33 km TRANIST TIME=70 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Jamaica
+3 SUTPHIN BLVD & ARCHER AVE -> Q8 to Q8 - SPRING CREEK GATEWAY MALL via 101 AV -> PITKIN AVE & EUCLID AVE
+S 3 0.33 70 Port Jefferson>Q8
+
+Q N 1608958511081 40.680249,-73.420312 40.764344,-73.930223 W
+1 WALK DISTANCE=0.43 km TRANIST TIME=77 min 
+1 ---------------------------
+1 Amityville -> Babylon to Penn Station -> Woodside
+1 ROOSEVELT AVE & 64TH ST -> Q32 to Q32 - W 32ND ST & 7TH AVE -> QUEENS BLVD & QUEENS PLAZA E
+1 JACKSON AVE & 42ND RD -> Q100-LTD to Q100 - LIMITED RIKERS IS -> 21ST ST & BROADWAY
+S 1 0.43 77 Babylon>Q32>Q100-LTD
+
+2 WALK DISTANCE=0.68 km TRANIST TIME=81 min 
+2 ---------------------------
+2 Amityville -> Babylon to Penn Station -> Woodside
+2 ROOSEVELT AVE & 64TH ST -> Q32 to Q32 - W 32ND ST & 7TH AVE -> QUEENS BLVD & QUEENS PLAZA E
+2 JACKSON AVE & ORCHARD ST -> Q102 to Q102 - ASTORIA 27 AV via 31 ST -> 31ST ST & BROADWAY
+S 2 0.68 81 Babylon>Q32>Q102
+
+3 WALK DISTANCE=0.40 km TRANIST TIME=94 min 
+3 ---------------------------
+3 Amityville -> Babylon to Penn Station -> Jamaica
+3 SUTPHIN BLVD & ARCHER AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & QUEENS PLAZA E
+3 JACKSON AVE & 42ND RD -> Q100-LTD to Q100 - LIMITED RIKERS IS -> 21ST ST & BROADWAY
+S 3 0.40 94 Babylon>Q60>Q100-LTD
+
+Q N 1608389969612 41.412696,-73.623089 40.643586,-74.0731 X
+1 WALK DISTANCE=0.71 km TRANIST TIME=140 min 
+1 ---------------------------
+1 Southeast -> Harlem to Grand Central -> Grand Central
+1 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Bowling Green
+1 Whitehall Ferry Terminal -> Staten Island Ferry to St. George Ferry Terminal -> St. George Ferry Terminal
+S 1 0.71 140 Harlem>4>Staten Island Ferry
+
+2 WALK DISTANCE=0.71 km TRANIST TIME=139 min 
+2 ---------------------------
+2 Southeast -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Bowling Green
+2 Whitehall Ferry Terminal -> Staten Island Ferry to St. George Ferry Terminal -> St. George Ferry Terminal
+S 2 0.71 139 Harlem>4>Staten Island Ferry
+
+3 WALK DISTANCE=0.71 km TRANIST TIME=139 min 
+3 ---------------------------
+3 Southeast -> Harlem to Grand Central -> Grand Central
+3 Grand Central-42 St -> 4 to Crown Hts-Utica Av -> Bowling Green
+3 Whitehall Ferry Terminal -> Staten Island Ferry to St. George Ferry Terminal -> St. George Ferry Terminal
+S 3 0.71 139 Harlem>4>Staten Island Ferry
+
+Q N 1608952590102 41.450181,-73.982449 40.700765,-73.807883 T
+1 WALK DISTANCE=5.11 km TRANIST TIME=136 min 
+1 ---------------------------
+1 Cold Spring -> Hudson to Croton-Harmon -> Croton-Harmon
+1 Croton-Harmon -> Hudson to Grand Central -> Marble Hill
+1 Marble Hill-225 St -> 1 to South Ferry -> 34 St-Penn Station
+1 Penn Station -> Babylon to Babylon -> Jamaica
+S 1 5.11 136 Hudson>Hudson>1>Babylon
+
+2 WALK DISTANCE=5.02 km TRANIST TIME=115 min 
+2 ---------------------------
+2 Cold Spring -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to Flushing-Main St -> Woodside-61 St
+2 Woodside -> Long Beach to Long Beach -> Jamaica
+S 2 5.02 115 Hudson>7>Long Beach
+
+3 WALK DISTANCE=5.02 km TRANIST TIME=115 min 
+3 ---------------------------
+3 Cold Spring -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7 to Flushing-Main St -> Woodside-61 St
+3 Woodside -> Port Jefferson to Huntington -> Jamaica
+S 3 5.02 115 Hudson>7>Port Jefferson
+
+Q N 1608853974307 41.494204,-73.052655 40.626665,-74.015032 X
+1 WALK DISTANCE=1.53 km TRANIST TIME=155 min 
+1 ---------------------------
+1 Naugatuck -> Waterbury to Bridgeport -> Bridgeport
+1 Bridgeport Amtrak Station -> Northeast Regional to Washington Union Station -> New York Penn Station
+1 34 St-Herald Sq -> N to Coney Island-Stillwell Av -> Fort Hamilton Pkwy
+S 1 1.53 155 Waterbury>Northeast Regional>N
+
+2 WALK DISTANCE=1.38 km TRANIST TIME=205 min 
+2 ---------------------------
+2 Naugatuck -> Waterbury to Bridgeport -> Bridgeport
+2 Bridgeport -> New Haven to Grand Central -> Harlem-125th St.
+2 125 St -> 6 to Brooklyn Bridge-City Hall -> Canal St
+2 CANAL ST & BROADWAY -> B99 to B99 - MIDWOOD - NOSTRAND AV - AVENUE H -> FLATBUSH AVE & ATLANTIC AVE
+2 ATLANTIC AVE & 4TH AVE -> B63 to B63 - BAY RIDGE SHORE RD via 5 AV -> 5TH AVE & BAY RIDGE PKWY
+S 2 1.38 205 Waterbury>New Haven>6>B99>B63
+
+Q N 1609092672764 41.354222,-72.093229 40.683928,-73.978412 T
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-27-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"QUICK","fromPlace":"41.354222,-72.093229","toPlace":"40.683928,-73.978412","maxWalkDistance":"500","time":"01:11 PM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314247977,"requestDate":1640628660000,"precalculationTime":86,"pathCalculationTime":20,"pathTimes":[],"renderingTime":0,"totalTime":106,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:57:27-05:00"}}
+
+Q N 1608521291998 40.8253,-73.9299 40.764572,-73.977873 T
+1 WALK DISTANCE=0.99 km TRANIST TIME=18 min 
+1 ---------------------------
+1 RIVER AVE & E 151ST ST -> BX13 to BX13 - WASHINGTON HEIGHTS G.W. BRIDGE -> E 161ST ST & RIVER AVE
+1 161 St-Yankee Stadium -> D to Coney Island-Stillwell Av -> 59 St-Columbus Circle
+S 1 0.99 18 BX13>D
+
+2 WALK DISTANCE=1.15 km TRANIST TIME=24 min 
+2 ---------------------------
+2 Yankees-E153 St. -> Hudson to Grand Central -> Grand Central
+2 MADISON AVE & E 42ND ST -> M1 to M1 - HARLEM 147 ST via MADISON AV -> MADISON AVE & E 55TH ST
+S 2 1.15 24 Hudson>M1
+
+3 WALK DISTANCE=1.04 km TRANIST TIME=36 min 
+3 ---------------------------
+3 Yankees-E153 St. -> Hudson to Croton-Harmon -> Marble Hill
+3 Marble Hill-225 St -> 1 to South Ferry -> 59 St-Columbus Circle
+S 3 1.04 36 Hudson>1
+
+Q N 1609007210765 41.706826,-73.937833 40.75794,-73.928573 X
+1 WALK DISTANCE=0.75 km TRANIST TIME=112 min 
+1 ---------------------------
+1 Poughkeepsie Amtrak Station -> Empire Service to New York Penn Station -> New York Penn Station
+1 34 St-Herald Sq -> N to Astoria-Ditmars Blvd -> 36 Av
+S 1 0.75 112 Empire Service>N
+
+2 WALK DISTANCE=0.75 km TRANIST TIME=112 min 
+2 ---------------------------
+2 Poughkeepsie Amtrak Station -> Ethan Allen Express to New York Penn Station -> New York Penn Station
+2 34 St-Herald Sq -> N to Astoria-Ditmars Blvd -> 36 Av
+S 2 0.75 112 Ethan Allen Express>N
+
+3 WALK DISTANCE=0.38 km TRANIST TIME=129 min 
+3 ---------------------------
+3 Poughkeepsie -> Hudson to Grand Central -> Harlem-125th St.
+3 E 125TH ST & MADISON AVE -> M60+ to M60+ - SELECT BUS LA GUARDIA AIRPORT -> ASTORIA BLVD & 31ST ST
+3 Astoria Blvd -> N to Coney Island-Stillwell Av -> 36 Av
+S 3 0.38 129 Hudson>M60+>N
+
+Q N 1608555197304 40.787151,-73.726678 40.704919,-73.809402 X
+1 WALK DISTANCE=0.56 km TRANIST TIME=32 min 
+1 ---------------------------
+1 Great Neck -> Port Washington to Penn Station -> Woodside
+1 Woodside -> Port Jefferson to Huntington -> Jamaica
+S 1 0.56 32 Port Washington>Port Jefferson
+
+2 WALK DISTANCE=0.32 km TRANIST TIME=46 min 
+2 ---------------------------
+2 Great Neck -> Port Washington to Penn Station -> Flushing Main Street
+2 MAIN ST & 41ST AVE -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> SUTPHIN BLVD & HILLSIDE AVE
+S 2 0.32 46 Port Washington>Q44+
+
+3 WALK DISTANCE=0.32 km TRANIST TIME=46 min 
+3 ---------------------------
+3 Great Neck -> Port Washington to Penn Station -> Flushing Main Street
+3 MAIN ST & 41ST AVE -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> SUTPHIN BLVD & HILLSIDE AVE
+S 3 0.32 46 Port Washington>Q44+
+
+Q N 1608905942448 40.769484,-73.293565 40.573668,-74.131991 W
+1 WALK DISTANCE=0.39 km TRANIST TIME=139 min 
+1 ---------------------------
+1 Deer Park -> Ronkonkoma to Penn Station -> Penn Station
+1 34 St-Penn Station -> A to Far Rockaway-Mott Av -> Chambers St
+1 BROADWAY & BARCLAY ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> ELTINGVILLE & TRANSIT CENTER
+1 ELTINGVILLE & TRANSIT CENTER -> S74 to S74 - ST GEORGE FERRY -> RICHMOND RD & ALTOONA AVE
+S 1 0.39 139 Ronkonkoma>A>SIM1C>S74
+
+2 WALK DISTANCE=0.39 km TRANIST TIME=140 min 
+2 ---------------------------
+2 Deer Park -> Ronkonkoma to Penn Station -> Penn Station
+2 34 St-Penn Station -> A to Far Rockaway-Mott Av -> Chambers St
+2 BROADWAY & BARCLAY ST -> SIM1C to SIM1C - ELTNGVLLE TRANS CTR  via HYLAN via RICH -> ELTINGVILLE & TRANSIT CENTER
+2 ELTINGVILLE & TRANSIT CENTER -> S74 to S74 - ST GEORGE FERRY -> RICHMOND RD & ALTOONA AVE
+S 2 0.39 140 Ronkonkoma>A>SIM1C>S74
+
+Q N 1608837331087 40.881836,-73.917936 40.753507,-73.96696 X
+1 WALK DISTANCE=1.50 km TRANIST TIME=33 min 
+1 ---------------------------
+1 Spuyten Duyvil -> Hudson to Grand Central -> Grand Central
+S 1 1.50 33 Hudson
+
+2 WALK DISTANCE=0.72 km TRANIST TIME=67 min 
+2 ---------------------------
+2 HENRY HUDSON PKWY W & W 227TH ST -> BXM1 to BxM1 - EAST MIDTOWN 34 ST via LEX AV -> LEXINGTON AVE & E 50TH ST
+S 2 0.72 67 BXM1
+
+3 WALK DISTANCE=1.50 km TRANIST TIME=30 min 
+3 ---------------------------
+3 Spuyten Duyvil -> Hudson to Grand Central -> Grand Central
+S 3 1.50 30 Hudson
+
+Q N 1608797791290 41.072819,-73.772599 40.823791,-73.944726 W
+1 WALK DISTANCE=0.08 km TRANIST TIME=61 min 
+1 ---------------------------
+1 Valhalla -> Harlem to Grand Central -> Fordham
+1 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> E KINGSBRIDGE RD & GRAND CONCOURSE
+1 Kingsbridge Rd -> D to Coney Island-Stillwell Av -> 145 St
+S 1 0.08 61 Harlem>BX9>D
+
+2 WALK DISTANCE=0.14 km TRANIST TIME=58 min 
+2 ---------------------------
+2 Valhalla -> Harlem to Grand Central -> Harlem-125th St.
+2 E 125TH ST & PARK AVE -> BX15-LTD to BX15 - LIMITED WEST HARLEM 12 AV via 3 AV -> W 125TH ST & ST NICHOLAS AVE
+2 125 St -> D to Norwood-205 St -> 145 St
+S 2 0.14 58 Harlem>BX15-LTD>D
+
+3 WALK DISTANCE=0.14 km TRANIST TIME=57 min 
+3 ---------------------------
+3 Valhalla -> Harlem to Grand Central -> Harlem-125th St.
+3 E 125TH ST & PARK AVE -> BX15-LTD to BX15 - LIMITED WEST HARLEM 12 AV via 3 AV -> W 125TH ST & ST NICHOLAS AVE
+3 125 St -> A to Inwood-207 St -> 145 St
+S 3 0.14 57 Harlem>BX15-LTD>A
+
+Q N 1608636094049 40.810699,-73.695214 40.810556,-73.950761 X
+1 WALK DISTANCE=0.40 km TRANIST TIME=54 min 
+1 ---------------------------
+1 Plandome -> Port Washington to Penn Station -> Penn Station
+1 34 St-Penn Station -> A to Inwood-207 St -> 125 St
+S 1 0.40 54 Port Washington>A
+
+2 WALK DISTANCE=0.40 km TRANIST TIME=47 min 
+2 ---------------------------
+2 Plandome -> Port Washington to Penn Station -> Penn Station
+2 34 St-Penn Station -> A to Inwood-207 St -> 125 St
+S 2 0.40 47 Port Washington>A
+
+3 WALK DISTANCE=0.40 km TRANIST TIME=47 min 
+3 ---------------------------
+3 Plandome -> Port Washington to Penn Station -> Penn Station
+3 34 St-Penn Station -> A to Inwood-207 St -> 125 St
+S 3 0.40 47 Port Washington>A
+
+Q N 1608808587748 40.6688,-73.52886 40.5754,-73.982971 T
+1 WALK DISTANCE=0.37 km TRANIST TIME=71 min 
+1 ---------------------------
+1 Bellmore -> Babylon to Penn Station -> Jamaica
+1 Jamaica -> Far Rockaway to Atlantic Terminal -> Atlantic Terminal
+1 Atlantic Av-Barclays Ctr -> N to Coney Island-Stillwell Av -> Coney Island-Stillwell Av
+S 1 0.37 71 Babylon>Far Rockaway>N
+
+2 WALK DISTANCE=0.37 km TRANIST TIME=77 min 
+2 ---------------------------
+2 Bellmore -> Babylon to Atlantic Terminal -> Atlantic Terminal
+2 Atlantic Av-Barclays Ctr -> N to Coney Island-Stillwell Av -> Coney Island-Stillwell Av
+S 2 0.37 77 Babylon>N
+
+3 WALK DISTANCE=0.37 km TRANIST TIME=85 min 
+3 ---------------------------
+3 Bellmore -> Babylon to Atlantic Terminal -> Atlantic Terminal
+3 Atlantic Av-Barclays Ctr -> Q to Coney Island-Stillwell Av -> Coney Island-Stillwell Av
+S 3 0.37 85 Babylon>Q
+
+Q N 1608343230613 41.259552,-73.684155 40.673398,-73.764353 W
+1 WALK DISTANCE=0.34 km TRANIST TIME=147 min 
+1 ---------------------------
+1 Katonah -> Harlem to Grand Central -> Grand Central
+1 MADISON AVE & E 42ND ST -> M2 to M2 - WASHINGTON HTS BWAY-168 ST via MADISON -> MADISON AVE & E 52ND ST
+1 5 Av/53 St -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+1 ARCHER AVE & PARSONS BLVD -> Q85 to Q85 - ROSEDALE 147 AV -> BEDELL ST & FARMERS BLVD
+S 1 0.34 147 Harlem>M2>E>Q85
+
+2 WALK DISTANCE=0.51 km TRANIST TIME=114 min 
+2 ---------------------------
+2 Katonah -> Harlem to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to Flushing-Main St -> Woodside-61 St
+2 Woodside -> Babylon to Babylon -> Jamaica
+2 Jamaica -> Far Rockaway to Far Rockaway -> Locust Manor
+S 2 0.51 114 Harlem>7>Babylon>Far Rockaway
+
+Q N 1608391658244 40.723102,-73.640361 40.609796,-73.93152 T
+1 WALK DISTANCE=0.39 km TRANIST TIME=78 min 
+1 ---------------------------
+1 Garden City -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+1 Atlantic Av-Barclays Ctr -> Q to Coney Island-Stillwell Av -> Kings Hwy
+1 E 16TH ST & QUENTIN RD -> B2 to B2 - KINGS PLAZA -> E 36TH ST & AV S
+S 1 0.39 78 Hempstead>Q>B2
+
+2 WALK DISTANCE=0.85 km TRANIST TIME=92 min 
+2 ---------------------------
+2 Garden City -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+2 FLATBUSH AVE & ATLANTIC AVE -> B41-LTD to B41 - LIMITED KINGS PLAZA via FLATBUSH -> FLATBUSH AVE & AV S
+S 2 0.85 92 Hempstead>B41-LTD
+
+3 WALK DISTANCE=0.39 km TRANIST TIME=78 min 
+3 ---------------------------
+3 Garden City -> Hempstead to Atlantic Terminal -> Atlantic Terminal
+3 Atlantic Av-Barclays Ctr -> Q to Coney Island-Stillwell Av -> Kings Hwy
+3 E 16TH ST & QUENTIN RD -> B2 to B2 - KINGS PLAZA -> E 36TH ST & AV S
+S 3 0.39 78 Hempstead>Q>B2
+
+Q N 1608837404488 40.950496,-73.899062 40.747845,-73.946003 X
+1 WALK DISTANCE=0.31 km TRANIST TIME=55 min 
+1 ---------------------------
+1 Glenwood -> Hudson to Grand Central -> Grand Central
+1 Grand Central-42 St -> 7X to Flushing-Main St -> Court Sq
+S 1 0.31 55 Hudson>7X
+
+2 WALK DISTANCE=0.31 km TRANIST TIME=55 min 
+2 ---------------------------
+2 Glenwood -> Hudson to Grand Central -> Grand Central
+2 Grand Central-42 St -> 7 to Flushing-Main St -> Court Sq
+S 2 0.31 55 Hudson>7
+
+3 WALK DISTANCE=0.31 km TRANIST TIME=55 min 
+3 ---------------------------
+3 Glenwood -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7X to Flushing-Main St -> Court Sq
+S 3 0.31 55 Hudson>7X
+
+Q N 1608486290230 40.767197,-73.528225 40.745963,-73.768313 W
+1 WALK DISTANCE=0.27 km TRANIST TIME=53 min 
+1 ---------------------------
+1 Hicksville -> Port Jefferson to Penn Station -> Jamaica
+1 ARCHER AVE & SUTPHIN BLVD -> Q30 to Q30 - LITTLE NECK LITTLE NECK PKY -> HORACE HARDING EXPWY & OCEANIA ST
+S 1 0.27 53 Port Jefferson>Q30
+
+2 WALK DISTANCE=0.27 km TRANIST TIME=55 min 
+2 ---------------------------
+2 Hicksville -> Ronkonkoma to Penn Station -> Jamaica
+2 ARCHER AVE & SUTPHIN BLVD -> Q30 to Q30 - LITTLE NECK LITTLE NECK PKY -> HORACE HARDING EXPWY & OCEANIA ST
+S 2 0.27 55 Ronkonkoma>Q30
+
+3 WALK DISTANCE=0.27 km TRANIST TIME=57 min 
+3 ---------------------------
+3 Hicksville -> Port Jefferson to Penn Station -> Jamaica
+3 ARCHER AVE & SUTPHIN BLVD -> Q30 to Q30 - LITTLE NECK LITTLE NECK PKY -> HORACE HARDING EXPWY & OCEANIA ST
+S 3 0.27 57 Port Jefferson>Q30
+
+Q N 1608758298120 40.754665,-73.974514 40.768614,-73.791442 W
+1 WALK DISTANCE=0.60 km TRANIST TIME=58 min 
+1 ---------------------------
+1 3RD AVE & E 44TH ST -> QM32 to QM32 - BAY TERRACE BELL BL via WHITESTONE EXP via BAYSIDE -> CROSS ISLAND PKWY & CLINTONVILLE ST
+1 CROSS ISLAND PKWY & CLINTONVILLE ST -> Q76 to Q76 - JAMAICA 165 ST TERM via FRANCIS LEWIS -> FRANCIS LEWIS BLVD & 32ND AVE
+S 1 0.60 58 QM32>Q76
+
+2 WALK DISTANCE=0.46 km TRANIST TIME=59 min 
+2 ---------------------------
+2 Lexington Av/53 St -> E to Jamaica-179 St -> Jamaica-179 St
+2 HILLSIDE AVE & 181ST ST -> Q76 to Q76 - COLLEGE PT 20 AV via FRANCIS LEWIS -> FRANCIS LEWIS BLVD & 32ND RD
+S 2 0.46 59 E>Q76
+
+3 WALK DISTANCE=0.76 km TRANIST TIME=47 min 
+3 ---------------------------
+3 Grand Central-42 St -> 7X to Flushing-Main St -> Flushing-Main St
+3 39TH AVE & 138TH ST -> Q28 to Q28 - BAY TERRACE BELL BL -> FRANCIS LEWIS BLVD & 32ND RD
+S 3 0.76 47 7X>Q28
+
+Q N 1608542795025 40.808306,-73.104401 40.703938,-73.823862 T
+1 WALK DISTANCE=0.34 km TRANIST TIME=65 min 
+1 ---------------------------
+1 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+1 JAMAICA AVE & SUTPHIN BLVD -> Q54 to Q54 - WILLAMSBURG BRIDGE PLZ -> METROPOLITAN AVE & 129TH ST
+S 1 0.34 65 Ronkonkoma>Q54
+
+2 WALK DISTANCE=0.68 km TRANIST TIME=51 min 
+2 ---------------------------
+2 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+2 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Jamaica-Van Wyck
+S 2 0.68 51 Ronkonkoma>E
+
+3 WALK DISTANCE=0.68 km TRANIST TIME=58 min 
+3 ---------------------------
+3 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+3 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Jamaica-Van Wyck
+S 3 0.68 58 Ronkonkoma>E
+
+Q N 1608659160556 41.552728,-73.046126 40.724441,-73.978693 T
+1 WALK DISTANCE=0.67 km TRANIST TIME=154 min 
+1 ---------------------------
+1 Waterbury -> Waterbury to Bridgeport -> Bridgeport
+1 Bridgeport Amtrak Station -> Northeast Regional to Washington Union Station -> New York Penn Station
+1 34 St-Penn Station -> 2 to Flatbush Av-Brooklyn College -> 14 St
+1 W 14TH ST & 6TH AVE -> M14D+ to M14D+ - SELECT BUS LES DELANCEY-FDR via 14 ST -> AV C & E 12TH ST
+S 1 0.67 154 Waterbury>Northeast Regional>2>M14D+
+
+2 WALK DISTANCE=1.02 km TRANIST TIME=205 min 
+2 ---------------------------
+2 Grand St and State St -> 229 to 229 - WATERBURY-Centerville via Whitney Ave -> State St and W Main St
+2 State St and W Main St -> 229 to 229 - NEW HAVEN via Whitney Ave -> Temple St and Chapel St
+2 Temple St and Chapel St -> 272 to 272 - UNION AVE-Union Station via Church St South -> Union Ave and Union Station
+2 New Haven Union Station -> Acela to Washington Union Station -> New York Penn Station
+2 34 St-Penn Station -> 1 to South Ferry -> 14 St
+2 W 14TH ST & 6TH AVE -> M14D+ to M14D+ - SELECT BUS LES DELANCEY-FDR via 14 ST -> AV C & E 12TH ST
+S 2 1.02 205 229>229>272>Acela>1>M14D+
+
+3 WALK DISTANCE=0.38 km TRANIST TIME=176 min 
+3 ---------------------------
+3 Waterbury -> Waterbury to Bridgeport -> Bridgeport
+3 Bridgeport -> New Haven to Grand Central -> Grand Central
+3 Grand Central-42 St -> 6 to Brooklyn Bridge-City Hall -> Astor Pl
+3 E 8TH ST & LAFAYETTE ST -> M8 to M8 - AVENUE D CROSSTOWN -> E 10TH ST & AV C
+S 3 0.38 176 Waterbury>New Haven>6>M8
+
+Q N 1608498128689 40.752171,-73.975676 40.829678,-73.850471 X
+1 WALK DISTANCE=1.04 km TRANIST TIME=37 min 
+1 ---------------------------
+1 Grand Central-42 St -> 6 to Parkchester -> Parkchester
+S 1 1.04 37 6
+
+2 WALK DISTANCE=0.83 km TRANIST TIME=35 min 
+2 ---------------------------
+2 MADISON AVE & E 45TH ST -> BXM8 to BxM8 - PELHAM BAY WESTCHESTER AVE via BRUCKNER BL -> BRUCKNER BLVD & CASTLE HILL AVE
+S 2 0.83 35 BXM8
+
+3 WALK DISTANCE=0.34 km TRANIST TIME=38 min 
+3 ---------------------------
+3 Grand Central-42 St -> 5 to Eastchester-Dyre Av -> West Farms Sq-E Tremont Av
+3 BOSTON RD & E 180TH ST -> Q44+ to Q44+ - SELECT BUS JAMAICA via MAIN ST -> CROSS BX SVC RD & CASTLE HILL AVE
+S 3 0.34 38 5>Q44+
+
+Q N 1609139237894 41.049836,-73.773287 40.738227,-73.996212 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"41.049836,-73.773287","toPlace":"40.738227,-73.996212","maxWalkDistance":"500","time":"02:07 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314264357,"requestDate":1640675220000,"precalculationTime":87,"pathCalculationTime":66,"pathTimes":[],"renderingTime":0,"totalTime":153,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:57:44-05:00"}}
+
+Q N 1608436601208 41.070547,-73.520021 40.880716,-73.899083 T
+1 WALK DISTANCE=0.69 km TRANIST TIME=87 min 
+1 ---------------------------
+1 Glenbrook -> New Canaan to Stamford -> Stamford
+1 Stamford -> New Haven to Grand Central -> Harlem-125th St.
+1 125 St -> 4 to Woodlawn -> Mosholu Pkwy
+1 E MOSHOLU PKWY S & JEROME AVE -> BX1 to BX1 - RIVERDALE 231 ST via CONCOURSE -> SEDGWICK AVE & FT INDEPENDENCE ST
+S 1 0.69 87 New Canaan>New Haven>4>BX1
+
+2 WALK DISTANCE=0.55 km TRANIST TIME=76 min 
+2 ---------------------------
+2 Glenbrook -> New Canaan to Stamford -> Stamford
+2 Stamford -> New Haven to Grand Central -> Fordham
+2 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> BROADWAY & W 234TH ST
+S 2 0.55 76 New Canaan>New Haven>BX9
+
+3 WALK DISTANCE=0.55 km TRANIST TIME=76 min 
+3 ---------------------------
+3 Glenbrook -> New Canaan to Stamford -> Stamford
+3 Stamford -> New Haven to Grand Central -> Fordham
+3 E FORDHAM RD & 3RD AVE -> BX9 to BX9 - RIVERDALE 262 ST -> BROADWAY & W 234TH ST
+S 3 0.55 76 New Canaan>New Haven>BX9
+
+Q N 1608663074538 41.707074,-73.937586 40.755882,-74.00191 X
+1 WALK DISTANCE=0.90 km TRANIST TIME=95 min 
+1 ---------------------------
+1 Poughkeepsie Amtrak Station -> Empire Service to New York Penn Station -> New York Penn Station
+S 1 0.90 95 Empire Service
+
+2 WALK DISTANCE=0.90 km TRANIST TIME=93 min 
+2 ---------------------------
+2 Poughkeepsie Amtrak Station -> Empire Service to New York Penn Station -> New York Penn Station
+S 2 0.90 93 Empire Service
+
+3 WALK DISTANCE=0.36 km TRANIST TIME=128 min 
+3 ---------------------------
+3 Poughkeepsie -> Hudson to Grand Central -> Grand Central
+3 Grand Central-42 St -> 7 to 34 St-Hudson Yards -> 34 St-Hudson Yards
+S 3 0.36 128 Hudson>7
+
+Q N 1608477682827 40.750342,-73.994278 40.705905,-73.925891 X
+1 WALK DISTANCE=0.67 km TRANIST TIME=19 min 
+1 ---------------------------
+1 34 St-Penn Station -> 2 to Flatbush Av-Brooklyn College -> 14 St
+1 6 Av -> L to Broadway Junction -> Jefferson St
+S 1 0.67 19 2>L
+
+2 WALK DISTANCE=0.66 km TRANIST TIME=21 min 
+2 ---------------------------
+2 7TH AVE & W 31ST ST -> M7 to M7 - 14 ST via COLUMBUS via 7 AV -> W 14TH ST & 7TH AVE
+2 6 Av -> L to Broadway Junction -> Jefferson St
+S 2 0.66 21 M7>L
+
+3 WALK DISTANCE=0.67 km TRANIST TIME=19 min 
+3 ---------------------------
+3 34 St-Penn Station -> 3 to New Lots Av -> 14 St
+3 6 Av -> L to Broadway Junction -> Jefferson St
+S 3 0.67 19 3>L
+
+Q N 1609027121587 40.742213,-73.947207 40.667131,-73.757123 T
+1 WALK DISTANCE=0.74 km TRANIST TIME=29 min 
+1 ---------------------------
+1 Hunters Point Av -> 7 to Flushing-Main St -> Woodside-61 St
+1 Woodside -> Long Beach to Long Beach -> Laurelton
+S 1 0.74 29 7>Long Beach
+
+2 WALK DISTANCE=0.41 km TRANIST TIME=68 min 
+2 ---------------------------
+2 Hunters Point Av -> 7 to Flushing-Main St -> 74 St-Broadway
+2 Jackson Hts-Roosevelt Av -> E to Jamaica Center-Parsons/Archer -> Jamaica Center-Parsons/Archer
+2 ARCHER AVE & PARSONS BLVD -> Q85 to Q85 - GREEN ACRES -> SPRINGFIELD BLVD & 143RD AVE
+S 2 0.41 68 7>E>Q85
+
+Q N 1608456798673 40.808244,-73.105084 40.729574,-73.861751 X
+1 WALK DISTANCE=0.18 km TRANIST TIME=80 min 
+1 ---------------------------
+1 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+1 SUTPHIN BLVD & ARCHER AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & 63RD DR
+S 1 0.18 80 Ronkonkoma>Q60
+
+2 WALK DISTANCE=0.21 km TRANIST TIME=83 min 
+2 ---------------------------
+2 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+2 SUTPHIN BLVD & 95TH AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & 63RD DR
+S 2 0.21 83 Ronkonkoma>Q60
+
+3 WALK DISTANCE=0.21 km TRANIST TIME=85 min 
+3 ---------------------------
+3 Ronkonkoma -> Ronkonkoma to Penn Station -> Jamaica
+3 SUTPHIN BLVD & 95TH AVE -> Q60 to Q60 - EAST MIDTOWN 2 AV via QUEENS BL -> QUEENS BLVD & 63RD DR
+S 3 0.21 85 Ronkonkoma>Q60
+
+Q N 1609131830686 40.881836,-73.917936 40.646458,-73.998193 X
+
+***** FAILED *****
+***** FAILED *****
+***** FAILED *****
+
+D {"requestParameters":{"date":"12-28-2021","mode":"TRANSIT,WALK","wheelchair":"false","ignoreRealtimeUpdates":"true","optimize":"TRANSFERS","fromPlace":"40.881836,-73.917936","toPlace":"40.646458,-73.998193","maxWalkDistance":"500","time":"12:03 AM"},"error":{"id":404,"msg":"No trip found. There may be no transit service within the maximum specified distance or at the specified time, or your start or end point might not be safely accessible.","message":"PATH_NOT_FOUND","noPath":true},"debugOutput":{"startedCalculating":1608314270192,"requestDate":1640667780000,"precalculationTime":74,"pathCalculationTime":167,"pathTimes":[],"renderingTime":0,"totalTime":241,"timedOut":false,"paths":"","startedCalculatingFmt":"2020-12-18T12:57:50-05:00"}}
+
+Q N 1609038891806 40.852937,-73.409546 40.709175,-73.820578 X
+1 WALK DISTANCE=0.42 km TRANIST TIME=43 min 
+1 ---------------------------
+1 Huntington -> Port Jefferson to Penn Station -> Jamaica
+1 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Briarwood
+S 1 0.42 43 Port Jefferson>E
+
+2 WALK DISTANCE=0.42 km TRANIST TIME=45 min 
+2 ---------------------------
+2 Huntington -> Port Jefferson to Penn Station -> Jamaica
+2 Sutphin Blvd-Archer Av-JFK Airport -> E to World Trade Center -> Briarwood
+S 2 0.42 45 Port Jefferson>E
+
+3 WALK DISTANCE=0.31 km TRANIST TIME=55 min 
+3 ---------------------------
+3 Huntington -> Port Jefferson to Penn Station -> Forest Hills
+3 Forest Hills-71 Av -> F to Jamaica-179 St -> Briarwood
+S 3 0.31 55 Port Jefferson>F
+
