@@ -142,14 +142,14 @@ public class ScoreAgainstIdealComparison {
        	  DynamicTest.dynamicTest("Ideal: Disapproved < 5%", new Executable() {
 			@Override
 			public void execute() throws Throwable {
-//				assertTrue((float)resultSummary[1]/(float)total < .05f);
+				assertTrue((float)resultSummary[1]/(float)total < .05f);
 			}
        	  }),
 
        	  DynamicTest.dynamicTest("Ideal: Approved > 65%", new Executable() {
 			@Override
 			public void execute() throws Throwable {
-//				assertTrue((float)resultSummary[0]/(float)total > .65f);
+				assertTrue((float)resultSummary[0]/(float)total > .65f);
 			}
        	  })
 

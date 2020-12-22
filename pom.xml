@@ -263,6 +263,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -290,23 +291,9 @@
                     </execution>
                 </executions>
 		    </plugin>
-		
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- latest version (2.20.1) does not work well with JUnit5 -->
-				<configuration>
-					<argLine>-Xmx1g</argLine>
-					<!-- Jenkins needs XML test reports to determine whether the build is 
-						stable. -->
-					<disableXmlReport>false</disableXmlReport>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-Xmx16g -server</argLine>
-              	</configuration>
 				<dependencies>
 					<dependency>
 		    			<groupId>org.junit.jupiter</groupId>
@@ -316,11 +303,28 @@
 				</dependencies>
 				<executions>
 					<execution>
+						<id>test</id>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<phase>test</phase>
+						<configuration>
+							<argLine>-Xmx1g</argLine>
+							<!-- Jenkins needs XML test reports to determine whether the build is 
+								stable. -->
+							<disableXmlReport>false</disableXmlReport>
+						</configuration>
+					</execution>
+				
+					<execution>
 						<id>integration-test</id>
 						<goals>
 							<goal>test</goal>
 						</goals>
 						<phase>integration-test</phase>
+						<configuration>
+							<argLine>-Xmx16g -server</argLine>
+              			</configuration>
 					</execution>
 				</executions>
 		
