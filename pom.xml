@@ -323,7 +323,7 @@
 						</goals>
 						<phase>integration-test</phase>
 						<configuration>
-							<argLine>-Xmx16g -server</argLine>
+							<argLine>-Xmx16g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
               			</configuration>
 					</execution>
 				</executions>
