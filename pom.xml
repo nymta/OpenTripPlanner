@@ -309,7 +309,7 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<argLine>-Xmx16g -server</argLine>
+							<argLine>-Xmx1g</argLine>
 							<!-- Jenkins needs XML test reports to determine whether the build is 
 								stable. -->
 							<disableXmlReport>false</disableXmlReport>
