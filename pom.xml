@@ -216,7 +216,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.6.0</version>
                 <configuration>
                     <!-- Target Java versions -->
                     <source>1.8</source>
@@ -309,7 +309,7 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
-							<argLine>-Xmx1g</argLine>
+							<argLine>-Xmx16g -server</argLine>
 							<!-- Jenkins needs XML test reports to determine whether the build is 
 								stable. -->
 							<disableXmlReport>false</disableXmlReport>
