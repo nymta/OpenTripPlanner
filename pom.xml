@@ -315,19 +315,39 @@
 							<disableXmlReport>false</disableXmlReport>
 						</configuration>
 					</execution>
-				
-					<execution>
-						<id>integration-test</id>
-						<goals>
-							<goal>test</goal>
-						</goals>
-						<phase>integration-test</phase>
-						<configuration>
-							<argLine>-Xmx16g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
-              			</configuration>
-					</execution>
 				</executions>
-		
+			</plugin>
+			<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+							<configuration>
+								<disableXmlReport>false</disableXmlReport>
+								<argLine>-Xmx16g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
+							</configuration>
+
+					<dependencies>
+						<dependency>
+							<groupId>org.junit.jupiter</groupId>
+							<artifactId>junit-jupiter-engine</artifactId>
+							<version>5.1.0</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<id>failsafe-integration-tests</id>
+							<phase>integration-test</phase>
+							<goals>
+								<goal>integration-test</goal>
+							</goals>
+						</execution>
+						<execution>
+							<id>failsafe-verify</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>verify</goal>
+							</goals>
+						</execution>
+					</executions>
 			</plugin>   
 
             <plugin>
