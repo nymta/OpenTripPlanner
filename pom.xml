@@ -309,9 +309,12 @@
 						</goals>
 						<phase>test</phase>
 						<configuration>
+							<excludes>
+								<exclude>**/mta/comparison/*.java</exclude>
+								<exclude>**/mta/comparison/**/*.java</exclude>
+							</excludes>
 							<argLine>-Xmx1g</argLine>
-							<!-- Jenkins needs XML test reports to determine whether the build is 
-								stable. -->
+							<!-- Jenkins needs XML test reports to determine whether the build is stable. -->
 							<disableXmlReport>false</disableXmlReport>
 						</configuration>
 					</execution>
