@@ -314,7 +314,8 @@
 								<exclude>**/mta/comparison/**/*.java</exclude>
 							</excludes>
 							<argLine>-Xmx1g</argLine>
-							<!-- Jenkins needs XML test reports to determine whether the build is stable. -->
+							<!-- Jenkins needs XML test reports to determine whether the build is 
+								stable. -->
 							<disableXmlReport>false</disableXmlReport>
 						</configuration>
 					</execution>
@@ -323,11 +324,10 @@
 			<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-							<configuration>
-								<disableXmlReport>false</disableXmlReport>
-								<argLine>-Xmx16g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
-							</configuration>
-
+					<configuration>
+						<disableXmlReport>false</disableXmlReport>
+						<argLine>-Xmx16g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
+					</configuration>
 					<dependencies>
 						<dependency>
 							<groupId>org.junit.jupiter</groupId>
@@ -339,9 +339,6 @@
 						<execution>
 							<id>integration-test</id>
 							<phase>integration-test</phase>
-							<goals>
-								<goal>test</goal>
-							</goals>
 						</execution>
 					</executions>
 			</plugin>   
