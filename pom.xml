@@ -313,7 +313,7 @@
 								<exclude>**/mta/comparison/*.java</exclude>
 								<exclude>**/mta/comparison/**/*.java</exclude>
 							</excludes>
-							<argLine>-Xmx1g</argLine>
+							<argLine>-Xmx4g -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit</argLine>
 							<!-- Jenkins needs XML test reports to determine whether the build is 
 								stable. -->
 							<disableXmlReport>false</disableXmlReport>
