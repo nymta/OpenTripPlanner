@@ -16,20 +16,17 @@ import org.opentripplanner.routing.mta.comparison.test_file_format.Result;
 import org.opentripplanner.routing.mta.comparison.test_file_format.ItinerarySummary;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.opentripplanner.routing.core.OptimizeType;
 import org.opentripplanner.routing.core.RoutingRequest;
-import org.opentripplanner.routing.core.TraverseModeSet;
-import org.opentripplanner.routing.error.PathNotFoundException;
 import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.impl.GraphPathFinder;
-import org.opentripplanner.routing.impl.NycFareServiceImpl;
-
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +36,7 @@ import org.opentripplanner.api.common.RoutingResource;
 import org.opentripplanner.api.model.Itinerary;
 import org.opentripplanner.api.model.TripPlan;
 import org.opentripplanner.api.model.error.PlannerError;
+import org.opentripplanner.api.parameter.QualifiedModeSet;
 import org.opentripplanner.api.resource.GraphPathToTripPlanConverter;
 import org.opentripplanner.graph_builder.GraphBuilder;
 
@@ -169,36 +167,41 @@ public class HistoricalTestsIT extends RoutingResource {
     	  
     private void runThroughGraph(File input, File output) throws Exception {
 		FileWriter resultsFileWriter = new FileWriter(output);
-		GraphPathFinder gpFinder = new GraphPathFinder(router);
 		
 		LOG.info("Loading test ideals from " + input);
 
 		List<Result> ideals = Result.loadResults(input);			
 		for(Result result : ideals) {
-			RoutingRequest request = 
-					super.buildRequest(router.defaultRoutingRequest, graph.getTimeZone());
+			this.fromPlace = result.query.origin;
+			this.toPlace = result.query.destination;
+			this.wheelchair = result.query.accessible;
 			
-			request.setFrom(Double.parseDouble(result.query.origin.split(",")[0]), 
-					Double.parseDouble(result.query.origin.split(",")[1]));
-			request.setTo(Double.parseDouble(result.query.destination.split(",")[0]), 
-					Double.parseDouble(result.query.destination.split(",")[1]));
-			request.wheelchairAccessible = result.query.accessible;
-			request.setDateTime(new DateTime(result.query.time).toDate());
-			request.modes = new TraverseModeSet("TRANSIT,WALK");
-			request.maxWalkDistance = 500.0;
-			request.ignoreRealtimeUpdates = true;
-	  		switch(result.query.optimizeFlag) {
+    		DateTimeFormatter dateF = DateTimeFormat.forPattern("MM-dd-YYYY");
+    		DateTimeFormatter timeF = DateTimeFormat.forPattern("hh:mm aa");
+    		this.date = new DateTime(result.query.time).toString(dateF);
+    		this.time = new DateTime(result.query.time).toString(timeF);
+			
+			this.modes = new QualifiedModeSet("TRANSIT,WALK");
+			this.maxWalkDistance = 500.0;
+			this.ignoreRealtimeUpdates = true;
+
+			switch(result.query.optimizeFlag) {
     			case "W":
-    				request.optimize = OptimizeType.WALKING; 
+    				this.optimize = OptimizeType.WALKING; 
     				break;
     			case "X":
-    				request.optimize = OptimizeType.TRANSFERS;
+    				this.optimize = OptimizeType.TRANSFERS;
     				break;
     			case "T":
-    				request.optimize = OptimizeType.QUICK;
+    				this.optimize = OptimizeType.QUICK;
     				break;
 	  		}
-	  		
+	  		  		
+			RoutingRequest request = 
+					super.buildRequest(router.defaultRoutingRequest, graph.getTimeZone());
+
+			// ##############
+			
             String optimizeFlag = null;
     		switch(request.optimize) {
 			case WALKING:
@@ -222,6 +225,7 @@ public class HistoricalTestsIT extends RoutingResource {
     				"\n");
             
 	  		try {
+	  			GraphPathFinder gpFinder = new GraphPathFinder(router);
 	  			List<GraphPath> paths = gpFinder.graphPathFinderEntryPoint(request);
 
 	  			TripPlan plan = GraphPathToTripPlanConverter.generatePlan(paths, request);
