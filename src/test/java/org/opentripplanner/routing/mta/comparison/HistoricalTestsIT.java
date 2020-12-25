@@ -144,6 +144,7 @@ public class HistoricalTestsIT extends RoutingResource {
     		
     		LOG.info("Calling graph startup to load JSON...");
     		router.startup(OTPMain.loadJson(new File(graphDir, Router.ROUTER_CONFIG_FILENAME)));
+    		this.routerId = router.id;
     		LOG.info("Complete");
 		}
 	}

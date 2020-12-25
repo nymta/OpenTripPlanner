@@ -420,10 +420,10 @@ public class QualitativeMultiDimInstanceComparison {
                 // for each optimization, require our result to be the winner 80% of the time
                 if(metricsDimLabels[m].startsWith(optimizationDimLabels[o])) {
             		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + ""
-            				+ " > System under test wins on optimization vs. baseline >= 80%", new Executable() {
+            				+ " > System under test equal to/greater on optimization vs. baseline >= 95%", new Executable() {
             			@Override
             			public void execute() throws Throwable {
- //           				assertTrue(ourPercentage >= 80f);	
+            				assertTrue(ourPercentage >= 95f);	
             			}
                    	}));
 
@@ -431,19 +431,19 @@ public class QualitativeMultiDimInstanceComparison {
             		// for the other two metrics (has results and matches), require 100% and 80%+ respectively
             		if(m == metricsDim.hasResults.ordinal()) {
                 		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + " "
-                				+ "> Provided result >= 95%", new Executable() {
+                				+ "> System under test provided a result >= 98%", new Executable() {
                 			@Override
                 			public void execute() throws Throwable {
-  //              				assertTrue(ourPercentage >= 95f);	
+                				assertTrue(ourPercentage >= 98f);	
                 			}
                        	}));
 
             		} else if(m == metricsDim.match.ordinal()) {
                 		results.add(DynamicTest.dynamicTest("MultiDim: Optimization " + optimizationDimLabels[o] + " | Metric " + metricsDimLabels[m] + " "
-                				+ "> System under test matches baseline >= 60%", new Executable() {
+                				+ "> System under test matches baseline >= 90%", new Executable() {
                 			@Override
                 			public void execute() throws Throwable {
-  //              				assertTrue(ourPercentage >= 60);	
+                				assertTrue(ourPercentage >= 90);	
                 			}
                        	}));
             		}
