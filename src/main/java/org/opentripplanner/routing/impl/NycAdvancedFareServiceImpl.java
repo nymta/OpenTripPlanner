@@ -601,8 +601,10 @@ public class NycAdvancedFareServiceImpl implements FareService, Serializable {
                                 ride.mergeMidZone = traveledService.midZone;
 
                                 agencyFare = findAgencyFare(ride, fareType);
-                                if(agencyFare == null)
-                                    break;
+                                if(agencyFare == null) {
+                                	totalPrice -= traveledService.price;
+                                	break;
+                                }
                                 transferFare = agencyFare.price - traveledService.price;
                                 traveledService.price = agencyFare.price;
                                 transferFound = true;
