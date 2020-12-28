@@ -13,6 +13,7 @@
        for logging and debug log messages will never make it to slf4j. -->
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
 
+<!-- <appender name="application" class="ch.qos.logback.core.ConsoleAppender"> -->
   <appender name="application" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${LOG_FILE_ROOT}/application.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -35,6 +36,9 @@
   <logger name="org.apache.http" level="info" />
   <logger name="com.conveyal" level="info"/>
 
+  <logger name="org.opentripplanner.routing.edgetype.factory.GTFSPatternHopFactory" level="error" />
+  <logger name="org.opentripplanner.graph_builder.linking.SimpleStreetSplitter" level="error" />
+  <logger name="org.opentripplanner.graph_builder.module.LandmarksModule" level="error" />
   <logger name="org.opentripplanner.graph_builder.module.osm.OSMDatabase" level="error" />
   <logger name="org.opentripplanner.openstreetmap.model.OSMLevel" level="error" />
   <logger name="org.opentripplanner.graph_builder.module.DirectTransferGenerator" level="info" />

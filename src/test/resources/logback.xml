@@ -35,6 +35,9 @@
   <logger name="org.apache.http" level="info" />
   <logger name="com.conveyal" level="info"/>
 
+  <logger name="org.opentripplanner.routing.edgetype.factory.GTFSPatternHopFactory" level="error" />
+  <logger name="org.opentripplanner.graph_builder.linking.SimpleStreetSplitter" level="error" />
+  <logger name="org.opentripplanner.graph_builder.module.LandmarksModule" level="error" />
   <logger name="org.opentripplanner.graph_builder.module.osm.OSMDatabase" level="error" />
   <logger name="org.opentripplanner.openstreetmap.model.OSMLevel" level="error" />
   <logger name="org.opentripplanner.graph_builder.module.DirectTransferGenerator" level="info" />
