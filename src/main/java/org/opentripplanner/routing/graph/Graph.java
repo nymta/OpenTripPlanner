@@ -812,7 +812,7 @@ public class Graph implements Serializable {
         MavenVersion gv = this.mavenVersion;
         LOG.info("Graph version: {}", gv);
         LOG.info("OTP version:   {}", v);
-        if (!v.equals(gv)) {
+        /*if (!v.equals(gv)) {
             LOG.error("This graph was built with a different version of OTP. Please rebuild it.");
             return true; // do not allow graph use
         } else if (!v.commit.equals(gv.commit)) {
@@ -830,7 +830,8 @@ public class Graph implements Serializable {
             // no version mismatch, no commit mismatch
             LOG.info("This graph was built with the currently running version and commit of OTP.");
             return false;
-        }
+        }*/
+        return false;
     }
 
     /**

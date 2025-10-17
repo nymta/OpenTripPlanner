@@ -762,6 +762,12 @@
 			<groupId>com.fasterxml.jackson.jaxrs</groupId>
 			<artifactId>jackson-jaxrs-xml-provider</artifactId>
 			<version>${jackson.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.stream</groupId>
+					<artifactId>stax-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Asynchronous Websocket-capable client, for message-driven incremental
@@ -834,13 +840,23 @@
 			<groupId>org.apache.axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
+			<exclusions>
+                <exclusion>
+                    <groupId>axis</groupId>
+                    <artifactId>axis-wsdl4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.axis</groupId>
+                    <artifactId>axis-jaxrpc</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<!-- Apache Axis: Used in NEDDownloader to fetch elevation tiles. -->
 		<dependency>
-			<groupId>org.apache.axis</groupId>
-			<artifactId>axis-jaxrpc</artifactId>
-			<version>1.4</version>
-		</dependency>
+            <groupId>javax.xml.rpc</groupId>
+            <artifactId>javax.xml.rpc-api</artifactId>
+            <version>1.1.2</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
