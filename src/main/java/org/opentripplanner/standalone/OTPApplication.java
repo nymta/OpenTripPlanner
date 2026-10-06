@@ -102,6 +102,7 @@ public class OTPApplication extends Application {
             ScenarioResource.class,
             StationConnectivityResource.class,
             /* Features and Filters: extend Jersey, manipulate requests and responses. */
+            CorsFilter.class,
             MultiPartFeature.class,
             NearbySchedulesResource.class,
             RoutePatternsResource.class,
