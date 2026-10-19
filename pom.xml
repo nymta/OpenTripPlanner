@@ -491,12 +491,19 @@
 			<url>https://people.apache.org/repo/m1-ibiblio-rsync-repository/org.apache.axis2/</url>
 		</repository>
 		<repository>
-			<id>repo.camsys-apps.com</id>
-			<url>https://repo.camsys-apps.com/third-party/</url>
+			<id>mta-otp-third-party</id>
+			<url>https://mta-otp-maven.s3.us-east-1.amazonaws.com/third-party/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<!-- com.conveyal:osm-lib:0.1-SNAPSHOT (via traffic-engine) lives here -->
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 		<repository>
-			<id>releases-camsys-public-repo</id>
-			<url>https://repo.camsys-apps.com/releases/</url>
+			<id>mta-otp-releases</id>
+			<url>https://mta-otp-maven.s3.us-east-1.amazonaws.com/releases/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -505,8 +512,8 @@
 			</snapshots>
 		</repository>
 		<repository>
-			<id>snapshots-camsys-public-repo</id>
-			<url>https://repo.camsys-apps.com/snapshots/</url>
+			<id>mta-otp-snapshots</id>
+			<url>https://mta-otp-maven.s3.us-east-1.amazonaws.com/snapshots/</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
